@@ -488,11 +488,12 @@ server <- function(input, output, session) {
   he_windowed <- reactive({
     df <- filtered_hesum()
     req(input$he_scroll)
-    
+
     df %>%
       filter(
         Archive_Date >= as.Date(input$he_scroll[1]),
-        Archive_Date <= as.Date(input$he_scroll[2])
+        Archive_Date <= as.Date(input$he_scroll[2]),
+        Institution != "Total"  # remove pre-aggregated total row to prevent double-counting
       ) %>%
       arrange(Archive_Date)
   })

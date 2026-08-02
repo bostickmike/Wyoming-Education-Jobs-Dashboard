@@ -8,6 +8,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("k12_he_classification.R")
 ```
 # This Markdown file contains all the code to scrape data from Wyoming's k12 and higher education job postings
 
@@ -489,57 +490,15 @@ combined<- rbind(frontline, ted, springer, other)%>%
 file_name <- paste0("combined_", Sys.Date(), ".csv")
 
 # Write the data to a CSV file with the new file name
-write.csv(combined, file=file.path('Archivek12_data',file_name))
+write.csv(combined, file=file.path('Archivek12_Data',file_name))
 
-# Code current data to categorize positions in the "position" column of the "combinedclean" dataset
+# Categorize positions in the "position" column of the "combinedclean" dataset.
+# classify_k12_position() lives in k12_he_classification.R (sourced above) so
+# this week's raw jobs-table classification and the full-archive rebuild
+# below can't silently drift apart.
 
 combinedclean <- combined %>%
-  mutate(
-    position = case_when(
-       # Paraprofessional-related positions
-      grepl("Paraprofessional|Para|Paraeducator", title, ignore.case = TRUE) ~ "Paraprofessional",
-
-     # Substitute
-      grepl("Sub|Substitute", title, ignore.case = TRUE) ~ "Substitute",
-     
-      # Support Services-related positions
-      grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support", 
-            title, ignore.case = TRUE) ~ "Support Services",
-      
-      # Teacher-related positions
-      grepl("Teacher|Instructor|Interventionist|English|Math|Library|Media|Language Arts|Science|Educator", 
-            title, ignore.case = TRUE) ~ "Teacher",
-      
-      # Coach-related positions
-      grepl("Coach|Athletic|Sports|Track|Football|Basketball|Golf|Soccer|Wrestling|Cheer|BB|Volleyball|Aquatics|Ski", 
-            title, ignore.case = TRUE) ~ "Athletics",
-
-      # Custodial/Maintenance-related positions
-      grepl("Custodian|Custodial|Maintenance|Cleaner|Snow Removal|Facility|Electrician|HVAC", 
-            title, ignore.case = TRUE) ~ "Custodial/Maintenance",
-      
-      # Transportation-related positions
-      grepl("Bus Driver|Driver|Transportation|Route|Bus|Mechanic|Bus Mechanic|Bus Monitor",
-            title, ignore.case = TRUE) ~ "Transportation",
-
-     
-      # Administration-related positions
-      grepl("Principal|Director|Coordinator|Administrator|Supervisor|Administrative", 
-            title, ignore.case = TRUE) ~ "Administration",
-      
-      # Staff-related positions
-      grepl("Secretary|Office Clerk|Office Manager|Desk Clerk|Aide", title, ignore.case = TRUE) ~ "Staff",
-
-      # Food Services-related positions
-      grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher", title, ignore.case = TRUE) ~ "Food Services",
-
-      # Student Teaching-related positions
-      grepl("Daycare|After School|Head Start", title, ignore.case = TRUE) ~ "Child Care",
-      
-      # Other positions
-      TRUE ~ "Other"
-    )
-  )%>%
+  mutate(position = classify_k12_position(title)) %>%
   dplyr::select(title, date_posted, position, location, url, District)
 
 write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'))
@@ -567,185 +526,38 @@ combined_k12_data$Archive_Date <- as.Date(combined_k12_data$Archive_Date)
 
 ###################################################
 # Create Categories
+# position/Category/Broad_Category classification and District name
+# canonicalization all live in k12_he_classification.R (sourced in setup)
+# so this full-archive rebuild can't drift from the current-week block above.
 
 combinedclean <- combined_k12_data %>%
-  mutate(
-    position = case_when(
-       # Paraprofessional-related positions
-      grepl("Paraprofessional|Para|Paraeducator", title, ignore.case = TRUE) ~ "Paraprofessional",
-
-     # Substitute
-      grepl("Sub|Substitute", title, ignore.case = TRUE) ~ "Substitute",
-     
-      # Support Services-related positions
-      grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support", 
-            title, ignore.case = TRUE) ~ "Support Services",
-      
-      # Teacher-related positions
-      grepl("Teacher|Instructor|Interventionist|English|Math|Library|Media|Language Arts|Science|Educator", 
-            title, ignore.case = TRUE) ~ "Teacher",
-      
-      # Coach-related positions
-      grepl("Coach|Athletic|Sports|Track|Football|Basketball|Golf|Soccer|Wrestling|Cheer|BB|Volleyball|Aquatics|Ski", 
-            title, ignore.case = TRUE) ~ "Athletics",
-
-      # Custodial/Maintenance-related positions
-      grepl("Custodian|Custodial|Maintenance|Cleaner|Snow Removal|Facility|Electrician|HVAC", 
-            title, ignore.case = TRUE) ~ "Custodial/Maintenance",
-      
-      # Transportation-related positions
-      grepl("Bus Driver|Driver|Transportation|Route|Bus|Mechanic|Bus Mechanic|Bus Monitor",
-            title, ignore.case = TRUE) ~ "Transportation",
-
-     
-      # Administration-related positions
-      grepl("Principal|Director|Coordinator|Administrator|Supervisor|Administrative", 
-            title, ignore.case = TRUE) ~ "Administration",
-      
-      # Staff-related positions
-      grepl("Secretary|Office Clerk|Office Manager|Desk Clerk|Aide", title, ignore.case = TRUE) ~ "Staff",
-
-      # Food Services-related positions
-      grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher", title, ignore.case = TRUE) ~ "Food Services",
-
-      # Student Teaching-related positions
-      grepl("Daycare|After School|Head Start", title, ignore.case = TRUE) ~ "Child Care",
-      
-      # Other positions
-      TRUE ~ "Other"
-    )
-  )%>%
+  mutate(position = classify_k12_position(title)) %>%
   dplyr::select(title, Archive_Date, position, location, url, District)
 
 combinedclean <- combinedclean %>%
-  mutate(District = case_when(
-    District == "Hot Springs School District 1" ~ "Hot Springs County School District 1",
-    District == "Crook County school District 1" ~ "Crook County School District 1",
-    TRUE ~ District
-  ))
+  mutate(District = canonicalize_k12_district(District))
 
 k12jobs <- combinedclean %>%
   filter(position == "Teacher")
 
-# Define the category keywords with enhanced regex
-category_keywords <- list(
-  "Technical Education" = "\\b(Welding|Weld|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Industrial Arts|Shop)\\b",
-  
-  "Agriculture Education" = "\\b(Agriculture|Ag Teacher|FFA)\\b",
-  
-  "Computer Science Education" = "\\b(Computer Science|Information Technology|\\bIT\\b|Technology Education(?! Teacher Assistant))\\b",
-  
-  "Early Childhood Education" = "\\b(Early Childhood|Pre[- ]?K(?!indergarten)|Preschool|Birth to age|Ages 3-5)\\b",
-  
-  "Elementary Education" = "\\b(Elementary|Kindergarten|1st|2nd|3rd|4th|5th|First|Second|Third|Fourth|Fifth|Grade [1-6])\\b",
-  
-  "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator))\\b",
-
-  "Family and Consumer Science" = "\\b(Family and Consumer Science|FCS|Home Economics)\\b",
-  
-  "Language Education" = "\\b(ESL|ELL|English as a Second Language|Bilingual|Spanish|French|Arapaho|Dual Language|World Language|Foreign Language)\\b",
-  "Mathematics Education" = "\\b(Mathematics|\\bMath\\b)\\b",
-  
-  "Music Education" = "\\b(Music|Orchestra|Band)\\b",
-  
-  "Health Science" = "\\b(Nurse Educator|Health Science)\\b",
-  
-  "Science Education" = "\\b(Science|Biology|Chemistry|Physics|Earth Science)\\b",
-  
-  "Social Studies Education" = "\\b(Social Studies|History|Geography|Civics|Political Science)\\b",
-  
-  "Special Education" = "\\b(Resource Teacher|Special Education|SPED|Exceptional Children|Deaf|Visually Impaired)\\b",
-  
-  "Physical Education" = "(?i)\\b(Physical Education|P\\.?E\\.?|PE\\s*/\\s*Health|Health\\s*/\\s*PE|Health and Physical Education)\\b",
-  
-  "Business and Economics" = "\\b(Business|Economics|Econ)\\b",
-  
-  "Substitute Teaching" = "\\b(Substitute)\\b",
-  
-  "Virtual Education" = "\\b(Virtual|Online|Remote)\\b",
-  
-  "Art Teacher" = "\\b(Art Teacher|\\bArt\\b)\\b",
-  
-  "STEM Teacher" = "\\b(STEM)\\b",
-  
-  "CTE Teacher" = "\\b(Career and Technical Education|CTE Teacher)\\b"
-)
+k12jobs <- k12jobs %>%
+  mutate(Category = classify_k12_subject(title))
 
 k12jobs <- k12jobs %>%
-  mutate(
-    Category = map_chr(str_to_lower(title), function(title) {
-      matched <- NULL
-      for (category in names(category_keywords)) {
-        pattern <- category_keywords[[category]]
-        if (str_detect(title, regex(pattern, ignore_case = TRUE))) {
-          matched <- category
-          break
-        }
-      }
-      if (is.null(matched)) "Uncategorized" else matched
-    })
-  )
-
-
-# Mutate the Category variable based on title using the keywords
-k12jobs <- k12jobs %>%
-  mutate(Category = case_when(
-    str_detect(title, regex(category_keywords[["Special Education"]], ignore_case = TRUE)) ~ "Special Education",  # Match Special Education first
-    str_detect(title, regex(category_keywords[["Technical Education"]], ignore_case = TRUE)) ~ "Technical Education",
-    str_detect(title, regex(category_keywords[["Agriculture Education"]], ignore_case = TRUE)) ~ "Agriculture Education",
-    str_detect(title, regex(category_keywords[["Computer Science Education"]], ignore_case = TRUE)) ~ "Computer Science Education",
-    str_detect(title, regex(category_keywords[["Early Childhood Education"]], ignore_case = TRUE)) ~ "Early Childhood Education",
-    str_detect(title, regex(category_keywords[["Elementary Education"]], ignore_case = TRUE)) ~ "Elementary Education",
-    str_detect(title, regex(category_keywords[["English Language Arts Education"]], ignore_case = TRUE)) ~ "English Language Arts Education",
-    str_detect(title, regex(category_keywords[["Family and Consumer Science"]], ignore_case = TRUE)) ~ "Family and Consumer Science",
-    str_detect(title, regex(category_keywords[["Language Education"]], ignore_case = TRUE)) ~ "Language Education",
-    str_detect(title, regex(category_keywords[["Mathematics Education"]], ignore_case = TRUE)) ~ "Mathematics Education",
-    str_detect(title, regex(category_keywords[["Music Education"]], ignore_case = TRUE)) ~ "Music Education",
-    str_detect(title, regex(category_keywords[["Physical Education"]], ignore_case = TRUE)) ~ "Physical Education",  # Match Physical Education second
-    str_detect(title, regex(category_keywords[["Health Science"]], ignore_case = TRUE)) ~ "Health Science",
-    str_detect(title, regex(category_keywords[["Science Education"]], ignore_case = TRUE)) ~ "Science Education",
-    str_detect(title, regex(category_keywords[["Social Studies Education"]], ignore_case = TRUE)) ~ "Social Studies Education",
-    str_detect(title, regex(category_keywords[["Business and Economics"]], ignore_case = TRUE)) ~ "Business and Economics",
-    str_detect(title, regex(category_keywords[["Substitute Teaching"]], ignore_case = TRUE)) ~ "Substitute Teaching",
-    str_detect(title, regex(category_keywords[["Virtual Education"]], ignore_case = TRUE)) ~ "Virtual Education",
-    str_detect(title, regex(category_keywords[["Art Teacher"]], ignore_case = TRUE)) ~ "Art Teacher",
-    str_detect(title, regex(category_keywords[["STEM Teacher"]], ignore_case = TRUE)) ~ "STEM Teacher",
-    str_detect(title, regex(category_keywords[["CTE Teacher"]], ignore_case = TRUE)) ~ "CTE Teacher",
-    TRUE ~ "Uncategorized"  # Default case for uncategorized titles
-  ))
-k12jobs <- k12jobs %>%
-  mutate(Broad_Category = case_when(
-    Category == "Agriculture Education" ~ "CTE",
-    Category == "Art Teacher" ~ "Art",
-    Category == "Business and Economics" ~ "CTE",
-    Category == "Computer Science Education" ~ "CTE",
-    Category == "Early Childhood Education" ~ "Early Childhood",
-    Category == "Elementary Education" ~ "Elementary",
-    Category == "English Language Arts Education" ~ "English Language Arts Secondary",
-    Category == "Family and Consumer Science" ~ "CTE",
-    Category == "Health Science" ~ "CTE",
-    Category == "Language Education" ~ "Lanugage",
-    Category == "Mathematics Education" ~ "STEM",
-    Category == "Music Education" ~ "Music",
-    Category == "Physical Education" ~ "Physical Education",
-    Category == "STEM Teacher" ~ "STEM",
-    Category == "Science Education" ~ "STEM",
-    Category == "Social Studies Education" ~ "Secondary Social Studies",
-    Category == "Special Education" ~ "Special Education",
-    Category == "Technical Education" ~ "CTE",
-    Category == "Uncategorized" ~ "Other",
-    Category == "Virtual Education" ~ "Other",
-    TRUE ~ "Other"  # Default case to handle any unexpected categories
-  ))
+  mutate(Broad_Category = classify_k12_broad_category(Category))
 
 write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'))
 
 
-#Database for all dates by category 
+#Database for all dates by category
+# Dedup key is title+location, not title alone: two different schools in the
+# same district legitimately post the same generic title (e.g. "Elementary
+# Teacher") for two different, real openings; n_distinct(title) alone would
+# silently collapse those into a single counted posting.
 k12sum <- k12jobs %>%
   group_by(Broad_Category, Archive_Date) %>%
   summarize(
-    sum = n_distinct(title)
+    sum = n_distinct(paste(title, location))
   ) %>%
   ungroup() %>%
   mutate(District = "Total") %>%
@@ -754,7 +566,7 @@ k12sum <- k12jobs %>%
 k12sumdistrict <- k12jobs %>%
   group_by(Broad_Category, Archive_Date, District) %>%
   summarize(
-    sum = n_distinct(title)
+    sum = n_distinct(paste(title, location))
   ) %>%
   ungroup()
 
@@ -768,7 +580,7 @@ k12now <- k12jobs %>%
 k12nowsum <- k12now %>%
   group_by(Broad_Category) %>%
   summarize(
-    Sum = n_distinct(title)
+    Sum = n_distinct(paste(title, location))
   ) %>%
   ungroup() %>%
   mutate(District = "Total")
@@ -776,7 +588,7 @@ k12nowsum <- k12now %>%
 k12districtnowsum <- k12now %>%
   group_by(Broad_Category, District) %>%
   summarize(
-    Sum = n_distinct(title)
+    Sum = n_distinct(paste(title, location))
   ) %>%
   ungroup() %>%
   select(Broad_Category, Sum, District)
@@ -1669,10 +1481,10 @@ file_name <- paste0("hedata_", Sys.Date(), ".xlsx")
 
 write_xlsx(hedata, path = file_name)
 
-write_xlsx(hedata, path = file.path("Archived_HE_data", file_name))
+write_xlsx(hedata, path = file.path("Archived_HE_Data", file_name))
 write_xlsx(hedata, path = file.path("Wy_Ed_Jobs", "hedata.xlsx"))
 
-csv_files <- list.files("Archived_HE_data", pattern = "\\.xlsx$", full.names = TRUE)
+csv_files <- list.files("Archived_HE_Data", pattern = "\\.xlsx$", full.names = TRUE)
 
 combined_HE_data <- csv_files %>%
   lapply(read_xlsx) %>%   
@@ -1680,107 +1492,22 @@ combined_HE_data <- csv_files %>%
 
 combined_HE_data$Archive_Date <- as.Date(combined_HE_data$Archive_Date)
 
+# Fix historical institution-name typos before anything downstream keys off
+# Institution, so a college's history doesn't silently split across two
+# spellings (see canonicalize_he_institution() in k12_he_classification.R).
+combined_HE_data <- combined_HE_data %>%
+  mutate(Institution = canonicalize_he_institution(Institution))
+
+# Job_Type/Category classification lives in k12_he_classification.R (sourced
+# in setup). Adjunct/pooled titles get their own Job_Type, separate from
+# "Instructor/Teacher/Faculty", so a standing adjunct-pool posting isn't
+# counted the same as full-time faculty hiring.
 combined_cat <- combined_HE_data %>%
-  mutate(Job_Type = case_when(
-    # Instructor/Teacher/Faculty
-    grepl("Instructor|Instructional|Teacher|Faculty|Adjunct|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator", Title, ignore.case = TRUE) ~ "Instructor/Teacher/Faculty",
-    
-    # Student Positions
-    grepl("Student Worker|Student Position|Work Study|Students Only|Student Library Aid|Student Employment", Title, ignore.case = TRUE) ~ "Student Positions",
-    
-    # Healthcare
-    grepl("Nurse|Wellbeing|Health|Medicine|Medical Support Assistant", Title, ignore.case = TRUE) ~ "Healthcare",
-    
-    # Temporary Position
-    grepl("Pooled Position|Temporary|Monthly Pooled", Title, ignore.case = TRUE) ~ "Temporary Position",
-    
-    # Staff (consolidated all office assistant/associate roles)
-    grepl("Hourly|Administrative Assistant|Administrative Associate|Secretary|Library Assistant|Office Assistant|Office Associate", 
-          Title, ignore.case = TRUE) ~ "Staff",
-    
-    # Advising
-    grepl("Advisor|Advising|Enrollment Counselor|Financial Aid Counselor|Night ESL Class Aide|Part-time Academic Support Services Pool- Academic Support Tutor|Peer Tutor|Tribal Education Assistant", Title, ignore.case = TRUE) ~ "Advising and Student Services",
-    
-    # Professional
-    grepl("Admissions|Coordinator|Registrar|Executive Assistant|Professional|Statistician|Proctor|Exec Assistant|Exec Assistant to President|Grant Writer|Graphic Designer|Negotiator|Botanist|College Relations|Controller|Database|Officer|Auditor|Web Site|Special Assistant|Retention Mentor|Buyer Assistant|Buyer, Textbooks|GEAR UP Event & College Coordination|Ombudsperson - Office of the President|Data Analyst|Employee Relations Specialist|Finance Technician|Grant Support Specialist|Marketing & Comm Spec.|Program Specialist", 
-          Title, ignore.case = TRUE) ~ "Professional",
-    
-    # Administration
-    grepl("\\bDean\\b|Vice President|Provost|Chief|Business Manager|Enrollment Specialist|Finance Technician|HR Records Specialist", Title, ignore.case = TRUE) ~ "Administration",
-    
-    # Coaching or Athletics
-    grepl("coach|Athletic|Athletics", Title, ignore.case = TRUE) ~ "Coaching or Athletics",
-    
-    # Accounting/Finance
-    grepl("Accountant|Receivable|Accounts", Title, ignore.case = TRUE) ~ "Accounting/Finance",
-    
-    # Research & Science (only actual research/scientific roles)
-    grepl("Research Associate|Laboratory Technician|Research Scientist", Title, ignore.case = TRUE) ~ "Research & Science",
-    
-    # Technical
-    grepl("Control Specialist|Engineer|IT Support Technician|Information Security Analyst|Programmer Analyst|Network Specialist|Specialist|Data Operation Engineer|Design Engineer|GIS Specialist", Title, ignore.case = TRUE) ~ "Technical",
-    
-    # Maintenance & Service
-    grepl("Maintenance|Technician|Facilities|Grounds|HVAC|Plumber|Carpenter|Cook|Baker|Logistics Handler|Meat Plant Technician", Title, ignore.case = TRUE) ~ "Maintenance & Service",
-    
-    # Support Services
-    grepl("Safety|Security|Custodian|Laborer|Driver|Cleaner|Facilities|Grounds|Library Information Specialist|Museum Exhibit Specialist|Specialist, Student Services|Campus Services I|Children's Center Part-Time Aide|KEY Camp Counselor|Lifeguard|Resident Assistant|Outdoor Recreation Lab Room|Part-Time Bookstore Sales Clerk|Physics Work-Study Assistant|Student Service Assistant|Subject Matter Expert, Life Enrichment Class", 
-          Title, ignore.case = TRUE) ~ "Support Services",
-    
-    # Culinary
-    grepl("Chef|Cook|Dining", Title, ignore.case = TRUE) ~ "Culinary",
-    
-    # Management
-    grepl("Coordinator|Director|\\bDirector\\b|Manager|Supervisor|Assoc Director|Assoc Dir|Assist Dir|Asst Dir", 
-          Title, ignore.case = TRUE) ~ "Management",
-    
-    TRUE ~ "Other"
-  ))
+  mutate(Job_Type = classify_he_job_type(Title))
 
 facultydata <- combined_cat %>%
   filter(Job_Type == "Instructor/Teacher/Faculty") %>%
-  mutate(Category = case_when(
-    grepl("Law|Legal|College of Law", Title, ignore.case = TRUE) ~ "Legal",  # New category for law-related faculty
-    
-    grepl("\\bAgricultural Communications\\b|Agricultural", Title, ignore.case = TRUE) ~ "CTE",  # Keeping this up top
-    
-    grepl("Math", Title, ignore.case = TRUE) ~ "Math",
-   
-    grepl("Philosophy|English|Communication( Studies)?|Literature|Mass Communication", Title, ignore.case = TRUE) ~ "Humanities",  # More specific for Communication
-    
-    grepl("\\bComputer Science\\b|Computer|Zoology|Information Technology|Computing", Title, ignore.case = TRUE) ~ "CTE",
-    
-    grepl("Chemistry|Biology|Physics|Astronomy|Lab|Geology|Science|Artificial Intelligence", Title, ignore.case = TRUE) ~ "Science",
-    
-    grepl("History", Title, ignore.case = TRUE) ~ "History",
-    
-    grepl("Business|Accounting|Finance", Title, ignore.case = TRUE) ~ "CTE",
-    
-    grepl("Physical|Outdoor Activity|Athletic Trainer|Kinesiology|Strength", Title, ignore.case = TRUE) ~ "Physical Education",
-    
-    grepl("Health Technology|Nursing|Dental Hygiene|EMS|Medical|Medicine|Nutritional|Nutrition|Pharmacy", Title, ignore.case = TRUE) ~ "CTE",  # Removed generic "Health" to avoid misclassification
-    
-    grepl("Culinary|Hospitality|Tourism", Title, ignore.case = TRUE) ~ "Culinary/Hospitality",
-    
-    grepl("Technology|Equine|Industrial|Electrical|Instrumentation|CDL|Massage|Criminal Justice|Maintenance|Powerline|Substation|Construction|Diesel|Heavy Equipment|Supply Chain|Machine Tool|Welding|Mechanical|Engineering|Engineer|Energy|Printmaking", 
-          Title, ignore.case = TRUE) ~ "CTE",
-    
-    grepl("Art|Graphic Design|Theater|Theatre|Acting|Music|Ceramics", Title, ignore.case = TRUE) ~ "The Arts",
-    
-    grepl("Criminal Justice", Title, ignore.case = TRUE) ~ "Criminal Justice",
-    
-    grepl("Human Services|Family", Title, ignore.case = TRUE) ~ "Human Services",
-    
-    grepl("Psychology|Anthropology|Sociology|Politics|Behavior|Social Work", Title, ignore.case = TRUE) ~ "Social Science",
-    
-    grepl("Spanish", Title, ignore.case = TRUE) ~ "Language",
-    
-    grepl("Education|Curriculum|Educational|Early Childhood", Title, ignore.case = TRUE) ~ "Education",
-    
-    grepl("library|librarian", Title, ignore.case = TRUE) ~ "Library",
-    
-    TRUE ~ "Uncategorized"
-  ))
+  mutate(Category = classify_he_faculty_category(Title))
 write.csv(facultydata, "facultydata.csv")
 hesum <- facultydata %>%
   group_by(Category, Archive_Date) %>%
