@@ -554,21 +554,28 @@ write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'))
 # same district legitimately post the same generic title (e.g. "Elementary
 # Teacher") for two different, real openings; n_distinct(title) alone would
 # silently collapse those into a single counted posting.
-k12sum <- k12jobs %>%
-  group_by(Broad_Category, Archive_Date) %>%
-  summarize(
-    sum = n_distinct(paste(title, location))
-  ) %>%
-  ungroup() %>%
-  mutate(District = "Total") %>%
-  select(Broad_Category, Archive_Date, District, sum)
-
+#
+# The Total row is computed as the SUM of the per-district counts below, not
+# as its own independent n_distinct() over every district's rows combined.
+# Some scrapers fall back to a generic location placeholder (literally the
+# string "District") when they can't extract a real school name, and two
+# different districts can both produce that same generic title+location
+# combination for two genuinely different real postings; deduping across
+# district boundaries would silently collapse those into one and undercount
+# the Total relative to its own parts.
 k12sumdistrict <- k12jobs %>%
   group_by(Broad_Category, Archive_Date, District) %>%
   summarize(
     sum = n_distinct(paste(title, location))
   ) %>%
   ungroup()
+
+k12sum <- k12sumdistrict %>%
+  group_by(Broad_Category, Archive_Date) %>%
+  summarize(sum = sum(sum)) %>%
+  ungroup() %>%
+  mutate(District = "Total") %>%
+  select(Broad_Category, Archive_Date, District, sum)
 
 Allsum <- bind_rows(k12sum, k12sumdistrict)
 write.csv(Allsum, file=file.path('Wy_Ed_Jobs','allsum.csv'))
@@ -577,14 +584,6 @@ write.csv(Allsum, file=file.path('Wy_Ed_Jobs','allsum.csv'))
 k12now <- k12jobs %>%
   filter(Archive_Date == max(Archive_Date))
 
-k12nowsum <- k12now %>%
-  group_by(Broad_Category) %>%
-  summarize(
-    Sum = n_distinct(paste(title, location))
-  ) %>%
-  ungroup() %>%
-  mutate(District = "Total")
-
 k12districtnowsum <- k12now %>%
   group_by(Broad_Category, District) %>%
   summarize(
@@ -592,6 +591,12 @@ k12districtnowsum <- k12now %>%
   ) %>%
   ungroup() %>%
   select(Broad_Category, Sum, District)
+
+k12nowsum <- k12districtnowsum %>%
+  group_by(Broad_Category) %>%
+  summarize(Sum = sum(Sum)) %>%
+  ungroup() %>%
+  mutate(District = "Total")
 
 Allnow <- bind_rows(k12nowsum, k12districtnowsum)
 
