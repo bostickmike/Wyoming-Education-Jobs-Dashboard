@@ -21,110 +21,133 @@ library(rvest)
 library(RSelenium)
 library(dplyr)
 library(readr)
+source("scrape_helpers.R")
 
 # Read the CSV file
 csv_file <- "Frontline_Job_Links.csv"
 job_links <- read_csv(csv_file)
 
 # Start RSelenium with Firefox browser
-rD <- suppressMessages(rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL))
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Initialize list to store job data from all URLs
-all_jobs_data <- list()
+# Iterate over each row in the CSV file. Each district's scrape is wrapped
+# in its own tryCatch and logged individually (there isn't one safe_scrape()
+# call for this chunk since it covers many districts, not one source) -- one
+# district's dead site/changed selector no longer aborts every other
+# district's scrape for the week, and every district's outcome (ok/empty/
+# error) is recorded to scrape_log.csv instead of only a transient cat().
+all_jobs_data <- tryCatch({
+  results <- list()
 
-# Iterate over each row in the CSV file
-for (i in 1:nrow(job_links)) {
-  url <- job_links$JobSite[i]
-  school_district <- job_links$`School District`[i]  # Extract the School District
-  
-  # Load the page
-  remDr$navigate(url)
-  
-  # Wait for dynamic content to load (adjust time as needed)
-  Sys.sleep(10)  # Adjust as needed based on page loading time
-  
-  # Get page source and parse with rvest
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  # Extract job listings
-  list_items <- soup %>%
-    html_nodes("ul.postingsList")
-  
-  # Debug: print the number of job listings found
-  cat("Number of job listings found at", url, ":", length(list_items), "\n")
-  
-  # Initialize list to store job data for the current URL
-  jobs_data <- list()
-  
-  if (length(list_items) == 0) {
-    # If no jobs found, create a placeholder row
-    jobs_data <- list(list(
-      title = "No jobs",
-      position = NA,
-      position2 = NA,
-      date_posted = NA,
-      location = NA,
-      closing_date = NA,
-      school_district = school_district
-    ))
-  } else {
-    # Iterate over each job listing
-    for (item in list_items) {
-      current_job <- list()
-      
-      # Extract job title
-      current_job$title <- item %>%
-        html_node("table.title td#wrapword") %>%
-        html_text(trim = TRUE)
-      
-      # Extract additional details
-      labels <- item %>%
-        html_nodes("li span.label") %>%
-        html_text(trim = TRUE)
-      
-      values <- item %>%
-        html_nodes("li span.normal") %>%
-        html_text(trim = TRUE)
-      
-      # Match labels and values
-      j <- 1
-      for (k in seq_along(labels)) {
-        label <- labels[k]
-        if (label == "Position Type:") {
-          current_job$position <- values[j]
-          if (j + 1 <= length(values) && !grepl(":", values[j + 1])) {
-            current_job$position2 <- values[j + 1]
+  for (i in 1:nrow(job_links)) {
+    url <- job_links$JobSite[i]
+    school_district <- job_links$`School District`[i]  # Extract the School District
+
+    jobs_data <- tryCatch({
+      # Load the page
+      remDr$navigate(url)
+
+      # Wait for dynamic content to load (adjust time as needed)
+      Sys.sleep(10)  # Adjust as needed based on page loading time
+
+      # Get page source and parse with rvest
+      page_source <- remDr$getPageSource()[[1]]
+      soup <- read_html(page_source)
+
+      # Extract job listings
+      list_items <- soup %>%
+        html_nodes("ul.postingsList")
+
+      # Debug: print the number of job listings found
+      cat("Number of job listings found at", url, ":", length(list_items), "\n")
+
+      if (length(list_items) == 0) {
+        # If no jobs found, create a placeholder row
+        log_scrape_result(school_district, status = "empty", n_rows = 0)
+        list(list(
+          title = "No jobs",
+          position = NA,
+          position2 = NA,
+          date_posted = NA,
+          location = NA,
+          closing_date = NA,
+          school_district = school_district
+        ))
+      } else {
+        # Iterate over each job listing
+        district_jobs <- list()
+        for (item in list_items) {
+          current_job <- list()
+
+          # Extract job title
+          current_job$title <- item %>%
+            html_node("table.title td#wrapword") %>%
+            html_text(trim = TRUE)
+
+          # Extract additional details
+          labels <- item %>%
+            html_nodes("li span.label") %>%
+            html_text(trim = TRUE)
+
+          values <- item %>%
+            html_nodes("li span.normal") %>%
+            html_text(trim = TRUE)
+
+          # Match labels and values
+          j <- 1
+          for (k in seq_along(labels)) {
+            label <- labels[k]
+            if (label == "Position Type:") {
+              current_job$position <- values[j]
+              if (j + 1 <= length(values) && !grepl(":", values[j + 1])) {
+                current_job$position2 <- values[j + 1]
+                j <- j + 1
+              } else {
+                current_job$position2 <- NULL
+              }
+            } else if (label == "Date Posted:") {
+              current_job$date_posted <- values[j]
+            } else if (label == "Location:") {
+              current_job$location <- values[j]
+            } else if (label == "Closing Date:") {
+              current_job$closing_date <- values[j]
+            }
             j <- j + 1
-          } else {
-            current_job$position2 <- NULL
           }
-        } else if (label == "Date Posted:") {
-          current_job$date_posted <- values[j]
-        } else if (label == "Location:") {
-          current_job$location <- values[j]
-        } else if (label == "Closing Date:") {
-          current_job$closing_date <- values[j]
-        }
-        j <- j + 1
-      }
-      
-      # Add the School District information
-      current_job$school_district <- school_district
-      
-      # Append current job data
-      jobs_data <- c(jobs_data, list(current_job))
-    }
-  }
-  
-  # Append jobs data for this district to overall results
-  all_jobs_data <- c(all_jobs_data, jobs_data)
-}
 
-# Close the RSelenium session
-remDr$close()
-rD$server$stop()
+          # Add the School District information
+          current_job$school_district <- school_district
+
+          # Append current job data
+          district_jobs <- c(district_jobs, list(current_job))
+        }
+
+        log_scrape_result(school_district, status = "ok", n_rows = length(district_jobs))
+        district_jobs
+      }
+    }, error = function(e) {
+      message("Applitrack loop: error scraping ", school_district, " (", url, "): ", conditionMessage(e))
+      log_scrape_result(school_district, status = "error", n_rows = 0, error_message = conditionMessage(e))
+      list(list(
+        title = "No jobs",
+        position = NA,
+        position2 = NA,
+        date_posted = NA,
+        location = NA,
+        closing_date = NA,
+        school_district = school_district
+      ))
+    })
+
+    # Append jobs data for this district to overall results
+    results <- c(results, jobs_data)
+  }
+
+  results
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Convert list of all job data to data frame
 all_jobs_df <- bind_rows(all_jobs_data) %>%
@@ -136,12 +159,12 @@ all_jobs_df <- bind_rows(all_jobs_data) %>%
     new_closing_date = if_else(grepl("^\\d", position2), location, closing_date)
   ) %>%
   select(
-    title, 
-    new_position, 
-    new_position2, 
-    new_date_posted, 
-    new_location, 
-    new_closing_date, 
+    title,
+    new_position,
+    new_position2,
+    new_date_posted,
+    new_location,
+    new_closing_date,
     school_district
   ) %>%
   rename(
@@ -169,6 +192,7 @@ library(RSelenium)
 library(dplyr)
 library(readr)
 library(purrr)
+source("scrape_helpers.R")
 
 # Read the CSV file containing the URLs
 tedjoblinks <- read.csv("tedk12_job_links.csv", stringsAsFactors = FALSE)
@@ -183,43 +207,56 @@ all_ted_data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Loop through each URL in the CSV file
+# Loop through each URL in the CSV file. No Selenium session here (plain
+# read_html against a static page), so each URL just needs its own
+# tryCatch + log entry -- one dead/changed URL no longer aborts every URL
+# after it in the CSV.
 for (i in 1:nrow(tedjoblinks)) {
   url <- tedjoblinks$Job.Link[i]  # Using the Job.Link column for URLs
-  
-  # Read the HTML content of the page
-  page <- read_html(url)
-  
-  # Extract job title, posting date, type, and location
-  jobs <- page %>%
-    html_nodes("tr") %>% # Assuming each job is within a <tr> element
-    map_df(~{
-      title <- .x %>%
-        html_node("td:nth-child(1) a") %>%
-        html_text(trim = TRUE)
-      
-      date_posted <- .x %>%
-        html_node("td:nth-child(2)") %>%
-        html_text(trim = TRUE)
-      
-      position <- .x %>%
-        html_node("td:nth-child(3)") %>%
-        html_text(trim = TRUE)
-      
-      location <- .x %>%
-        html_node("td:nth-child(4)") %>%
-        html_text(trim = TRUE)
-      
-      data.frame(
-        title = title,
-        date_posted = date_posted,
-        position = position,
-        location = location,
-        url = url,  # Add the URL to the data frame
-        stringsAsFactors = FALSE
-      )
-    })
-  
+
+  jobs <- tryCatch({
+    # Read the HTML content of the page
+    page <- read_html(url)
+
+    # Extract job title, posting date, type, and location
+    result <- page %>%
+      html_nodes("tr") %>% # Assuming each job is within a <tr> element
+      map_df(~{
+        title <- .x %>%
+          html_node("td:nth-child(1) a") %>%
+          html_text(trim = TRUE)
+
+        date_posted <- .x %>%
+          html_node("td:nth-child(2)") %>%
+          html_text(trim = TRUE)
+
+        position <- .x %>%
+          html_node("td:nth-child(3)") %>%
+          html_text(trim = TRUE)
+
+        location <- .x %>%
+          html_node("td:nth-child(4)") %>%
+          html_text(trim = TRUE)
+
+        data.frame(
+          title = title,
+          date_posted = date_posted,
+          position = position,
+          location = location,
+          url = url,  # Add the URL to the data frame
+          stringsAsFactors = FALSE
+        )
+      })
+
+    log_scrape_result(url, status = if (nrow(result) > 0) "ok" else "empty", n_rows = nrow(result))
+    result
+  }, error = function(e) {
+    message("tedk12: error scraping ", url, ": ", conditionMessage(e))
+    log_scrape_result(url, status = "error", n_rows = 0, error_message = conditionMessage(e))
+    data.frame(title = character(), date_posted = character(), position = character(),
+               location = character(), url = character(), stringsAsFactors = FALSE)
+  })
+
   # Append the jobs data to the all_jobs_data data frame
   all_ted_data <- bind_rows(all_ted_data, jobs)
 }
@@ -246,12 +283,13 @@ library(dplyr)
 library(stringr)
 library(lubridate)
 library(purrr)
+source("scrape_helpers.R")
 
 # ----------------------------
 # Start RSelenium
 # ----------------------------
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
 # ----------------------------
 # Read the CSV file containing the URLs
@@ -379,21 +417,34 @@ scrape_jobs <- function(remDr, url) {
 
 
 # ----------------------------
-# Loop through each URL and scrape
+# Loop through each URL and scrape. Each URL is now wrapped in its own
+# tryCatch + log entry -- one dead/changed district site no longer aborts
+# every district after it in the CSV.
 # ----------------------------
-for (i in 1:nrow(springerjoblinks)) {
-  url <- springerjoblinks$`Job.Link`[i]
-  message(paste("Processing URL:", url))
-  
-  job_data <- scrape_jobs(remDr, url)
-  
-  if (nrow(job_data) > 0) {
-    all_springer_data <- bind_rows(all_springer_data, job_data)
-    message(paste("Scraped", nrow(job_data), "jobs from:", url))
-  } else {
-    message("No jobs found at:", url)
+all_springer_data <- tryCatch({
+  for (i in 1:nrow(springerjoblinks)) {
+    url <- springerjoblinks$`Job.Link`[i]
+    message(paste("Processing URL:", url))
+
+    job_data <- tryCatch(scrape_jobs(remDr, url), error = function(e) {
+      message("Springer: error scraping ", url, ": ", conditionMessage(e))
+      log_scrape_result(url, status = "error", n_rows = 0, error_message = conditionMessage(e))
+      NULL
+    })
+
+    if (!is.null(job_data) && nrow(job_data) > 0) {
+      all_springer_data <- bind_rows(all_springer_data, job_data)
+      message(paste("Scraped", nrow(job_data), "jobs from:", url))
+      log_scrape_result(url, status = "ok", n_rows = nrow(job_data))
+    } else if (!is.null(job_data)) {
+      message("No jobs found at:", url)
+      log_scrape_result(url, status = "empty", n_rows = 0)
+    }
   }
-}
+  all_springer_data
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # ----------------------------
 # Merge with original CSV and clean up
@@ -408,14 +459,6 @@ all_springer_data <- all_springer_data %>%
 # Save to CSV
 # ----------------------------
 write.csv(all_springer_data, "all_springer_job_listings.csv", row.names = FALSE)
-
-# ----------------------------
-# Close RSelenium
-# ----------------------------
-remDr$close()
-rD$server$stop()
-
-
 
 ```
 
@@ -614,108 +657,115 @@ write.csv(list, "list.csv")
 library(rvest)
 library(RSelenium)
 library(dplyr)
+source("scrape_helpers.R")
 
 # Start RSelenium with Firefox browser
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Function to scrape job postings from a given page URL
-scrape_jobs <- function(url) {
-  remDr$navigate(url)
-  
- # Scroll to bottom once
-remDr$executeScript("window.scrollTo(0, document.body.scrollHeight);")
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Laramie County Community College",
+    scrape_fn = function() {
+      # Function to scrape job postings from a given page URL
+      scrape_jobs <- function(url) {
+        remDr$navigate(url)
 
-# Wait up to ~8 seconds for all job elements to appear
-for(i in 1:16) {     # 16 × 0.5 sec = 8 sec total
-  job_nodes <- remDr$findElements(using = "css selector",
-                                  value = ".item-details-link")
-  if(length(job_nodes) >= 30) break
-  Sys.sleep(0.5)
-}
+       # Scroll to bottom once
+      remDr$executeScript("window.scrollTo(0, document.body.scrollHeight);")
+
+      # Wait up to ~8 seconds for all job elements to appear
+      for(i in 1:16) {     # 16 x 0.5 sec = 8 sec total
+        job_nodes <- remDr$findElements(using = "css selector",
+                                        value = ".item-details-link")
+        if(length(job_nodes) >= 30) break
+        Sys.sleep(0.5)
+      }
 
 
-  # Re-fetch the page after waiting for all jobs to load
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  # Safely try to fetch job titles, links, locations, and posted dates
-  job_titles <- tryCatch({
-    soup %>% html_nodes(".item-details-link") %>% html_text(trim = TRUE)
-  }, error = function(e) character(0))
+        # Re-fetch the page after waiting for all jobs to load
+        page_source <- remDr$getPageSource()[[1]]
+        soup <- read_html(page_source)
 
-  job_links <- tryCatch({
-    soup %>% html_nodes(".item-details-link") %>% html_attr("href") %>%
-      paste0("https://www.governmentjobs.com/careers/lcccwy?page=", .)
-  }, error = function(e) character(0))
+        # Safely try to fetch job titles, links, locations, and posted dates
+        job_titles <- tryCatch({
+          soup %>% html_nodes(".item-details-link") %>% html_text(trim = TRUE)
+        }, error = function(e) character(0))
 
-  # **Update to capture the Location** correctly for all jobs, including the last one
-  job_location <- tryCatch({
-    soup %>% html_nodes(".list-meta li:nth-child(1)") %>% html_text(trim = TRUE)
-  }, error = function(e) character(0))
-  
-  
-  posted_date <- tryCatch({
-    soup %>% html_nodes(".list-entry-starts span") %>% html_text(trim = TRUE)
-  }, error = function(e) character(0))
+        job_links <- tryCatch({
+          soup %>% html_nodes(".item-details-link") %>% html_attr("href") %>%
+            paste0("https://www.governmentjobs.com/careers/lcccwy?page=", .)
+        }, error = function(e) character(0))
 
-  # Ensure all vectors have the same length
-  max_length <- max(length(job_titles), length(job_links), length(job_location), length(posted_date))
-  
-  job_titles <- c(job_titles, rep(NA, max_length - length(job_titles)))
-  job_links <- c(job_links, rep(NA, max_length - length(job_links)))
-  job_location <- c(job_location, rep(NA, max_length - length(job_location)))
-  posted_date <- c(posted_date, rep(NA, max_length - length(posted_date)))
+        # **Update to capture the Location** correctly for all jobs, including the last one
+        job_location <- tryCatch({
+          soup %>% html_nodes(".list-meta li:nth-child(1)") %>% html_text(trim = TRUE)
+        }, error = function(e) character(0))
 
-  # Create dataframe
-  jobs_df <- data.frame(
-    Title = job_titles,
-    Location = job_location,
-    Link = job_links,
-    Posted_Date = posted_date,
-    stringsAsFactors = FALSE
+
+        posted_date <- tryCatch({
+          soup %>% html_nodes(".list-entry-starts span") %>% html_text(trim = TRUE)
+        }, error = function(e) character(0))
+
+        # Ensure all vectors have the same length
+        max_length <- max(length(job_titles), length(job_links), length(job_location), length(posted_date))
+
+        job_titles <- c(job_titles, rep(NA, max_length - length(job_titles)))
+        job_links <- c(job_links, rep(NA, max_length - length(job_links)))
+        job_location <- c(job_location, rep(NA, max_length - length(job_location)))
+        posted_date <- c(posted_date, rep(NA, max_length - length(posted_date)))
+
+        # Create dataframe
+        jobs_df <- data.frame(
+          Title = job_titles,
+          Location = job_location,
+          Link = job_links,
+          Posted_Date = posted_date,
+          stringsAsFactors = FALSE
+        )
+
+        return(jobs_df)
+      }
+
+      # Scrape multiple pages
+      all_jobs <- list()
+
+      page <- 1
+      repeat {
+        url <- paste0("https://www.governmentjobs.com/careers/lcccwy?page=", page)
+        cat("Scraping:", url, "\n")
+
+        jobs_df <- tryCatch({
+          scrape_jobs(url)
+        }, error = function(e) {
+          cat("Error scraping page", page, ":", e$message, "\n")
+          return(data.frame())
+        })
+
+        if (all(is.na(jobs_df$Title)) || nrow(jobs_df) == 0) {
+          cat("No job titles found on page", page, ". Assuming end of listings.\n")
+          break
+        } else {
+          all_jobs[[length(all_jobs) + 1]] <- jobs_df
+          cat("Scraped page", page, "\n")
+          page <- page + 1  # Don't forget to increment the page!
+        }
+
+        Sys.sleep(1)  # Be nice to the server
+      }
+
+      bind_rows(all_jobs)
+    },
+    expected_cols = c("Title", "Location", "Link", "Posted_Date")
   )
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
-  return(jobs_df)
-}
-
-# Scrape multiple pages
-all_jobs <- list()
-
-all_jobs <- list()
-
-page <- 1
-repeat {
-  url <- paste0("https://www.governmentjobs.com/careers/lcccwy?page=", page)
-  cat("Scraping:", url, "\n")
-
-  jobs_df <- tryCatch({
-    scrape_jobs(url)
-  }, error = function(e) {
-    cat("Error scraping page", page, ":", e$message, "\n")
-    return(data.frame())
-  })
-
-  if (all(is.na(jobs_df$Title)) || nrow(jobs_df) == 0) {
-    cat("No job titles found on page", page, ". Assuming end of listings.\n")
-    break
-  } else {
-    all_jobs[[length(all_jobs) + 1]] <- jobs_df
-    cat("Scraped page", page, "\n")
-    page <- page + 1  # Don't forget to increment the page!
-  }
-
-  Sys.sleep(1)  # Be nice to the server
-}
-
-# Now outside the loop — combine and clean
-lccc <- bind_rows(all_jobs) %>%
+# Combine and clean
+lccc <- all_jobs_raw %>%
   mutate(Institution = "Laramie County Community College") %>%
   distinct(Title, .keep_all = TRUE)
-
-# Close Selenium
-remDr$close()
-rD$server$stop()
 
 # Cleanup and print results
 lccc <- lccc %>%
@@ -727,106 +777,102 @@ print(lccc)
 
 ### This pulls data from Casper College
 ```{r casper college, message=FALSE, warning=FALSE, echo=TRUE}
+library(rvest)
+library(RSelenium)
+library(dplyr)
+source("scrape_helpers.R")
 
 # Define the URLs for page 1 and page 2
 urls <- c(
-  "https://www.schooljobs.com/careers/caspercollege", 
+  "https://www.schooljobs.com/careers/caspercollege",
   "https://www.schooljobs.com/careers/caspercollege?page=2"
 )
 
 # Start RSelenium with Firefox browser
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Initialize an empty data frame to store all job listings
-casper <- data.frame()
+casper_raw <- tryCatch({
+  safe_scrape(
+    "Casper College",
+    scrape_fn = function() {
+      casper <- data.frame()
 
-# Loop over both pages to scrape data
-for (url in urls) {
-  
-  remDr$navigate(url)
-  Sys.sleep(10)  # Wait for dynamic content
-  
-  # Get page source and parse with rvest
-  soup <- read_html(remDr$getPageSource()[[1]])
-  
-  # Extract job titles and links
-  job_titles <- soup %>% 
-    html_nodes(".item-details-link") %>% 
-    html_text(trim = TRUE)
-  
-  job_links <- soup %>% 
-    html_nodes(".item-details-link") %>% 
-    html_attr("href") %>% 
-    paste0("https://www.schooljobs.com/careers/caspercollege", .)
-  
-  # Extract department details
-  departments <- soup %>% 
-    html_nodes(".item-details-link") %>% 
-    html_attr("data-department-name")
-  
-  if (length(departments) == 0) {
-    departments <- rep(NA, length(job_titles))
-  }
-  
-  # Extract job locations
-  job_locations <- soup %>% 
-    html_nodes(".list-meta li:nth-child(1)") %>% 
-    html_text(trim = TRUE)
-  
-  if (length(job_locations) == 0) {
-    job_locations <- rep(NA, length(job_titles))
-  }
-  
-  # Extract posted date text (RELATIVE — keep as-is)
-  Posted_Date <- soup %>% 
-    html_nodes(".list-entry-starts span") %>% 
-    html_text(trim = TRUE)
-  
-  # If no jobs found
-  if (length(job_titles) == 0) {
-    
-    page_jobs <- data.frame(
-      Title = "No Jobs",
-      Location = NA,
-      Posted_Date = NA,
-      Institution = "Casper College",
-      Link = url,
-      stringsAsFactors = FALSE
-    )
-    
-  } else {
-    
-    page_jobs <- data.frame(
-      Title = job_titles,
-      Location = job_locations,
-      Posted_Date = Posted_Date,
-      Institution = "Casper College",
-      Link = job_links,
-      stringsAsFactors = FALSE
-    )
-  }
-  
-  # Append results
-  casper <- rbind(casper, page_jobs)
-}
+      # Loop over both pages to scrape data; one page erroring doesn't lose the other.
+      for (url in urls) {
+        page_jobs <- tryCatch({
+          remDr$navigate(url)
+          Sys.sleep(10)  # Wait for dynamic content
 
-# Remove duplicates
-casper <- unique(casper)
+          soup <- read_html(remDr$getPageSource()[[1]])
+
+          job_titles <- soup %>%
+            html_nodes(".item-details-link") %>%
+            html_text(trim = TRUE)
+
+          job_links <- soup %>%
+            html_nodes(".item-details-link") %>%
+            html_attr("href") %>%
+            paste0("https://www.schooljobs.com/careers/caspercollege", .)
+
+          # Extract job locations
+          job_locations <- soup %>%
+            html_nodes(".list-meta li:nth-child(1)") %>%
+            html_text(trim = TRUE)
+
+          if (length(job_locations) == 0) {
+            job_locations <- rep(NA, length(job_titles))
+          }
+
+          # Extract posted date text (RELATIVE -- keep as-is)
+          Posted_Date <- soup %>%
+            html_nodes(".list-entry-starts span") %>%
+            html_text(trim = TRUE)
+
+          if (length(job_titles) == 0) {
+            data.frame(
+              Title = "No Jobs",
+              Location = NA,
+              Posted_Date = NA,
+              Institution = "Casper College",
+              Link = url,
+              stringsAsFactors = FALSE
+            )
+          } else {
+            data.frame(
+              Title = job_titles,
+              Location = job_locations,
+              Posted_Date = Posted_Date,
+              Institution = "Casper College",
+              Link = job_links,
+              stringsAsFactors = FALSE
+            )
+          }
+        }, error = function(e) {
+          message("Casper College: error scraping ", url, ": ", conditionMessage(e))
+          data.frame(Title = "No Jobs", Location = NA, Posted_Date = NA,
+                     Institution = "Casper College", Link = url, stringsAsFactors = FALSE)
+        })
+
+        casper <- rbind(casper, page_jobs)
+      }
+
+      # Remove duplicates
+      unique(casper)
+    },
+    expected_cols = c("Title", "Location", "Posted_Date", "Institution", "Link")
+  )
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Final column order & cleanup
-casper <- casper %>%
+casper <- casper_raw %>%
   select(Title, Location, Posted_Date, Institution, Link) %>%
   filter(Title != "No Jobs")
 
 # Print results
 print(casper)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
-
 
 ```
 
@@ -837,15 +883,16 @@ library(rvest)
 library(RSelenium)
 library(dplyr)
 library(stringr)
+source("scrape_helpers.R")
 
 #Convert date to days, weeks, more than 30 days
 convert_date_to_relative <- function(date_chr) {
   date_parsed <- as.Date(date_chr, format = "%m/%d/%Y")
-  
+
   if (is.na(date_parsed)) return(NA_character_)
-  
+
   days_ago <- as.integer(Sys.Date() - date_parsed)
-  
+
   if (days_ago < 1) {
     "Posted today"
   } else if (days_ago == 1) {
@@ -866,60 +913,76 @@ convert_date_to_relative <- function(date_chr) {
 }
 
 
-# Start RSelenium
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+# Start RSelenium. NOTE: like Eastern Wyoming originally was, this scraper is
+# still hardcoded to pages 1-2 (lapply(1:2, ...)) rather than paginating
+# until an empty page -- that specific rewrite wasn't in this pass's scope,
+# flagging it here as the same class of risk Eastern had.
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-extract_jobs <- function(page_url) {
-  remDr$navigate(page_url)
-  Sys.sleep(5)  # allow full page load
-  
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  jobs <- soup %>% html_nodes("div.job-item.job-item-posting")
-  if(length(jobs) == 0) return(NULL)
-  
-  job_list <- lapply(jobs, function(job) {
-    # Title and Link
-    title_node <- job %>% html_node("div.col-md-4.job-title h3 a")
-    Title <- title_node %>% html_text(trim = TRUE)
-    Link  <- paste0("https://wwccwy.peopleadmin.com", title_node %>% html_attr("href"))
-    
-    # Right column text (single string)
-    right_text <- job %>% html_node("div.col-md-8") %>% html_text(trim = TRUE)
-    
-    # Posted_Date: first occurrence of MM/DD/YYYY
-    raw_date <- str_extract(right_text, "\\d{2}/\\d{2}/\\d{4}")
-    Posted_Date <- convert_date_to_relative(raw_date)
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Western Wyoming Community College",
+    scrape_fn = function() {
+      extract_jobs <- function(page_url) {
+        remDr$navigate(page_url)
+        Sys.sleep(5)  # allow full page load
 
-    
-    # Location: last non-empty line that is NOT a date or code
-    lines <- str_split(right_text, "\\n")[[1]] %>% str_trim()
-    non_date <- lines[!str_detect(lines, "\\d{2}/\\d{2}/\\d{4}")]
-    non_empty <- non_date[nzchar(non_date)]
-    Location <- if(length(non_empty) > 0) tail(non_empty, 1) else NA
-    
-    data.frame(
-      Title = Title,
-      Location = Location,
-      Posted_Date = Posted_Date,
-      Link = Link,
-      stringsAsFactors = FALSE
-    )
-  })
-  
-  do.call(rbind, job_list)
-}
+        page_source <- remDr$getPageSource()[[1]]
+        soup <- read_html(page_source)
 
-# Scrape pages 1 and 2
-all_jobs <- do.call(rbind, lapply(1:2, function(p) {
-  url <- paste0("https://wwccwy.peopleadmin.com/postings/search?page=", p)
-  extract_jobs(url)
-}))
+        jobs <- soup %>% html_nodes("div.job-item.job-item-posting")
+        if(length(jobs) == 0) return(NULL)
+
+        job_list <- lapply(jobs, function(job) {
+          # Title and Link
+          title_node <- job %>% html_node("div.col-md-4.job-title h3 a")
+          Title <- title_node %>% html_text(trim = TRUE)
+          Link  <- paste0("https://wwccwy.peopleadmin.com", title_node %>% html_attr("href"))
+
+          # Right column text (single string)
+          right_text <- job %>% html_node("div.col-md-8") %>% html_text(trim = TRUE)
+
+          # Posted_Date: first occurrence of MM/DD/YYYY
+          raw_date <- str_extract(right_text, "\\d{2}/\\d{2}/\\d{4}")
+          Posted_Date <- convert_date_to_relative(raw_date)
+
+
+          # Location: last non-empty line that is NOT a date or code
+          lines <- str_split(right_text, "\\n")[[1]] %>% str_trim()
+          non_date <- lines[!str_detect(lines, "\\d{2}/\\d{2}/\\d{4}")]
+          non_empty <- non_date[nzchar(non_date)]
+          Location <- if(length(non_empty) > 0) tail(non_empty, 1) else NA
+
+          data.frame(
+            Title = Title,
+            Location = Location,
+            Posted_Date = Posted_Date,
+            Link = Link,
+            stringsAsFactors = FALSE
+          )
+        })
+
+        do.call(rbind, job_list)
+      }
+
+      # Scrape pages 1 and 2
+      do.call(rbind, lapply(1:2, function(p) {
+        url <- paste0("https://wwccwy.peopleadmin.com/postings/search?page=", p)
+        tryCatch(extract_jobs(url), error = function(e) {
+          message("Western Wyoming Community College: error scraping page ", p, ": ", conditionMessage(e))
+          NULL
+        })
+      }))
+    },
+    expected_cols = c("Title", "Location", "Posted_Date", "Link")
+  )
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Add Institution column
-western <- all_jobs %>% mutate(Institution = "Western Wyoming Community College")%>%
+western <- all_jobs_raw %>% mutate(Institution = "Western Wyoming Community College")%>%
   dplyr::select(Title, Location, Posted_Date, Institution, Link)
 
 # Save CSV
@@ -927,11 +990,6 @@ write.csv(western, "WWCC_job_listings.csv", row.names = FALSE)
 
 # Print
 print(western)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
 
 ```
 
@@ -942,80 +1000,82 @@ library(rvest)
 library(RSelenium)
 library(dplyr)
 library(purrr)
+source("scrape_helpers.R")
 
 # Start RSelenium with Firefox browser
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Function to extract job postings from a page
-extract_jobs <- function(page_url) {
-  # Navigate to the page
-  remDr$navigate(page_url)
-  
-  # Wait for dynamic content to load
-  Sys.sleep(10)  # Adjust as needed based on page loading time
-  
-  # Get page source and parse with rvest
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  # Extract job details
-  job_titles <- soup %>% 
-    html_nodes(".list-item .item-details-link") %>% 
-    html_text(trim = TRUE)
-  
-  job_dates <- soup %>% 
-    html_nodes(".list-published .list-entry-starts span") %>% 
-    html_text(trim = TRUE)
-  
-  job_locations <- soup %>% 
-    html_nodes(".list-item ul.list-meta li:nth-child(1)") %>% 
-    html_text(trim = TRUE)
-  
-  # Combine data into a dataframe
-  jobs_df <- data.frame(
-    Title = job_titles,
-    Location = job_locations,
-    Posted_Date = job_dates,
-    stringsAsFactors = FALSE
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Central Wyoming College",
+    scrape_fn = function() {
+      # Function to extract job postings from a page
+      extract_jobs <- function(page_url) {
+        remDr$navigate(page_url)
+        Sys.sleep(10)  # Adjust as needed based on page loading time
+
+        page_source <- remDr$getPageSource()[[1]]
+        soup <- read_html(page_source)
+
+        job_titles <- soup %>%
+          html_nodes(".list-item .item-details-link") %>%
+          html_text(trim = TRUE)
+
+        job_dates <- soup %>%
+          html_nodes(".list-published .list-entry-starts span") %>%
+          html_text(trim = TRUE)
+
+        job_locations <- soup %>%
+          html_nodes(".list-item ul.list-meta li:nth-child(1)") %>%
+          html_text(trim = TRUE)
+
+        data.frame(
+          Title = job_titles,
+          Location = job_locations,
+          Posted_Date = job_dates,
+          stringsAsFactors = FALSE
+        )
+      }
+
+      all_jobs <- data.frame()
+      for (page in 1:3) {
+        # NB: no space before `page` here -- the original had "?page= "
+        # (with a trailing space before the number), which could send pages
+        # 2-3 a malformed query string and silently re-scrape page 1.
+        page_url <- if (page == 1) {
+          "https://www.schooljobs.com/careers/cwc"
+        } else {
+          paste0("https://www.schooljobs.com/careers/cwc?page=", page)
+        }
+
+        page_jobs <- tryCatch(extract_jobs(page_url), error = function(e) {
+          message("Central Wyoming College: error scraping page ", page, ": ", conditionMessage(e))
+          data.frame()
+        })
+
+        if (nrow(page_jobs) > 0) {
+          all_jobs <- bind_rows(all_jobs, page_jobs)
+          cat("Scraped page", page, "\n")
+        } else {
+          cat("No data found on page", page, "\n")
+        }
+      }
+      all_jobs
+    },
+    expected_cols = c("Title", "Location", "Posted_Date")
   )
-  
-  return(jobs_df)
-}
-
-# Initialize an empty data frame to store all jobs
-all_jobs <- data.frame()
-
-# Scrape both pages
-for (page in 1:3) {
-  page_url <- if (page == 1) {
-    "https://www.schooljobs.com/careers/cwc"
-  } else {
-    paste0("https://www.schooljobs.com/careers/cwc?page= ", page)
-  }
-  
-  page_jobs <- extract_jobs(page_url)
-  
-  if (nrow(page_jobs) > 0) {
-    all_jobs <- bind_rows(all_jobs, page_jobs)
-    cat("Scraped page", page, "\n")
-  } else {
-    cat("No data found on page", page, "\n")
-  }
-}
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Add the current date to the dataframe
-central <- all_jobs %>%
+central <- all_jobs_raw %>%
   mutate(Institution = "Central Wyoming College")%>%
   mutate(Link = "https://www.schooljobs.com/careers/cwc")
 
 # Print the dataframe
 print(central)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
 
 ```
 
@@ -1027,10 +1087,12 @@ library(dplyr)
 library(stringr)
 library(lubridate)
 library(purrr)
+source("scrape_helpers.R")
+source("eastern_wyoming_scraper.R")
 
 convert_to_relative_date <- function(date_obj, reference_date = Sys.Date()) {
   diff_days <- as.numeric(difftime(reference_date, date_obj, units = "days"))
-  
+
   if(is.na(diff_days)) return(NA_character_)
   else if(diff_days == 0) return("Today")
   else if(diff_days == 1) return("Yesterday")
@@ -1039,72 +1101,36 @@ convert_to_relative_date <- function(date_obj, reference_date = Sys.Date()) {
   else return("More than 30 days ago")
 }
 
-# Start RSelenium
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+# Start RSelenium. Pagination (until an empty page), per-job Open Date
+# lookup, and per-page/per-job error handling all live in
+# eastern_wyoming_scraper.R -- previously this chunk was hardcoded to
+# "scrape first 2 pages" with no error handling anywhere, so a single dead
+# link or a page beyond #2 either got silently dropped or crashed the whole
+# chunk. tryCatch/finally guarantees the Selenium session is closed even if
+# something throws (on.exit doesn't reliably fire at a knitr chunk's
+# top level the way it would inside a function).
+selenium_session <- start_selenium()
 
-extract_jobs <- function(page_url) {
-  remDr$navigate(page_url)
-  Sys.sleep(10)
-  
-  soup <- read_html(remDr$getPageSource()[[1]])
-  
-  job_nodes <- soup %>% html_nodes(".job-item.job-item-posting")
-  if(length(job_nodes) == 0) return(NULL)
-  
-  job_list <- lapply(job_nodes, function(job) {
-    title_node <- job %>% html_node(".job-title a")
-    Title <- title_node %>% html_text(trim = TRUE)
-    Link  <- paste0("https://ewc.peopleadmin.com", html_attr(title_node, "href"))
-    
-    # Navigate to individual job page to get Open Date
-    remDr$navigate(Link)
-    Sys.sleep(5)
-    job_page <- read_html(remDr$getPageSource()[[1]])
-    
-    # Scrape Open Date from the <tr> where <th> = "Open Date"
-    open_date_text <- job_page %>%
-      html_nodes("tr") %>%
-      keep(~ html_node(.x, "th") %>% html_text(trim = TRUE) == "Open Date") %>%
-      html_node("td") %>%
-      html_text(trim = TRUE)
-    
-    Posted_Date <- if(!is.na(open_date_text) && open_date_text != "") mdy(open_date_text) else NA
-    
-    data.frame(
-      Title = Title,
-      Link = Link,
-      Posted_Date = Posted_Date,
-      stringsAsFactors = FALSE
-    )
-  })
-  
-  do.call(rbind, job_list)
-}
-
-# Example: scrape first 2 pages
-all_jobs <- do.call(rbind, lapply(1:2, function(p) {
-  url <- paste0("https://ewc.peopleadmin.com/postings/search?page=", p)
-  extract_jobs(url)
-}))
+all_jobs <- tryCatch({
+  safe_scrape(
+    "Eastern Wyoming Community College",
+    scrape_fn = function() scrape_eastern_wyoming(selenium_session$remDr),
+    expected_cols = c("Title", "Link", "Posted_Date")
+  )
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Add metadata and convert Posted_Date to relative
 eastern <- all_jobs %>%
   mutate(
     Location = "Eastern Wyoming Campus",
     Institution = "Eastern Wyoming Community College",
-    Posted_Date = map_chr(Posted_Date, convert_to_relative_date)) %>%
+    Posted_Date = map_chr(as.Date(Posted_Date), convert_to_relative_date)) %>%
   dplyr::select(Title, Location, Posted_Date, Institution, Link)%>%
   distinct()
 
 print(eastern)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
-
-
 ```
 
 ### This pulls data Gillette college
@@ -1112,78 +1138,81 @@ rD$server$stop()
 library(rvest)
 library(RSelenium)
 library(dplyr)
+source("scrape_helpers.R")
 
 # Start RSelenium with Firefox browser
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Function to extract job postings from a page
-extract_jobs <- function(page_url) {
-  # Navigate to the page
-  remDr$navigate(page_url)
-  
-  # Wait for dynamic content to load
-  Sys.sleep(10)  # Adjust as needed based on page loading time
-  
-  # Get page source and parse with rvest
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  # Extract job details
-  job_titles <- soup %>% 
-    html_nodes(".list-item .item-details-link") %>% 
-    html_text(trim = TRUE)
-  
-  job_dates <- soup %>% 
-    html_nodes(".list-published .list-entry-starts span") %>% 
-    html_text(trim = TRUE)
-  
-  job_locations <- soup %>% 
-    html_nodes(".list-item ul.list-meta li:nth-child(1)") %>% 
-    html_text(trim = TRUE)
-  
-  # Combine data into a dataframe
-  jobs_df <- data.frame(
-    Title = job_titles,
-    Location = job_locations,
-    Posted_Date = job_dates,
-    stringsAsFactors = FALSE
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Gillette College",
+    scrape_fn = function() {
+      # Function to extract job postings from a page
+      extract_jobs <- function(page_url) {
+        remDr$navigate(page_url)
+        Sys.sleep(10)  # Adjust as needed based on page loading time
+
+        page_source <- remDr$getPageSource()[[1]]
+        soup <- read_html(page_source)
+
+        job_titles <- soup %>%
+          html_nodes(".list-item .item-details-link") %>%
+          html_text(trim = TRUE)
+
+        job_dates <- soup %>%
+          html_nodes(".list-published .list-entry-starts span") %>%
+          html_text(trim = TRUE)
+
+        job_locations <- soup %>%
+          html_nodes(".list-item ul.list-meta li:nth-child(1)") %>%
+          html_text(trim = TRUE)
+
+        data.frame(
+          Title = job_titles,
+          Location = job_locations,
+          Posted_Date = job_dates,
+          stringsAsFactors = FALSE
+        )
+      }
+
+      all_jobs <- data.frame()
+      for (page in 1:5) {
+        # NB: no space before `page` here -- the original had "?page= "
+        # (with a trailing space before the number), which could send pages
+        # 2-5 a malformed query string and silently re-scrape page 1.
+        page_url <- if (page == 1) {
+          "https://www.schooljobs.com/careers/gillettecollege"
+        } else {
+          paste0("https://www.schooljobs.com/careers/gillettecollege?page=", page)
+        }
+
+        page_jobs <- tryCatch(extract_jobs(page_url), error = function(e) {
+          message("Gillette College: error scraping page ", page, ": ", conditionMessage(e))
+          data.frame()
+        })
+
+        if (nrow(page_jobs) > 0) {
+          all_jobs <- bind_rows(all_jobs, page_jobs)
+          cat("Scraped page", page, "\n")
+        } else {
+          cat("No data found on page", page, "\n")
+        }
+      }
+      all_jobs
+    },
+    expected_cols = c("Title", "Location", "Posted_Date")
   )
-  
-  return(jobs_df)
-}
-
-# Initialize an empty data frame to store all jobs
-all_jobs <- data.frame()
-
-# Scrape both pages
-for (page in 1:5) {
-  page_url <- if (page == 1) {
-    "https://www.schooljobs.com/careers/gillettecollege"
-  } else {
-    paste0("https://www.schooljobs.com/careers/gillettecollege?page= ", page)
-  }
-  
-  page_jobs <- extract_jobs(page_url)
-  
-  if (nrow(page_jobs) > 0) {
-    all_jobs <- bind_rows(all_jobs, page_jobs)
-    cat("Scraped page", page, "\n")
-  } else {
-    cat("No data found on page", page, "\n")
-  }
-}
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Add the current date to the dataframe
-gillette <- all_jobs %>%
+gillette <- all_jobs_raw %>%
   mutate(Institution = "Gillette College")%>%
   mutate(Link = "https://www.schooljobs.com/careers/gillettecollege")
 
 print(gillette)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
 
 ```
 
@@ -1195,11 +1224,12 @@ library(dplyr)
 library(purrr)
 library(stringr)
 library(lubridate)
+source("scrape_helpers.R")
 
 # Function to convert date to relative format
 convert_to_relative_date <- function(date_obj, reference_date = Sys.Date()) {
   diff_days <- as.numeric(difftime(reference_date, date_obj, units = "days"))
-  
+
   if(is.na(diff_days)) return(NA_character_)
   else if(diff_days == 0) return("Today")
   else if(diff_days == 1) return("Yesterday")
@@ -1209,62 +1239,81 @@ convert_to_relative_date <- function(date_obj, reference_date = Sys.Date()) {
 }
 
 # Start RSelenium
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-extract_jobs <- function(page_url) {
-  remDr$navigate(page_url)
-  Sys.sleep(10)  # allow full load
-  
-  soup <- read_html(remDr$getPageSource()[[1]])
-  
-  # Get job titles and links
-  title_nodes <- soup %>% html_nodes(".col-md-4.job-title h3 a")
-  Titles <- title_nodes %>% html_text(trim = TRUE)
-  Links  <- title_nodes %>% html_attr("href") %>% paste0("https://jobs.sheridan.edu", .)
-  
-  if(length(Titles) == 0) return(NULL)
-  
-  job_list <- lapply(seq_along(Titles), function(i) {
-    # Visit detail page for the posting
-    remDr$navigate(Links[i])
-    Sys.sleep(5)  # wait for detail page
-    
-    detail_page <- read_html(remDr$getPageSource()[[1]])
-    
-    # Extract "Job Posting Date"
-    posted_date_text <- detail_page %>%
-      html_nodes("th") %>%
-      { .[str_detect(html_text(.), "Job Posting Date")] } %>%
-      html_node(xpath = "following-sibling::td") %>%
-      html_text(trim = TRUE)
-    
-    # Convert to Date
-    Posted_Date <- if(length(posted_date_text) == 1) mdy(posted_date_text) else NA
-    
-    data.frame(
-      Title = Titles[i],
-      Link = Links[i],
-      Posted_Date = Posted_Date,
-      stringsAsFactors = FALSE
-    )
-  })
-  
-  do.call(rbind, job_list)
-}
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Sheridan College",
+    scrape_fn = function() {
+      extract_jobs <- function(page_url) {
+        remDr$navigate(page_url)
+        Sys.sleep(10)  # allow full load
 
-# Scrape first 3 pages (adjust if needed)
-all_jobs_list <- lapply(1:3, function(p) {
-  url <- paste0("https://jobs.sheridan.edu/postings/search?page=", p)
-  extract_jobs(url)
+        soup <- read_html(remDr$getPageSource()[[1]])
+
+        # Get job titles and links
+        title_nodes <- soup %>% html_nodes(".col-md-4.job-title h3 a")
+        Titles <- title_nodes %>% html_text(trim = TRUE)
+        Links  <- title_nodes %>% html_attr("href") %>% paste0("https://jobs.sheridan.edu", .)
+
+        if(length(Titles) == 0) return(NULL)
+
+        job_list <- lapply(seq_along(Titles), function(i) {
+          # Visit detail page for the posting; one dead link/parse failure
+          # falls back to a missing Posted_Date instead of aborting every
+          # other job on this and later pages.
+          tryCatch({
+            remDr$navigate(Links[i])
+            Sys.sleep(5)  # wait for detail page
+
+            detail_page <- read_html(remDr$getPageSource()[[1]])
+
+            # Extract "Job Posting Date"
+            posted_date_text <- detail_page %>%
+              html_nodes("th") %>%
+              { .[str_detect(html_text(.), "Job Posting Date")] } %>%
+              html_node(xpath = "following-sibling::td") %>%
+              html_text(trim = TRUE)
+
+            Posted_Date <- if(length(posted_date_text) == 1) mdy(posted_date_text) else NA
+
+            data.frame(
+              Title = Titles[i],
+              Link = Links[i],
+              Posted_Date = Posted_Date,
+              stringsAsFactors = FALSE
+            )
+          }, error = function(e) {
+            message("Sheridan College: error fetching detail for '", Titles[i], "': ", conditionMessage(e))
+            data.frame(Title = Titles[i], Link = Links[i], Posted_Date = as.Date(NA), stringsAsFactors = FALSE)
+          })
+        })
+
+        do.call(rbind, job_list)
+      }
+
+      # Scrape first 3 pages (adjust if needed); one bad page doesn't drop the others.
+      all_jobs_list <- lapply(1:3, function(p) {
+        url <- paste0("https://jobs.sheridan.edu/postings/search?page=", p)
+        tryCatch(extract_jobs(url), error = function(e) {
+          message("Sheridan College: error scraping page ", p, ": ", conditionMessage(e))
+          NULL
+        })
+      })
+
+      # Remove NULL pages
+      all_jobs_list <- all_jobs_list[!sapply(all_jobs_list, is.null)]
+      do.call(rbind, all_jobs_list)
+    },
+    expected_cols = c("Title", "Link", "Posted_Date")
+  )
+}, finally = {
+  stop_selenium(selenium_session)
 })
 
-# Remove NULL pages
-all_jobs_list <- all_jobs_list[!sapply(all_jobs_list, is.null)]
-all_jobs <- do.call(rbind, all_jobs_list)
-
 # Add metadata and convert to relative date
-sheridan <- all_jobs %>%
+sheridan <- all_jobs_raw %>%
   mutate(
     Location = "Sheridan College Campus",
     Institution = "Sheridan College",
@@ -1274,23 +1323,22 @@ sheridan <- all_jobs %>%
 
 print(sheridan)
 
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
 ```
 
 ### This pulls data from Northwest College
 ```{r Northwest, message=FALSE, warning=FALSE, echo=TRUE}
+library(rvest)
+library(RSelenium)
 library(lubridate)
 library(dplyr)
 library(purrr)
+source("scrape_helpers.R")
 
 convert_to_relative_date <- function(date_str, reference_date = Sys.Date()) {
   # Convert to Date
   actual_date <- mdy(date_str)  # assumes MM/DD/YYYY
   diff_days <- as.numeric(difftime(reference_date, actual_date, units = "days"))
-  
+
   # Convert to relative format
   if(is.na(diff_days)) return(NA_character_)
   else if(diff_days == 0) return("Today")
@@ -1300,65 +1348,70 @@ convert_to_relative_date <- function(date_str, reference_date = Sys.Date()) {
   else return("More than 30 days ago")
 }
 
-# Start RSelenium with Firefox browser
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
+# Start RSelenium with Firefox browser. Scrape wrapped in safe_scrape() so a
+# failure here is logged and degrades to "Northwest missing this week"
+# instead of halting every chunk after it.
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-# Function to extract job postings from a page
-extract_jobs <- function(page_url) {
-  # Navigate to the page
-  remDr$navigate(page_url)
-  
-  # Wait for dynamic content to load
-  Sys.sleep(10)  # Adjust as needed based on page loading time
-  
-  # Get page source and parse with rvest
-  page_source <- remDr$getPageSource()[[1]]
-  soup <- read_html(page_source)
-  
-  # Extract job titles, posted dates, and locations
-  job_titles <- soup %>%
-    html_nodes(".row.row-table .job-title h3 a") %>%
-    html_text()
-  
-  posted_dates <- soup %>%
-    html_nodes(".row.row-table .tbody-cell.col-3:nth-child(1)") %>%
-    html_text()
-  
-  locations <- soup %>%
-    html_nodes(".row.row-table .tbody-cell.col-3:nth-child(3)") %>%
-    html_text()
-  
-  # Combine data into a dataframe
-  jobs_df <- data.frame(
-    Title = job_titles,
-    Posted_Date = posted_dates,
-    Location = locations,
-    stringsAsFactors = FALSE
+all_jobs_raw <- tryCatch({
+  safe_scrape(
+    "Northwest College",
+    scrape_fn = function() {
+      # Function to extract job postings from a page
+      extract_jobs <- function(page_url) {
+        remDr$navigate(page_url)
+        Sys.sleep(10)  # Adjust as needed based on page loading time
+
+        page_source <- remDr$getPageSource()[[1]]
+        soup <- read_html(page_source)
+
+        job_titles <- soup %>%
+          html_nodes(".row.row-table .job-title h3 a") %>%
+          html_text()
+
+        posted_dates <- soup %>%
+          html_nodes(".row.row-table .tbody-cell.col-3:nth-child(1)") %>%
+          html_text()
+
+        locations <- soup %>%
+          html_nodes(".row.row-table .tbody-cell.col-3:nth-child(3)") %>%
+          html_text()
+
+        data.frame(
+          Title = job_titles,
+          Posted_Date = posted_dates,
+          Location = locations,
+          stringsAsFactors = FALSE
+        )
+      }
+
+      all_jobs <- data.frame()
+      for (page in 1:3) {
+        page_url <- paste0("https://northwestcollege.simplehire.com/postings/search?page=", page)
+        page_jobs <- tryCatch(extract_jobs(page_url), error = function(e) {
+          message("Northwest College: error scraping page ", page, ": ", conditionMessage(e))
+          data.frame()
+        })
+
+        if (nrow(page_jobs) > 0) {
+          all_jobs <- bind_rows(all_jobs, page_jobs)
+          cat("Scraped page", page, "\n")
+        } else {
+          cat("No data found on page", page, "\n")
+        }
+      }
+      all_jobs
+    },
+    expected_cols = c("Title", "Posted_Date", "Location")
   )
-  
-  return(jobs_df)
-}
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
-# Initialize an empty data frame to store all jobs
-all_jobs <- data.frame()
-
-# Scrape the first 3 pages
-for (page in 1:3) {
-  page_url <- paste0("https://northwestcollege.simplehire.com/postings/search?page=", page)
-  page_jobs <- extract_jobs(page_url)
-  
-  if (nrow(page_jobs) > 0) {
-    all_jobs <- bind_rows(all_jobs, page_jobs)
-    cat("Scraped page", page, "\n")
-  } else {
-    cat("No data found on page", page, "\n")
-  }
-}
-
-northwest<- all_jobs%>%
-  mutate(Institution = "Northwest College")%>%
-  mutate(Link = "https://northwestcollege.simplehire.com/postings/search?page=")%>%
+northwest <- all_jobs_raw %>%
+  mutate(Institution = "Northwest College") %>%
+  mutate(Link = "https://northwestcollege.simplehire.com/postings/search?page=") %>%
   select(Title, Location, Posted_Date, Institution, Link)
 
 northwest <- northwest %>%
@@ -1368,10 +1421,6 @@ northwest <- northwest %>%
 
 # Print the dataframe
 print(northwest)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
 
 ```
 
@@ -1383,14 +1432,15 @@ library(RSelenium)
 library(dplyr)
 library(purrr)
 library(lubridate)
+source("scrape_helpers.R")
 
 # Function to convert dates to relative format
 convert_to_relative_date <- function(date_str, reference_date = Sys.Date()) {
   if(is.na(date_str) || date_str == "") return(NA_character_)
-  
+
   actual_date <- mdy(date_str)  # MM/DD/YYYY
   diff_days <- as.numeric(difftime(reference_date, actual_date, units = "days"))
-  
+
   if(is.na(diff_days)) return(NA_character_)
   else if(diff_days == 0) return("Today")
   else if(diff_days == 1) return("Yesterday")
@@ -1399,55 +1449,63 @@ convert_to_relative_date <- function(date_str, reference_date = Sys.Date()) {
   else return("More than 30 days ago")
 }
 
-# Start RSelenium
-rD <- rsDriver(browser = "firefox", port = 4444L, check = FALSE, chromever = NULL)
-remDr <- rD$client
-
-# Navigate to the job site
 url <- "https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions?"
-remDr$navigate(url)
-Sys.sleep(5)  # wait for initial load
 
-# Scroll to load all jobs
-scroll_pause_time <- 3
-last_height <- remDr$executeScript("return document.body.scrollHeight")[[1]]
+# Start RSelenium. The scrape itself is wrapped in safe_scrape() so a
+# selector/timeout failure here doesn't halt every chunk after it in the
+# knit, and tryCatch/finally guarantees the session is closed either way.
+selenium_session <- start_selenium()
+remDr <- selenium_session$remDr
 
-repeat {
-  remDr$executeScript("window.scrollTo(0, document.body.scrollHeight);")
-  Sys.sleep(scroll_pause_time)
-  new_height <- remDr$executeScript("return document.body.scrollHeight")[[1]]
-  if (new_height == last_height) break
-  last_height <- new_height
-}
+UW_raw <- tryCatch({
+  safe_scrape(
+    "University of Wyoming",
+    scrape_fn = function() {
+      remDr$navigate(url)
+      Sys.sleep(5)  # wait for initial load
 
-# Extract job titles
-titles_elems <- remDr$findElements(using = 'css selector', ".job-tile__title")
-job_titles <- sapply(titles_elems, function(x) x$getElementText()) %>% unlist()
+      # Scroll to load all jobs
+      scroll_pause_time <- 3
+      last_height <- remDr$executeScript("return document.body.scrollHeight")[[1]]
 
-# Extract job locations
-locations_elems <- remDr$findElements(using = 'css selector', "span[data-bind='html: primaryLocation']")
-job_locations <- sapply(locations_elems, function(x) x$getElementText()) %>% unlist()
+      repeat {
+        remDr$executeScript("window.scrollTo(0, document.body.scrollHeight);")
+        Sys.sleep(scroll_pause_time)
+        new_height <- remDr$executeScript("return document.body.scrollHeight")[[1]]
+        if (new_height == last_height) break
+        last_height <- new_height
+      }
 
-# Extract posted dates
-dates_elems <- remDr$findElements(
-  using = 'css selector',
-  "div.job-list-item__job-info-label--posting-date + div div.job-list-item__job-info-value"
-)
-posted_dates <- sapply(dates_elems, function(x) x$getElementText()) %>% unlist()
+      # Extract job titles
+      titles_elems <- remDr$findElements(using = 'css selector', ".job-tile__title")
+      job_titles <- sapply(titles_elems, function(x) x$getElementText()) %>% unlist()
 
-# Check alignment
-length(job_titles); length(job_locations); length(posted_dates)
+      # Extract job locations
+      locations_elems <- remDr$findElements(using = 'css selector', "span[data-bind='html: primaryLocation']")
+      job_locations <- sapply(locations_elems, function(x) x$getElementText()) %>% unlist()
 
-# Combine into a dataframe
-UW <- data.frame(
-  Title = job_titles,
-  Location = job_locations,
-  Posted_Date = posted_dates,
-  stringsAsFactors = FALSE
-)
+      # Extract posted dates
+      dates_elems <- remDr$findElements(
+        using = 'css selector',
+        "div.job-list-item__job-info-label--posting-date + div div.job-list-item__job-info-value"
+      )
+      posted_dates <- sapply(dates_elems, function(x) x$getElementText()) %>% unlist()
+
+      data.frame(
+        Title = job_titles,
+        Location = job_locations,
+        Posted_Date = posted_dates,
+        stringsAsFactors = FALSE
+      )
+    },
+    expected_cols = c("Title", "Location", "Posted_Date")
+  )
+}, finally = {
+  stop_selenium(selenium_session)
+})
 
 # Convert Posted_Date to relative format
-UW <- UW %>%
+UW <- UW_raw %>%
   mutate(
     Institution = "University of Wyoming",
     Link = url,
@@ -1457,11 +1515,6 @@ UW <- UW %>%
 
 # Print results
 print(UW)
-
-# Close RSelenium
-remDr$close()
-rD$server$stop()
-
 
 ```
 
