@@ -885,38 +885,22 @@ library(dplyr)
 library(stringr)
 source("scrape_helpers.R")
 
-#Convert date to days, weeks, more than 30 days
-convert_date_to_relative <- function(date_chr) {
-  date_parsed <- as.Date(date_chr, format = "%m/%d/%Y")
+# Western's old target (wwccwy.peopleadmin.com) stopped resolving entirely
+# (NXDOMAIN) -- confirmed 2026-08-02. The college's careers page now lives
+# on schooljobs.com, the same NEOGOV platform already used by Casper
+# College, Central Wyoming, and Gillette College (confirmed via matching
+# "NEOGOV" generator markers in both pages' raw HTML). Selectors below
+# mirror Casper's chunk, the closest working sibling on this same
+# subdomain pattern, since Western's actual rendered DOM couldn't be
+# verified directly in this environment (no Firefox/geckodriver here) --
+# this should be spot-checked against the live site the first time it
+# actually runs.
+base_url <- "https://www.schooljobs.com/careers/westernwyoming"
 
-  if (is.na(date_parsed)) return(NA_character_)
-
-  days_ago <- as.integer(Sys.Date() - date_parsed)
-
-  if (days_ago < 1) {
-    "Posted today"
-  } else if (days_ago == 1) {
-    "Posted 1 day ago"
-  } else if (days_ago < 7) {
-    paste("Posted", days_ago, "days ago")
-  } else if (days_ago < 14) {
-    "Posted 1 week ago"
-  } else if (days_ago < 21) {
-    "Posted 2 weeks ago"
-  } else if (days_ago < 28) {
-    "Posted 3 weeks ago"
-  } else if (days_ago < 35) {
-    "Posted 4 weeks ago"
-  } else {
-    "Posted more than 30 days ago"
-  }
-}
-
-
-# Start RSelenium. NOTE: like Eastern Wyoming originally was, this scraper is
-# still hardcoded to pages 1-2 (lapply(1:2, ...)) rather than paginating
-# until an empty page -- that specific rewrite wasn't in this pass's scope,
-# flagging it here as the same class of risk Eastern had.
+# Start RSelenium. Pagination continues until a genuinely empty page
+# (matching LCCC/Eastern Wyoming's pattern) instead of a hardcoded page
+# count, and a page-level error is skipped rather than treated as the end
+# of listings.
 selenium_session <- start_selenium()
 remDr <- selenium_session$remDr
 
@@ -926,54 +910,76 @@ all_jobs_raw <- tryCatch({
     scrape_fn = function() {
       extract_jobs <- function(page_url) {
         remDr$navigate(page_url)
-        Sys.sleep(5)  # allow full page load
+        Sys.sleep(10)  # allow full page load
 
-        page_source <- remDr$getPageSource()[[1]]
-        soup <- read_html(page_source)
+        soup <- read_html(remDr$getPageSource()[[1]])
 
-        jobs <- soup %>% html_nodes("div.job-item.job-item-posting")
-        if(length(jobs) == 0) return(NULL)
+        job_titles <- soup %>%
+          html_nodes(".item-details-link") %>%
+          html_text(trim = TRUE)
 
-        job_list <- lapply(jobs, function(job) {
-          # Title and Link
-          title_node <- job %>% html_node("div.col-md-4.job-title h3 a")
-          Title <- title_node %>% html_text(trim = TRUE)
-          Link  <- paste0("https://wwccwy.peopleadmin.com", title_node %>% html_attr("href"))
+        if (length(job_titles) == 0) {
+          return(data.frame(Title = character(0), Location = character(0),
+                             Posted_Date = character(0), Link = character(0),
+                             stringsAsFactors = FALSE))
+        }
 
-          # Right column text (single string)
-          right_text <- job %>% html_node("div.col-md-8") %>% html_text(trim = TRUE)
+        job_links <- soup %>%
+          html_nodes(".item-details-link") %>%
+          html_attr("href") %>%
+          paste0(base_url, .)
 
-          # Posted_Date: first occurrence of MM/DD/YYYY
-          raw_date <- str_extract(right_text, "\\d{2}/\\d{2}/\\d{4}")
-          Posted_Date <- convert_date_to_relative(raw_date)
+        job_locations <- soup %>%
+          html_nodes(".list-meta li:nth-child(1)") %>%
+          html_text(trim = TRUE)
+        if (length(job_locations) == 0) job_locations <- rep(NA, length(job_titles))
 
+        # Posted date is already relative text on this platform (e.g. "3
+        # days ago") -- keep as-is, matching Casper/Central/Gillette.
+        posted_dates <- soup %>%
+          html_nodes(".list-entry-starts span") %>%
+          html_text(trim = TRUE)
+        if (length(posted_dates) == 0) posted_dates <- rep(NA, length(job_titles))
 
-          # Location: last non-empty line that is NOT a date or code
-          lines <- str_split(right_text, "\\n")[[1]] %>% str_trim()
-          non_date <- lines[!str_detect(lines, "\\d{2}/\\d{2}/\\d{4}")]
-          non_empty <- non_date[nzchar(non_date)]
-          Location <- if(length(non_empty) > 0) tail(non_empty, 1) else NA
-
-          data.frame(
-            Title = Title,
-            Location = Location,
-            Posted_Date = Posted_Date,
-            Link = Link,
-            stringsAsFactors = FALSE
-          )
-        })
-
-        do.call(rbind, job_list)
+        data.frame(
+          Title = job_titles,
+          Location = job_locations,
+          Posted_Date = posted_dates,
+          Link = job_links,
+          stringsAsFactors = FALSE
+        )
       }
 
-      # Scrape pages 1 and 2
-      do.call(rbind, lapply(1:2, function(p) {
-        url <- paste0("https://wwccwy.peopleadmin.com/postings/search?page=", p)
-        tryCatch(extract_jobs(url), error = function(e) {
-          message("Western Wyoming Community College: error scraping page ", p, ": ", conditionMessage(e))
-          NULL
-        })
-      }))
+      all_jobs <- list()
+      page <- 1
+      repeat {
+        page_url <- if (page == 1) base_url else paste0(base_url, "?page=", page)
+
+        outcome <- tryCatch(
+          list(df = extract_jobs(page_url), error = NULL),
+          error = function(e) list(df = NULL, error = conditionMessage(e))
+        )
+
+        if (!is.null(outcome$error)) {
+          message("Western Wyoming Community College: error scraping page ", page, ": ", outcome$error)
+          page <- page + 1
+          Sys.sleep(1)
+          if (page > 20) break  # backstop against looping forever if the site is down
+          next
+        }
+
+        if (nrow(outcome$df) == 0) break  # genuine end of listings
+        all_jobs[[length(all_jobs) + 1]] <- outcome$df
+        page <- page + 1
+        Sys.sleep(1)  # be nice to the server
+      }
+
+      if (length(all_jobs) == 0) {
+        return(data.frame(Title = character(0), Location = character(0),
+                           Posted_Date = character(0), Link = character(0),
+                           stringsAsFactors = FALSE))
+      }
+      do.call(rbind, all_jobs)
     },
     expected_cols = c("Title", "Location", "Posted_Date", "Link")
   )
@@ -982,7 +988,9 @@ all_jobs_raw <- tryCatch({
 })
 
 # Add Institution column
-western <- all_jobs_raw %>% mutate(Institution = "Western Wyoming Community College")%>%
+western <- all_jobs_raw %>%
+  mutate(Institution = "Western Wyoming Community College") %>%
+  distinct(Title, .keep_all = TRUE) %>%
   dplyr::select(Title, Location, Posted_Date, Institution, Link)
 
 # Save CSV
