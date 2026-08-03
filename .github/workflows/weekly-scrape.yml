@@ -1,0 +1,88 @@
+name: Weekly job data refresh
+
+on:
+  schedule:
+    # Every Friday 13:00 UTC (~7am Mountain), matching the historical
+    # weekly cadence of the archive snapshots this replaces.
+    - cron: '0 13 * * 5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c(
+            "rmarkdown", "dplyr", "purrr", "readr", "readxl", "rvest",
+            "stringr", "tidyverse", "writexl", "xml2", "jsonlite",
+            "httr2", "lubridate", "chromote", "rsconnect", "testthat",
+            "withr", "here", "data.table"
+          ))'
+
+      - name: Install Chrome (for the 4 Apptegy misc-district scrapers)
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run test suite (abort before touching real data if red)
+        run: |
+          Rscript -e 'here::here(); testthat::test_dir("tests/testthat", stop_on_failure = TRUE)'
+
+      - name: Snapshot pre-run data for the sanity check
+        run: |
+          mkdir -p /tmp
+          cp Wy_Ed_Jobs/combinedclean.csv /tmp/baseline_combinedclean.csv
+          cp Wy_Ed_Jobs/hedata.xlsx /tmp/baseline_hedata.xlsx
+
+      - name: Run the scrape pipeline
+        env:
+          CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          Rscript -e 'rmarkdown::render("Wy_ED_Jobs.Rmd")'
+
+      - name: Sanity-check the new data before committing anything
+        run: Rscript .github/scripts/sanity_check.R
+
+      - name: Regenerate the Connect Cloud manifest
+        run: |
+          Rscript -e 'rsconnect::writeManifest(appDir = "Wy_Ed_Jobs")'
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            Wy_Ed_Jobs/combinedclean.csv \
+            Wy_Ed_Jobs/allsum.csv \
+            Wy_Ed_Jobs/allnow.csv \
+            Wy_Ed_Jobs/allsum_he.csv \
+            Wy_Ed_Jobs/allnow_he.csv \
+            Wy_Ed_Jobs/hedata.xlsx \
+            Wy_Ed_Jobs/k12jobanalysis.csv \
+            Wy_Ed_Jobs/manifest.json \
+            Archived_HE_Data/*.xlsx \
+            Archivek12_Data/*.csv
+          if git diff --cached --quiet; then
+            echo "No data changes this run -- nothing to commit."
+          else
+            git commit -m "Automated weekly data refresh ($(date -u +%Y-%m-%d))"
+            git push
+          fi
