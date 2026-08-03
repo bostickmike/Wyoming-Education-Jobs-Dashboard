@@ -32,10 +32,18 @@ jobs:
       - name: Install R packages
         run: |
           Rscript -e 'install.packages(c(
+            # Wy_ED_Jobs.Rmd (the scrape pipeline) dependencies
             "rmarkdown", "dplyr", "purrr", "readr", "readxl", "rvest",
             "stringr", "tidyverse", "writexl", "xml2", "jsonlite",
             "httr2", "lubridate", "chromote", "rsconnect", "testthat",
-            "withr", "here", "data.table"
+            "withr", "here",
+            # app.R dependencies -- these never run in this workflow, but
+            # rsconnect::writeManifest() can only capture a package if it
+            # is actually installed in the environment generating the
+            # manifest. Omitting these once already broke every Connect
+            # Cloud redeploy silently (manifest missing shiny entirely).
+            "shiny", "shinydashboard", "shinyWidgets", "DT", "data.table",
+            "leaflet", "plotly", "scales"
           ))'
 
       - name: Install Chrome (for the 4 Apptegy misc-district scrapers)
@@ -64,6 +72,21 @@ jobs:
       - name: Regenerate the Connect Cloud manifest
         run: |
           Rscript -e 'rsconnect::writeManifest(appDir = "Wy_Ed_Jobs")'
+
+      - name: Verify the manifest actually includes app.R's packages
+        run: |
+          Rscript -e '
+          m <- jsonlite::fromJSON("Wy_Ed_Jobs/manifest.json", simplifyVector = FALSE)
+          required <- c("shiny", "shinydashboard", "shinyWidgets", "DT", "data.table", "leaflet", "plotly", "scales")
+          missing <- setdiff(required, names(m$packages))
+          if (length(missing) > 0) {
+            stop(sprintf(
+              "manifest.json is missing %s -- writeManifest() only captures packages actually installed in this job, so this workflow'\''s own package-install step is now out of sync with app.R. Refusing to push a manifest that would break the Connect Cloud deploy the way it did on 2026-08-03.",
+              paste(missing, collapse = ", ")
+            ))
+          }
+          cat("Manifest includes all", length(required), "app.R packages.\n")
+          '
 
       - name: Commit and push if anything changed
         run: |
