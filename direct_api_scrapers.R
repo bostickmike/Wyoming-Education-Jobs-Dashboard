@@ -298,7 +298,14 @@ fetch_applitrack_postings <- function(tenant_path) {
   resp <- request(paste0("https://www.applitrack.com/", tenant_path, "/onlineapp/jobpostings/Output.asp")) %>%
     req_url_query(all = "1") %>%
     req_perform()
-  parse_applitrack_output(resp_body_string(resp))
+  # Applitrack serves Windows-1252 bytes with no charset in Content-Type, so
+  # httr2 guesses UTF-8. Any posting containing a curly quote/en-dash/etc.
+  # then fails to decode -- resp_body_string() returns NA rather than
+  # erroring, and parse_applitrack_output(NA) silently yields zero rows.
+  # That looks identical to a district with genuinely no openings, and it's
+  # exactly what happened: confirmed live for 10 of 25 districts, one
+  # (Sweetwater County SD1) hiding 69 real postings this way.
+  parse_applitrack_output(resp_body_string(resp, encoding = "Windows-1252"))
 }
 
 parse_applitrack_output <- function(js_text) {

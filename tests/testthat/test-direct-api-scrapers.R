@@ -170,6 +170,32 @@ test_that("parse_applitrack_output returns zero rows (not an error) when there's
   expect_equal(names(result), c("title", "position", "position2", "date_posted", "location", "closing_date"))
 })
 
+test_that("fetch_applitrack_postings decodes Windows-1252 bytes instead of silently dropping them as NA", {
+  # Regression: Applitrack serves Windows-1252 with no charset in
+  # Content-Type. httr2 guesses UTF-8 by default; if a posting contains a
+  # non-ASCII Windows-1252 byte (e.g. an en-dash, 0x96), UTF-8 decoding
+  # fails and resp_body_string() returns NA rather than erroring -- which
+  # parse_applitrack_output() then silently turns into zero rows,
+  # indistinguishable from a district with genuinely no openings. Confirmed
+  # live: 10 of 25 Applitrack districts were affected, one hiding 69 real
+  # postings. This fixture is the real applitrack_output.txt fixture with
+  # an en-dash injected into the first title and re-encoded as raw
+  # Windows-1252 bytes, exactly mirroring what the live endpoint sends.
+  raw_bytes <- readBin(
+    test_path("fixtures", "applitrack_output_windows1252.bin"),
+    "raw",
+    file.info(test_path("fixtures", "applitrack_output_windows1252.bin"))$size
+  )
+  httr2::local_mocked_responses(
+    list(httr2::response(200, headers = list("Content-Type" = "text/javascript"), body = raw_bytes))
+  )
+
+  result <- fetch_applitrack_postings("bighorn")
+
+  expect_equal(nrow(result), 3)
+  expect_equal(result$title[1], "Life Skills Para–professional - Middle/High School")
+})
+
 test_that("parse_paylocity_jobs extracts the embedded window.pageData JSON from a real fixture", {
   # Real fixture: Laramie Montessori Charter School's Paylocity recruiting
   # page. Confirmed the full job list is embedded as JSON directly in the
