@@ -22,7 +22,7 @@ source("scrape_helpers.R")
 source("direct_api_scrapers.R")
 
 # Read the CSV file
-csv_file <- "Frontline_Job_Links.csv"
+csv_file <- "Frontline_job_links.csv"
 job_links <- read_csv(csv_file)
 
 # fetch_applitrack_postings() replaces the old RSelenium loop entirely --
