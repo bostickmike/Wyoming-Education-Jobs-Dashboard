@@ -143,14 +143,19 @@ empty_misc_result <- function() {
 }
 
 # ---------------------------------------------------------------------------
-# Edlio (Washakie County SD2, Weston County SD1)
+# Edlio (Washakie County SD2, Weston County SD1, Uinta County SD4)
 # ---------------------------------------------------------------------------
 
-# Edlio content pages mix two independent block types, and a given page can
-# use either or both: a "files" block (an uploaded-document list, each
-# posting is literally a PDF/image named after the job -- Weston 1's
-# pattern) and a "text" block (prose with the title bolded before a colon,
-# in a plain <li> -- Washakie 2's pattern). Neither carries a posted date.
+# Edlio content pages mix up to three independent block types, and a given
+# page can use any combination: a "files" block (an uploaded-document
+# list, each posting is literally a PDF/image named after the job --
+# Weston 1's pattern), a "text" block (prose with the title bolded before
+# a colon, in a plain <li> -- Washakie 2's pattern), and a "scrollingTabs"
+# widget (Certified/Classified/Coaching tabs, each tab's content a single
+# JSON-embedded HTML string with postings as plain <br>-separated lines,
+# no title markup at all -- Uinta 4's pattern, a materially different
+# Edlio page template from the other two). None of the three carry a
+# posted date.
 #
 # A page can ALSO have "files" blocks that have nothing to do with job
 # postings at all: salary schedules, application forms, or (confirmed on
@@ -185,8 +190,41 @@ parse_edlio_postings <- function(html_text) {
   prose_nodes <- rvest::html_elements(soup, ".page-block-text li strong")
   prose_titles <- str_trim(str_remove(rvest::html_text2(prose_nodes), ":\\s*$"))
 
-  titles <- c(file_titles, prose_titles)
-  links <- c(file_links, rep(NA_character_, length(prose_titles)))
+  # scrollingTabs widget: each real job-category tab is
+  # "title":"Certified/Classified/Coaching(...)","content":"<html
+  # string>","active". Content is itself HTML, JSON-string-escaped (\n,
+  # \") -- postings are plain text separated by literal <br> tags, with no
+  # per-posting markup to key off at all, so this can only be scoped by
+  # tab title (Certified/Classified/Coaching), not by any structural
+  # marker. A trailing licensing/application-instructions paragraph
+  # follows the postings in the same tab; excluded by requiring each
+  # candidate line be short and not itself prose (no period, not
+  # containing "must"/"submit"/"application").
+  tab_matches <- gregexpr(
+    '"title":"(Certified[^"]*|Classified[^"]*|Coaching[^"]*)","content":"(.*?)","active"',
+    html_text, perl = TRUE
+  )
+  tab_groups <- regmatches(html_text, tab_matches)[[1]]
+  tab_titles <- character(0)
+  for (tab in tab_groups) {
+    m <- regmatches(tab, regexec('"title":"([^"]*)","content":"(.*?)","active"', tab, perl = TRUE))[[1]]
+    content <- gsub("\\\\n", " ", m[3])
+    content <- gsub("&nbsp;", " ", content)
+    lines <- strsplit(content, "<br>")[[1]]
+    # The first line in particular carries a leading <p><font ...> prefix
+    # (confirmed on Uinta 4's real page: "K-12 Special Education Teacher"
+    # arrives as "...<font size=\"5\">K-12 Special Education Teacher"),
+    # since that markup precedes the first <br> rather than following one.
+    # Strip any remaining tags per-line, only after splitting on <br> --
+    # stripping tags first would destroy the <br> delimiters themselves.
+    lines <- gsub("<[^>]+>", "", lines)
+    lines <- str_trim(lines)
+    lines <- lines[nzchar(lines) & nchar(lines) < 80 & !grepl("must|submit|application|\\.$", lines, ignore.case = TRUE)]
+    tab_titles <- c(tab_titles, lines)
+  }
+
+  titles <- c(file_titles, prose_titles, tab_titles)
+  links <- c(file_links, rep(NA_character_, length(prose_titles) + length(tab_titles)))
 
   if (length(titles) == 0) return(empty_misc_result())
 
@@ -396,13 +434,28 @@ parse_googlesites_postings <- function(html_text) {
 
 # Apptegy content pages are a client-side-rendered Nuxt app; the raw HTML
 # has no posting text at all (confirmed directly -- a plain fetch returns
-# an empty shell). Postings are free prose under a bolded ALL-CAPS category
-# heading ("CERTIFIED POSITIONS", "CLASSIFIED POSITIONS", ...), each
-# formatted as "Title: description..." -- same shape as Edlio's prose
-# variant, just requiring a rendered page as input instead of raw HTML.
-# fetch_apptegy_postings() takes a chromote session so callers can reuse
-# one browser across all four Apptegy districts instead of paying startup
-# cost per district.
+# an empty shell). Postings are free prose written by each district's own
+# staff, with no shared template -- three patterns confirmed across real
+# districts: "Title: description..." (Niobrara 1), "ALL-CAPS TITLE-
+# District Wide" with no description (also Niobrara 1), and "Title
+# $NNN/day" (Platte 2). fetch_apptegy_postings() takes a chromote session
+# so callers can reuse one browser across all four Apptegy districts
+# instead of paying startup cost per district.
+#
+# KNOWN INCOMPLETE, more so than every other platform here: checked all 4
+# Apptegy districts' real current pages directly (not just Niobrara 1) and
+# found postings these three patterns still don't catch -- Sheridan 3 has
+# bare title-only lines with no punctuation marker at all ("Bus Drivers"),
+# and Weston 7 mixes several different free-prose phrasings on the same
+# page, including a title embedded mid-sentence ("...is currently
+# accepting applications for the Middle School Football Coach starting
+# with..."). Adding a bare-short-line pattern to catch Sheridan 3's style
+# would false-positive heavily on Apptegy's own generic nav/footer text
+# ("MENU", "SIGN IN", "Find Us", "Stay Connected", all short Title-Case-or-
+# caps lines); not attempted for that reason. Apptegy districts are
+# comparatively low-value to get perfect anyway since WSBA already covers
+# some of what they post -- treat this specifically as best-effort partial
+# coverage, not a completeness guarantee the way the other 5 platforms are.
 fetch_apptegy_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
@@ -448,11 +501,165 @@ parse_apptegy_postings <- function(rendered_text) {
   dash_lines <- grep("^[A-Z][A-Z /]+-\\s*.+$", lines, value = TRUE, perl = TRUE)
   dash_titles <- str_trim(sub("^([A-Z][A-Z /]+?)-\\s*.+$", "\\1", dash_lines))
 
-  titles <- unique(c(colon_titles, dash_titles))
+  # 3. "Title Case Title $NNN/day" -- confirmed on Platte County SD2's real
+  #    page ("Substitute Certified Teachers $160/day"); no colon, no dash,
+  #    just a title followed directly by a pay rate.
+  rate_lines <- grep("^[A-Z][A-Za-z /]+\\$\\d", lines, value = TRUE, perl = TRUE)
+  rate_titles <- str_trim(sub("^([A-Z][A-Za-z /]+?)\\s*\\$\\d.*$", "\\1", rate_lines))
+
+  titles <- unique(c(colon_titles, dash_titles, rate_titles))
   titles <- titles[nzchar(titles)]
 
   if (length(titles) == 0) return(empty_misc_result())
 
   data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
              Link = NA_character_, stringsAsFactors = FALSE)
+}
+
+# ---------------------------------------------------------------------------
+# Registry + orchestration
+# ---------------------------------------------------------------------------
+
+# One row per district: canonical District name (matching the rest of the
+# K-12 pipeline's naming), which platform its own page is on, and that
+# page's URL. Everything except Apptegy's `platform` needs no extra
+# per-district config; schoolblocks_widget_title exists because a
+# different district on that same platform might title its equivalent
+# widget differently than Sublette 1's "Current Job Announcements".
+misc_district_registry <- data.frame(
+  District = c(
+    "Lincoln County School District 2",
+    "Niobrara County School District 1",
+    "Park County School District 16",
+    "Platte County School District 1",
+    "Platte County School District 2",
+    "Sheridan County School District 3",
+    "Sublette County School District 1",
+    "Uinta County School District 4",
+    "Uinta County School District 6",
+    "Washakie County School District 2",
+    "Weston County School District 1",
+    "Weston County School District 7"
+  ),
+  platform = c(
+    "wordpress",
+    "apptegy",
+    "smartsites",
+    "smartsites",
+    "apptegy",
+    "apptegy",
+    "schoolblocks",
+    "edlio",
+    "googlesites",
+    "edlio",
+    "edlio",
+    "apptegy"
+  ),
+  url = c(
+    "https://lcsd2.org/employment-opportunities/",
+    "https://www.growingluskleaders.org/page/human-resources",
+    "https://pcsd16.com/271372_2",
+    "https://www.platte1.org/89574_1",
+    "https://www.guernseysunrise.org/page/employment",
+    "https://www.sheridan3.com/page/hr-and-career-opportunities",
+    "https://www.sub1.org/en-US/employment-and-human-resources-f26202d3",
+    "https://www.uinta4.com/departments/business_office/job_opportunities/current_openings",
+    "https://sites.google.com/lymanschools.org/ucsd6/home/job-openings",
+    "https://www.wsh2.k12.wy.us/apps/pages/index.jsp?uREC_ID=440610&type=d&pREC_ID=1008214",
+    "https://www.wcsd1.org/apps/pages/Career_Opportunities",
+    "https://www.weston7.org/o/wcsd/page/employment"
+  ),
+  stringsAsFactors = FALSE
+)
+
+# Fetches one district's own-page postings via the right platform-specific
+# function. Apptegy districts require a live chromote session (passed in
+# by the caller so all 4 districts can share one browser instance instead
+# of paying startup cost per district); every other platform is plain
+# HTTP and ignores the session argument entirely.
+fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
+  switch(platform,
+    wordpress = fetch_wordpress_postings(url),
+    smartsites = fetch_smartsites_postings(url),
+    schoolblocks = fetch_schoolblocks_postings(url),
+    edlio = fetch_edlio_postings(url),
+    googlesites = fetch_googlesites_postings(url),
+    apptegy = fetch_apptegy_postings(chromote_session, url),
+    stop("fetch_misc_district_postings: unknown platform '", platform, "'")
+  )
+}
+
+# Full pipeline: WSBA (statewide, one fetch) + each district's own page
+# (deduplicated against that district's WSBA entries by normalized title)
+# combined into one data frame matching the schema the rest of the K-12
+# pipeline expects (title/date_posted/position/location/url/District).
+# `position` is intentionally NA throughout -- combinedclean's
+# classify_k12_position() recomputes it from `title` for every source
+# regardless, same as every other K-12 loader.
+#
+# safe_scrape (from scrape_helpers.R) logs each source individually: WSBA
+# once, then each of the 12 districts' own-page fetch, so one district's
+# selector breaking is visible in scrape_log.csv without blocking the
+# other 11 or the WSBA fetch itself.
+#
+# chromote_session_factory: a zero-arg function returning a fresh
+# chromote session (e.g. \() chromote::ChromoteSession$new()), only
+# invoked (once) if the registry actually contains an Apptegy district.
+# Kept as an injected factory rather than a hard chromote::: call so this
+# function -- and everything except the 4 Apptegy districts within it --
+# stays testable without a real browser available.
+fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
+  wsba <- safe_scrape(
+    "WSBA statewide vacancies",
+    scrape_fn = fetch_wsba_vacancies,
+    expected_cols = c("Title", "District", "Location", "Posted_Date")
+  )
+
+  apptegy_session <- if (any(misc_district_registry$platform == "apptegy") && !is.null(chromote_session_factory)) {
+    chromote_session_factory()
+  } else {
+    NULL
+  }
+
+  all_rows <- list()
+
+  for (i in seq_len(nrow(misc_district_registry))) {
+    district <- misc_district_registry$District[i]
+    platform <- misc_district_registry$platform[i]
+    url <- misc_district_registry$url[i]
+
+    own_postings <- safe_scrape(
+      district,
+      scrape_fn = function() fetch_misc_district_postings(platform, url, apptegy_session),
+      expected_cols = c("Title", "Location", "Posted_Date", "Link")
+    )
+    own_postings <- dedupe_against_wsba(own_postings, wsba, district)
+
+    wsba_here <- wsba[wsba$District == district, , drop = FALSE]
+
+    combined <- dplyr::bind_rows(
+      if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = NA_character_, stringsAsFactors = FALSE),
+      if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = url, stringsAsFactors = FALSE)
+    )
+
+    if (nrow(combined) > 0) {
+      combined$position <- NA_character_
+      combined$location <- NA_character_
+      combined$District <- district
+      all_rows[[length(all_rows) + 1]] <- combined
+    }
+  }
+
+  if (!is.null(apptegy_session)) {
+    tryCatch(apptegy_session$close(), error = function(e) NULL)
+  }
+
+  if (length(all_rows) == 0) {
+    return(data.frame(title = character(0), date_posted = character(0), position = character(0),
+                       location = character(0), url = character(0), District = character(0),
+                       stringsAsFactors = FALSE))
+  }
+
+  result <- dplyr::bind_rows(all_rows)
+  result[, c("title", "date_posted", "position", "location", "url", "District")]
 }

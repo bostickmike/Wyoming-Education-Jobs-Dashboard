@@ -37,6 +37,29 @@ test_that("parse_edlio_postings extracts file-list titles scoped to the Open Pos
   expect_false(any(grepl("Application|Salary Schedule|Employee Benefits", result$Title)))
 })
 
+test_that("parse_edlio_postings extracts scrollingTabs br-separated titles across all 3 category tabs (Uinta 4's real page)", {
+  # Regression: a materially different Edlio page template from the other
+  # two districts -- Certified/Classified/Coaching tabs, each a single
+  # JSON-embedded HTML string with postings as plain <br>-separated lines
+  # and no per-posting markup at all. The first line in each tab carries a
+  # leading <p><font ...> prefix (precedes the first <br> rather than
+  # following one) that must be stripped per-line, not just once for the
+  # whole content string, or "K-12 Special Education Teacher" and "School
+  # Bus Route Driver" (both first-in-tab) are silently dropped while every
+  # later line in the same tab extracts fine.
+  html <- read_fixture("edlio_uinta4_tabs.html")
+  result <- parse_edlio_postings(html)
+
+  expect_equal(nrow(result), 6)
+  expect_true("K-12 Special Education Teacher" %in% result$Title)  # Certified, first line
+  expect_true("SPED Consultant Case Manager (part-time)" %in% result$Title)  # Certified, last line
+  expect_true("School Bus Route Driver" %in% result$Title)  # Classified, first line
+  # Coaching tab is genuinely empty on the real page -- confirms this
+  # isn't silently swallowing a real Coaching posting, not just "0 tabs
+  # matched at all".
+  expect_false(any(grepl("Coaching", result$Title)))
+})
+
 test_that("parse_edlio_postings returns zero rows (not an error) for a page with no matching content", {
   result <- parse_edlio_postings("<html><body><p>nothing here</p></body></html>")
   expect_equal(nrow(result), 0)
@@ -182,6 +205,19 @@ test_that("parse_apptegy_postings extracts both posting formats and excludes con
   expect_true("BUS DRIVER SUBSTITUTES" %in% result$Title)
   expect_true("CUSTODIAL SUBSTITUTE" %in% result$Title)
   expect_false(any(grepl("Business Manager", result$Title)))
+})
+
+test_that("parse_apptegy_postings extracts the dollar-rate posting format (Platte 2's real rendered page)", {
+  # Regression: a third real Apptegy posting format found by checking all
+  # 4 Apptegy districts' actual current pages (not just Niobrara 1) --
+  # "Title $NNN/day" with neither a colon nor a dash, which the first two
+  # patterns silently miss entirely.
+  text <- read_fixture("apptegy_platte2_rendered.txt")
+  result <- parse_apptegy_postings(text)
+
+  expect_equal(nrow(result), 2)
+  expect_true("Substitute Certified Teachers" %in% result$Title)
+  expect_true("Substitute Paraeducator" %in% result$Title)
 })
 
 test_that("parse_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {
