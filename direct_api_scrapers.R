@@ -365,3 +365,64 @@ parse_applitrack_output <- function(js_text) {
 
   do.call(rbind, rows)
 }
+
+# ---------------------------------------------------------------------------
+# Paylocity Recruiting (Laramie Montessori Charter School, and potentially
+# other small orgs found later) -- job list embedded as JSON in the raw
+# page, not fetched via a separate API call
+# ---------------------------------------------------------------------------
+
+# company_guid and company_slug come from the org's own recruiting URL:
+# https://recruiting.paylocity.com/recruiting/jobs/All/<company_guid>/<company_slug>
+fetch_paylocity_jobs <- function(company_guid, company_slug) {
+  url <- paste0("https://recruiting.paylocity.com/recruiting/jobs/All/", company_guid, "/", company_slug)
+  resp <- request(url) %>% req_perform()
+  parse_paylocity_jobs(resp_body_string(resp))
+}
+
+parse_paylocity_jobs <- function(html_text) {
+  m <- regmatches(html_text, regexpr("window\\.pageData\\s*=\\s*\\{", html_text))
+  if (length(m) == 0) {
+    return(data.frame(Title = character(0), Location = character(0),
+                       Posted_Date = character(0), Link = character(0),
+                       stringsAsFactors = FALSE))
+  }
+
+  # Brace-counting to find the end of the embedded JSON object, since it's
+  # not on its own line and may itself contain nested braces.
+  start <- regexpr("window\\.pageData\\s*=\\s*", html_text)
+  json_start <- start + attr(start, "match.length")
+  remainder <- substring(html_text, json_start)
+  depth <- 0
+  end_pos <- NA_integer_
+  for (i in seq_len(nchar(remainder))) {
+    ch <- substr(remainder, i, i)
+    if (ch == "{") depth <- depth + 1
+    else if (ch == "}") {
+      depth <- depth - 1
+      if (depth == 0) { end_pos <- i; break }
+    }
+  }
+  if (is.na(end_pos)) {
+    return(data.frame(Title = character(0), Location = character(0),
+                       Posted_Date = character(0), Link = character(0),
+                       stringsAsFactors = FALSE))
+  }
+
+  page_data <- jsonlite::fromJSON(substr(remainder, 1, end_pos), simplifyVector = TRUE)
+  jobs <- page_data$Jobs
+
+  if (is.null(jobs) || length(jobs) == 0 || nrow(jobs) == 0) {
+    return(data.frame(Title = character(0), Location = character(0),
+                       Posted_Date = character(0), Link = character(0),
+                       stringsAsFactors = FALSE))
+  }
+
+  data.frame(
+    Title = jobs$JobTitle,
+    Location = jobs$LocationName,
+    Posted_Date = substr(jobs$PublishedDate, 1, 10),
+    Link = paste0("https://recruiting.paylocity.com/recruiting/jobs/Details/", jobs$JobId),
+    stringsAsFactors = FALSE
+  )
+}

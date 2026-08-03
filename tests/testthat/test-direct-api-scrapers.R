@@ -169,3 +169,26 @@ test_that("parse_applitrack_output returns zero rows (not an error) when there's
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("title", "position", "position2", "date_posted", "location", "closing_date"))
 })
+
+test_that("parse_paylocity_jobs extracts the embedded window.pageData JSON from a real fixture", {
+  # Real fixture: Laramie Montessori Charter School's Paylocity recruiting
+  # page. Confirmed the full job list is embedded as JSON directly in the
+  # raw HTML (window.pageData = {...}) rather than fetched via a separate
+  # API call -- a plain httr2 request reproduces this exactly, no browser
+  # needed despite the page being a React app.
+  html <- paste(readLines(test_path("fixtures", "paylocity_laramie_montessori.html"), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+
+  result <- parse_paylocity_jobs(html)
+
+  expect_equal(nrow(result), 1)
+  expect_equal(result$Title, "School Custodian-evening")
+  expect_equal(result$Location, "Laramie Montessori Charter School")
+  expect_equal(result$Posted_Date, "2026-06-24")
+  expect_equal(result$Link, "https://recruiting.paylocity.com/recruiting/jobs/Details/4263561")
+})
+
+test_that("parse_paylocity_jobs returns zero rows (not an error) when window.pageData is absent", {
+  result <- parse_paylocity_jobs("<html><body>Not a Paylocity page</body></html>")
+  expect_equal(nrow(result), 0)
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+})
