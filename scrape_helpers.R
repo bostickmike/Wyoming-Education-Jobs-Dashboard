@@ -78,21 +78,3 @@ safe_scrape <- function(source_name, scrape_fn, expected_cols, log_path = "scrap
   log_scrape_result(source_name, status = "ok", n_rows = nrow(df), log_path = log_path)
   df
 }
-
-# Thin wrappers around RSelenium setup/teardown so each scraper chunk has
-# one line to start and stop a session instead of repeating the same
-# rsDriver() call and client extraction nine times.
-start_selenium <- function(port = 4444L) {
-  rD <- RSelenium::rsDriver(browser = "firefox", port = port, check = FALSE, chromever = NULL)
-  list(rD = rD, remDr = rD$client)
-}
-
-stop_selenium <- function(session) {
-  tryCatch({
-    session$remDr$close()
-    session$rD$server$stop()
-  }, error = function(e) {
-    message("stop_selenium: cleanup failed: ", conditionMessage(e))
-  })
-  invisible(NULL)
-}

@@ -76,7 +76,6 @@ write.csv(all_jobs_df, "all_job_listings.csv", row.names = FALSE)
 
 # Load required libraries
 library(rvest)
-library(RSelenium)
 library(dplyr)
 library(readr)
 library(purrr)
