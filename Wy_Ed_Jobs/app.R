@@ -59,7 +59,7 @@ hesum_he$Category<- as.factor(hesum_he$Category)
 henowsum_he <- read.csv("allnow_he.csv") %>%
   filter(Category != "Uncategorized")
 
-last_refreshed_date <- "February 27, 2026"
+last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
 
 #--------------------------------------------------
 # UI
@@ -458,9 +458,6 @@ server <- function(input, output, session) {
     # Filter by Category (vector match)
     df %>% filter(Category %in% input$he_category)
   })
-  
-  # ---- Number of weeks visible at a time ----
-  WINDOW_WEEKS <- 52
   
   # ---- Update slider based on filtered data ----
   observe({
