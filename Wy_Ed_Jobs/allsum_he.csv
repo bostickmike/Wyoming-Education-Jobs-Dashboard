@@ -404,7 +404,7 @@
 "403","Humanities",2026-02-13,"Total",3
 "404","Humanities",2026-02-20,"Total",3
 "405","Humanities",2026-02-27,"Total",3
-"406","Humanities",2026-08-03,"Total",2
+"406","Humanities",2026-08-03,"Total",11
 "407","Legal",2025-02-21,"Total",2
 "408","Legal",2025-02-28,"Total",2
 "409","Legal",2025-03-07,"Total",2
@@ -2123,1492 +2123,1493 @@
 "2122","Humanities",2026-02-27,"Sheridan College",2
 "2123","Humanities",2026-02-27,"University of Wyoming",1
 "2124","Humanities",2026-08-03,"Sheridan College",2
-"2125","Legal",2025-02-21,"University of Wyoming",2
-"2126","Legal",2025-02-28,"University of Wyoming",2
-"2127","Legal",2025-03-07,"University of Wyoming",2
-"2128","Legal",2025-03-14,"University of Wyoming",2
-"2129","Legal",2025-03-21,"University of Wyoming",1
-"2130","Legal",2025-03-28,"University of Wyoming",1
-"2131","Legal",2025-04-04,"University of Wyoming",1
-"2132","Legal",2025-04-11,"University of Wyoming",1
-"2133","Legal",2025-04-18,"University of Wyoming",1
-"2134","Legal",2025-04-25,"University of Wyoming",1
-"2135","Legal",2025-05-02,"University of Wyoming",1
-"2136","Legal",2025-05-09,"University of Wyoming",1
-"2137","Legal",2025-05-16,"University of Wyoming",1
-"2138","Legal",2025-05-23,"University of Wyoming",2
-"2139","Legal",2025-05-30,"University of Wyoming",2
-"2140","Legal",2025-06-06,"University of Wyoming",2
-"2141","Legal",2025-06-13,"University of Wyoming",2
-"2142","Legal",2025-06-20,"University of Wyoming",2
-"2143","Legal",2025-06-27,"University of Wyoming",2
-"2144","Legal",2025-07-04,"University of Wyoming",2
-"2145","Legal",2025-07-11,"University of Wyoming",2
-"2146","Legal",2025-07-18,"University of Wyoming",1
-"2147","Legal",2025-07-25,"University of Wyoming",1
-"2148","Legal",2025-08-01,"University of Wyoming",1
-"2149","Legal",2025-08-08,"University of Wyoming",1
-"2150","Legal",2025-08-29,"University of Wyoming",1
-"2151","Legal",2025-09-05,"University of Wyoming",1
-"2152","Legal",2025-09-12,"University of Wyoming",3
-"2153","Legal",2025-09-19,"University of Wyoming",4
-"2154","Legal",2025-09-26,"University of Wyoming",4
-"2155","Legal",2025-10-03,"University of Wyoming",5
-"2156","Legal",2025-10-10,"University of Wyoming",5
-"2157","Legal",2025-10-17,"University of Wyoming",5
-"2158","Legal",2025-10-24,"University of Wyoming",3
-"2159","Legal",2025-10-31,"University of Wyoming",2
-"2160","Legal",2025-11-07,"University of Wyoming",2
-"2161","Legal",2025-11-14,"University of Wyoming",2
-"2162","Legal",2025-11-21,"University of Wyoming",2
-"2163","Legal",2025-11-28,"University of Wyoming",2
-"2164","Legal",2025-12-05,"University of Wyoming",2
-"2165","Legal",2025-12-12,"University of Wyoming",2
-"2166","Legal",2025-12-19,"University of Wyoming",1
-"2167","Legal",2025-12-26,"University of Wyoming",1
-"2168","Legal",2026-01-02,"University of Wyoming",1
-"2169","Legal",2026-01-09,"University of Wyoming",1
-"2170","Legal",2026-01-16,"University of Wyoming",1
-"2171","Legal",2026-01-23,"University of Wyoming",1
-"2172","Legal",2026-01-30,"University of Wyoming",1
-"2173","Legal",2026-02-06,"University of Wyoming",1
-"2174","Legal",2026-02-13,"University of Wyoming",1
-"2175","Legal",2026-02-20,"University of Wyoming",1
-"2176","Legal",2026-02-27,"University of Wyoming",1
-"2177","Library",2024-08-09,"University of Wyoming",2
-"2178","Library",2024-08-16,"University of Wyoming",2
-"2179","Library",2024-08-23,"University of Wyoming",2
-"2180","Library",2024-08-30,"University of Wyoming",2
-"2181","Library",2024-09-06,"University of Wyoming",2
-"2182","Library",2024-09-13,"University of Wyoming",2
-"2183","Library",2024-09-20,"University of Wyoming",2
-"2184","Library",2024-09-27,"University of Wyoming",2
-"2185","Library",2024-10-04,"University of Wyoming",2
-"2186","Library",2024-10-11,"University of Wyoming",2
-"2187","Library",2024-10-18,"University of Wyoming",3
-"2188","Library",2024-10-25,"University of Wyoming",3
-"2189","Library",2024-11-01,"University of Wyoming",3
-"2190","Library",2024-11-08,"University of Wyoming",3
-"2191","Library",2024-11-15,"University of Wyoming",1
-"2192","Library",2024-11-22,"University of Wyoming",1
-"2193","Library",2024-11-29,"University of Wyoming",1
-"2194","Library",2024-12-06,"University of Wyoming",1
-"2195","Library",2024-12-13,"University of Wyoming",1
-"2196","Library",2024-12-20,"University of Wyoming",1
-"2197","Library",2024-12-27,"University of Wyoming",1
-"2198","Library",2025-01-03,"University of Wyoming",1
-"2199","Library",2025-01-10,"University of Wyoming",1
-"2200","Library",2025-01-17,"University of Wyoming",1
-"2201","Library",2025-01-24,"University of Wyoming",1
-"2202","Library",2025-01-31,"University of Wyoming",2
-"2203","Library",2025-02-07,"University of Wyoming",2
-"2204","Library",2025-02-14,"University of Wyoming",2
-"2205","Library",2025-02-21,"University of Wyoming",2
-"2206","Library",2025-02-28,"University of Wyoming",2
-"2207","Library",2025-03-07,"University of Wyoming",2
-"2208","Library",2025-03-14,"University of Wyoming",2
-"2209","Library",2025-03-21,"University of Wyoming",2
-"2210","Library",2025-03-28,"University of Wyoming",2
-"2211","Library",2025-04-04,"University of Wyoming",1
-"2212","Library",2025-04-11,"University of Wyoming",1
-"2213","Library",2025-04-18,"University of Wyoming",2
-"2214","Library",2025-04-25,"University of Wyoming",2
-"2215","Library",2025-05-02,"University of Wyoming",2
-"2216","Library",2025-05-09,"University of Wyoming",2
-"2217","Library",2025-05-16,"University of Wyoming",2
-"2218","Library",2025-05-23,"University of Wyoming",2
-"2219","Library",2025-05-30,"University of Wyoming",1
-"2220","Library",2025-06-06,"University of Wyoming",2
-"2221","Library",2025-06-13,"Central Wyoming College",1
-"2222","Library",2025-06-13,"University of Wyoming",2
-"2223","Library",2025-06-20,"Central Wyoming College",1
-"2224","Library",2025-06-20,"Gillette College",1
-"2225","Library",2025-06-20,"University of Wyoming",2
-"2226","Library",2025-06-27,"Central Wyoming College",1
-"2227","Library",2025-06-27,"Gillette College",1
-"2228","Library",2025-06-27,"University of Wyoming",3
-"2229","Library",2025-07-04,"Central Wyoming College",1
-"2230","Library",2025-07-04,"Gillette College",1
-"2231","Library",2025-07-04,"University of Wyoming",3
-"2232","Library",2025-07-11,"Central Wyoming College",1
-"2233","Library",2025-07-11,"Gillette College",1
-"2234","Library",2025-07-11,"University of Wyoming",3
-"2235","Library",2025-07-18,"Central Wyoming College",1
-"2236","Library",2025-07-18,"Gillette College",1
-"2237","Library",2025-07-18,"University of Wyoming",3
-"2238","Library",2025-07-25,"Central Wyoming College",1
-"2239","Library",2025-07-25,"Gillette College",1
-"2240","Library",2025-07-25,"University of Wyoming",3
-"2241","Library",2025-08-01,"Central Wyoming College",1
-"2242","Library",2025-08-01,"Gillette College",1
-"2243","Library",2025-08-01,"Laramie County Community College",1
-"2244","Library",2025-08-01,"University of Wyoming",2
-"2245","Library",2025-08-08,"Central Wyoming College",1
-"2246","Library",2025-08-08,"Gillette College",1
-"2247","Library",2025-08-08,"Laramie County Community College",1
-"2248","Library",2025-08-08,"University of Wyoming",4
-"2249","Library",2025-08-15,"Central Wyoming College",1
-"2250","Library",2025-08-15,"Gillette College",1
-"2251","Library",2025-08-15,"Laramie County Community College",1
-"2252","Library",2025-08-15,"University of Wyoming",4
-"2253","Library",2025-08-22,"Central Wyoming College",1
-"2254","Library",2025-08-22,"Gillette College",1
-"2255","Library",2025-08-22,"Laramie County Community College",1
-"2256","Library",2025-08-22,"University of Wyoming",4
-"2257","Library",2025-08-29,"Central Wyoming College",1
-"2258","Library",2025-08-29,"Gillette College",1
-"2259","Library",2025-08-29,"Laramie County Community College",1
-"2260","Library",2025-08-29,"University of Wyoming",4
-"2261","Library",2025-09-05,"Central Wyoming College",1
-"2262","Library",2025-09-05,"Gillette College",1
-"2263","Library",2025-09-05,"Laramie County Community College",1
-"2264","Library",2025-09-05,"University of Wyoming",4
-"2265","Library",2025-09-12,"Central Wyoming College",1
-"2266","Library",2025-09-12,"Gillette College",1
-"2267","Library",2025-09-12,"Laramie County Community College",1
-"2268","Library",2025-09-12,"University of Wyoming",4
-"2269","Library",2025-09-19,"Central Wyoming College",1
-"2270","Library",2025-09-19,"University of Wyoming",4
-"2271","Library",2025-09-26,"Central Wyoming College",1
-"2272","Library",2025-09-26,"University of Wyoming",3
-"2273","Library",2025-10-03,"Central Wyoming College",1
-"2274","Library",2025-10-03,"University of Wyoming",3
-"2275","Library",2025-10-10,"University of Wyoming",3
-"2276","Library",2025-10-17,"University of Wyoming",3
-"2277","Library",2025-10-24,"University of Wyoming",2
-"2278","Library",2025-10-31,"University of Wyoming",2
-"2279","Library",2025-11-07,"University of Wyoming",1
-"2280","Library",2025-12-12,"Central Wyoming College",1
-"2281","Library",2025-12-19,"Central Wyoming College",1
-"2282","Library",2025-12-26,"Central Wyoming College",1
-"2283","Library",2026-01-02,"Central Wyoming College",1
-"2284","Library",2026-01-09,"Central Wyoming College",1
-"2285","Library",2026-01-16,"Central Wyoming College",1
-"2286","Library",2026-01-23,"Central Wyoming College",1
-"2287","Library",2026-01-30,"Central Wyoming College",1
-"2288","Library",2026-02-06,"Central Wyoming College",1
-"2289","Library",2026-02-13,"Central Wyoming College",1
-"2290","Library",2026-02-20,"Central Wyoming College",1
-"2291","Library",2026-02-27,"Central Wyoming College",1
-"2292","Math",2024-08-09,"Sheridan College",1
-"2293","Math",2024-08-16,"Sheridan College",1
-"2294","Math",2024-08-23,"Sheridan College",1
-"2295","Math",2024-08-30,"Sheridan College",1
-"2296","Math",2024-09-06,"Sheridan College",1
-"2297","Math",2024-09-13,"Sheridan College",1
-"2298","Math",2024-09-20,"Sheridan College",1
-"2299","Math",2024-09-27,"Sheridan College",1
-"2300","Math",2024-10-04,"Sheridan College",1
-"2301","Math",2024-10-11,"Sheridan College",1
-"2302","Math",2024-10-11,"University of Wyoming",2
-"2303","Math",2024-10-18,"Sheridan College",1
-"2304","Math",2024-10-18,"University of Wyoming",2
-"2305","Math",2024-10-25,"Sheridan College",1
-"2306","Math",2024-10-25,"University of Wyoming",3
-"2307","Math",2024-11-01,"Sheridan College",1
-"2308","Math",2024-11-01,"University of Wyoming",3
-"2309","Math",2024-11-08,"Sheridan College",1
-"2310","Math",2024-11-08,"University of Wyoming",3
-"2311","Math",2024-11-15,"Sheridan College",1
-"2312","Math",2024-11-15,"University of Wyoming",3
-"2313","Math",2024-11-22,"Laramie County Community College",1
-"2314","Math",2024-11-22,"Sheridan College",1
-"2315","Math",2024-11-22,"University of Wyoming",3
-"2316","Math",2024-11-29,"Laramie County Community College",1
-"2317","Math",2024-11-29,"Sheridan College",1
-"2318","Math",2024-11-29,"University of Wyoming",3
-"2319","Math",2024-12-06,"Laramie County Community College",1
-"2320","Math",2024-12-06,"Sheridan College",1
-"2321","Math",2024-12-06,"University of Wyoming",3
-"2322","Math",2024-12-13,"Laramie County Community College",1
-"2323","Math",2024-12-13,"Sheridan College",1
-"2324","Math",2024-12-13,"University of Wyoming",3
-"2325","Math",2024-12-20,"Laramie County Community College",1
-"2326","Math",2024-12-20,"Sheridan College",1
-"2327","Math",2024-12-20,"University of Wyoming",3
-"2328","Math",2024-12-27,"Laramie County Community College",1
-"2329","Math",2024-12-27,"Sheridan College",1
-"2330","Math",2024-12-27,"University of Wyoming",3
-"2331","Math",2025-01-03,"Laramie County Community College",1
-"2332","Math",2025-01-03,"Sheridan College",1
-"2333","Math",2025-01-03,"University of Wyoming",3
-"2334","Math",2025-01-10,"Laramie County Community College",1
-"2335","Math",2025-01-10,"Sheridan College",1
-"2336","Math",2025-01-10,"University of Wyoming",3
-"2337","Math",2025-01-17,"Laramie County Community College",1
-"2338","Math",2025-01-17,"Sheridan College",1
-"2339","Math",2025-01-17,"University of Wyoming",3
-"2340","Math",2025-01-24,"Laramie County Community College",1
-"2341","Math",2025-01-24,"Sheridan College",1
-"2342","Math",2025-01-24,"University of Wyoming",3
-"2343","Math",2025-01-31,"Laramie County Community College",1
-"2344","Math",2025-01-31,"Sheridan College",1
-"2345","Math",2025-01-31,"University of Wyoming",3
-"2346","Math",2025-02-07,"Laramie County Community College",1
-"2347","Math",2025-02-07,"Sheridan College",1
-"2348","Math",2025-02-07,"University of Wyoming",3
-"2349","Math",2025-02-14,"Laramie County Community College",1
-"2350","Math",2025-02-14,"Sheridan College",1
-"2351","Math",2025-02-14,"University of Wyoming",3
-"2352","Math",2025-02-21,"Laramie County Community College",1
-"2353","Math",2025-02-21,"Sheridan College",1
-"2354","Math",2025-02-21,"University of Wyoming",3
-"2355","Math",2025-02-28,"Laramie County Community College",1
-"2356","Math",2025-02-28,"Sheridan College",2
-"2357","Math",2025-02-28,"University of Wyoming",3
-"2358","Math",2025-03-07,"Sheridan College",2
-"2359","Math",2025-03-07,"University of Wyoming",3
-"2360","Math",2025-03-14,"Sheridan College",2
-"2361","Math",2025-03-14,"University of Wyoming",3
-"2362","Math",2025-03-21,"Sheridan College",2
-"2363","Math",2025-03-21,"University of Wyoming",3
-"2364","Math",2025-03-28,"Sheridan College",2
-"2365","Math",2025-03-28,"University of Wyoming",3
-"2366","Math",2025-04-04,"Sheridan College",2
-"2367","Math",2025-04-04,"University of Wyoming",3
-"2368","Math",2025-04-11,"Sheridan College",2
-"2369","Math",2025-04-11,"University of Wyoming",3
-"2370","Math",2025-04-18,"Sheridan College",2
-"2371","Math",2025-04-18,"University of Wyoming",3
-"2372","Math",2025-04-25,"Sheridan College",2
-"2373","Math",2025-04-25,"University of Wyoming",3
-"2374","Math",2025-05-02,"Eastern Wyoming Community College",1
-"2375","Math",2025-05-02,"Sheridan College",2
-"2376","Math",2025-05-02,"University of Wyoming",3
-"2377","Math",2025-05-09,"Eastern Wyoming Community College",1
-"2378","Math",2025-05-09,"Sheridan College",1
-"2379","Math",2025-05-09,"University of Wyoming",3
-"2380","Math",2025-05-16,"Eastern Wyoming Community College",1
-"2381","Math",2025-05-16,"Sheridan College",1
-"2382","Math",2025-05-16,"University of Wyoming",2
-"2383","Math",2025-05-23,"Eastern Wyoming Community College",1
-"2384","Math",2025-05-23,"Laramie County Community College",1
-"2385","Math",2025-05-23,"Sheridan College",1
-"2386","Math",2025-05-23,"University of Wyoming",2
-"2387","Math",2025-05-30,"Eastern Wyoming Community College",1
-"2388","Math",2025-05-30,"Laramie County Community College",1
-"2389","Math",2025-05-30,"Sheridan College",1
-"2390","Math",2025-05-30,"University of Wyoming",2
-"2391","Math",2025-06-06,"Eastern Wyoming Community College",1
-"2392","Math",2025-06-06,"Laramie County Community College",1
-"2393","Math",2025-06-06,"Sheridan College",1
-"2394","Math",2025-06-13,"Eastern Wyoming Community College",1
-"2395","Math",2025-06-13,"Laramie County Community College",1
-"2396","Math",2025-06-13,"Sheridan College",1
-"2397","Math",2025-06-20,"Eastern Wyoming Community College",1
-"2398","Math",2025-06-20,"Laramie County Community College",1
-"2399","Math",2025-06-20,"Sheridan College",1
-"2400","Math",2025-06-27,"Eastern Wyoming Community College",1
-"2401","Math",2025-06-27,"Laramie County Community College",1
-"2402","Math",2025-06-27,"Sheridan College",1
-"2403","Math",2025-07-04,"Eastern Wyoming Community College",1
-"2404","Math",2025-07-04,"Laramie County Community College",1
-"2405","Math",2025-07-04,"Sheridan College",1
-"2406","Math",2025-07-11,"Eastern Wyoming Community College",1
-"2407","Math",2025-07-11,"Laramie County Community College",1
-"2408","Math",2025-07-11,"Sheridan College",1
-"2409","Math",2025-07-18,"Eastern Wyoming Community College",1
-"2410","Math",2025-07-18,"Laramie County Community College",1
-"2411","Math",2025-07-18,"Sheridan College",1
-"2412","Math",2025-07-25,"Eastern Wyoming Community College",1
-"2413","Math",2025-07-25,"Laramie County Community College",1
-"2414","Math",2025-07-25,"Sheridan College",1
-"2415","Math",2025-08-01,"Eastern Wyoming Community College",1
-"2416","Math",2025-08-01,"Laramie County Community College",1
-"2417","Math",2025-08-01,"Sheridan College",1
-"2418","Math",2025-08-08,"Eastern Wyoming Community College",1
-"2419","Math",2025-08-08,"Laramie County Community College",1
-"2420","Math",2025-08-08,"Sheridan College",1
-"2421","Math",2025-08-15,"Eastern Wyoming Community College",1
-"2422","Math",2025-08-15,"Laramie County Community College",1
-"2423","Math",2025-08-15,"Sheridan College",1
-"2424","Math",2025-08-15,"University of Wyoming",1
-"2425","Math",2025-08-22,"Eastern Wyoming Community College",1
-"2426","Math",2025-08-22,"Laramie County Community College",1
-"2427","Math",2025-08-22,"Sheridan College",1
-"2428","Math",2025-08-22,"University of Wyoming",1
-"2429","Math",2025-08-29,"Laramie County Community College",1
-"2430","Math",2025-08-29,"Sheridan College",1
-"2431","Math",2025-08-29,"University of Wyoming",1
-"2432","Math",2025-09-05,"Laramie County Community College",1
-"2433","Math",2025-09-05,"Sheridan College",1
-"2434","Math",2025-09-05,"University of Wyoming",1
-"2435","Math",2025-09-12,"Laramie County Community College",1
-"2436","Math",2025-09-12,"Sheridan College",1
-"2437","Math",2025-09-12,"University of Wyoming",1
-"2438","Math",2025-09-19,"Laramie County Community College",1
-"2439","Math",2025-09-19,"Sheridan College",1
-"2440","Math",2025-09-26,"Laramie County Community College",1
-"2441","Math",2025-09-26,"Sheridan College",1
-"2442","Math",2025-10-03,"Laramie County Community College",1
-"2443","Math",2025-10-03,"Sheridan College",1
-"2444","Math",2025-10-10,"Laramie County Community College",1
-"2445","Math",2025-10-10,"Sheridan College",1
-"2446","Math",2025-10-17,"Laramie County Community College",1
-"2447","Math",2025-10-17,"Sheridan College",1
-"2448","Math",2025-10-24,"Sheridan College",1
-"2449","Math",2025-10-31,"Sheridan College",1
-"2450","Math",2025-11-07,"Sheridan College",1
-"2451","Math",2025-11-07,"University of Wyoming",1
-"2452","Math",2025-11-14,"Sheridan College",1
-"2453","Math",2025-11-14,"University of Wyoming",1
-"2454","Math",2025-11-21,"Sheridan College",1
-"2455","Math",2025-11-21,"University of Wyoming",1
-"2456","Math",2025-11-28,"Sheridan College",1
-"2457","Math",2025-11-28,"University of Wyoming",1
-"2458","Math",2025-12-05,"Sheridan College",1
-"2459","Math",2025-12-05,"University of Wyoming",1
-"2460","Math",2025-12-12,"Sheridan College",1
-"2461","Math",2025-12-12,"University of Wyoming",1
-"2462","Math",2025-12-19,"Sheridan College",1
-"2463","Math",2025-12-19,"University of Wyoming",1
-"2464","Math",2025-12-26,"Sheridan College",1
-"2465","Math",2025-12-26,"University of Wyoming",1
-"2466","Math",2026-01-02,"Sheridan College",1
-"2467","Math",2026-01-02,"University of Wyoming",1
-"2468","Math",2026-01-09,"Sheridan College",1
-"2469","Math",2026-01-09,"University of Wyoming",1
-"2470","Math",2026-01-16,"Sheridan College",1
-"2471","Math",2026-01-16,"University of Wyoming",1
-"2472","Math",2026-01-23,"Sheridan College",1
-"2473","Math",2026-01-23,"University of Wyoming",1
-"2474","Math",2026-01-30,"Sheridan College",1
-"2475","Math",2026-01-30,"University of Wyoming",1
-"2476","Math",2026-02-06,"Sheridan College",1
-"2477","Math",2026-02-06,"University of Wyoming",1
-"2478","Math",2026-02-13,"Eastern Wyoming Community College",1
-"2479","Math",2026-02-13,"Sheridan College",1
-"2480","Math",2026-02-13,"University of Wyoming",1
-"2481","Math",2026-02-20,"Eastern Wyoming Community College",1
-"2482","Math",2026-02-20,"Sheridan College",1
-"2483","Math",2026-02-20,"University of Wyoming",1
-"2484","Math",2026-02-27,"Eastern Wyoming Community College",1
-"2485","Math",2026-02-27,"Sheridan College",1
-"2486","Math",2026-02-27,"University of Wyoming",1
-"2487","Math",2026-08-03,"Eastern Wyoming Community College",1
-"2488","Math",2026-08-03,"Sheridan College",1
-"2489","Physical Education",2024-08-09,"Sheridan College",1
-"2490","Physical Education",2024-08-16,"Sheridan College",1
-"2491","Physical Education",2024-08-23,"Sheridan College",1
-"2492","Physical Education",2024-08-30,"Sheridan College",1
-"2493","Physical Education",2024-09-06,"Sheridan College",1
-"2494","Physical Education",2024-09-13,"Sheridan College",1
-"2495","Physical Education",2024-09-20,"Sheridan College",1
-"2496","Physical Education",2024-09-27,"Laramie County Community College",1
-"2497","Physical Education",2024-10-04,"Laramie County Community College",1
-"2498","Physical Education",2024-10-11,"Laramie County Community College",1
-"2499","Physical Education",2024-10-11,"University of Wyoming",1
-"2500","Physical Education",2024-10-18,"Laramie County Community College",1
-"2501","Physical Education",2024-10-18,"University of Wyoming",1
-"2502","Physical Education",2024-10-25,"Laramie County Community College",1
-"2503","Physical Education",2024-10-25,"University of Wyoming",1
-"2504","Physical Education",2024-11-01,"Laramie County Community College",1
-"2505","Physical Education",2024-11-01,"University of Wyoming",1
-"2506","Physical Education",2024-11-08,"Laramie County Community College",1
-"2507","Physical Education",2024-11-08,"University of Wyoming",1
-"2508","Physical Education",2024-11-15,"Laramie County Community College",1
-"2509","Physical Education",2024-11-15,"University of Wyoming",2
-"2510","Physical Education",2024-11-22,"Laramie County Community College",1
-"2511","Physical Education",2024-11-22,"University of Wyoming",2
-"2512","Physical Education",2024-11-29,"Laramie County Community College",1
-"2513","Physical Education",2024-11-29,"University of Wyoming",2
-"2514","Physical Education",2024-12-06,"Laramie County Community College",1
-"2515","Physical Education",2024-12-06,"University of Wyoming",2
-"2516","Physical Education",2024-12-13,"Laramie County Community College",1
-"2517","Physical Education",2024-12-13,"University of Wyoming",2
-"2518","Physical Education",2024-12-20,"Laramie County Community College",1
-"2519","Physical Education",2024-12-20,"University of Wyoming",2
-"2520","Physical Education",2024-12-27,"Laramie County Community College",1
-"2521","Physical Education",2024-12-27,"University of Wyoming",2
-"2522","Physical Education",2025-01-03,"Laramie County Community College",1
-"2523","Physical Education",2025-01-03,"University of Wyoming",2
-"2524","Physical Education",2025-01-10,"Laramie County Community College",1
-"2525","Physical Education",2025-01-10,"University of Wyoming",2
-"2526","Physical Education",2025-01-17,"Laramie County Community College",1
-"2527","Physical Education",2025-01-17,"University of Wyoming",2
-"2528","Physical Education",2025-01-24,"University of Wyoming",2
-"2529","Physical Education",2025-01-31,"University of Wyoming",2
-"2530","Physical Education",2025-02-07,"University of Wyoming",2
-"2531","Physical Education",2025-02-14,"University of Wyoming",1
-"2532","Physical Education",2025-02-21,"University of Wyoming",1
-"2533","Physical Education",2025-02-28,"University of Wyoming",1
-"2534","Physical Education",2025-03-07,"University of Wyoming",1
-"2535","Physical Education",2025-03-14,"University of Wyoming",1
-"2536","Physical Education",2025-03-21,"University of Wyoming",1
-"2537","Physical Education",2025-03-28,"University of Wyoming",1
-"2538","Physical Education",2025-04-04,"University of Wyoming",1
-"2539","Physical Education",2025-06-20,"Laramie County Community College",1
-"2540","Physical Education",2025-07-04,"Laramie County Community College",1
-"2541","Physical Education",2025-09-05,"University of Wyoming",1
-"2542","Physical Education",2025-09-12,"University of Wyoming",1
-"2543","Physical Education",2025-09-19,"University of Wyoming",1
-"2544","Physical Education",2025-09-26,"University of Wyoming",1
-"2545","Physical Education",2025-10-03,"University of Wyoming",1
-"2546","Physical Education",2025-10-10,"University of Wyoming",1
-"2547","Physical Education",2025-10-17,"University of Wyoming",1
-"2548","Physical Education",2025-10-24,"Laramie County Community College",1
-"2549","Physical Education",2025-10-24,"University of Wyoming",1
-"2550","Physical Education",2025-10-31,"Laramie County Community College",1
-"2551","Physical Education",2025-10-31,"University of Wyoming",1
-"2552","Physical Education",2025-11-07,"Laramie County Community College",1
-"2553","Physical Education",2025-11-07,"University of Wyoming",1
-"2554","Physical Education",2025-11-14,"Laramie County Community College",1
-"2555","Physical Education",2025-11-21,"Laramie County Community College",1
-"2556","Physical Education",2025-11-28,"Laramie County Community College",1
-"2557","Physical Education",2025-12-05,"Laramie County Community College",1
-"2558","Physical Education",2025-12-12,"Laramie County Community College",1
-"2559","Physical Education",2025-12-19,"Laramie County Community College",1
-"2560","Physical Education",2025-12-26,"Laramie County Community College",1
-"2561","Physical Education",2026-01-02,"Laramie County Community College",1
-"2562","Physical Education",2026-01-09,"Laramie County Community College",1
-"2563","Physical Education",2026-01-16,"Laramie County Community College",1
-"2564","Physical Education",2026-01-23,"Laramie County Community College",1
-"2565","Physical Education",2026-01-30,"Laramie County Community College",1
-"2566","Physical Education",2026-02-06,"Laramie County Community College",1
-"2567","Physical Education",2026-02-13,"Laramie County Community College",1
-"2568","Physical Education",2026-02-20,"Laramie County Community College",1
-"2569","Physical Education",2026-02-27,"Laramie County Community College",1
-"2570","Science",2024-08-09,"Gillette College",1
-"2571","Science",2024-08-09,"Sheridan College",4
-"2572","Science",2024-08-09,"University of Wyoming",4
-"2573","Science",2024-08-16,"Gillette College",1
-"2574","Science",2024-08-16,"Sheridan College",4
-"2575","Science",2024-08-16,"University of Wyoming",4
-"2576","Science",2024-08-23,"Gillette College",1
-"2577","Science",2024-08-23,"Sheridan College",4
-"2578","Science",2024-08-23,"University of Wyoming",4
-"2579","Science",2024-08-30,"Gillette College",1
-"2580","Science",2024-08-30,"Sheridan College",4
-"2581","Science",2024-08-30,"University of Wyoming",4
-"2582","Science",2024-09-06,"Gillette College",1
-"2583","Science",2024-09-06,"Sheridan College",4
-"2584","Science",2024-09-06,"University of Wyoming",4
-"2585","Science",2024-09-13,"Gillette College",1
-"2586","Science",2024-09-13,"Sheridan College",4
-"2587","Science",2024-09-13,"University of Wyoming",5
-"2588","Science",2024-09-20,"Gillette College",1
-"2589","Science",2024-09-20,"Sheridan College",4
-"2590","Science",2024-09-20,"University of Wyoming",7
-"2591","Science",2024-09-27,"Gillette College",1
-"2592","Science",2024-09-27,"Sheridan College",4
-"2593","Science",2024-09-27,"University of Wyoming",8
-"2594","Science",2024-10-04,"Gillette College",1
-"2595","Science",2024-10-04,"Sheridan College",4
-"2596","Science",2024-10-04,"University of Wyoming",9
-"2597","Science",2024-10-11,"Gillette College",1
-"2598","Science",2024-10-11,"Sheridan College",4
-"2599","Science",2024-10-11,"University of Wyoming",10
-"2600","Science",2024-10-18,"Gillette College",1
-"2601","Science",2024-10-18,"Sheridan College",4
-"2602","Science",2024-10-18,"University of Wyoming",9
-"2603","Science",2024-10-25,"Sheridan College",4
-"2604","Science",2024-10-25,"University of Wyoming",10
-"2605","Science",2024-11-01,"Sheridan College",4
-"2606","Science",2024-11-01,"University of Wyoming",10
-"2607","Science",2024-11-08,"Sheridan College",4
-"2608","Science",2024-11-08,"University of Wyoming",9
-"2609","Science",2024-11-15,"Sheridan College",4
-"2610","Science",2024-11-15,"University of Wyoming",7
-"2611","Science",2024-11-22,"Sheridan College",4
-"2612","Science",2024-11-22,"University of Wyoming",7
-"2613","Science",2024-11-29,"Sheridan College",4
-"2614","Science",2024-11-29,"University of Wyoming",7
-"2615","Science",2024-12-06,"Sheridan College",4
-"2616","Science",2024-12-06,"University of Wyoming",7
-"2617","Science",2024-12-13,"Sheridan College",4
-"2618","Science",2024-12-13,"University of Wyoming",7
-"2619","Science",2024-12-20,"Sheridan College",4
-"2620","Science",2024-12-20,"University of Wyoming",7
-"2621","Science",2024-12-27,"Sheridan College",4
-"2622","Science",2024-12-27,"University of Wyoming",7
-"2623","Science",2025-01-03,"Sheridan College",4
-"2624","Science",2025-01-03,"University of Wyoming",7
-"2625","Science",2025-01-10,"Sheridan College",4
-"2626","Science",2025-01-10,"University of Wyoming",7
-"2627","Science",2025-01-17,"Sheridan College",4
-"2628","Science",2025-01-17,"University of Wyoming",9
-"2629","Science",2025-01-24,"Casper College",1
-"2630","Science",2025-01-24,"Sheridan College",4
-"2631","Science",2025-01-24,"University of Wyoming",9
-"2632","Science",2025-01-31,"Sheridan College",4
-"2633","Science",2025-01-31,"University of Wyoming",9
-"2634","Science",2025-02-07,"Sheridan College",4
-"2635","Science",2025-02-07,"University of Wyoming",9
-"2636","Science",2025-02-14,"Sheridan College",4
-"2637","Science",2025-02-14,"University of Wyoming",10
-"2638","Science",2025-02-21,"Sheridan College",4
-"2639","Science",2025-02-21,"University of Wyoming",10
-"2640","Science",2025-02-28,"Sheridan College",4
-"2641","Science",2025-02-28,"University of Wyoming",10
-"2642","Science",2025-03-07,"Sheridan College",4
-"2643","Science",2025-03-07,"University of Wyoming",11
-"2644","Science",2025-03-14,"Sheridan College",4
-"2645","Science",2025-03-14,"University of Wyoming",10
-"2646","Science",2025-03-21,"Sheridan College",4
-"2647","Science",2025-03-21,"University of Wyoming",13
-"2648","Science",2025-03-28,"Sheridan College",4
-"2649","Science",2025-03-28,"University of Wyoming",13
-"2650","Science",2025-04-04,"Sheridan College",4
-"2651","Science",2025-04-04,"University of Wyoming",14
-"2652","Science",2025-04-11,"Sheridan College",4
-"2653","Science",2025-04-11,"University of Wyoming",13
-"2654","Science",2025-04-18,"Sheridan College",4
-"2655","Science",2025-04-18,"University of Wyoming",13
-"2656","Science",2025-04-25,"Sheridan College",4
-"2657","Science",2025-04-25,"University of Wyoming",11
-"2658","Science",2025-05-02,"Sheridan College",4
-"2659","Science",2025-05-02,"University of Wyoming",11
-"2660","Science",2025-05-09,"Sheridan College",4
-"2661","Science",2025-05-09,"University of Wyoming",10
-"2662","Science",2025-05-16,"Sheridan College",4
-"2663","Science",2025-05-16,"University of Wyoming",10
-"2664","Science",2025-05-23,"Sheridan College",4
-"2665","Science",2025-05-23,"University of Wyoming",9
-"2666","Science",2025-05-30,"Laramie County Community College",1
-"2667","Science",2025-05-30,"Sheridan College",4
-"2668","Science",2025-05-30,"University of Wyoming",9
-"2669","Science",2025-06-06,"Laramie County Community College",1
-"2670","Science",2025-06-06,"Sheridan College",4
-"2671","Science",2025-06-06,"University of Wyoming",8
-"2672","Science",2025-06-06,"Western Wyoming Community College",1
-"2673","Science",2025-06-13,"Laramie County Community College",1
-"2674","Science",2025-06-13,"Sheridan College",4
-"2675","Science",2025-06-13,"University of Wyoming",8
-"2676","Science",2025-06-13,"Western Wyoming Community College",1
-"2677","Science",2025-06-20,"Laramie County Community College",1
-"2678","Science",2025-06-20,"Sheridan College",4
-"2679","Science",2025-06-20,"University of Wyoming",5
-"2680","Science",2025-06-20,"Western Wyoming Community College",1
-"2681","Science",2025-06-27,"Laramie County Community College",1
-"2682","Science",2025-06-27,"Sheridan College",4
-"2683","Science",2025-06-27,"University of Wyoming",3
-"2684","Science",2025-06-27,"Western Wyoming Community College",1
-"2685","Science",2025-07-04,"Laramie County Community College",1
-"2686","Science",2025-07-04,"Sheridan College",4
-"2687","Science",2025-07-04,"University of Wyoming",3
-"2688","Science",2025-07-04,"Western Wyoming Community College",1
-"2689","Science",2025-07-11,"Laramie County Community College",2
-"2690","Science",2025-07-11,"Sheridan College",4
-"2691","Science",2025-07-11,"University of Wyoming",3
-"2692","Science",2025-07-11,"Western Wyoming Community College",1
-"2693","Science",2025-07-18,"Laramie County Community College",1
-"2694","Science",2025-07-18,"Sheridan College",4
-"2695","Science",2025-07-18,"University of Wyoming",4
-"2696","Science",2025-07-18,"Western Wyoming Community College",1
-"2697","Science",2025-07-25,"Laramie County Community College",1
-"2698","Science",2025-07-25,"Sheridan College",4
-"2699","Science",2025-07-25,"University of Wyoming",4
-"2700","Science",2025-07-25,"Western Wyoming Community College",1
-"2701","Science",2025-08-01,"Sheridan College",4
-"2702","Science",2025-08-01,"University of Wyoming",4
-"2703","Science",2025-08-08,"Sheridan College",4
-"2704","Science",2025-08-08,"University of Wyoming",4
-"2705","Science",2025-08-15,"Sheridan College",4
-"2706","Science",2025-08-15,"University of Wyoming",4
-"2707","Science",2025-08-22,"Sheridan College",4
-"2708","Science",2025-08-22,"University of Wyoming",4
-"2709","Science",2025-08-29,"Sheridan College",4
-"2710","Science",2025-08-29,"University of Wyoming",6
-"2711","Science",2025-09-05,"Sheridan College",4
-"2712","Science",2025-09-05,"University of Wyoming",6
-"2713","Science",2025-09-12,"Sheridan College",4
-"2714","Science",2025-09-12,"University of Wyoming",7
-"2715","Science",2025-09-19,"Sheridan College",4
-"2716","Science",2025-09-19,"University of Wyoming",8
-"2717","Science",2025-09-26,"Sheridan College",4
-"2718","Science",2025-09-26,"University of Wyoming",12
-"2719","Science",2025-10-03,"Sheridan College",4
-"2720","Science",2025-10-03,"University of Wyoming",13
-"2721","Science",2025-10-10,"Sheridan College",4
-"2722","Science",2025-10-10,"University of Wyoming",15
-"2723","Science",2025-10-17,"Sheridan College",4
-"2724","Science",2025-10-17,"University of Wyoming",15
-"2725","Science",2025-10-24,"Sheridan College",4
-"2726","Science",2025-10-24,"University of Wyoming",16
-"2727","Science",2025-10-31,"Sheridan College",4
-"2728","Science",2025-10-31,"University of Wyoming",16
-"2729","Science",2025-11-07,"Sheridan College",4
-"2730","Science",2025-11-07,"University of Wyoming",16
-"2731","Science",2025-11-14,"Sheridan College",4
-"2732","Science",2025-11-14,"University of Wyoming",16
-"2733","Science",2025-11-21,"Sheridan College",4
-"2734","Science",2025-11-21,"University of Wyoming",16
-"2735","Science",2025-11-28,"Sheridan College",4
-"2736","Science",2025-11-28,"University of Wyoming",16
-"2737","Science",2025-12-05,"Sheridan College",4
-"2738","Science",2025-12-05,"University of Wyoming",15
-"2739","Science",2025-12-12,"Sheridan College",4
-"2740","Science",2025-12-12,"University of Wyoming",14
-"2741","Science",2025-12-19,"Northwest College",1
-"2742","Science",2025-12-19,"Sheridan College",4
-"2743","Science",2025-12-19,"University of Wyoming",12
-"2744","Science",2025-12-26,"Northwest College",1
-"2745","Science",2025-12-26,"Sheridan College",4
-"2746","Science",2025-12-26,"University of Wyoming",13
-"2747","Science",2026-01-02,"Northwest College",1
-"2748","Science",2026-01-02,"Sheridan College",4
-"2749","Science",2026-01-02,"University of Wyoming",13
-"2750","Science",2026-01-09,"Northwest College",1
-"2751","Science",2026-01-09,"Sheridan College",4
-"2752","Science",2026-01-09,"University of Wyoming",13
-"2753","Science",2026-01-16,"Central Wyoming College",1
-"2754","Science",2026-01-16,"Sheridan College",4
-"2755","Science",2026-01-16,"University of Wyoming",13
-"2756","Science",2026-01-23,"Central Wyoming College",1
-"2757","Science",2026-01-23,"Sheridan College",4
-"2758","Science",2026-01-23,"University of Wyoming",12
-"2759","Science",2026-01-30,"Central Wyoming College",1
-"2760","Science",2026-01-30,"Sheridan College",4
-"2761","Science",2026-01-30,"University of Wyoming",11
-"2762","Science",2026-02-06,"Central Wyoming College",1
-"2763","Science",2026-02-06,"Sheridan College",4
-"2764","Science",2026-02-06,"University of Wyoming",9
-"2765","Science",2026-02-13,"Central Wyoming College",1
-"2766","Science",2026-02-13,"Sheridan College",4
-"2767","Science",2026-02-13,"University of Wyoming",9
-"2768","Science",2026-02-20,"Central Wyoming College",1
-"2769","Science",2026-02-20,"Laramie County Community College",1
-"2770","Science",2026-02-20,"Sheridan College",4
-"2771","Science",2026-02-20,"University of Wyoming",7
-"2772","Science",2026-02-27,"Central Wyoming College",1
-"2773","Science",2026-02-27,"Laramie County Community College",1
-"2774","Science",2026-02-27,"Sheridan College",4
-"2775","Science",2026-02-27,"University of Wyoming",7
-"2776","Science",2026-08-03,"Sheridan College",4
-"2777","Social Science",2024-08-09,"University of Wyoming",7
-"2778","Social Science",2024-08-16,"University of Wyoming",7
-"2779","Social Science",2024-08-23,"University of Wyoming",5
-"2780","Social Science",2024-08-30,"University of Wyoming",7
-"2781","Social Science",2024-09-06,"University of Wyoming",6
-"2782","Social Science",2024-09-13,"University of Wyoming",6
-"2783","Social Science",2024-09-20,"University of Wyoming",7
-"2784","Social Science",2024-09-27,"University of Wyoming",7
-"2785","Social Science",2024-10-04,"University of Wyoming",7
-"2786","Social Science",2024-10-11,"University of Wyoming",7
-"2787","Social Science",2024-10-18,"University of Wyoming",7
-"2788","Social Science",2024-10-25,"University of Wyoming",7
-"2789","Social Science",2024-11-01,"University of Wyoming",7
-"2790","Social Science",2024-11-08,"University of Wyoming",7
-"2791","Social Science",2024-11-15,"University of Wyoming",7
-"2792","Social Science",2024-11-22,"University of Wyoming",6
-"2793","Social Science",2024-11-29,"University of Wyoming",6
-"2794","Social Science",2024-12-06,"University of Wyoming",6
-"2795","Social Science",2024-12-13,"University of Wyoming",5
-"2796","Social Science",2024-12-20,"University of Wyoming",5
-"2797","Social Science",2024-12-27,"University of Wyoming",4
-"2798","Social Science",2025-01-03,"University of Wyoming",2
-"2799","Social Science",2025-01-10,"University of Wyoming",2
-"2800","Social Science",2025-01-17,"University of Wyoming",2
-"2801","Social Science",2025-01-24,"University of Wyoming",3
-"2802","Social Science",2025-01-31,"University of Wyoming",3
-"2803","Social Science",2025-02-07,"University of Wyoming",3
-"2804","Social Science",2025-02-14,"University of Wyoming",2
-"2805","Social Science",2025-02-14,"Western Wyoming Community College",1
-"2806","Social Science",2025-02-21,"University of Wyoming",2
-"2807","Social Science",2025-02-21,"Western Wyoming Community College",1
-"2808","Social Science",2025-02-28,"University of Wyoming",2
-"2809","Social Science",2025-02-28,"Western Wyoming Community College",1
-"2810","Social Science",2025-03-07,"University of Wyoming",2
-"2811","Social Science",2025-03-07,"Western Wyoming Community College",1
-"2812","Social Science",2025-03-14,"University of Wyoming",2
-"2813","Social Science",2025-03-14,"Western Wyoming Community College",1
-"2814","Social Science",2025-03-21,"University of Wyoming",2
-"2815","Social Science",2025-03-21,"Western Wyoming Community College",1
-"2816","Social Science",2025-03-28,"University of Wyoming",2
-"2817","Social Science",2025-03-28,"Western Wyoming Community College",1
-"2818","Social Science",2025-04-04,"University of Wyoming",2
-"2819","Social Science",2025-04-04,"Western Wyoming Community College",1
-"2820","Social Science",2025-04-11,"University of Wyoming",1
-"2821","Social Science",2025-04-11,"Western Wyoming Community College",1
-"2822","Social Science",2025-04-18,"University of Wyoming",1
-"2823","Social Science",2025-04-18,"Western Wyoming Community College",1
-"2824","Social Science",2025-04-25,"University of Wyoming",1
-"2825","Social Science",2025-04-25,"Western Wyoming Community College",1
-"2826","Social Science",2025-05-02,"University of Wyoming",1
-"2827","Social Science",2025-05-02,"Western Wyoming Community College",1
-"2828","Social Science",2025-05-09,"University of Wyoming",1
-"2829","Social Science",2025-05-09,"Western Wyoming Community College",1
-"2830","Social Science",2025-05-16,"University of Wyoming",1
-"2831","Social Science",2025-05-16,"Western Wyoming Community College",1
-"2832","Social Science",2025-05-23,"Northwest College",2
-"2833","Social Science",2025-05-23,"University of Wyoming",1
-"2834","Social Science",2025-05-30,"Northwest College",2
-"2835","Social Science",2025-05-30,"University of Wyoming",1
-"2836","Social Science",2025-06-06,"Northwest College",2
-"2837","Social Science",2025-06-06,"University of Wyoming",1
-"2838","Social Science",2025-06-13,"University of Wyoming",1
-"2839","Social Science",2025-06-20,"University of Wyoming",1
-"2840","Social Science",2025-06-27,"University of Wyoming",1
-"2841","Social Science",2025-07-04,"University of Wyoming",1
-"2842","Social Science",2025-08-15,"University of Wyoming",1
-"2843","Social Science",2025-08-22,"University of Wyoming",1
-"2844","Social Science",2025-08-29,"University of Wyoming",1
-"2845","Social Science",2025-09-05,"University of Wyoming",1
-"2846","Social Science",2025-09-12,"University of Wyoming",1
-"2847","Social Science",2025-09-19,"University of Wyoming",2
-"2848","Social Science",2025-09-26,"University of Wyoming",2
-"2849","Social Science",2025-10-03,"University of Wyoming",2
-"2850","Social Science",2025-10-10,"University of Wyoming",2
-"2851","Social Science",2025-10-17,"Laramie County Community College",1
-"2852","Social Science",2025-10-17,"University of Wyoming",2
-"2853","Social Science",2025-10-24,"Laramie County Community College",1
-"2854","Social Science",2025-10-24,"University of Wyoming",2
-"2855","Social Science",2025-10-31,"Laramie County Community College",1
-"2856","Social Science",2025-10-31,"University of Wyoming",2
-"2857","Social Science",2025-11-07,"Laramie County Community College",1
-"2858","Social Science",2025-11-07,"University of Wyoming",2
-"2859","Social Science",2025-11-14,"Laramie County Community College",1
-"2860","Social Science",2025-11-14,"University of Wyoming",2
-"2861","Social Science",2025-11-21,"University of Wyoming",2
-"2862","Social Science",2025-11-28,"University of Wyoming",1
-"2863","Social Science",2025-12-05,"University of Wyoming",1
-"2864","Social Science",2025-12-12,"University of Wyoming",1
-"2865","Social Science",2025-12-19,"Northwest College",1
-"2866","Social Science",2025-12-19,"Western Wyoming Community College",1
-"2867","Social Science",2025-12-26,"Gillette College",1
-"2868","Social Science",2025-12-26,"Northwest College",1
-"2869","Social Science",2025-12-26,"Western Wyoming Community College",1
-"2870","Social Science",2026-01-02,"Gillette College",1
-"2871","Social Science",2026-01-02,"Northwest College",1
-"2872","Social Science",2026-01-02,"Western Wyoming Community College",1
-"2873","Social Science",2026-01-09,"Gillette College",1
-"2874","Social Science",2026-01-09,"Laramie County Community College",1
-"2875","Social Science",2026-01-09,"Northwest College",1
-"2876","Social Science",2026-01-09,"Western Wyoming Community College",1
-"2877","Social Science",2026-01-16,"Gillette College",1
-"2878","Social Science",2026-01-16,"Laramie County Community College",1
-"2879","Social Science",2026-01-16,"Western Wyoming Community College",1
-"2880","Social Science",2026-01-23,"Gillette College",1
-"2881","Social Science",2026-01-23,"Laramie County Community College",1
-"2882","Social Science",2026-01-23,"Western Wyoming Community College",1
-"2883","Social Science",2026-01-30,"Gillette College",1
-"2884","Social Science",2026-01-30,"Laramie County Community College",1
-"2885","Social Science",2026-01-30,"Western Wyoming Community College",1
-"2886","Social Science",2026-02-06,"Gillette College",1
-"2887","Social Science",2026-02-06,"Laramie County Community College",1
-"2888","Social Science",2026-02-06,"Western Wyoming Community College",1
-"2889","Social Science",2026-02-13,"Gillette College",1
-"2890","Social Science",2026-02-13,"Laramie County Community College",1
-"2891","Social Science",2026-02-13,"Western Wyoming Community College",1
-"2892","Social Science",2026-02-20,"Gillette College",1
-"2893","Social Science",2026-02-20,"Laramie County Community College",1
-"2894","Social Science",2026-02-20,"Western Wyoming Community College",1
-"2895","Social Science",2026-02-27,"Gillette College",1
-"2896","Social Science",2026-02-27,"Laramie County Community College",1
-"2897","Social Science",2026-02-27,"Western Wyoming Community College",1
-"2898","The Arts",2024-08-09,"Northwest College",1
-"2899","The Arts",2024-08-09,"Sheridan College",10
-"2900","The Arts",2024-08-16,"Northwest College",1
-"2901","The Arts",2024-08-16,"Sheridan College",10
-"2902","The Arts",2024-08-23,"Sheridan College",10
-"2903","The Arts",2024-08-30,"Sheridan College",10
-"2904","The Arts",2024-09-06,"Sheridan College",11
-"2905","The Arts",2024-09-13,"Sheridan College",12
-"2906","The Arts",2024-09-13,"University of Wyoming",2
-"2907","The Arts",2024-09-20,"Sheridan College",12
-"2908","The Arts",2024-09-20,"University of Wyoming",2
-"2909","The Arts",2024-09-27,"Sheridan College",14
-"2910","The Arts",2024-09-27,"University of Wyoming",2
-"2911","The Arts",2024-10-04,"Sheridan College",14
-"2912","The Arts",2024-10-04,"University of Wyoming",2
-"2913","The Arts",2024-10-11,"Sheridan College",14
-"2914","The Arts",2024-10-11,"University of Wyoming",3
-"2915","The Arts",2024-10-18,"Sheridan College",14
-"2916","The Arts",2024-10-18,"University of Wyoming",4
-"2917","The Arts",2024-10-25,"Sheridan College",15
-"2918","The Arts",2024-10-25,"University of Wyoming",4
-"2919","The Arts",2024-11-01,"Sheridan College",15
-"2920","The Arts",2024-11-01,"University of Wyoming",4
-"2921","The Arts",2024-11-08,"Sheridan College",15
-"2922","The Arts",2024-11-08,"University of Wyoming",4
-"2923","The Arts",2024-11-15,"Sheridan College",15
-"2924","The Arts",2024-11-15,"University of Wyoming",4
-"2925","The Arts",2024-11-22,"Sheridan College",15
-"2926","The Arts",2024-11-22,"University of Wyoming",4
-"2927","The Arts",2024-11-29,"Sheridan College",15
-"2928","The Arts",2024-11-29,"University of Wyoming",4
-"2929","The Arts",2024-12-06,"Sheridan College",15
-"2930","The Arts",2024-12-06,"University of Wyoming",4
-"2931","The Arts",2024-12-13,"Northwest College",1
-"2932","The Arts",2024-12-13,"Sheridan College",15
-"2933","The Arts",2024-12-13,"University of Wyoming",5
-"2934","The Arts",2024-12-20,"Northwest College",1
-"2935","The Arts",2024-12-20,"Sheridan College",16
-"2936","The Arts",2024-12-20,"University of Wyoming",5
-"2937","The Arts",2024-12-27,"Northwest College",1
-"2938","The Arts",2024-12-27,"Sheridan College",16
-"2939","The Arts",2024-12-27,"University of Wyoming",5
-"2940","The Arts",2025-01-03,"Northwest College",1
-"2941","The Arts",2025-01-03,"Sheridan College",16
-"2942","The Arts",2025-01-03,"University of Wyoming",4
-"2943","The Arts",2025-01-10,"Casper College",1
-"2944","The Arts",2025-01-10,"Northwest College",1
-"2945","The Arts",2025-01-10,"Sheridan College",16
-"2946","The Arts",2025-01-10,"University of Wyoming",3
-"2947","The Arts",2025-01-17,"Casper College",1
-"2948","The Arts",2025-01-17,"Northwest College",1
-"2949","The Arts",2025-01-17,"Sheridan College",16
-"2950","The Arts",2025-01-17,"University of Wyoming",3
-"2951","The Arts",2025-01-24,"Casper College",1
-"2952","The Arts",2025-01-24,"Northwest College",1
-"2953","The Arts",2025-01-24,"Sheridan College",16
-"2954","The Arts",2025-01-24,"University of Wyoming",3
-"2955","The Arts",2025-01-31,"Casper College",1
-"2956","The Arts",2025-01-31,"Northwest College",1
-"2957","The Arts",2025-01-31,"Sheridan College",16
-"2958","The Arts",2025-01-31,"University of Wyoming",3
-"2959","The Arts",2025-02-07,"Casper College",1
-"2960","The Arts",2025-02-07,"Northwest College",1
-"2961","The Arts",2025-02-07,"Sheridan College",16
-"2962","The Arts",2025-02-07,"University of Wyoming",3
-"2963","The Arts",2025-02-14,"Casper College",1
-"2964","The Arts",2025-02-14,"Northwest College",1
-"2965","The Arts",2025-02-14,"Sheridan College",16
-"2966","The Arts",2025-02-14,"University of Wyoming",3
-"2967","The Arts",2025-02-21,"Northwest College",1
-"2968","The Arts",2025-02-21,"Sheridan College",16
-"2969","The Arts",2025-02-21,"University of Wyoming",3
-"2970","The Arts",2025-02-28,"Northwest College",1
-"2971","The Arts",2025-02-28,"Sheridan College",16
-"2972","The Arts",2025-02-28,"University of Wyoming",3
-"2973","The Arts",2025-03-07,"Northwest College",1
-"2974","The Arts",2025-03-07,"Sheridan College",16
-"2975","The Arts",2025-03-07,"University of Wyoming",2
-"2976","The Arts",2025-03-14,"Northwest College",1
-"2977","The Arts",2025-03-14,"Sheridan College",16
-"2978","The Arts",2025-03-14,"University of Wyoming",2
-"2979","The Arts",2025-03-21,"Northwest College",1
-"2980","The Arts",2025-03-21,"Sheridan College",16
-"2981","The Arts",2025-03-21,"University of Wyoming",2
-"2982","The Arts",2025-03-28,"Northwest College",1
-"2983","The Arts",2025-03-28,"Sheridan College",16
-"2984","The Arts",2025-03-28,"University of Wyoming",2
-"2985","The Arts",2025-04-04,"Northwest College",1
-"2986","The Arts",2025-04-04,"Sheridan College",16
-"2987","The Arts",2025-04-04,"University of Wyoming",2
-"2988","The Arts",2025-04-11,"Laramie County Community College",1
-"2989","The Arts",2025-04-11,"Northwest College",1
-"2990","The Arts",2025-04-11,"Sheridan College",16
-"2991","The Arts",2025-04-11,"University of Wyoming",2
-"2992","The Arts",2025-04-18,"Laramie County Community College",1
-"2993","The Arts",2025-04-18,"Northwest College",1
-"2994","The Arts",2025-04-18,"Sheridan College",16
-"2995","The Arts",2025-04-18,"University of Wyoming",2
-"2996","The Arts",2025-04-25,"Laramie County Community College",1
-"2997","The Arts",2025-04-25,"Northwest College",1
-"2998","The Arts",2025-04-25,"Sheridan College",16
-"2999","The Arts",2025-04-25,"University of Wyoming",1
-"3000","The Arts",2025-05-02,"Northwest College",1
-"3001","The Arts",2025-05-02,"Sheridan College",16
-"3002","The Arts",2025-05-02,"University of Wyoming",1
-"3003","The Arts",2025-05-09,"Northwest College",1
-"3004","The Arts",2025-05-09,"Sheridan College",16
-"3005","The Arts",2025-05-16,"Northwest College",1
-"3006","The Arts",2025-05-16,"Sheridan College",16
-"3007","The Arts",2025-05-23,"Laramie County Community College",1
-"3008","The Arts",2025-05-23,"Northwest College",1
-"3009","The Arts",2025-05-23,"Sheridan College",16
-"3010","The Arts",2025-05-30,"Laramie County Community College",1
-"3011","The Arts",2025-05-30,"Northwest College",1
-"3012","The Arts",2025-05-30,"Sheridan College",17
-"3013","The Arts",2025-05-30,"University of Wyoming",1
-"3014","The Arts",2025-06-06,"Laramie County Community College",1
-"3015","The Arts",2025-06-06,"Northwest College",1
-"3016","The Arts",2025-06-06,"Sheridan College",17
-"3017","The Arts",2025-06-06,"University of Wyoming",1
-"3018","The Arts",2025-06-13,"Laramie County Community College",1
-"3019","The Arts",2025-06-13,"Sheridan College",17
-"3020","The Arts",2025-06-13,"University of Wyoming",1
-"3021","The Arts",2025-06-20,"Laramie County Community College",1
-"3022","The Arts",2025-06-20,"Sheridan College",17
-"3023","The Arts",2025-06-20,"University of Wyoming",2
-"3024","The Arts",2025-06-27,"Laramie County Community College",1
-"3025","The Arts",2025-06-27,"Sheridan College",17
-"3026","The Arts",2025-06-27,"University of Wyoming",2
-"3027","The Arts",2025-07-04,"Laramie County Community College",1
-"3028","The Arts",2025-07-04,"Sheridan College",17
-"3029","The Arts",2025-07-04,"University of Wyoming",2
-"3030","The Arts",2025-07-11,"Laramie County Community College",1
-"3031","The Arts",2025-07-11,"Sheridan College",17
-"3032","The Arts",2025-07-11,"University of Wyoming",2
-"3033","The Arts",2025-07-18,"Laramie County Community College",1
-"3034","The Arts",2025-07-18,"Sheridan College",17
-"3035","The Arts",2025-07-18,"University of Wyoming",2
-"3036","The Arts",2025-07-25,"Laramie County Community College",1
-"3037","The Arts",2025-07-25,"Sheridan College",17
-"3038","The Arts",2025-07-25,"University of Wyoming",2
-"3039","The Arts",2025-08-01,"Laramie County Community College",1
-"3040","The Arts",2025-08-01,"Sheridan College",17
-"3041","The Arts",2025-08-01,"University of Wyoming",2
-"3042","The Arts",2025-08-08,"Casper College",1
-"3043","The Arts",2025-08-08,"Laramie County Community College",1
-"3044","The Arts",2025-08-08,"Sheridan College",17
-"3045","The Arts",2025-08-08,"University of Wyoming",2
-"3046","The Arts",2025-08-15,"Laramie County Community College",1
-"3047","The Arts",2025-08-15,"Sheridan College",17
-"3048","The Arts",2025-08-15,"University of Wyoming",2
-"3049","The Arts",2025-08-22,"Laramie County Community College",1
-"3050","The Arts",2025-08-22,"Sheridan College",17
-"3051","The Arts",2025-08-22,"University of Wyoming",2
-"3052","The Arts",2025-08-29,"Casper College",1
-"3053","The Arts",2025-08-29,"Laramie County Community College",1
-"3054","The Arts",2025-08-29,"Sheridan College",17
-"3055","The Arts",2025-08-29,"University of Wyoming",2
-"3056","The Arts",2025-09-05,"Gillette College",1
-"3057","The Arts",2025-09-05,"Laramie County Community College",1
-"3058","The Arts",2025-09-05,"Sheridan College",17
-"3059","The Arts",2025-09-05,"University of Wyoming",2
-"3060","The Arts",2025-09-12,"Gillette College",1
-"3061","The Arts",2025-09-12,"Laramie County Community College",1
-"3062","The Arts",2025-09-12,"Sheridan College",17
-"3063","The Arts",2025-09-12,"University of Wyoming",2
-"3064","The Arts",2025-09-19,"Gillette College",1
-"3065","The Arts",2025-09-19,"Laramie County Community College",1
-"3066","The Arts",2025-09-19,"Sheridan College",17
-"3067","The Arts",2025-09-19,"University of Wyoming",2
-"3068","The Arts",2025-09-19,"Western Wyoming Community College",1
-"3069","The Arts",2025-09-26,"Gillette College",1
-"3070","The Arts",2025-09-26,"Laramie County Community College",1
-"3071","The Arts",2025-09-26,"Sheridan College",17
-"3072","The Arts",2025-09-26,"University of Wyoming",2
-"3073","The Arts",2025-09-26,"Western Wyoming Community College",1
-"3074","The Arts",2025-10-03,"Casper College",1
-"3075","The Arts",2025-10-03,"Gillette College",1
-"3076","The Arts",2025-10-03,"Laramie County Community College",1
-"3077","The Arts",2025-10-03,"Sheridan College",17
-"3078","The Arts",2025-10-03,"University of Wyoming",3
-"3079","The Arts",2025-10-03,"Western Wyoming Community College",1
-"3080","The Arts",2025-10-10,"Casper College",1
-"3081","The Arts",2025-10-10,"Gillette College",1
-"3082","The Arts",2025-10-10,"Laramie County Community College",1
-"3083","The Arts",2025-10-10,"Sheridan College",17
-"3084","The Arts",2025-10-10,"University of Wyoming",3
-"3085","The Arts",2025-10-10,"Western Wyoming Community College",1
-"3086","The Arts",2025-10-17,"Gillette College",1
-"3087","The Arts",2025-10-17,"Laramie County Community College",1
-"3088","The Arts",2025-10-17,"Sheridan College",17
-"3089","The Arts",2025-10-17,"University of Wyoming",3
-"3090","The Arts",2025-10-17,"Western Wyoming Community College",1
-"3091","The Arts",2025-10-24,"Gillette College",1
-"3092","The Arts",2025-10-24,"Laramie County Community College",1
-"3093","The Arts",2025-10-24,"Sheridan College",17
-"3094","The Arts",2025-10-24,"University of Wyoming",3
-"3095","The Arts",2025-10-24,"Western Wyoming Community College",1
-"3096","The Arts",2025-10-31,"Casper College",1
-"3097","The Arts",2025-10-31,"Gillette College",1
-"3098","The Arts",2025-10-31,"Laramie County Community College",1
-"3099","The Arts",2025-10-31,"Sheridan College",17
-"3100","The Arts",2025-10-31,"University of Wyoming",3
-"3101","The Arts",2025-10-31,"Western Wyoming Community College",1
-"3102","The Arts",2025-11-07,"Gillette College",1
-"3103","The Arts",2025-11-07,"Laramie County Community College",1
-"3104","The Arts",2025-11-07,"Sheridan College",17
-"3105","The Arts",2025-11-07,"University of Wyoming",3
-"3106","The Arts",2025-11-07,"Western Wyoming Community College",1
-"3107","The Arts",2025-11-14,"Gillette College",1
-"3108","The Arts",2025-11-14,"Laramie County Community College",1
-"3109","The Arts",2025-11-14,"Sheridan College",17
-"3110","The Arts",2025-11-14,"University of Wyoming",3
-"3111","The Arts",2025-11-14,"Western Wyoming Community College",1
-"3112","The Arts",2025-11-21,"Gillette College",1
-"3113","The Arts",2025-11-21,"Laramie County Community College",1
-"3114","The Arts",2025-11-21,"Sheridan College",17
-"3115","The Arts",2025-11-21,"University of Wyoming",2
-"3116","The Arts",2025-11-21,"Western Wyoming Community College",1
-"3117","The Arts",2025-11-28,"Gillette College",1
-"3118","The Arts",2025-11-28,"Laramie County Community College",1
-"3119","The Arts",2025-11-28,"Sheridan College",17
-"3120","The Arts",2025-11-28,"University of Wyoming",2
-"3121","The Arts",2025-11-28,"Western Wyoming Community College",1
-"3122","The Arts",2025-12-05,"Gillette College",1
-"3123","The Arts",2025-12-05,"Laramie County Community College",1
-"3124","The Arts",2025-12-05,"Sheridan College",17
-"3125","The Arts",2025-12-05,"University of Wyoming",2
-"3126","The Arts",2025-12-05,"Western Wyoming Community College",1
-"3127","The Arts",2025-12-12,"Laramie County Community College",1
-"3128","The Arts",2025-12-12,"Sheridan College",17
-"3129","The Arts",2025-12-12,"University of Wyoming",2
-"3130","The Arts",2025-12-12,"Western Wyoming Community College",1
-"3131","The Arts",2025-12-19,"Laramie County Community College",1
-"3132","The Arts",2025-12-19,"Northwest College",2
-"3133","The Arts",2025-12-19,"Sheridan College",17
-"3134","The Arts",2025-12-19,"University of Wyoming",2
-"3135","The Arts",2025-12-19,"Western Wyoming Community College",1
-"3136","The Arts",2025-12-26,"Laramie County Community College",1
-"3137","The Arts",2025-12-26,"Northwest College",2
-"3138","The Arts",2025-12-26,"Sheridan College",17
-"3139","The Arts",2025-12-26,"University of Wyoming",2
-"3140","The Arts",2025-12-26,"Western Wyoming Community College",1
-"3141","The Arts",2026-01-02,"Laramie County Community College",1
-"3142","The Arts",2026-01-02,"Northwest College",2
-"3143","The Arts",2026-01-02,"Sheridan College",17
-"3144","The Arts",2026-01-02,"University of Wyoming",2
-"3145","The Arts",2026-01-02,"Western Wyoming Community College",1
-"3146","The Arts",2026-01-09,"Laramie County Community College",1
-"3147","The Arts",2026-01-09,"Northwest College",2
-"3148","The Arts",2026-01-09,"Sheridan College",17
-"3149","The Arts",2026-01-09,"University of Wyoming",2
-"3150","The Arts",2026-01-09,"Western Wyoming Community College",1
-"3151","The Arts",2026-01-16,"Laramie County Community College",1
-"3152","The Arts",2026-01-16,"Sheridan College",17
-"3153","The Arts",2026-01-16,"University of Wyoming",2
-"3154","The Arts",2026-01-16,"Western Wyoming Community College",1
-"3155","The Arts",2026-01-23,"Laramie County Community College",1
-"3156","The Arts",2026-01-23,"Sheridan College",17
-"3157","The Arts",2026-01-23,"University of Wyoming",2
-"3158","The Arts",2026-01-23,"Western Wyoming Community College",1
-"3159","The Arts",2026-01-30,"Casper College",1
-"3160","The Arts",2026-01-30,"Laramie County Community College",1
-"3161","The Arts",2026-01-30,"Sheridan College",17
-"3162","The Arts",2026-01-30,"University of Wyoming",2
-"3163","The Arts",2026-01-30,"Western Wyoming Community College",1
-"3164","The Arts",2026-02-06,"Casper College",1
-"3165","The Arts",2026-02-06,"Laramie County Community College",1
-"3166","The Arts",2026-02-06,"Sheridan College",17
-"3167","The Arts",2026-02-06,"University of Wyoming",2
-"3168","The Arts",2026-02-06,"Western Wyoming Community College",2
-"3169","The Arts",2026-02-13,"Casper College",1
-"3170","The Arts",2026-02-13,"Laramie County Community College",1
-"3171","The Arts",2026-02-13,"Sheridan College",17
-"3172","The Arts",2026-02-13,"University of Wyoming",1
-"3173","The Arts",2026-02-13,"Western Wyoming Community College",2
-"3174","The Arts",2026-02-20,"Casper College",1
-"3175","The Arts",2026-02-20,"Laramie County Community College",1
-"3176","The Arts",2026-02-20,"Sheridan College",17
-"3177","The Arts",2026-02-20,"University of Wyoming",1
-"3178","The Arts",2026-02-20,"Western Wyoming Community College",2
-"3179","The Arts",2026-02-27,"Laramie County Community College",1
-"3180","The Arts",2026-02-27,"Sheridan College",17
-"3181","The Arts",2026-02-27,"University of Wyoming",1
-"3182","The Arts",2026-02-27,"Western Wyoming Community College",2
-"3183","The Arts",2026-08-03,"Sheridan College",17
-"3184","Uncategorized",2024-08-09,"Central Wyoming College",1
-"3185","Uncategorized",2024-08-09,"Laramie County Community College",2
-"3186","Uncategorized",2024-08-09,"University of Wyoming",5
-"3187","Uncategorized",2024-08-09,"Western Wyoming Community College",1
-"3188","Uncategorized",2024-08-16,"Laramie County Community College",1
-"3189","Uncategorized",2024-08-16,"University of Wyoming",5
-"3190","Uncategorized",2024-08-16,"Western Wyoming Community College",1
-"3191","Uncategorized",2024-08-23,"Casper College",1
-"3192","Uncategorized",2024-08-23,"Central Wyoming College",1
-"3193","Uncategorized",2024-08-23,"Laramie County Community College",1
-"3194","Uncategorized",2024-08-23,"University of Wyoming",5
-"3195","Uncategorized",2024-08-23,"Western Wyoming Community College",1
-"3196","Uncategorized",2024-08-30,"Casper College",1
-"3197","Uncategorized",2024-08-30,"Laramie County Community College",1
-"3198","Uncategorized",2024-08-30,"University of Wyoming",5
-"3199","Uncategorized",2024-08-30,"Western Wyoming Community College",1
-"3200","Uncategorized",2024-09-06,"Casper College",1
-"3201","Uncategorized",2024-09-06,"Central Wyoming College",1
-"3202","Uncategorized",2024-09-06,"Laramie County Community College",1
-"3203","Uncategorized",2024-09-06,"University of Wyoming",6
-"3204","Uncategorized",2024-09-06,"Western Wyoming Community College",1
-"3205","Uncategorized",2024-09-13,"Casper College",1
-"3206","Uncategorized",2024-09-13,"Central Wyoming College",1
-"3207","Uncategorized",2024-09-13,"Laramie County Community College",1
-"3208","Uncategorized",2024-09-13,"University of Wyoming",5
-"3209","Uncategorized",2024-09-13,"Western Wyoming Community College",1
-"3210","Uncategorized",2024-09-20,"Casper College",1
-"3211","Uncategorized",2024-09-20,"Central Wyoming College",1
-"3212","Uncategorized",2024-09-20,"Laramie County Community College",1
-"3213","Uncategorized",2024-09-20,"Sheridan College",1
-"3214","Uncategorized",2024-09-20,"University of Wyoming",5
-"3215","Uncategorized",2024-09-20,"Western Wyoming Community College",1
-"3216","Uncategorized",2024-09-27,"Casper College",1
-"3217","Uncategorized",2024-09-27,"Central Wyoming College",1
-"3218","Uncategorized",2024-09-27,"Laramie County Community College",1
-"3219","Uncategorized",2024-09-27,"Sheridan College",1
-"3220","Uncategorized",2024-09-27,"University of Wyoming",7
-"3221","Uncategorized",2024-09-27,"Western Wyoming Community College",1
-"3222","Uncategorized",2024-10-04,"Casper College",1
-"3223","Uncategorized",2024-10-04,"Central Wyoming College",1
-"3224","Uncategorized",2024-10-04,"Laramie County Community College",1
-"3225","Uncategorized",2024-10-04,"Sheridan College",1
-"3226","Uncategorized",2024-10-04,"University of Wyoming",7
-"3227","Uncategorized",2024-10-04,"Western Wyoming Community College",1
-"3228","Uncategorized",2024-10-11,"Casper College",1
-"3229","Uncategorized",2024-10-11,"Central Wyoming College",1
-"3230","Uncategorized",2024-10-11,"Laramie County Community College",1
-"3231","Uncategorized",2024-10-11,"Sheridan College",1
-"3232","Uncategorized",2024-10-11,"University of Wyoming",6
-"3233","Uncategorized",2024-10-11,"Western Wyoming Community College",1
-"3234","Uncategorized",2024-10-18,"Casper College",1
-"3235","Uncategorized",2024-10-18,"Laramie County Community College",1
-"3236","Uncategorized",2024-10-18,"Sheridan College",1
-"3237","Uncategorized",2024-10-18,"University of Wyoming",7
-"3238","Uncategorized",2024-10-18,"Western Wyoming Community College",1
-"3239","Uncategorized",2024-10-25,"Casper College",1
-"3240","Uncategorized",2024-10-25,"Laramie County Community College",1
-"3241","Uncategorized",2024-10-25,"Sheridan College",1
-"3242","Uncategorized",2024-10-25,"University of Wyoming",9
-"3243","Uncategorized",2024-10-25,"Western Wyoming Community College",1
-"3244","Uncategorized",2024-11-01,"Casper College",1
-"3245","Uncategorized",2024-11-01,"Central Wyoming College",1
-"3246","Uncategorized",2024-11-01,"Laramie County Community College",1
-"3247","Uncategorized",2024-11-01,"Sheridan College",1
-"3248","Uncategorized",2024-11-01,"University of Wyoming",11
-"3249","Uncategorized",2024-11-01,"Western Wyoming Community College",1
-"3250","Uncategorized",2024-11-08,"Casper College",1
-"3251","Uncategorized",2024-11-08,"Central Wyoming College",1
-"3252","Uncategorized",2024-11-08,"Laramie County Community College",1
-"3253","Uncategorized",2024-11-08,"Sheridan College",1
-"3254","Uncategorized",2024-11-08,"University of Wyoming",11
-"3255","Uncategorized",2024-11-08,"Western Wyoming Community College",1
-"3256","Uncategorized",2024-11-15,"Central Wyoming College",1
-"3257","Uncategorized",2024-11-15,"Laramie County Community College",1
-"3258","Uncategorized",2024-11-15,"Sheridan College",1
-"3259","Uncategorized",2024-11-15,"University of Wyoming",11
-"3260","Uncategorized",2024-11-15,"Western Wyoming Community College",1
-"3261","Uncategorized",2024-11-22,"Central Wyoming College",1
-"3262","Uncategorized",2024-11-22,"Laramie County Community College",1
-"3263","Uncategorized",2024-11-22,"Sheridan College",1
-"3264","Uncategorized",2024-11-22,"University of Wyoming",11
-"3265","Uncategorized",2024-11-22,"Western Wyoming Community College",1
-"3266","Uncategorized",2024-11-29,"Central Wyoming College",1
-"3267","Uncategorized",2024-11-29,"Laramie County Community College",1
-"3268","Uncategorized",2024-11-29,"Sheridan College",1
-"3269","Uncategorized",2024-11-29,"University of Wyoming",11
-"3270","Uncategorized",2024-11-29,"Western Wyoming Community College",1
-"3271","Uncategorized",2024-12-06,"Central Wyoming College",1
-"3272","Uncategorized",2024-12-06,"Laramie County Community College",1
-"3273","Uncategorized",2024-12-06,"Sheridan College",1
-"3274","Uncategorized",2024-12-06,"University of Wyoming",10
-"3275","Uncategorized",2024-12-06,"Western Wyoming Community College",1
-"3276","Uncategorized",2024-12-13,"Central Wyoming College",1
-"3277","Uncategorized",2024-12-13,"Gillette College",1
-"3278","Uncategorized",2024-12-13,"Laramie County Community College",1
-"3279","Uncategorized",2024-12-13,"Sheridan College",1
-"3280","Uncategorized",2024-12-13,"University of Wyoming",8
-"3281","Uncategorized",2024-12-13,"Western Wyoming Community College",1
-"3282","Uncategorized",2024-12-20,"Central Wyoming College",1
-"3283","Uncategorized",2024-12-20,"Gillette College",1
-"3284","Uncategorized",2024-12-20,"Laramie County Community College",1
-"3285","Uncategorized",2024-12-20,"Sheridan College",1
-"3286","Uncategorized",2024-12-20,"University of Wyoming",11
-"3287","Uncategorized",2024-12-20,"Western Wyoming Community College",1
-"3288","Uncategorized",2024-12-27,"Central Wyoming College",1
-"3289","Uncategorized",2024-12-27,"Gillette College",1
-"3290","Uncategorized",2024-12-27,"Laramie County Community College",1
-"3291","Uncategorized",2024-12-27,"Sheridan College",1
-"3292","Uncategorized",2024-12-27,"University of Wyoming",11
-"3293","Uncategorized",2024-12-27,"Western Wyoming Community College",1
-"3294","Uncategorized",2025-01-03,"Central Wyoming College",1
-"3295","Uncategorized",2025-01-03,"Gillette College",1
-"3296","Uncategorized",2025-01-03,"Laramie County Community College",1
-"3297","Uncategorized",2025-01-03,"Sheridan College",1
-"3298","Uncategorized",2025-01-03,"University of Wyoming",10
-"3299","Uncategorized",2025-01-03,"Western Wyoming Community College",1
-"3300","Uncategorized",2025-01-10,"Central Wyoming College",1
-"3301","Uncategorized",2025-01-10,"Gillette College",1
-"3302","Uncategorized",2025-01-10,"Laramie County Community College",1
-"3303","Uncategorized",2025-01-10,"Sheridan College",1
-"3304","Uncategorized",2025-01-10,"University of Wyoming",12
-"3305","Uncategorized",2025-01-10,"Western Wyoming Community College",1
-"3306","Uncategorized",2025-01-17,"Central Wyoming College",2
-"3307","Uncategorized",2025-01-17,"Gillette College",1
-"3308","Uncategorized",2025-01-17,"Laramie County Community College",1
-"3309","Uncategorized",2025-01-17,"Sheridan College",1
-"3310","Uncategorized",2025-01-17,"University of Wyoming",13
-"3311","Uncategorized",2025-01-17,"Western Wyoming Community College",1
-"3312","Uncategorized",2025-01-24,"Casper College",1
-"3313","Uncategorized",2025-01-24,"Central Wyoming College",2
-"3314","Uncategorized",2025-01-24,"Gillette College",1
-"3315","Uncategorized",2025-01-24,"Laramie County Community College",1
-"3316","Uncategorized",2025-01-24,"Sheridan College",1
-"3317","Uncategorized",2025-01-24,"University of Wyoming",11
-"3318","Uncategorized",2025-01-24,"Western Wyoming Community College",1
-"3319","Uncategorized",2025-01-31,"Casper College",1
-"3320","Uncategorized",2025-01-31,"Central Wyoming College",2
-"3321","Uncategorized",2025-01-31,"Gillette College",1
-"3322","Uncategorized",2025-01-31,"Laramie County Community College",1
-"3323","Uncategorized",2025-01-31,"Sheridan College",1
-"3324","Uncategorized",2025-01-31,"University of Wyoming",9
-"3325","Uncategorized",2025-01-31,"Western Wyoming Community College",1
-"3326","Uncategorized",2025-02-07,"Casper College",1
-"3327","Uncategorized",2025-02-07,"Central Wyoming College",2
-"3328","Uncategorized",2025-02-07,"Gillette College",1
-"3329","Uncategorized",2025-02-07,"Laramie County Community College",1
-"3330","Uncategorized",2025-02-07,"Sheridan College",1
-"3331","Uncategorized",2025-02-07,"University of Wyoming",9
-"3332","Uncategorized",2025-02-07,"Western Wyoming Community College",1
-"3333","Uncategorized",2025-02-14,"Casper College",2
-"3334","Uncategorized",2025-02-14,"Central Wyoming College",2
-"3335","Uncategorized",2025-02-14,"Gillette College",1
-"3336","Uncategorized",2025-02-14,"Laramie County Community College",1
-"3337","Uncategorized",2025-02-14,"Sheridan College",1
-"3338","Uncategorized",2025-02-14,"University of Wyoming",9
-"3339","Uncategorized",2025-02-14,"Western Wyoming Community College",1
-"3340","Uncategorized",2025-02-21,"Casper College",2
-"3341","Uncategorized",2025-02-21,"Central Wyoming College",1
-"3342","Uncategorized",2025-02-21,"Gillette College",1
-"3343","Uncategorized",2025-02-21,"Laramie County Community College",1
-"3344","Uncategorized",2025-02-21,"Sheridan College",1
-"3345","Uncategorized",2025-02-21,"University of Wyoming",8
-"3346","Uncategorized",2025-02-21,"Western Wyoming Community College",1
-"3347","Uncategorized",2025-02-28,"Casper College",2
-"3348","Uncategorized",2025-02-28,"Central Wyoming College",1
-"3349","Uncategorized",2025-02-28,"Gillette College",1
-"3350","Uncategorized",2025-02-28,"Laramie County Community College",1
-"3351","Uncategorized",2025-02-28,"Sheridan College",1
-"3352","Uncategorized",2025-02-28,"University of Wyoming",9
-"3353","Uncategorized",2025-02-28,"Western Wyoming Community College",1
-"3354","Uncategorized",2025-03-07,"Casper College",1
-"3355","Uncategorized",2025-03-07,"Central Wyoming College",1
-"3356","Uncategorized",2025-03-07,"Gillette College",1
-"3357","Uncategorized",2025-03-07,"Sheridan College",1
-"3358","Uncategorized",2025-03-07,"University of Wyoming",7
-"3359","Uncategorized",2025-03-07,"Western Wyoming Community College",1
-"3360","Uncategorized",2025-03-14,"Casper College",2
-"3361","Uncategorized",2025-03-14,"Central Wyoming College",1
-"3362","Uncategorized",2025-03-14,"Gillette College",1
-"3363","Uncategorized",2025-03-14,"Laramie County Community College",1
-"3364","Uncategorized",2025-03-14,"University of Wyoming",8
-"3365","Uncategorized",2025-03-14,"Western Wyoming Community College",1
-"3366","Uncategorized",2025-03-21,"Casper College",2
-"3367","Uncategorized",2025-03-21,"Central Wyoming College",1
-"3368","Uncategorized",2025-03-21,"Gillette College",1
-"3369","Uncategorized",2025-03-21,"University of Wyoming",14
-"3370","Uncategorized",2025-03-21,"Western Wyoming Community College",1
-"3371","Uncategorized",2025-03-28,"Casper College",2
-"3372","Uncategorized",2025-03-28,"Central Wyoming College",2
-"3373","Uncategorized",2025-03-28,"Gillette College",1
-"3374","Uncategorized",2025-03-28,"Laramie County Community College",1
-"3375","Uncategorized",2025-03-28,"University of Wyoming",16
-"3376","Uncategorized",2025-03-28,"Western Wyoming Community College",1
-"3377","Uncategorized",2025-04-04,"Casper College",1
-"3378","Uncategorized",2025-04-04,"Central Wyoming College",3
-"3379","Uncategorized",2025-04-04,"Gillette College",1
-"3380","Uncategorized",2025-04-04,"Laramie County Community College",2
-"3381","Uncategorized",2025-04-04,"University of Wyoming",17
-"3382","Uncategorized",2025-04-04,"Western Wyoming Community College",1
-"3383","Uncategorized",2025-04-11,"Casper College",1
-"3384","Uncategorized",2025-04-11,"Central Wyoming College",3
-"3385","Uncategorized",2025-04-11,"Gillette College",1
-"3386","Uncategorized",2025-04-11,"Laramie County Community College",3
-"3387","Uncategorized",2025-04-11,"University of Wyoming",17
-"3388","Uncategorized",2025-04-11,"Western Wyoming Community College",1
-"3389","Uncategorized",2025-04-18,"Casper College",1
-"3390","Uncategorized",2025-04-18,"Central Wyoming College",2
-"3391","Uncategorized",2025-04-18,"Gillette College",1
-"3392","Uncategorized",2025-04-18,"Laramie County Community College",3
-"3393","Uncategorized",2025-04-18,"University of Wyoming",17
-"3394","Uncategorized",2025-04-18,"Western Wyoming Community College",1
-"3395","Uncategorized",2025-04-25,"Casper College",1
-"3396","Uncategorized",2025-04-25,"Central Wyoming College",2
-"3397","Uncategorized",2025-04-25,"Gillette College",1
-"3398","Uncategorized",2025-04-25,"Laramie County Community College",3
-"3399","Uncategorized",2025-04-25,"University of Wyoming",16
-"3400","Uncategorized",2025-04-25,"Western Wyoming Community College",1
-"3401","Uncategorized",2025-05-02,"Central Wyoming College",1
-"3402","Uncategorized",2025-05-02,"Gillette College",2
-"3403","Uncategorized",2025-05-02,"Laramie County Community College",3
-"3404","Uncategorized",2025-05-02,"University of Wyoming",15
-"3405","Uncategorized",2025-05-02,"Western Wyoming Community College",1
-"3406","Uncategorized",2025-05-09,"Central Wyoming College",1
-"3407","Uncategorized",2025-05-09,"Gillette College",2
-"3408","Uncategorized",2025-05-09,"Laramie County Community College",3
-"3409","Uncategorized",2025-05-09,"University of Wyoming",12
-"3410","Uncategorized",2025-05-09,"Western Wyoming Community College",1
-"3411","Uncategorized",2025-05-16,"Central Wyoming College",1
-"3412","Uncategorized",2025-05-16,"Gillette College",2
-"3413","Uncategorized",2025-05-16,"Laramie County Community College",3
-"3414","Uncategorized",2025-05-16,"University of Wyoming",13
-"3415","Uncategorized",2025-05-16,"Western Wyoming Community College",1
-"3416","Uncategorized",2025-05-23,"Central Wyoming College",1
-"3417","Uncategorized",2025-05-23,"Laramie County Community College",3
-"3418","Uncategorized",2025-05-23,"University of Wyoming",14
-"3419","Uncategorized",2025-05-23,"Western Wyoming Community College",1
-"3420","Uncategorized",2025-05-30,"Central Wyoming College",2
-"3421","Uncategorized",2025-05-30,"Laramie County Community College",5
-"3422","Uncategorized",2025-05-30,"University of Wyoming",12
-"3423","Uncategorized",2025-05-30,"Western Wyoming Community College",1
-"3424","Uncategorized",2025-06-06,"Central Wyoming College",2
-"3425","Uncategorized",2025-06-06,"Laramie County Community College",5
-"3426","Uncategorized",2025-06-06,"Sheridan College",1
-"3427","Uncategorized",2025-06-06,"University of Wyoming",14
-"3428","Uncategorized",2025-06-06,"Western Wyoming Community College",1
-"3429","Uncategorized",2025-06-13,"Central Wyoming College",2
-"3430","Uncategorized",2025-06-13,"Laramie County Community College",5
-"3431","Uncategorized",2025-06-13,"Sheridan College",1
-"3432","Uncategorized",2025-06-13,"University of Wyoming",14
-"3433","Uncategorized",2025-06-13,"Western Wyoming Community College",1
-"3434","Uncategorized",2025-06-20,"Central Wyoming College",2
-"3435","Uncategorized",2025-06-20,"Laramie County Community College",4
-"3436","Uncategorized",2025-06-20,"Sheridan College",1
-"3437","Uncategorized",2025-06-20,"University of Wyoming",14
-"3438","Uncategorized",2025-06-20,"Western Wyoming Community College",1
-"3439","Uncategorized",2025-06-27,"Central Wyoming College",2
-"3440","Uncategorized",2025-06-27,"Laramie County Community College",2
-"3441","Uncategorized",2025-06-27,"Sheridan College",1
-"3442","Uncategorized",2025-06-27,"University of Wyoming",13
-"3443","Uncategorized",2025-06-27,"Western Wyoming Community College",1
-"3444","Uncategorized",2025-07-04,"Central Wyoming College",2
-"3445","Uncategorized",2025-07-04,"Laramie County Community College",2
-"3446","Uncategorized",2025-07-04,"Sheridan College",1
-"3447","Uncategorized",2025-07-04,"University of Wyoming",13
-"3448","Uncategorized",2025-07-04,"Western Wyoming Community College",1
-"3449","Uncategorized",2025-07-11,"Central Wyoming College",1
-"3450","Uncategorized",2025-07-11,"Laramie County Community College",1
-"3451","Uncategorized",2025-07-11,"University of Wyoming",10
-"3452","Uncategorized",2025-07-11,"Western Wyoming Community College",1
-"3453","Uncategorized",2025-07-18,"Central Wyoming College",1
-"3454","Uncategorized",2025-07-18,"Laramie County Community College",1
-"3455","Uncategorized",2025-07-18,"University of Wyoming",7
-"3456","Uncategorized",2025-07-18,"Western Wyoming Community College",1
-"3457","Uncategorized",2025-07-25,"Central Wyoming College",2
-"3458","Uncategorized",2025-07-25,"Laramie County Community College",2
-"3459","Uncategorized",2025-07-25,"University of Wyoming",8
-"3460","Uncategorized",2025-07-25,"Western Wyoming Community College",1
-"3461","Uncategorized",2025-08-01,"Central Wyoming College",2
-"3462","Uncategorized",2025-08-01,"Laramie County Community College",2
-"3463","Uncategorized",2025-08-01,"University of Wyoming",8
-"3464","Uncategorized",2025-08-01,"Western Wyoming Community College",1
-"3465","Uncategorized",2025-08-08,"Central Wyoming College",2
-"3466","Uncategorized",2025-08-08,"Laramie County Community College",2
-"3467","Uncategorized",2025-08-08,"University of Wyoming",8
-"3468","Uncategorized",2025-08-08,"Western Wyoming Community College",1
-"3469","Uncategorized",2025-08-15,"Central Wyoming College",2
-"3470","Uncategorized",2025-08-15,"Laramie County Community College",1
-"3471","Uncategorized",2025-08-15,"University of Wyoming",8
-"3472","Uncategorized",2025-08-15,"Western Wyoming Community College",1
-"3473","Uncategorized",2025-08-22,"Central Wyoming College",1
-"3474","Uncategorized",2025-08-22,"Laramie County Community College",1
-"3475","Uncategorized",2025-08-22,"University of Wyoming",10
-"3476","Uncategorized",2025-08-22,"Western Wyoming Community College",1
-"3477","Uncategorized",2025-08-29,"Casper College",1
-"3478","Uncategorized",2025-08-29,"Central Wyoming College",2
-"3479","Uncategorized",2025-08-29,"Laramie County Community College",2
-"3480","Uncategorized",2025-08-29,"University of Wyoming",10
-"3481","Uncategorized",2025-08-29,"Western Wyoming Community College",1
-"3482","Uncategorized",2025-09-05,"Casper College",1
-"3483","Uncategorized",2025-09-05,"Central Wyoming College",2
-"3484","Uncategorized",2025-09-05,"Laramie County Community College",2
-"3485","Uncategorized",2025-09-05,"University of Wyoming",9
-"3486","Uncategorized",2025-09-05,"Western Wyoming Community College",1
-"3487","Uncategorized",2025-09-12,"Central Wyoming College",2
-"3488","Uncategorized",2025-09-12,"Laramie County Community College",2
-"3489","Uncategorized",2025-09-12,"University of Wyoming",8
-"3490","Uncategorized",2025-09-12,"Western Wyoming Community College",1
-"3491","Uncategorized",2025-09-19,"Central Wyoming College",3
-"3492","Uncategorized",2025-09-19,"Laramie County Community College",2
-"3493","Uncategorized",2025-09-19,"University of Wyoming",10
-"3494","Uncategorized",2025-09-19,"Western Wyoming Community College",2
-"3495","Uncategorized",2025-09-26,"Central Wyoming College",3
-"3496","Uncategorized",2025-09-26,"Laramie County Community College",2
-"3497","Uncategorized",2025-09-26,"University of Wyoming",9
-"3498","Uncategorized",2025-09-26,"Western Wyoming Community College",2
-"3499","Uncategorized",2025-10-03,"Central Wyoming College",3
-"3500","Uncategorized",2025-10-03,"Laramie County Community College",3
-"3501","Uncategorized",2025-10-03,"University of Wyoming",8
-"3502","Uncategorized",2025-10-03,"Western Wyoming Community College",2
-"3503","Uncategorized",2025-10-10,"Central Wyoming College",3
-"3504","Uncategorized",2025-10-10,"Laramie County Community College",3
-"3505","Uncategorized",2025-10-10,"University of Wyoming",8
-"3506","Uncategorized",2025-10-10,"Western Wyoming Community College",2
-"3507","Uncategorized",2025-10-17,"Central Wyoming College",3
-"3508","Uncategorized",2025-10-17,"Laramie County Community College",3
-"3509","Uncategorized",2025-10-17,"University of Wyoming",10
-"3510","Uncategorized",2025-10-17,"Western Wyoming Community College",2
-"3511","Uncategorized",2025-10-24,"Central Wyoming College",3
-"3512","Uncategorized",2025-10-24,"Laramie County Community College",3
-"3513","Uncategorized",2025-10-24,"University of Wyoming",9
-"3514","Uncategorized",2025-10-24,"Western Wyoming Community College",2
-"3515","Uncategorized",2025-10-31,"Central Wyoming College",3
-"3516","Uncategorized",2025-10-31,"Eastern Wyoming Community College",1
-"3517","Uncategorized",2025-10-31,"Laramie County Community College",4
-"3518","Uncategorized",2025-10-31,"University of Wyoming",7
-"3519","Uncategorized",2025-10-31,"Western Wyoming Community College",2
-"3520","Uncategorized",2025-11-07,"Central Wyoming College",3
-"3521","Uncategorized",2025-11-07,"Eastern Wyoming Community College",1
-"3522","Uncategorized",2025-11-07,"Laramie County Community College",4
-"3523","Uncategorized",2025-11-07,"University of Wyoming",9
-"3524","Uncategorized",2025-11-07,"Western Wyoming Community College",2
-"3525","Uncategorized",2025-11-14,"Central Wyoming College",2
-"3526","Uncategorized",2025-11-14,"Eastern Wyoming Community College",1
-"3527","Uncategorized",2025-11-14,"Laramie County Community College",4
-"3528","Uncategorized",2025-11-14,"University of Wyoming",8
-"3529","Uncategorized",2025-11-14,"Western Wyoming Community College",2
-"3530","Uncategorized",2025-11-21,"Central Wyoming College",2
-"3531","Uncategorized",2025-11-21,"Eastern Wyoming Community College",1
-"3532","Uncategorized",2025-11-21,"Laramie County Community College",4
-"3533","Uncategorized",2025-11-21,"University of Wyoming",10
-"3534","Uncategorized",2025-11-21,"Western Wyoming Community College",2
-"3535","Uncategorized",2025-11-28,"Central Wyoming College",2
-"3536","Uncategorized",2025-11-28,"Eastern Wyoming Community College",1
-"3537","Uncategorized",2025-11-28,"Laramie County Community College",3
-"3538","Uncategorized",2025-11-28,"University of Wyoming",10
-"3539","Uncategorized",2025-11-28,"Western Wyoming Community College",2
-"3540","Uncategorized",2025-12-05,"Central Wyoming College",2
-"3541","Uncategorized",2025-12-05,"Eastern Wyoming Community College",1
-"3542","Uncategorized",2025-12-05,"Laramie County Community College",3
-"3543","Uncategorized",2025-12-05,"University of Wyoming",9
-"3544","Uncategorized",2025-12-05,"Western Wyoming Community College",2
-"3545","Uncategorized",2025-12-12,"Central Wyoming College",2
-"3546","Uncategorized",2025-12-12,"Eastern Wyoming Community College",1
-"3547","Uncategorized",2025-12-12,"Laramie County Community College",3
-"3548","Uncategorized",2025-12-12,"University of Wyoming",8
-"3549","Uncategorized",2025-12-12,"Western Wyoming Community College",2
-"3550","Uncategorized",2025-12-19,"Casper College",1
-"3551","Uncategorized",2025-12-19,"Central Wyoming College",2
-"3552","Uncategorized",2025-12-19,"Eastern Wyoming Community College",1
-"3553","Uncategorized",2025-12-19,"Laramie County Community College",3
-"3554","Uncategorized",2025-12-19,"University of Wyoming",6
-"3555","Uncategorized",2025-12-19,"Western Wyoming Community College",2
-"3556","Uncategorized",2025-12-26,"Casper College",1
-"3557","Uncategorized",2025-12-26,"Central Wyoming College",2
-"3558","Uncategorized",2025-12-26,"Eastern Wyoming Community College",1
-"3559","Uncategorized",2025-12-26,"Laramie County Community College",3
-"3560","Uncategorized",2025-12-26,"University of Wyoming",6
-"3561","Uncategorized",2025-12-26,"Western Wyoming Community College",2
-"3562","Uncategorized",2026-01-02,"Casper College",1
-"3563","Uncategorized",2026-01-02,"Central Wyoming College",2
-"3564","Uncategorized",2026-01-02,"Eastern Wyoming Community College",1
-"3565","Uncategorized",2026-01-02,"Laramie County Community College",3
-"3566","Uncategorized",2026-01-02,"University of Wyoming",6
-"3567","Uncategorized",2026-01-02,"Western Wyoming Community College",2
-"3568","Uncategorized",2026-01-09,"Casper College",1
-"3569","Uncategorized",2026-01-09,"Central Wyoming College",2
-"3570","Uncategorized",2026-01-09,"Eastern Wyoming Community College",1
-"3571","Uncategorized",2026-01-09,"Laramie County Community College",4
-"3572","Uncategorized",2026-01-09,"University of Wyoming",7
-"3573","Uncategorized",2026-01-09,"Western Wyoming Community College",3
-"3574","Uncategorized",2026-01-16,"Casper College",1
-"3575","Uncategorized",2026-01-16,"Central Wyoming College",2
-"3576","Uncategorized",2026-01-16,"Eastern Wyoming Community College",1
-"3577","Uncategorized",2026-01-16,"Laramie County Community College",2
-"3578","Uncategorized",2026-01-16,"University of Wyoming",8
-"3579","Uncategorized",2026-01-16,"Western Wyoming Community College",3
-"3580","Uncategorized",2026-01-23,"Casper College",1
-"3581","Uncategorized",2026-01-23,"Central Wyoming College",2
-"3582","Uncategorized",2026-01-23,"Eastern Wyoming Community College",1
-"3583","Uncategorized",2026-01-23,"Laramie County Community College",2
-"3584","Uncategorized",2026-01-23,"University of Wyoming",8
-"3585","Uncategorized",2026-01-23,"Western Wyoming Community College",3
-"3586","Uncategorized",2026-01-30,"Casper College",1
-"3587","Uncategorized",2026-01-30,"Central Wyoming College",2
-"3588","Uncategorized",2026-01-30,"Eastern Wyoming Community College",1
-"3589","Uncategorized",2026-01-30,"Laramie County Community College",2
-"3590","Uncategorized",2026-01-30,"University of Wyoming",9
-"3591","Uncategorized",2026-01-30,"Western Wyoming Community College",3
-"3592","Uncategorized",2026-02-06,"Casper College",1
-"3593","Uncategorized",2026-02-06,"Eastern Wyoming Community College",1
-"3594","Uncategorized",2026-02-06,"Laramie County Community College",2
-"3595","Uncategorized",2026-02-06,"University of Wyoming",10
-"3596","Uncategorized",2026-02-06,"Western Wyoming Community College",3
-"3597","Uncategorized",2026-02-13,"Casper College",1
-"3598","Uncategorized",2026-02-13,"Eastern Wyoming Community College",1
-"3599","Uncategorized",2026-02-13,"Laramie County Community College",2
-"3600","Uncategorized",2026-02-13,"University of Wyoming",14
-"3601","Uncategorized",2026-02-13,"Western Wyoming Community College",3
-"3602","Uncategorized",2026-02-20,"Casper College",2
-"3603","Uncategorized",2026-02-20,"Eastern Wyoming Community College",1
-"3604","Uncategorized",2026-02-20,"Laramie County Community College",2
-"3605","Uncategorized",2026-02-20,"University of Wyoming",15
-"3606","Uncategorized",2026-02-20,"Western Wyoming Community College",3
-"3607","Uncategorized",2026-02-27,"Casper College",3
-"3608","Uncategorized",2026-02-27,"Eastern Wyoming Community College",1
-"3609","Uncategorized",2026-02-27,"Laramie County Community College",2
-"3610","Uncategorized",2026-02-27,"University of Wyoming",15
-"3611","Uncategorized",2026-02-27,"Western Wyoming Community College",2
-"3612","Uncategorized",2026-08-03,"Central Wyoming College",1
-"3613","Uncategorized",2026-08-03,"Gillette College",1
+"2125","Humanities",2026-08-03,"University of Wyoming",9
+"2126","Legal",2025-02-21,"University of Wyoming",2
+"2127","Legal",2025-02-28,"University of Wyoming",2
+"2128","Legal",2025-03-07,"University of Wyoming",2
+"2129","Legal",2025-03-14,"University of Wyoming",2
+"2130","Legal",2025-03-21,"University of Wyoming",1
+"2131","Legal",2025-03-28,"University of Wyoming",1
+"2132","Legal",2025-04-04,"University of Wyoming",1
+"2133","Legal",2025-04-11,"University of Wyoming",1
+"2134","Legal",2025-04-18,"University of Wyoming",1
+"2135","Legal",2025-04-25,"University of Wyoming",1
+"2136","Legal",2025-05-02,"University of Wyoming",1
+"2137","Legal",2025-05-09,"University of Wyoming",1
+"2138","Legal",2025-05-16,"University of Wyoming",1
+"2139","Legal",2025-05-23,"University of Wyoming",2
+"2140","Legal",2025-05-30,"University of Wyoming",2
+"2141","Legal",2025-06-06,"University of Wyoming",2
+"2142","Legal",2025-06-13,"University of Wyoming",2
+"2143","Legal",2025-06-20,"University of Wyoming",2
+"2144","Legal",2025-06-27,"University of Wyoming",2
+"2145","Legal",2025-07-04,"University of Wyoming",2
+"2146","Legal",2025-07-11,"University of Wyoming",2
+"2147","Legal",2025-07-18,"University of Wyoming",1
+"2148","Legal",2025-07-25,"University of Wyoming",1
+"2149","Legal",2025-08-01,"University of Wyoming",1
+"2150","Legal",2025-08-08,"University of Wyoming",1
+"2151","Legal",2025-08-29,"University of Wyoming",1
+"2152","Legal",2025-09-05,"University of Wyoming",1
+"2153","Legal",2025-09-12,"University of Wyoming",3
+"2154","Legal",2025-09-19,"University of Wyoming",4
+"2155","Legal",2025-09-26,"University of Wyoming",4
+"2156","Legal",2025-10-03,"University of Wyoming",5
+"2157","Legal",2025-10-10,"University of Wyoming",5
+"2158","Legal",2025-10-17,"University of Wyoming",5
+"2159","Legal",2025-10-24,"University of Wyoming",3
+"2160","Legal",2025-10-31,"University of Wyoming",2
+"2161","Legal",2025-11-07,"University of Wyoming",2
+"2162","Legal",2025-11-14,"University of Wyoming",2
+"2163","Legal",2025-11-21,"University of Wyoming",2
+"2164","Legal",2025-11-28,"University of Wyoming",2
+"2165","Legal",2025-12-05,"University of Wyoming",2
+"2166","Legal",2025-12-12,"University of Wyoming",2
+"2167","Legal",2025-12-19,"University of Wyoming",1
+"2168","Legal",2025-12-26,"University of Wyoming",1
+"2169","Legal",2026-01-02,"University of Wyoming",1
+"2170","Legal",2026-01-09,"University of Wyoming",1
+"2171","Legal",2026-01-16,"University of Wyoming",1
+"2172","Legal",2026-01-23,"University of Wyoming",1
+"2173","Legal",2026-01-30,"University of Wyoming",1
+"2174","Legal",2026-02-06,"University of Wyoming",1
+"2175","Legal",2026-02-13,"University of Wyoming",1
+"2176","Legal",2026-02-20,"University of Wyoming",1
+"2177","Legal",2026-02-27,"University of Wyoming",1
+"2178","Library",2024-08-09,"University of Wyoming",2
+"2179","Library",2024-08-16,"University of Wyoming",2
+"2180","Library",2024-08-23,"University of Wyoming",2
+"2181","Library",2024-08-30,"University of Wyoming",2
+"2182","Library",2024-09-06,"University of Wyoming",2
+"2183","Library",2024-09-13,"University of Wyoming",2
+"2184","Library",2024-09-20,"University of Wyoming",2
+"2185","Library",2024-09-27,"University of Wyoming",2
+"2186","Library",2024-10-04,"University of Wyoming",2
+"2187","Library",2024-10-11,"University of Wyoming",2
+"2188","Library",2024-10-18,"University of Wyoming",3
+"2189","Library",2024-10-25,"University of Wyoming",3
+"2190","Library",2024-11-01,"University of Wyoming",3
+"2191","Library",2024-11-08,"University of Wyoming",3
+"2192","Library",2024-11-15,"University of Wyoming",1
+"2193","Library",2024-11-22,"University of Wyoming",1
+"2194","Library",2024-11-29,"University of Wyoming",1
+"2195","Library",2024-12-06,"University of Wyoming",1
+"2196","Library",2024-12-13,"University of Wyoming",1
+"2197","Library",2024-12-20,"University of Wyoming",1
+"2198","Library",2024-12-27,"University of Wyoming",1
+"2199","Library",2025-01-03,"University of Wyoming",1
+"2200","Library",2025-01-10,"University of Wyoming",1
+"2201","Library",2025-01-17,"University of Wyoming",1
+"2202","Library",2025-01-24,"University of Wyoming",1
+"2203","Library",2025-01-31,"University of Wyoming",2
+"2204","Library",2025-02-07,"University of Wyoming",2
+"2205","Library",2025-02-14,"University of Wyoming",2
+"2206","Library",2025-02-21,"University of Wyoming",2
+"2207","Library",2025-02-28,"University of Wyoming",2
+"2208","Library",2025-03-07,"University of Wyoming",2
+"2209","Library",2025-03-14,"University of Wyoming",2
+"2210","Library",2025-03-21,"University of Wyoming",2
+"2211","Library",2025-03-28,"University of Wyoming",2
+"2212","Library",2025-04-04,"University of Wyoming",1
+"2213","Library",2025-04-11,"University of Wyoming",1
+"2214","Library",2025-04-18,"University of Wyoming",2
+"2215","Library",2025-04-25,"University of Wyoming",2
+"2216","Library",2025-05-02,"University of Wyoming",2
+"2217","Library",2025-05-09,"University of Wyoming",2
+"2218","Library",2025-05-16,"University of Wyoming",2
+"2219","Library",2025-05-23,"University of Wyoming",2
+"2220","Library",2025-05-30,"University of Wyoming",1
+"2221","Library",2025-06-06,"University of Wyoming",2
+"2222","Library",2025-06-13,"Central Wyoming College",1
+"2223","Library",2025-06-13,"University of Wyoming",2
+"2224","Library",2025-06-20,"Central Wyoming College",1
+"2225","Library",2025-06-20,"Gillette College",1
+"2226","Library",2025-06-20,"University of Wyoming",2
+"2227","Library",2025-06-27,"Central Wyoming College",1
+"2228","Library",2025-06-27,"Gillette College",1
+"2229","Library",2025-06-27,"University of Wyoming",3
+"2230","Library",2025-07-04,"Central Wyoming College",1
+"2231","Library",2025-07-04,"Gillette College",1
+"2232","Library",2025-07-04,"University of Wyoming",3
+"2233","Library",2025-07-11,"Central Wyoming College",1
+"2234","Library",2025-07-11,"Gillette College",1
+"2235","Library",2025-07-11,"University of Wyoming",3
+"2236","Library",2025-07-18,"Central Wyoming College",1
+"2237","Library",2025-07-18,"Gillette College",1
+"2238","Library",2025-07-18,"University of Wyoming",3
+"2239","Library",2025-07-25,"Central Wyoming College",1
+"2240","Library",2025-07-25,"Gillette College",1
+"2241","Library",2025-07-25,"University of Wyoming",3
+"2242","Library",2025-08-01,"Central Wyoming College",1
+"2243","Library",2025-08-01,"Gillette College",1
+"2244","Library",2025-08-01,"Laramie County Community College",1
+"2245","Library",2025-08-01,"University of Wyoming",2
+"2246","Library",2025-08-08,"Central Wyoming College",1
+"2247","Library",2025-08-08,"Gillette College",1
+"2248","Library",2025-08-08,"Laramie County Community College",1
+"2249","Library",2025-08-08,"University of Wyoming",4
+"2250","Library",2025-08-15,"Central Wyoming College",1
+"2251","Library",2025-08-15,"Gillette College",1
+"2252","Library",2025-08-15,"Laramie County Community College",1
+"2253","Library",2025-08-15,"University of Wyoming",4
+"2254","Library",2025-08-22,"Central Wyoming College",1
+"2255","Library",2025-08-22,"Gillette College",1
+"2256","Library",2025-08-22,"Laramie County Community College",1
+"2257","Library",2025-08-22,"University of Wyoming",4
+"2258","Library",2025-08-29,"Central Wyoming College",1
+"2259","Library",2025-08-29,"Gillette College",1
+"2260","Library",2025-08-29,"Laramie County Community College",1
+"2261","Library",2025-08-29,"University of Wyoming",4
+"2262","Library",2025-09-05,"Central Wyoming College",1
+"2263","Library",2025-09-05,"Gillette College",1
+"2264","Library",2025-09-05,"Laramie County Community College",1
+"2265","Library",2025-09-05,"University of Wyoming",4
+"2266","Library",2025-09-12,"Central Wyoming College",1
+"2267","Library",2025-09-12,"Gillette College",1
+"2268","Library",2025-09-12,"Laramie County Community College",1
+"2269","Library",2025-09-12,"University of Wyoming",4
+"2270","Library",2025-09-19,"Central Wyoming College",1
+"2271","Library",2025-09-19,"University of Wyoming",4
+"2272","Library",2025-09-26,"Central Wyoming College",1
+"2273","Library",2025-09-26,"University of Wyoming",3
+"2274","Library",2025-10-03,"Central Wyoming College",1
+"2275","Library",2025-10-03,"University of Wyoming",3
+"2276","Library",2025-10-10,"University of Wyoming",3
+"2277","Library",2025-10-17,"University of Wyoming",3
+"2278","Library",2025-10-24,"University of Wyoming",2
+"2279","Library",2025-10-31,"University of Wyoming",2
+"2280","Library",2025-11-07,"University of Wyoming",1
+"2281","Library",2025-12-12,"Central Wyoming College",1
+"2282","Library",2025-12-19,"Central Wyoming College",1
+"2283","Library",2025-12-26,"Central Wyoming College",1
+"2284","Library",2026-01-02,"Central Wyoming College",1
+"2285","Library",2026-01-09,"Central Wyoming College",1
+"2286","Library",2026-01-16,"Central Wyoming College",1
+"2287","Library",2026-01-23,"Central Wyoming College",1
+"2288","Library",2026-01-30,"Central Wyoming College",1
+"2289","Library",2026-02-06,"Central Wyoming College",1
+"2290","Library",2026-02-13,"Central Wyoming College",1
+"2291","Library",2026-02-20,"Central Wyoming College",1
+"2292","Library",2026-02-27,"Central Wyoming College",1
+"2293","Math",2024-08-09,"Sheridan College",1
+"2294","Math",2024-08-16,"Sheridan College",1
+"2295","Math",2024-08-23,"Sheridan College",1
+"2296","Math",2024-08-30,"Sheridan College",1
+"2297","Math",2024-09-06,"Sheridan College",1
+"2298","Math",2024-09-13,"Sheridan College",1
+"2299","Math",2024-09-20,"Sheridan College",1
+"2300","Math",2024-09-27,"Sheridan College",1
+"2301","Math",2024-10-04,"Sheridan College",1
+"2302","Math",2024-10-11,"Sheridan College",1
+"2303","Math",2024-10-11,"University of Wyoming",2
+"2304","Math",2024-10-18,"Sheridan College",1
+"2305","Math",2024-10-18,"University of Wyoming",2
+"2306","Math",2024-10-25,"Sheridan College",1
+"2307","Math",2024-10-25,"University of Wyoming",3
+"2308","Math",2024-11-01,"Sheridan College",1
+"2309","Math",2024-11-01,"University of Wyoming",3
+"2310","Math",2024-11-08,"Sheridan College",1
+"2311","Math",2024-11-08,"University of Wyoming",3
+"2312","Math",2024-11-15,"Sheridan College",1
+"2313","Math",2024-11-15,"University of Wyoming",3
+"2314","Math",2024-11-22,"Laramie County Community College",1
+"2315","Math",2024-11-22,"Sheridan College",1
+"2316","Math",2024-11-22,"University of Wyoming",3
+"2317","Math",2024-11-29,"Laramie County Community College",1
+"2318","Math",2024-11-29,"Sheridan College",1
+"2319","Math",2024-11-29,"University of Wyoming",3
+"2320","Math",2024-12-06,"Laramie County Community College",1
+"2321","Math",2024-12-06,"Sheridan College",1
+"2322","Math",2024-12-06,"University of Wyoming",3
+"2323","Math",2024-12-13,"Laramie County Community College",1
+"2324","Math",2024-12-13,"Sheridan College",1
+"2325","Math",2024-12-13,"University of Wyoming",3
+"2326","Math",2024-12-20,"Laramie County Community College",1
+"2327","Math",2024-12-20,"Sheridan College",1
+"2328","Math",2024-12-20,"University of Wyoming",3
+"2329","Math",2024-12-27,"Laramie County Community College",1
+"2330","Math",2024-12-27,"Sheridan College",1
+"2331","Math",2024-12-27,"University of Wyoming",3
+"2332","Math",2025-01-03,"Laramie County Community College",1
+"2333","Math",2025-01-03,"Sheridan College",1
+"2334","Math",2025-01-03,"University of Wyoming",3
+"2335","Math",2025-01-10,"Laramie County Community College",1
+"2336","Math",2025-01-10,"Sheridan College",1
+"2337","Math",2025-01-10,"University of Wyoming",3
+"2338","Math",2025-01-17,"Laramie County Community College",1
+"2339","Math",2025-01-17,"Sheridan College",1
+"2340","Math",2025-01-17,"University of Wyoming",3
+"2341","Math",2025-01-24,"Laramie County Community College",1
+"2342","Math",2025-01-24,"Sheridan College",1
+"2343","Math",2025-01-24,"University of Wyoming",3
+"2344","Math",2025-01-31,"Laramie County Community College",1
+"2345","Math",2025-01-31,"Sheridan College",1
+"2346","Math",2025-01-31,"University of Wyoming",3
+"2347","Math",2025-02-07,"Laramie County Community College",1
+"2348","Math",2025-02-07,"Sheridan College",1
+"2349","Math",2025-02-07,"University of Wyoming",3
+"2350","Math",2025-02-14,"Laramie County Community College",1
+"2351","Math",2025-02-14,"Sheridan College",1
+"2352","Math",2025-02-14,"University of Wyoming",3
+"2353","Math",2025-02-21,"Laramie County Community College",1
+"2354","Math",2025-02-21,"Sheridan College",1
+"2355","Math",2025-02-21,"University of Wyoming",3
+"2356","Math",2025-02-28,"Laramie County Community College",1
+"2357","Math",2025-02-28,"Sheridan College",2
+"2358","Math",2025-02-28,"University of Wyoming",3
+"2359","Math",2025-03-07,"Sheridan College",2
+"2360","Math",2025-03-07,"University of Wyoming",3
+"2361","Math",2025-03-14,"Sheridan College",2
+"2362","Math",2025-03-14,"University of Wyoming",3
+"2363","Math",2025-03-21,"Sheridan College",2
+"2364","Math",2025-03-21,"University of Wyoming",3
+"2365","Math",2025-03-28,"Sheridan College",2
+"2366","Math",2025-03-28,"University of Wyoming",3
+"2367","Math",2025-04-04,"Sheridan College",2
+"2368","Math",2025-04-04,"University of Wyoming",3
+"2369","Math",2025-04-11,"Sheridan College",2
+"2370","Math",2025-04-11,"University of Wyoming",3
+"2371","Math",2025-04-18,"Sheridan College",2
+"2372","Math",2025-04-18,"University of Wyoming",3
+"2373","Math",2025-04-25,"Sheridan College",2
+"2374","Math",2025-04-25,"University of Wyoming",3
+"2375","Math",2025-05-02,"Eastern Wyoming Community College",1
+"2376","Math",2025-05-02,"Sheridan College",2
+"2377","Math",2025-05-02,"University of Wyoming",3
+"2378","Math",2025-05-09,"Eastern Wyoming Community College",1
+"2379","Math",2025-05-09,"Sheridan College",1
+"2380","Math",2025-05-09,"University of Wyoming",3
+"2381","Math",2025-05-16,"Eastern Wyoming Community College",1
+"2382","Math",2025-05-16,"Sheridan College",1
+"2383","Math",2025-05-16,"University of Wyoming",2
+"2384","Math",2025-05-23,"Eastern Wyoming Community College",1
+"2385","Math",2025-05-23,"Laramie County Community College",1
+"2386","Math",2025-05-23,"Sheridan College",1
+"2387","Math",2025-05-23,"University of Wyoming",2
+"2388","Math",2025-05-30,"Eastern Wyoming Community College",1
+"2389","Math",2025-05-30,"Laramie County Community College",1
+"2390","Math",2025-05-30,"Sheridan College",1
+"2391","Math",2025-05-30,"University of Wyoming",2
+"2392","Math",2025-06-06,"Eastern Wyoming Community College",1
+"2393","Math",2025-06-06,"Laramie County Community College",1
+"2394","Math",2025-06-06,"Sheridan College",1
+"2395","Math",2025-06-13,"Eastern Wyoming Community College",1
+"2396","Math",2025-06-13,"Laramie County Community College",1
+"2397","Math",2025-06-13,"Sheridan College",1
+"2398","Math",2025-06-20,"Eastern Wyoming Community College",1
+"2399","Math",2025-06-20,"Laramie County Community College",1
+"2400","Math",2025-06-20,"Sheridan College",1
+"2401","Math",2025-06-27,"Eastern Wyoming Community College",1
+"2402","Math",2025-06-27,"Laramie County Community College",1
+"2403","Math",2025-06-27,"Sheridan College",1
+"2404","Math",2025-07-04,"Eastern Wyoming Community College",1
+"2405","Math",2025-07-04,"Laramie County Community College",1
+"2406","Math",2025-07-04,"Sheridan College",1
+"2407","Math",2025-07-11,"Eastern Wyoming Community College",1
+"2408","Math",2025-07-11,"Laramie County Community College",1
+"2409","Math",2025-07-11,"Sheridan College",1
+"2410","Math",2025-07-18,"Eastern Wyoming Community College",1
+"2411","Math",2025-07-18,"Laramie County Community College",1
+"2412","Math",2025-07-18,"Sheridan College",1
+"2413","Math",2025-07-25,"Eastern Wyoming Community College",1
+"2414","Math",2025-07-25,"Laramie County Community College",1
+"2415","Math",2025-07-25,"Sheridan College",1
+"2416","Math",2025-08-01,"Eastern Wyoming Community College",1
+"2417","Math",2025-08-01,"Laramie County Community College",1
+"2418","Math",2025-08-01,"Sheridan College",1
+"2419","Math",2025-08-08,"Eastern Wyoming Community College",1
+"2420","Math",2025-08-08,"Laramie County Community College",1
+"2421","Math",2025-08-08,"Sheridan College",1
+"2422","Math",2025-08-15,"Eastern Wyoming Community College",1
+"2423","Math",2025-08-15,"Laramie County Community College",1
+"2424","Math",2025-08-15,"Sheridan College",1
+"2425","Math",2025-08-15,"University of Wyoming",1
+"2426","Math",2025-08-22,"Eastern Wyoming Community College",1
+"2427","Math",2025-08-22,"Laramie County Community College",1
+"2428","Math",2025-08-22,"Sheridan College",1
+"2429","Math",2025-08-22,"University of Wyoming",1
+"2430","Math",2025-08-29,"Laramie County Community College",1
+"2431","Math",2025-08-29,"Sheridan College",1
+"2432","Math",2025-08-29,"University of Wyoming",1
+"2433","Math",2025-09-05,"Laramie County Community College",1
+"2434","Math",2025-09-05,"Sheridan College",1
+"2435","Math",2025-09-05,"University of Wyoming",1
+"2436","Math",2025-09-12,"Laramie County Community College",1
+"2437","Math",2025-09-12,"Sheridan College",1
+"2438","Math",2025-09-12,"University of Wyoming",1
+"2439","Math",2025-09-19,"Laramie County Community College",1
+"2440","Math",2025-09-19,"Sheridan College",1
+"2441","Math",2025-09-26,"Laramie County Community College",1
+"2442","Math",2025-09-26,"Sheridan College",1
+"2443","Math",2025-10-03,"Laramie County Community College",1
+"2444","Math",2025-10-03,"Sheridan College",1
+"2445","Math",2025-10-10,"Laramie County Community College",1
+"2446","Math",2025-10-10,"Sheridan College",1
+"2447","Math",2025-10-17,"Laramie County Community College",1
+"2448","Math",2025-10-17,"Sheridan College",1
+"2449","Math",2025-10-24,"Sheridan College",1
+"2450","Math",2025-10-31,"Sheridan College",1
+"2451","Math",2025-11-07,"Sheridan College",1
+"2452","Math",2025-11-07,"University of Wyoming",1
+"2453","Math",2025-11-14,"Sheridan College",1
+"2454","Math",2025-11-14,"University of Wyoming",1
+"2455","Math",2025-11-21,"Sheridan College",1
+"2456","Math",2025-11-21,"University of Wyoming",1
+"2457","Math",2025-11-28,"Sheridan College",1
+"2458","Math",2025-11-28,"University of Wyoming",1
+"2459","Math",2025-12-05,"Sheridan College",1
+"2460","Math",2025-12-05,"University of Wyoming",1
+"2461","Math",2025-12-12,"Sheridan College",1
+"2462","Math",2025-12-12,"University of Wyoming",1
+"2463","Math",2025-12-19,"Sheridan College",1
+"2464","Math",2025-12-19,"University of Wyoming",1
+"2465","Math",2025-12-26,"Sheridan College",1
+"2466","Math",2025-12-26,"University of Wyoming",1
+"2467","Math",2026-01-02,"Sheridan College",1
+"2468","Math",2026-01-02,"University of Wyoming",1
+"2469","Math",2026-01-09,"Sheridan College",1
+"2470","Math",2026-01-09,"University of Wyoming",1
+"2471","Math",2026-01-16,"Sheridan College",1
+"2472","Math",2026-01-16,"University of Wyoming",1
+"2473","Math",2026-01-23,"Sheridan College",1
+"2474","Math",2026-01-23,"University of Wyoming",1
+"2475","Math",2026-01-30,"Sheridan College",1
+"2476","Math",2026-01-30,"University of Wyoming",1
+"2477","Math",2026-02-06,"Sheridan College",1
+"2478","Math",2026-02-06,"University of Wyoming",1
+"2479","Math",2026-02-13,"Eastern Wyoming Community College",1
+"2480","Math",2026-02-13,"Sheridan College",1
+"2481","Math",2026-02-13,"University of Wyoming",1
+"2482","Math",2026-02-20,"Eastern Wyoming Community College",1
+"2483","Math",2026-02-20,"Sheridan College",1
+"2484","Math",2026-02-20,"University of Wyoming",1
+"2485","Math",2026-02-27,"Eastern Wyoming Community College",1
+"2486","Math",2026-02-27,"Sheridan College",1
+"2487","Math",2026-02-27,"University of Wyoming",1
+"2488","Math",2026-08-03,"Eastern Wyoming Community College",1
+"2489","Math",2026-08-03,"Sheridan College",1
+"2490","Physical Education",2024-08-09,"Sheridan College",1
+"2491","Physical Education",2024-08-16,"Sheridan College",1
+"2492","Physical Education",2024-08-23,"Sheridan College",1
+"2493","Physical Education",2024-08-30,"Sheridan College",1
+"2494","Physical Education",2024-09-06,"Sheridan College",1
+"2495","Physical Education",2024-09-13,"Sheridan College",1
+"2496","Physical Education",2024-09-20,"Sheridan College",1
+"2497","Physical Education",2024-09-27,"Laramie County Community College",1
+"2498","Physical Education",2024-10-04,"Laramie County Community College",1
+"2499","Physical Education",2024-10-11,"Laramie County Community College",1
+"2500","Physical Education",2024-10-11,"University of Wyoming",1
+"2501","Physical Education",2024-10-18,"Laramie County Community College",1
+"2502","Physical Education",2024-10-18,"University of Wyoming",1
+"2503","Physical Education",2024-10-25,"Laramie County Community College",1
+"2504","Physical Education",2024-10-25,"University of Wyoming",1
+"2505","Physical Education",2024-11-01,"Laramie County Community College",1
+"2506","Physical Education",2024-11-01,"University of Wyoming",1
+"2507","Physical Education",2024-11-08,"Laramie County Community College",1
+"2508","Physical Education",2024-11-08,"University of Wyoming",1
+"2509","Physical Education",2024-11-15,"Laramie County Community College",1
+"2510","Physical Education",2024-11-15,"University of Wyoming",2
+"2511","Physical Education",2024-11-22,"Laramie County Community College",1
+"2512","Physical Education",2024-11-22,"University of Wyoming",2
+"2513","Physical Education",2024-11-29,"Laramie County Community College",1
+"2514","Physical Education",2024-11-29,"University of Wyoming",2
+"2515","Physical Education",2024-12-06,"Laramie County Community College",1
+"2516","Physical Education",2024-12-06,"University of Wyoming",2
+"2517","Physical Education",2024-12-13,"Laramie County Community College",1
+"2518","Physical Education",2024-12-13,"University of Wyoming",2
+"2519","Physical Education",2024-12-20,"Laramie County Community College",1
+"2520","Physical Education",2024-12-20,"University of Wyoming",2
+"2521","Physical Education",2024-12-27,"Laramie County Community College",1
+"2522","Physical Education",2024-12-27,"University of Wyoming",2
+"2523","Physical Education",2025-01-03,"Laramie County Community College",1
+"2524","Physical Education",2025-01-03,"University of Wyoming",2
+"2525","Physical Education",2025-01-10,"Laramie County Community College",1
+"2526","Physical Education",2025-01-10,"University of Wyoming",2
+"2527","Physical Education",2025-01-17,"Laramie County Community College",1
+"2528","Physical Education",2025-01-17,"University of Wyoming",2
+"2529","Physical Education",2025-01-24,"University of Wyoming",2
+"2530","Physical Education",2025-01-31,"University of Wyoming",2
+"2531","Physical Education",2025-02-07,"University of Wyoming",2
+"2532","Physical Education",2025-02-14,"University of Wyoming",1
+"2533","Physical Education",2025-02-21,"University of Wyoming",1
+"2534","Physical Education",2025-02-28,"University of Wyoming",1
+"2535","Physical Education",2025-03-07,"University of Wyoming",1
+"2536","Physical Education",2025-03-14,"University of Wyoming",1
+"2537","Physical Education",2025-03-21,"University of Wyoming",1
+"2538","Physical Education",2025-03-28,"University of Wyoming",1
+"2539","Physical Education",2025-04-04,"University of Wyoming",1
+"2540","Physical Education",2025-06-20,"Laramie County Community College",1
+"2541","Physical Education",2025-07-04,"Laramie County Community College",1
+"2542","Physical Education",2025-09-05,"University of Wyoming",1
+"2543","Physical Education",2025-09-12,"University of Wyoming",1
+"2544","Physical Education",2025-09-19,"University of Wyoming",1
+"2545","Physical Education",2025-09-26,"University of Wyoming",1
+"2546","Physical Education",2025-10-03,"University of Wyoming",1
+"2547","Physical Education",2025-10-10,"University of Wyoming",1
+"2548","Physical Education",2025-10-17,"University of Wyoming",1
+"2549","Physical Education",2025-10-24,"Laramie County Community College",1
+"2550","Physical Education",2025-10-24,"University of Wyoming",1
+"2551","Physical Education",2025-10-31,"Laramie County Community College",1
+"2552","Physical Education",2025-10-31,"University of Wyoming",1
+"2553","Physical Education",2025-11-07,"Laramie County Community College",1
+"2554","Physical Education",2025-11-07,"University of Wyoming",1
+"2555","Physical Education",2025-11-14,"Laramie County Community College",1
+"2556","Physical Education",2025-11-21,"Laramie County Community College",1
+"2557","Physical Education",2025-11-28,"Laramie County Community College",1
+"2558","Physical Education",2025-12-05,"Laramie County Community College",1
+"2559","Physical Education",2025-12-12,"Laramie County Community College",1
+"2560","Physical Education",2025-12-19,"Laramie County Community College",1
+"2561","Physical Education",2025-12-26,"Laramie County Community College",1
+"2562","Physical Education",2026-01-02,"Laramie County Community College",1
+"2563","Physical Education",2026-01-09,"Laramie County Community College",1
+"2564","Physical Education",2026-01-16,"Laramie County Community College",1
+"2565","Physical Education",2026-01-23,"Laramie County Community College",1
+"2566","Physical Education",2026-01-30,"Laramie County Community College",1
+"2567","Physical Education",2026-02-06,"Laramie County Community College",1
+"2568","Physical Education",2026-02-13,"Laramie County Community College",1
+"2569","Physical Education",2026-02-20,"Laramie County Community College",1
+"2570","Physical Education",2026-02-27,"Laramie County Community College",1
+"2571","Science",2024-08-09,"Gillette College",1
+"2572","Science",2024-08-09,"Sheridan College",4
+"2573","Science",2024-08-09,"University of Wyoming",4
+"2574","Science",2024-08-16,"Gillette College",1
+"2575","Science",2024-08-16,"Sheridan College",4
+"2576","Science",2024-08-16,"University of Wyoming",4
+"2577","Science",2024-08-23,"Gillette College",1
+"2578","Science",2024-08-23,"Sheridan College",4
+"2579","Science",2024-08-23,"University of Wyoming",4
+"2580","Science",2024-08-30,"Gillette College",1
+"2581","Science",2024-08-30,"Sheridan College",4
+"2582","Science",2024-08-30,"University of Wyoming",4
+"2583","Science",2024-09-06,"Gillette College",1
+"2584","Science",2024-09-06,"Sheridan College",4
+"2585","Science",2024-09-06,"University of Wyoming",4
+"2586","Science",2024-09-13,"Gillette College",1
+"2587","Science",2024-09-13,"Sheridan College",4
+"2588","Science",2024-09-13,"University of Wyoming",5
+"2589","Science",2024-09-20,"Gillette College",1
+"2590","Science",2024-09-20,"Sheridan College",4
+"2591","Science",2024-09-20,"University of Wyoming",7
+"2592","Science",2024-09-27,"Gillette College",1
+"2593","Science",2024-09-27,"Sheridan College",4
+"2594","Science",2024-09-27,"University of Wyoming",8
+"2595","Science",2024-10-04,"Gillette College",1
+"2596","Science",2024-10-04,"Sheridan College",4
+"2597","Science",2024-10-04,"University of Wyoming",9
+"2598","Science",2024-10-11,"Gillette College",1
+"2599","Science",2024-10-11,"Sheridan College",4
+"2600","Science",2024-10-11,"University of Wyoming",10
+"2601","Science",2024-10-18,"Gillette College",1
+"2602","Science",2024-10-18,"Sheridan College",4
+"2603","Science",2024-10-18,"University of Wyoming",9
+"2604","Science",2024-10-25,"Sheridan College",4
+"2605","Science",2024-10-25,"University of Wyoming",10
+"2606","Science",2024-11-01,"Sheridan College",4
+"2607","Science",2024-11-01,"University of Wyoming",10
+"2608","Science",2024-11-08,"Sheridan College",4
+"2609","Science",2024-11-08,"University of Wyoming",9
+"2610","Science",2024-11-15,"Sheridan College",4
+"2611","Science",2024-11-15,"University of Wyoming",7
+"2612","Science",2024-11-22,"Sheridan College",4
+"2613","Science",2024-11-22,"University of Wyoming",7
+"2614","Science",2024-11-29,"Sheridan College",4
+"2615","Science",2024-11-29,"University of Wyoming",7
+"2616","Science",2024-12-06,"Sheridan College",4
+"2617","Science",2024-12-06,"University of Wyoming",7
+"2618","Science",2024-12-13,"Sheridan College",4
+"2619","Science",2024-12-13,"University of Wyoming",7
+"2620","Science",2024-12-20,"Sheridan College",4
+"2621","Science",2024-12-20,"University of Wyoming",7
+"2622","Science",2024-12-27,"Sheridan College",4
+"2623","Science",2024-12-27,"University of Wyoming",7
+"2624","Science",2025-01-03,"Sheridan College",4
+"2625","Science",2025-01-03,"University of Wyoming",7
+"2626","Science",2025-01-10,"Sheridan College",4
+"2627","Science",2025-01-10,"University of Wyoming",7
+"2628","Science",2025-01-17,"Sheridan College",4
+"2629","Science",2025-01-17,"University of Wyoming",9
+"2630","Science",2025-01-24,"Casper College",1
+"2631","Science",2025-01-24,"Sheridan College",4
+"2632","Science",2025-01-24,"University of Wyoming",9
+"2633","Science",2025-01-31,"Sheridan College",4
+"2634","Science",2025-01-31,"University of Wyoming",9
+"2635","Science",2025-02-07,"Sheridan College",4
+"2636","Science",2025-02-07,"University of Wyoming",9
+"2637","Science",2025-02-14,"Sheridan College",4
+"2638","Science",2025-02-14,"University of Wyoming",10
+"2639","Science",2025-02-21,"Sheridan College",4
+"2640","Science",2025-02-21,"University of Wyoming",10
+"2641","Science",2025-02-28,"Sheridan College",4
+"2642","Science",2025-02-28,"University of Wyoming",10
+"2643","Science",2025-03-07,"Sheridan College",4
+"2644","Science",2025-03-07,"University of Wyoming",11
+"2645","Science",2025-03-14,"Sheridan College",4
+"2646","Science",2025-03-14,"University of Wyoming",10
+"2647","Science",2025-03-21,"Sheridan College",4
+"2648","Science",2025-03-21,"University of Wyoming",13
+"2649","Science",2025-03-28,"Sheridan College",4
+"2650","Science",2025-03-28,"University of Wyoming",13
+"2651","Science",2025-04-04,"Sheridan College",4
+"2652","Science",2025-04-04,"University of Wyoming",14
+"2653","Science",2025-04-11,"Sheridan College",4
+"2654","Science",2025-04-11,"University of Wyoming",13
+"2655","Science",2025-04-18,"Sheridan College",4
+"2656","Science",2025-04-18,"University of Wyoming",13
+"2657","Science",2025-04-25,"Sheridan College",4
+"2658","Science",2025-04-25,"University of Wyoming",11
+"2659","Science",2025-05-02,"Sheridan College",4
+"2660","Science",2025-05-02,"University of Wyoming",11
+"2661","Science",2025-05-09,"Sheridan College",4
+"2662","Science",2025-05-09,"University of Wyoming",10
+"2663","Science",2025-05-16,"Sheridan College",4
+"2664","Science",2025-05-16,"University of Wyoming",10
+"2665","Science",2025-05-23,"Sheridan College",4
+"2666","Science",2025-05-23,"University of Wyoming",9
+"2667","Science",2025-05-30,"Laramie County Community College",1
+"2668","Science",2025-05-30,"Sheridan College",4
+"2669","Science",2025-05-30,"University of Wyoming",9
+"2670","Science",2025-06-06,"Laramie County Community College",1
+"2671","Science",2025-06-06,"Sheridan College",4
+"2672","Science",2025-06-06,"University of Wyoming",8
+"2673","Science",2025-06-06,"Western Wyoming Community College",1
+"2674","Science",2025-06-13,"Laramie County Community College",1
+"2675","Science",2025-06-13,"Sheridan College",4
+"2676","Science",2025-06-13,"University of Wyoming",8
+"2677","Science",2025-06-13,"Western Wyoming Community College",1
+"2678","Science",2025-06-20,"Laramie County Community College",1
+"2679","Science",2025-06-20,"Sheridan College",4
+"2680","Science",2025-06-20,"University of Wyoming",5
+"2681","Science",2025-06-20,"Western Wyoming Community College",1
+"2682","Science",2025-06-27,"Laramie County Community College",1
+"2683","Science",2025-06-27,"Sheridan College",4
+"2684","Science",2025-06-27,"University of Wyoming",3
+"2685","Science",2025-06-27,"Western Wyoming Community College",1
+"2686","Science",2025-07-04,"Laramie County Community College",1
+"2687","Science",2025-07-04,"Sheridan College",4
+"2688","Science",2025-07-04,"University of Wyoming",3
+"2689","Science",2025-07-04,"Western Wyoming Community College",1
+"2690","Science",2025-07-11,"Laramie County Community College",2
+"2691","Science",2025-07-11,"Sheridan College",4
+"2692","Science",2025-07-11,"University of Wyoming",3
+"2693","Science",2025-07-11,"Western Wyoming Community College",1
+"2694","Science",2025-07-18,"Laramie County Community College",1
+"2695","Science",2025-07-18,"Sheridan College",4
+"2696","Science",2025-07-18,"University of Wyoming",4
+"2697","Science",2025-07-18,"Western Wyoming Community College",1
+"2698","Science",2025-07-25,"Laramie County Community College",1
+"2699","Science",2025-07-25,"Sheridan College",4
+"2700","Science",2025-07-25,"University of Wyoming",4
+"2701","Science",2025-07-25,"Western Wyoming Community College",1
+"2702","Science",2025-08-01,"Sheridan College",4
+"2703","Science",2025-08-01,"University of Wyoming",4
+"2704","Science",2025-08-08,"Sheridan College",4
+"2705","Science",2025-08-08,"University of Wyoming",4
+"2706","Science",2025-08-15,"Sheridan College",4
+"2707","Science",2025-08-15,"University of Wyoming",4
+"2708","Science",2025-08-22,"Sheridan College",4
+"2709","Science",2025-08-22,"University of Wyoming",4
+"2710","Science",2025-08-29,"Sheridan College",4
+"2711","Science",2025-08-29,"University of Wyoming",6
+"2712","Science",2025-09-05,"Sheridan College",4
+"2713","Science",2025-09-05,"University of Wyoming",6
+"2714","Science",2025-09-12,"Sheridan College",4
+"2715","Science",2025-09-12,"University of Wyoming",7
+"2716","Science",2025-09-19,"Sheridan College",4
+"2717","Science",2025-09-19,"University of Wyoming",8
+"2718","Science",2025-09-26,"Sheridan College",4
+"2719","Science",2025-09-26,"University of Wyoming",12
+"2720","Science",2025-10-03,"Sheridan College",4
+"2721","Science",2025-10-03,"University of Wyoming",13
+"2722","Science",2025-10-10,"Sheridan College",4
+"2723","Science",2025-10-10,"University of Wyoming",15
+"2724","Science",2025-10-17,"Sheridan College",4
+"2725","Science",2025-10-17,"University of Wyoming",15
+"2726","Science",2025-10-24,"Sheridan College",4
+"2727","Science",2025-10-24,"University of Wyoming",16
+"2728","Science",2025-10-31,"Sheridan College",4
+"2729","Science",2025-10-31,"University of Wyoming",16
+"2730","Science",2025-11-07,"Sheridan College",4
+"2731","Science",2025-11-07,"University of Wyoming",16
+"2732","Science",2025-11-14,"Sheridan College",4
+"2733","Science",2025-11-14,"University of Wyoming",16
+"2734","Science",2025-11-21,"Sheridan College",4
+"2735","Science",2025-11-21,"University of Wyoming",16
+"2736","Science",2025-11-28,"Sheridan College",4
+"2737","Science",2025-11-28,"University of Wyoming",16
+"2738","Science",2025-12-05,"Sheridan College",4
+"2739","Science",2025-12-05,"University of Wyoming",15
+"2740","Science",2025-12-12,"Sheridan College",4
+"2741","Science",2025-12-12,"University of Wyoming",14
+"2742","Science",2025-12-19,"Northwest College",1
+"2743","Science",2025-12-19,"Sheridan College",4
+"2744","Science",2025-12-19,"University of Wyoming",12
+"2745","Science",2025-12-26,"Northwest College",1
+"2746","Science",2025-12-26,"Sheridan College",4
+"2747","Science",2025-12-26,"University of Wyoming",13
+"2748","Science",2026-01-02,"Northwest College",1
+"2749","Science",2026-01-02,"Sheridan College",4
+"2750","Science",2026-01-02,"University of Wyoming",13
+"2751","Science",2026-01-09,"Northwest College",1
+"2752","Science",2026-01-09,"Sheridan College",4
+"2753","Science",2026-01-09,"University of Wyoming",13
+"2754","Science",2026-01-16,"Central Wyoming College",1
+"2755","Science",2026-01-16,"Sheridan College",4
+"2756","Science",2026-01-16,"University of Wyoming",13
+"2757","Science",2026-01-23,"Central Wyoming College",1
+"2758","Science",2026-01-23,"Sheridan College",4
+"2759","Science",2026-01-23,"University of Wyoming",12
+"2760","Science",2026-01-30,"Central Wyoming College",1
+"2761","Science",2026-01-30,"Sheridan College",4
+"2762","Science",2026-01-30,"University of Wyoming",11
+"2763","Science",2026-02-06,"Central Wyoming College",1
+"2764","Science",2026-02-06,"Sheridan College",4
+"2765","Science",2026-02-06,"University of Wyoming",9
+"2766","Science",2026-02-13,"Central Wyoming College",1
+"2767","Science",2026-02-13,"Sheridan College",4
+"2768","Science",2026-02-13,"University of Wyoming",9
+"2769","Science",2026-02-20,"Central Wyoming College",1
+"2770","Science",2026-02-20,"Laramie County Community College",1
+"2771","Science",2026-02-20,"Sheridan College",4
+"2772","Science",2026-02-20,"University of Wyoming",7
+"2773","Science",2026-02-27,"Central Wyoming College",1
+"2774","Science",2026-02-27,"Laramie County Community College",1
+"2775","Science",2026-02-27,"Sheridan College",4
+"2776","Science",2026-02-27,"University of Wyoming",7
+"2777","Science",2026-08-03,"Sheridan College",4
+"2778","Social Science",2024-08-09,"University of Wyoming",7
+"2779","Social Science",2024-08-16,"University of Wyoming",7
+"2780","Social Science",2024-08-23,"University of Wyoming",5
+"2781","Social Science",2024-08-30,"University of Wyoming",7
+"2782","Social Science",2024-09-06,"University of Wyoming",6
+"2783","Social Science",2024-09-13,"University of Wyoming",6
+"2784","Social Science",2024-09-20,"University of Wyoming",7
+"2785","Social Science",2024-09-27,"University of Wyoming",7
+"2786","Social Science",2024-10-04,"University of Wyoming",7
+"2787","Social Science",2024-10-11,"University of Wyoming",7
+"2788","Social Science",2024-10-18,"University of Wyoming",7
+"2789","Social Science",2024-10-25,"University of Wyoming",7
+"2790","Social Science",2024-11-01,"University of Wyoming",7
+"2791","Social Science",2024-11-08,"University of Wyoming",7
+"2792","Social Science",2024-11-15,"University of Wyoming",7
+"2793","Social Science",2024-11-22,"University of Wyoming",6
+"2794","Social Science",2024-11-29,"University of Wyoming",6
+"2795","Social Science",2024-12-06,"University of Wyoming",6
+"2796","Social Science",2024-12-13,"University of Wyoming",5
+"2797","Social Science",2024-12-20,"University of Wyoming",5
+"2798","Social Science",2024-12-27,"University of Wyoming",4
+"2799","Social Science",2025-01-03,"University of Wyoming",2
+"2800","Social Science",2025-01-10,"University of Wyoming",2
+"2801","Social Science",2025-01-17,"University of Wyoming",2
+"2802","Social Science",2025-01-24,"University of Wyoming",3
+"2803","Social Science",2025-01-31,"University of Wyoming",3
+"2804","Social Science",2025-02-07,"University of Wyoming",3
+"2805","Social Science",2025-02-14,"University of Wyoming",2
+"2806","Social Science",2025-02-14,"Western Wyoming Community College",1
+"2807","Social Science",2025-02-21,"University of Wyoming",2
+"2808","Social Science",2025-02-21,"Western Wyoming Community College",1
+"2809","Social Science",2025-02-28,"University of Wyoming",2
+"2810","Social Science",2025-02-28,"Western Wyoming Community College",1
+"2811","Social Science",2025-03-07,"University of Wyoming",2
+"2812","Social Science",2025-03-07,"Western Wyoming Community College",1
+"2813","Social Science",2025-03-14,"University of Wyoming",2
+"2814","Social Science",2025-03-14,"Western Wyoming Community College",1
+"2815","Social Science",2025-03-21,"University of Wyoming",2
+"2816","Social Science",2025-03-21,"Western Wyoming Community College",1
+"2817","Social Science",2025-03-28,"University of Wyoming",2
+"2818","Social Science",2025-03-28,"Western Wyoming Community College",1
+"2819","Social Science",2025-04-04,"University of Wyoming",2
+"2820","Social Science",2025-04-04,"Western Wyoming Community College",1
+"2821","Social Science",2025-04-11,"University of Wyoming",1
+"2822","Social Science",2025-04-11,"Western Wyoming Community College",1
+"2823","Social Science",2025-04-18,"University of Wyoming",1
+"2824","Social Science",2025-04-18,"Western Wyoming Community College",1
+"2825","Social Science",2025-04-25,"University of Wyoming",1
+"2826","Social Science",2025-04-25,"Western Wyoming Community College",1
+"2827","Social Science",2025-05-02,"University of Wyoming",1
+"2828","Social Science",2025-05-02,"Western Wyoming Community College",1
+"2829","Social Science",2025-05-09,"University of Wyoming",1
+"2830","Social Science",2025-05-09,"Western Wyoming Community College",1
+"2831","Social Science",2025-05-16,"University of Wyoming",1
+"2832","Social Science",2025-05-16,"Western Wyoming Community College",1
+"2833","Social Science",2025-05-23,"Northwest College",2
+"2834","Social Science",2025-05-23,"University of Wyoming",1
+"2835","Social Science",2025-05-30,"Northwest College",2
+"2836","Social Science",2025-05-30,"University of Wyoming",1
+"2837","Social Science",2025-06-06,"Northwest College",2
+"2838","Social Science",2025-06-06,"University of Wyoming",1
+"2839","Social Science",2025-06-13,"University of Wyoming",1
+"2840","Social Science",2025-06-20,"University of Wyoming",1
+"2841","Social Science",2025-06-27,"University of Wyoming",1
+"2842","Social Science",2025-07-04,"University of Wyoming",1
+"2843","Social Science",2025-08-15,"University of Wyoming",1
+"2844","Social Science",2025-08-22,"University of Wyoming",1
+"2845","Social Science",2025-08-29,"University of Wyoming",1
+"2846","Social Science",2025-09-05,"University of Wyoming",1
+"2847","Social Science",2025-09-12,"University of Wyoming",1
+"2848","Social Science",2025-09-19,"University of Wyoming",2
+"2849","Social Science",2025-09-26,"University of Wyoming",2
+"2850","Social Science",2025-10-03,"University of Wyoming",2
+"2851","Social Science",2025-10-10,"University of Wyoming",2
+"2852","Social Science",2025-10-17,"Laramie County Community College",1
+"2853","Social Science",2025-10-17,"University of Wyoming",2
+"2854","Social Science",2025-10-24,"Laramie County Community College",1
+"2855","Social Science",2025-10-24,"University of Wyoming",2
+"2856","Social Science",2025-10-31,"Laramie County Community College",1
+"2857","Social Science",2025-10-31,"University of Wyoming",2
+"2858","Social Science",2025-11-07,"Laramie County Community College",1
+"2859","Social Science",2025-11-07,"University of Wyoming",2
+"2860","Social Science",2025-11-14,"Laramie County Community College",1
+"2861","Social Science",2025-11-14,"University of Wyoming",2
+"2862","Social Science",2025-11-21,"University of Wyoming",2
+"2863","Social Science",2025-11-28,"University of Wyoming",1
+"2864","Social Science",2025-12-05,"University of Wyoming",1
+"2865","Social Science",2025-12-12,"University of Wyoming",1
+"2866","Social Science",2025-12-19,"Northwest College",1
+"2867","Social Science",2025-12-19,"Western Wyoming Community College",1
+"2868","Social Science",2025-12-26,"Gillette College",1
+"2869","Social Science",2025-12-26,"Northwest College",1
+"2870","Social Science",2025-12-26,"Western Wyoming Community College",1
+"2871","Social Science",2026-01-02,"Gillette College",1
+"2872","Social Science",2026-01-02,"Northwest College",1
+"2873","Social Science",2026-01-02,"Western Wyoming Community College",1
+"2874","Social Science",2026-01-09,"Gillette College",1
+"2875","Social Science",2026-01-09,"Laramie County Community College",1
+"2876","Social Science",2026-01-09,"Northwest College",1
+"2877","Social Science",2026-01-09,"Western Wyoming Community College",1
+"2878","Social Science",2026-01-16,"Gillette College",1
+"2879","Social Science",2026-01-16,"Laramie County Community College",1
+"2880","Social Science",2026-01-16,"Western Wyoming Community College",1
+"2881","Social Science",2026-01-23,"Gillette College",1
+"2882","Social Science",2026-01-23,"Laramie County Community College",1
+"2883","Social Science",2026-01-23,"Western Wyoming Community College",1
+"2884","Social Science",2026-01-30,"Gillette College",1
+"2885","Social Science",2026-01-30,"Laramie County Community College",1
+"2886","Social Science",2026-01-30,"Western Wyoming Community College",1
+"2887","Social Science",2026-02-06,"Gillette College",1
+"2888","Social Science",2026-02-06,"Laramie County Community College",1
+"2889","Social Science",2026-02-06,"Western Wyoming Community College",1
+"2890","Social Science",2026-02-13,"Gillette College",1
+"2891","Social Science",2026-02-13,"Laramie County Community College",1
+"2892","Social Science",2026-02-13,"Western Wyoming Community College",1
+"2893","Social Science",2026-02-20,"Gillette College",1
+"2894","Social Science",2026-02-20,"Laramie County Community College",1
+"2895","Social Science",2026-02-20,"Western Wyoming Community College",1
+"2896","Social Science",2026-02-27,"Gillette College",1
+"2897","Social Science",2026-02-27,"Laramie County Community College",1
+"2898","Social Science",2026-02-27,"Western Wyoming Community College",1
+"2899","The Arts",2024-08-09,"Northwest College",1
+"2900","The Arts",2024-08-09,"Sheridan College",10
+"2901","The Arts",2024-08-16,"Northwest College",1
+"2902","The Arts",2024-08-16,"Sheridan College",10
+"2903","The Arts",2024-08-23,"Sheridan College",10
+"2904","The Arts",2024-08-30,"Sheridan College",10
+"2905","The Arts",2024-09-06,"Sheridan College",11
+"2906","The Arts",2024-09-13,"Sheridan College",12
+"2907","The Arts",2024-09-13,"University of Wyoming",2
+"2908","The Arts",2024-09-20,"Sheridan College",12
+"2909","The Arts",2024-09-20,"University of Wyoming",2
+"2910","The Arts",2024-09-27,"Sheridan College",14
+"2911","The Arts",2024-09-27,"University of Wyoming",2
+"2912","The Arts",2024-10-04,"Sheridan College",14
+"2913","The Arts",2024-10-04,"University of Wyoming",2
+"2914","The Arts",2024-10-11,"Sheridan College",14
+"2915","The Arts",2024-10-11,"University of Wyoming",3
+"2916","The Arts",2024-10-18,"Sheridan College",14
+"2917","The Arts",2024-10-18,"University of Wyoming",4
+"2918","The Arts",2024-10-25,"Sheridan College",15
+"2919","The Arts",2024-10-25,"University of Wyoming",4
+"2920","The Arts",2024-11-01,"Sheridan College",15
+"2921","The Arts",2024-11-01,"University of Wyoming",4
+"2922","The Arts",2024-11-08,"Sheridan College",15
+"2923","The Arts",2024-11-08,"University of Wyoming",4
+"2924","The Arts",2024-11-15,"Sheridan College",15
+"2925","The Arts",2024-11-15,"University of Wyoming",4
+"2926","The Arts",2024-11-22,"Sheridan College",15
+"2927","The Arts",2024-11-22,"University of Wyoming",4
+"2928","The Arts",2024-11-29,"Sheridan College",15
+"2929","The Arts",2024-11-29,"University of Wyoming",4
+"2930","The Arts",2024-12-06,"Sheridan College",15
+"2931","The Arts",2024-12-06,"University of Wyoming",4
+"2932","The Arts",2024-12-13,"Northwest College",1
+"2933","The Arts",2024-12-13,"Sheridan College",15
+"2934","The Arts",2024-12-13,"University of Wyoming",5
+"2935","The Arts",2024-12-20,"Northwest College",1
+"2936","The Arts",2024-12-20,"Sheridan College",16
+"2937","The Arts",2024-12-20,"University of Wyoming",5
+"2938","The Arts",2024-12-27,"Northwest College",1
+"2939","The Arts",2024-12-27,"Sheridan College",16
+"2940","The Arts",2024-12-27,"University of Wyoming",5
+"2941","The Arts",2025-01-03,"Northwest College",1
+"2942","The Arts",2025-01-03,"Sheridan College",16
+"2943","The Arts",2025-01-03,"University of Wyoming",4
+"2944","The Arts",2025-01-10,"Casper College",1
+"2945","The Arts",2025-01-10,"Northwest College",1
+"2946","The Arts",2025-01-10,"Sheridan College",16
+"2947","The Arts",2025-01-10,"University of Wyoming",3
+"2948","The Arts",2025-01-17,"Casper College",1
+"2949","The Arts",2025-01-17,"Northwest College",1
+"2950","The Arts",2025-01-17,"Sheridan College",16
+"2951","The Arts",2025-01-17,"University of Wyoming",3
+"2952","The Arts",2025-01-24,"Casper College",1
+"2953","The Arts",2025-01-24,"Northwest College",1
+"2954","The Arts",2025-01-24,"Sheridan College",16
+"2955","The Arts",2025-01-24,"University of Wyoming",3
+"2956","The Arts",2025-01-31,"Casper College",1
+"2957","The Arts",2025-01-31,"Northwest College",1
+"2958","The Arts",2025-01-31,"Sheridan College",16
+"2959","The Arts",2025-01-31,"University of Wyoming",3
+"2960","The Arts",2025-02-07,"Casper College",1
+"2961","The Arts",2025-02-07,"Northwest College",1
+"2962","The Arts",2025-02-07,"Sheridan College",16
+"2963","The Arts",2025-02-07,"University of Wyoming",3
+"2964","The Arts",2025-02-14,"Casper College",1
+"2965","The Arts",2025-02-14,"Northwest College",1
+"2966","The Arts",2025-02-14,"Sheridan College",16
+"2967","The Arts",2025-02-14,"University of Wyoming",3
+"2968","The Arts",2025-02-21,"Northwest College",1
+"2969","The Arts",2025-02-21,"Sheridan College",16
+"2970","The Arts",2025-02-21,"University of Wyoming",3
+"2971","The Arts",2025-02-28,"Northwest College",1
+"2972","The Arts",2025-02-28,"Sheridan College",16
+"2973","The Arts",2025-02-28,"University of Wyoming",3
+"2974","The Arts",2025-03-07,"Northwest College",1
+"2975","The Arts",2025-03-07,"Sheridan College",16
+"2976","The Arts",2025-03-07,"University of Wyoming",2
+"2977","The Arts",2025-03-14,"Northwest College",1
+"2978","The Arts",2025-03-14,"Sheridan College",16
+"2979","The Arts",2025-03-14,"University of Wyoming",2
+"2980","The Arts",2025-03-21,"Northwest College",1
+"2981","The Arts",2025-03-21,"Sheridan College",16
+"2982","The Arts",2025-03-21,"University of Wyoming",2
+"2983","The Arts",2025-03-28,"Northwest College",1
+"2984","The Arts",2025-03-28,"Sheridan College",16
+"2985","The Arts",2025-03-28,"University of Wyoming",2
+"2986","The Arts",2025-04-04,"Northwest College",1
+"2987","The Arts",2025-04-04,"Sheridan College",16
+"2988","The Arts",2025-04-04,"University of Wyoming",2
+"2989","The Arts",2025-04-11,"Laramie County Community College",1
+"2990","The Arts",2025-04-11,"Northwest College",1
+"2991","The Arts",2025-04-11,"Sheridan College",16
+"2992","The Arts",2025-04-11,"University of Wyoming",2
+"2993","The Arts",2025-04-18,"Laramie County Community College",1
+"2994","The Arts",2025-04-18,"Northwest College",1
+"2995","The Arts",2025-04-18,"Sheridan College",16
+"2996","The Arts",2025-04-18,"University of Wyoming",2
+"2997","The Arts",2025-04-25,"Laramie County Community College",1
+"2998","The Arts",2025-04-25,"Northwest College",1
+"2999","The Arts",2025-04-25,"Sheridan College",16
+"3000","The Arts",2025-04-25,"University of Wyoming",1
+"3001","The Arts",2025-05-02,"Northwest College",1
+"3002","The Arts",2025-05-02,"Sheridan College",16
+"3003","The Arts",2025-05-02,"University of Wyoming",1
+"3004","The Arts",2025-05-09,"Northwest College",1
+"3005","The Arts",2025-05-09,"Sheridan College",16
+"3006","The Arts",2025-05-16,"Northwest College",1
+"3007","The Arts",2025-05-16,"Sheridan College",16
+"3008","The Arts",2025-05-23,"Laramie County Community College",1
+"3009","The Arts",2025-05-23,"Northwest College",1
+"3010","The Arts",2025-05-23,"Sheridan College",16
+"3011","The Arts",2025-05-30,"Laramie County Community College",1
+"3012","The Arts",2025-05-30,"Northwest College",1
+"3013","The Arts",2025-05-30,"Sheridan College",17
+"3014","The Arts",2025-05-30,"University of Wyoming",1
+"3015","The Arts",2025-06-06,"Laramie County Community College",1
+"3016","The Arts",2025-06-06,"Northwest College",1
+"3017","The Arts",2025-06-06,"Sheridan College",17
+"3018","The Arts",2025-06-06,"University of Wyoming",1
+"3019","The Arts",2025-06-13,"Laramie County Community College",1
+"3020","The Arts",2025-06-13,"Sheridan College",17
+"3021","The Arts",2025-06-13,"University of Wyoming",1
+"3022","The Arts",2025-06-20,"Laramie County Community College",1
+"3023","The Arts",2025-06-20,"Sheridan College",17
+"3024","The Arts",2025-06-20,"University of Wyoming",2
+"3025","The Arts",2025-06-27,"Laramie County Community College",1
+"3026","The Arts",2025-06-27,"Sheridan College",17
+"3027","The Arts",2025-06-27,"University of Wyoming",2
+"3028","The Arts",2025-07-04,"Laramie County Community College",1
+"3029","The Arts",2025-07-04,"Sheridan College",17
+"3030","The Arts",2025-07-04,"University of Wyoming",2
+"3031","The Arts",2025-07-11,"Laramie County Community College",1
+"3032","The Arts",2025-07-11,"Sheridan College",17
+"3033","The Arts",2025-07-11,"University of Wyoming",2
+"3034","The Arts",2025-07-18,"Laramie County Community College",1
+"3035","The Arts",2025-07-18,"Sheridan College",17
+"3036","The Arts",2025-07-18,"University of Wyoming",2
+"3037","The Arts",2025-07-25,"Laramie County Community College",1
+"3038","The Arts",2025-07-25,"Sheridan College",17
+"3039","The Arts",2025-07-25,"University of Wyoming",2
+"3040","The Arts",2025-08-01,"Laramie County Community College",1
+"3041","The Arts",2025-08-01,"Sheridan College",17
+"3042","The Arts",2025-08-01,"University of Wyoming",2
+"3043","The Arts",2025-08-08,"Casper College",1
+"3044","The Arts",2025-08-08,"Laramie County Community College",1
+"3045","The Arts",2025-08-08,"Sheridan College",17
+"3046","The Arts",2025-08-08,"University of Wyoming",2
+"3047","The Arts",2025-08-15,"Laramie County Community College",1
+"3048","The Arts",2025-08-15,"Sheridan College",17
+"3049","The Arts",2025-08-15,"University of Wyoming",2
+"3050","The Arts",2025-08-22,"Laramie County Community College",1
+"3051","The Arts",2025-08-22,"Sheridan College",17
+"3052","The Arts",2025-08-22,"University of Wyoming",2
+"3053","The Arts",2025-08-29,"Casper College",1
+"3054","The Arts",2025-08-29,"Laramie County Community College",1
+"3055","The Arts",2025-08-29,"Sheridan College",17
+"3056","The Arts",2025-08-29,"University of Wyoming",2
+"3057","The Arts",2025-09-05,"Gillette College",1
+"3058","The Arts",2025-09-05,"Laramie County Community College",1
+"3059","The Arts",2025-09-05,"Sheridan College",17
+"3060","The Arts",2025-09-05,"University of Wyoming",2
+"3061","The Arts",2025-09-12,"Gillette College",1
+"3062","The Arts",2025-09-12,"Laramie County Community College",1
+"3063","The Arts",2025-09-12,"Sheridan College",17
+"3064","The Arts",2025-09-12,"University of Wyoming",2
+"3065","The Arts",2025-09-19,"Gillette College",1
+"3066","The Arts",2025-09-19,"Laramie County Community College",1
+"3067","The Arts",2025-09-19,"Sheridan College",17
+"3068","The Arts",2025-09-19,"University of Wyoming",2
+"3069","The Arts",2025-09-19,"Western Wyoming Community College",1
+"3070","The Arts",2025-09-26,"Gillette College",1
+"3071","The Arts",2025-09-26,"Laramie County Community College",1
+"3072","The Arts",2025-09-26,"Sheridan College",17
+"3073","The Arts",2025-09-26,"University of Wyoming",2
+"3074","The Arts",2025-09-26,"Western Wyoming Community College",1
+"3075","The Arts",2025-10-03,"Casper College",1
+"3076","The Arts",2025-10-03,"Gillette College",1
+"3077","The Arts",2025-10-03,"Laramie County Community College",1
+"3078","The Arts",2025-10-03,"Sheridan College",17
+"3079","The Arts",2025-10-03,"University of Wyoming",3
+"3080","The Arts",2025-10-03,"Western Wyoming Community College",1
+"3081","The Arts",2025-10-10,"Casper College",1
+"3082","The Arts",2025-10-10,"Gillette College",1
+"3083","The Arts",2025-10-10,"Laramie County Community College",1
+"3084","The Arts",2025-10-10,"Sheridan College",17
+"3085","The Arts",2025-10-10,"University of Wyoming",3
+"3086","The Arts",2025-10-10,"Western Wyoming Community College",1
+"3087","The Arts",2025-10-17,"Gillette College",1
+"3088","The Arts",2025-10-17,"Laramie County Community College",1
+"3089","The Arts",2025-10-17,"Sheridan College",17
+"3090","The Arts",2025-10-17,"University of Wyoming",3
+"3091","The Arts",2025-10-17,"Western Wyoming Community College",1
+"3092","The Arts",2025-10-24,"Gillette College",1
+"3093","The Arts",2025-10-24,"Laramie County Community College",1
+"3094","The Arts",2025-10-24,"Sheridan College",17
+"3095","The Arts",2025-10-24,"University of Wyoming",3
+"3096","The Arts",2025-10-24,"Western Wyoming Community College",1
+"3097","The Arts",2025-10-31,"Casper College",1
+"3098","The Arts",2025-10-31,"Gillette College",1
+"3099","The Arts",2025-10-31,"Laramie County Community College",1
+"3100","The Arts",2025-10-31,"Sheridan College",17
+"3101","The Arts",2025-10-31,"University of Wyoming",3
+"3102","The Arts",2025-10-31,"Western Wyoming Community College",1
+"3103","The Arts",2025-11-07,"Gillette College",1
+"3104","The Arts",2025-11-07,"Laramie County Community College",1
+"3105","The Arts",2025-11-07,"Sheridan College",17
+"3106","The Arts",2025-11-07,"University of Wyoming",3
+"3107","The Arts",2025-11-07,"Western Wyoming Community College",1
+"3108","The Arts",2025-11-14,"Gillette College",1
+"3109","The Arts",2025-11-14,"Laramie County Community College",1
+"3110","The Arts",2025-11-14,"Sheridan College",17
+"3111","The Arts",2025-11-14,"University of Wyoming",3
+"3112","The Arts",2025-11-14,"Western Wyoming Community College",1
+"3113","The Arts",2025-11-21,"Gillette College",1
+"3114","The Arts",2025-11-21,"Laramie County Community College",1
+"3115","The Arts",2025-11-21,"Sheridan College",17
+"3116","The Arts",2025-11-21,"University of Wyoming",2
+"3117","The Arts",2025-11-21,"Western Wyoming Community College",1
+"3118","The Arts",2025-11-28,"Gillette College",1
+"3119","The Arts",2025-11-28,"Laramie County Community College",1
+"3120","The Arts",2025-11-28,"Sheridan College",17
+"3121","The Arts",2025-11-28,"University of Wyoming",2
+"3122","The Arts",2025-11-28,"Western Wyoming Community College",1
+"3123","The Arts",2025-12-05,"Gillette College",1
+"3124","The Arts",2025-12-05,"Laramie County Community College",1
+"3125","The Arts",2025-12-05,"Sheridan College",17
+"3126","The Arts",2025-12-05,"University of Wyoming",2
+"3127","The Arts",2025-12-05,"Western Wyoming Community College",1
+"3128","The Arts",2025-12-12,"Laramie County Community College",1
+"3129","The Arts",2025-12-12,"Sheridan College",17
+"3130","The Arts",2025-12-12,"University of Wyoming",2
+"3131","The Arts",2025-12-12,"Western Wyoming Community College",1
+"3132","The Arts",2025-12-19,"Laramie County Community College",1
+"3133","The Arts",2025-12-19,"Northwest College",2
+"3134","The Arts",2025-12-19,"Sheridan College",17
+"3135","The Arts",2025-12-19,"University of Wyoming",2
+"3136","The Arts",2025-12-19,"Western Wyoming Community College",1
+"3137","The Arts",2025-12-26,"Laramie County Community College",1
+"3138","The Arts",2025-12-26,"Northwest College",2
+"3139","The Arts",2025-12-26,"Sheridan College",17
+"3140","The Arts",2025-12-26,"University of Wyoming",2
+"3141","The Arts",2025-12-26,"Western Wyoming Community College",1
+"3142","The Arts",2026-01-02,"Laramie County Community College",1
+"3143","The Arts",2026-01-02,"Northwest College",2
+"3144","The Arts",2026-01-02,"Sheridan College",17
+"3145","The Arts",2026-01-02,"University of Wyoming",2
+"3146","The Arts",2026-01-02,"Western Wyoming Community College",1
+"3147","The Arts",2026-01-09,"Laramie County Community College",1
+"3148","The Arts",2026-01-09,"Northwest College",2
+"3149","The Arts",2026-01-09,"Sheridan College",17
+"3150","The Arts",2026-01-09,"University of Wyoming",2
+"3151","The Arts",2026-01-09,"Western Wyoming Community College",1
+"3152","The Arts",2026-01-16,"Laramie County Community College",1
+"3153","The Arts",2026-01-16,"Sheridan College",17
+"3154","The Arts",2026-01-16,"University of Wyoming",2
+"3155","The Arts",2026-01-16,"Western Wyoming Community College",1
+"3156","The Arts",2026-01-23,"Laramie County Community College",1
+"3157","The Arts",2026-01-23,"Sheridan College",17
+"3158","The Arts",2026-01-23,"University of Wyoming",2
+"3159","The Arts",2026-01-23,"Western Wyoming Community College",1
+"3160","The Arts",2026-01-30,"Casper College",1
+"3161","The Arts",2026-01-30,"Laramie County Community College",1
+"3162","The Arts",2026-01-30,"Sheridan College",17
+"3163","The Arts",2026-01-30,"University of Wyoming",2
+"3164","The Arts",2026-01-30,"Western Wyoming Community College",1
+"3165","The Arts",2026-02-06,"Casper College",1
+"3166","The Arts",2026-02-06,"Laramie County Community College",1
+"3167","The Arts",2026-02-06,"Sheridan College",17
+"3168","The Arts",2026-02-06,"University of Wyoming",2
+"3169","The Arts",2026-02-06,"Western Wyoming Community College",2
+"3170","The Arts",2026-02-13,"Casper College",1
+"3171","The Arts",2026-02-13,"Laramie County Community College",1
+"3172","The Arts",2026-02-13,"Sheridan College",17
+"3173","The Arts",2026-02-13,"University of Wyoming",1
+"3174","The Arts",2026-02-13,"Western Wyoming Community College",2
+"3175","The Arts",2026-02-20,"Casper College",1
+"3176","The Arts",2026-02-20,"Laramie County Community College",1
+"3177","The Arts",2026-02-20,"Sheridan College",17
+"3178","The Arts",2026-02-20,"University of Wyoming",1
+"3179","The Arts",2026-02-20,"Western Wyoming Community College",2
+"3180","The Arts",2026-02-27,"Laramie County Community College",1
+"3181","The Arts",2026-02-27,"Sheridan College",17
+"3182","The Arts",2026-02-27,"University of Wyoming",1
+"3183","The Arts",2026-02-27,"Western Wyoming Community College",2
+"3184","The Arts",2026-08-03,"Sheridan College",17
+"3185","Uncategorized",2024-08-09,"Central Wyoming College",1
+"3186","Uncategorized",2024-08-09,"Laramie County Community College",2
+"3187","Uncategorized",2024-08-09,"University of Wyoming",5
+"3188","Uncategorized",2024-08-09,"Western Wyoming Community College",1
+"3189","Uncategorized",2024-08-16,"Laramie County Community College",1
+"3190","Uncategorized",2024-08-16,"University of Wyoming",5
+"3191","Uncategorized",2024-08-16,"Western Wyoming Community College",1
+"3192","Uncategorized",2024-08-23,"Casper College",1
+"3193","Uncategorized",2024-08-23,"Central Wyoming College",1
+"3194","Uncategorized",2024-08-23,"Laramie County Community College",1
+"3195","Uncategorized",2024-08-23,"University of Wyoming",5
+"3196","Uncategorized",2024-08-23,"Western Wyoming Community College",1
+"3197","Uncategorized",2024-08-30,"Casper College",1
+"3198","Uncategorized",2024-08-30,"Laramie County Community College",1
+"3199","Uncategorized",2024-08-30,"University of Wyoming",5
+"3200","Uncategorized",2024-08-30,"Western Wyoming Community College",1
+"3201","Uncategorized",2024-09-06,"Casper College",1
+"3202","Uncategorized",2024-09-06,"Central Wyoming College",1
+"3203","Uncategorized",2024-09-06,"Laramie County Community College",1
+"3204","Uncategorized",2024-09-06,"University of Wyoming",6
+"3205","Uncategorized",2024-09-06,"Western Wyoming Community College",1
+"3206","Uncategorized",2024-09-13,"Casper College",1
+"3207","Uncategorized",2024-09-13,"Central Wyoming College",1
+"3208","Uncategorized",2024-09-13,"Laramie County Community College",1
+"3209","Uncategorized",2024-09-13,"University of Wyoming",5
+"3210","Uncategorized",2024-09-13,"Western Wyoming Community College",1
+"3211","Uncategorized",2024-09-20,"Casper College",1
+"3212","Uncategorized",2024-09-20,"Central Wyoming College",1
+"3213","Uncategorized",2024-09-20,"Laramie County Community College",1
+"3214","Uncategorized",2024-09-20,"Sheridan College",1
+"3215","Uncategorized",2024-09-20,"University of Wyoming",5
+"3216","Uncategorized",2024-09-20,"Western Wyoming Community College",1
+"3217","Uncategorized",2024-09-27,"Casper College",1
+"3218","Uncategorized",2024-09-27,"Central Wyoming College",1
+"3219","Uncategorized",2024-09-27,"Laramie County Community College",1
+"3220","Uncategorized",2024-09-27,"Sheridan College",1
+"3221","Uncategorized",2024-09-27,"University of Wyoming",7
+"3222","Uncategorized",2024-09-27,"Western Wyoming Community College",1
+"3223","Uncategorized",2024-10-04,"Casper College",1
+"3224","Uncategorized",2024-10-04,"Central Wyoming College",1
+"3225","Uncategorized",2024-10-04,"Laramie County Community College",1
+"3226","Uncategorized",2024-10-04,"Sheridan College",1
+"3227","Uncategorized",2024-10-04,"University of Wyoming",7
+"3228","Uncategorized",2024-10-04,"Western Wyoming Community College",1
+"3229","Uncategorized",2024-10-11,"Casper College",1
+"3230","Uncategorized",2024-10-11,"Central Wyoming College",1
+"3231","Uncategorized",2024-10-11,"Laramie County Community College",1
+"3232","Uncategorized",2024-10-11,"Sheridan College",1
+"3233","Uncategorized",2024-10-11,"University of Wyoming",6
+"3234","Uncategorized",2024-10-11,"Western Wyoming Community College",1
+"3235","Uncategorized",2024-10-18,"Casper College",1
+"3236","Uncategorized",2024-10-18,"Laramie County Community College",1
+"3237","Uncategorized",2024-10-18,"Sheridan College",1
+"3238","Uncategorized",2024-10-18,"University of Wyoming",7
+"3239","Uncategorized",2024-10-18,"Western Wyoming Community College",1
+"3240","Uncategorized",2024-10-25,"Casper College",1
+"3241","Uncategorized",2024-10-25,"Laramie County Community College",1
+"3242","Uncategorized",2024-10-25,"Sheridan College",1
+"3243","Uncategorized",2024-10-25,"University of Wyoming",9
+"3244","Uncategorized",2024-10-25,"Western Wyoming Community College",1
+"3245","Uncategorized",2024-11-01,"Casper College",1
+"3246","Uncategorized",2024-11-01,"Central Wyoming College",1
+"3247","Uncategorized",2024-11-01,"Laramie County Community College",1
+"3248","Uncategorized",2024-11-01,"Sheridan College",1
+"3249","Uncategorized",2024-11-01,"University of Wyoming",11
+"3250","Uncategorized",2024-11-01,"Western Wyoming Community College",1
+"3251","Uncategorized",2024-11-08,"Casper College",1
+"3252","Uncategorized",2024-11-08,"Central Wyoming College",1
+"3253","Uncategorized",2024-11-08,"Laramie County Community College",1
+"3254","Uncategorized",2024-11-08,"Sheridan College",1
+"3255","Uncategorized",2024-11-08,"University of Wyoming",11
+"3256","Uncategorized",2024-11-08,"Western Wyoming Community College",1
+"3257","Uncategorized",2024-11-15,"Central Wyoming College",1
+"3258","Uncategorized",2024-11-15,"Laramie County Community College",1
+"3259","Uncategorized",2024-11-15,"Sheridan College",1
+"3260","Uncategorized",2024-11-15,"University of Wyoming",11
+"3261","Uncategorized",2024-11-15,"Western Wyoming Community College",1
+"3262","Uncategorized",2024-11-22,"Central Wyoming College",1
+"3263","Uncategorized",2024-11-22,"Laramie County Community College",1
+"3264","Uncategorized",2024-11-22,"Sheridan College",1
+"3265","Uncategorized",2024-11-22,"University of Wyoming",11
+"3266","Uncategorized",2024-11-22,"Western Wyoming Community College",1
+"3267","Uncategorized",2024-11-29,"Central Wyoming College",1
+"3268","Uncategorized",2024-11-29,"Laramie County Community College",1
+"3269","Uncategorized",2024-11-29,"Sheridan College",1
+"3270","Uncategorized",2024-11-29,"University of Wyoming",11
+"3271","Uncategorized",2024-11-29,"Western Wyoming Community College",1
+"3272","Uncategorized",2024-12-06,"Central Wyoming College",1
+"3273","Uncategorized",2024-12-06,"Laramie County Community College",1
+"3274","Uncategorized",2024-12-06,"Sheridan College",1
+"3275","Uncategorized",2024-12-06,"University of Wyoming",10
+"3276","Uncategorized",2024-12-06,"Western Wyoming Community College",1
+"3277","Uncategorized",2024-12-13,"Central Wyoming College",1
+"3278","Uncategorized",2024-12-13,"Gillette College",1
+"3279","Uncategorized",2024-12-13,"Laramie County Community College",1
+"3280","Uncategorized",2024-12-13,"Sheridan College",1
+"3281","Uncategorized",2024-12-13,"University of Wyoming",8
+"3282","Uncategorized",2024-12-13,"Western Wyoming Community College",1
+"3283","Uncategorized",2024-12-20,"Central Wyoming College",1
+"3284","Uncategorized",2024-12-20,"Gillette College",1
+"3285","Uncategorized",2024-12-20,"Laramie County Community College",1
+"3286","Uncategorized",2024-12-20,"Sheridan College",1
+"3287","Uncategorized",2024-12-20,"University of Wyoming",11
+"3288","Uncategorized",2024-12-20,"Western Wyoming Community College",1
+"3289","Uncategorized",2024-12-27,"Central Wyoming College",1
+"3290","Uncategorized",2024-12-27,"Gillette College",1
+"3291","Uncategorized",2024-12-27,"Laramie County Community College",1
+"3292","Uncategorized",2024-12-27,"Sheridan College",1
+"3293","Uncategorized",2024-12-27,"University of Wyoming",11
+"3294","Uncategorized",2024-12-27,"Western Wyoming Community College",1
+"3295","Uncategorized",2025-01-03,"Central Wyoming College",1
+"3296","Uncategorized",2025-01-03,"Gillette College",1
+"3297","Uncategorized",2025-01-03,"Laramie County Community College",1
+"3298","Uncategorized",2025-01-03,"Sheridan College",1
+"3299","Uncategorized",2025-01-03,"University of Wyoming",10
+"3300","Uncategorized",2025-01-03,"Western Wyoming Community College",1
+"3301","Uncategorized",2025-01-10,"Central Wyoming College",1
+"3302","Uncategorized",2025-01-10,"Gillette College",1
+"3303","Uncategorized",2025-01-10,"Laramie County Community College",1
+"3304","Uncategorized",2025-01-10,"Sheridan College",1
+"3305","Uncategorized",2025-01-10,"University of Wyoming",12
+"3306","Uncategorized",2025-01-10,"Western Wyoming Community College",1
+"3307","Uncategorized",2025-01-17,"Central Wyoming College",2
+"3308","Uncategorized",2025-01-17,"Gillette College",1
+"3309","Uncategorized",2025-01-17,"Laramie County Community College",1
+"3310","Uncategorized",2025-01-17,"Sheridan College",1
+"3311","Uncategorized",2025-01-17,"University of Wyoming",13
+"3312","Uncategorized",2025-01-17,"Western Wyoming Community College",1
+"3313","Uncategorized",2025-01-24,"Casper College",1
+"3314","Uncategorized",2025-01-24,"Central Wyoming College",2
+"3315","Uncategorized",2025-01-24,"Gillette College",1
+"3316","Uncategorized",2025-01-24,"Laramie County Community College",1
+"3317","Uncategorized",2025-01-24,"Sheridan College",1
+"3318","Uncategorized",2025-01-24,"University of Wyoming",11
+"3319","Uncategorized",2025-01-24,"Western Wyoming Community College",1
+"3320","Uncategorized",2025-01-31,"Casper College",1
+"3321","Uncategorized",2025-01-31,"Central Wyoming College",2
+"3322","Uncategorized",2025-01-31,"Gillette College",1
+"3323","Uncategorized",2025-01-31,"Laramie County Community College",1
+"3324","Uncategorized",2025-01-31,"Sheridan College",1
+"3325","Uncategorized",2025-01-31,"University of Wyoming",9
+"3326","Uncategorized",2025-01-31,"Western Wyoming Community College",1
+"3327","Uncategorized",2025-02-07,"Casper College",1
+"3328","Uncategorized",2025-02-07,"Central Wyoming College",2
+"3329","Uncategorized",2025-02-07,"Gillette College",1
+"3330","Uncategorized",2025-02-07,"Laramie County Community College",1
+"3331","Uncategorized",2025-02-07,"Sheridan College",1
+"3332","Uncategorized",2025-02-07,"University of Wyoming",9
+"3333","Uncategorized",2025-02-07,"Western Wyoming Community College",1
+"3334","Uncategorized",2025-02-14,"Casper College",2
+"3335","Uncategorized",2025-02-14,"Central Wyoming College",2
+"3336","Uncategorized",2025-02-14,"Gillette College",1
+"3337","Uncategorized",2025-02-14,"Laramie County Community College",1
+"3338","Uncategorized",2025-02-14,"Sheridan College",1
+"3339","Uncategorized",2025-02-14,"University of Wyoming",9
+"3340","Uncategorized",2025-02-14,"Western Wyoming Community College",1
+"3341","Uncategorized",2025-02-21,"Casper College",2
+"3342","Uncategorized",2025-02-21,"Central Wyoming College",1
+"3343","Uncategorized",2025-02-21,"Gillette College",1
+"3344","Uncategorized",2025-02-21,"Laramie County Community College",1
+"3345","Uncategorized",2025-02-21,"Sheridan College",1
+"3346","Uncategorized",2025-02-21,"University of Wyoming",8
+"3347","Uncategorized",2025-02-21,"Western Wyoming Community College",1
+"3348","Uncategorized",2025-02-28,"Casper College",2
+"3349","Uncategorized",2025-02-28,"Central Wyoming College",1
+"3350","Uncategorized",2025-02-28,"Gillette College",1
+"3351","Uncategorized",2025-02-28,"Laramie County Community College",1
+"3352","Uncategorized",2025-02-28,"Sheridan College",1
+"3353","Uncategorized",2025-02-28,"University of Wyoming",9
+"3354","Uncategorized",2025-02-28,"Western Wyoming Community College",1
+"3355","Uncategorized",2025-03-07,"Casper College",1
+"3356","Uncategorized",2025-03-07,"Central Wyoming College",1
+"3357","Uncategorized",2025-03-07,"Gillette College",1
+"3358","Uncategorized",2025-03-07,"Sheridan College",1
+"3359","Uncategorized",2025-03-07,"University of Wyoming",7
+"3360","Uncategorized",2025-03-07,"Western Wyoming Community College",1
+"3361","Uncategorized",2025-03-14,"Casper College",2
+"3362","Uncategorized",2025-03-14,"Central Wyoming College",1
+"3363","Uncategorized",2025-03-14,"Gillette College",1
+"3364","Uncategorized",2025-03-14,"Laramie County Community College",1
+"3365","Uncategorized",2025-03-14,"University of Wyoming",8
+"3366","Uncategorized",2025-03-14,"Western Wyoming Community College",1
+"3367","Uncategorized",2025-03-21,"Casper College",2
+"3368","Uncategorized",2025-03-21,"Central Wyoming College",1
+"3369","Uncategorized",2025-03-21,"Gillette College",1
+"3370","Uncategorized",2025-03-21,"University of Wyoming",14
+"3371","Uncategorized",2025-03-21,"Western Wyoming Community College",1
+"3372","Uncategorized",2025-03-28,"Casper College",2
+"3373","Uncategorized",2025-03-28,"Central Wyoming College",2
+"3374","Uncategorized",2025-03-28,"Gillette College",1
+"3375","Uncategorized",2025-03-28,"Laramie County Community College",1
+"3376","Uncategorized",2025-03-28,"University of Wyoming",16
+"3377","Uncategorized",2025-03-28,"Western Wyoming Community College",1
+"3378","Uncategorized",2025-04-04,"Casper College",1
+"3379","Uncategorized",2025-04-04,"Central Wyoming College",3
+"3380","Uncategorized",2025-04-04,"Gillette College",1
+"3381","Uncategorized",2025-04-04,"Laramie County Community College",2
+"3382","Uncategorized",2025-04-04,"University of Wyoming",17
+"3383","Uncategorized",2025-04-04,"Western Wyoming Community College",1
+"3384","Uncategorized",2025-04-11,"Casper College",1
+"3385","Uncategorized",2025-04-11,"Central Wyoming College",3
+"3386","Uncategorized",2025-04-11,"Gillette College",1
+"3387","Uncategorized",2025-04-11,"Laramie County Community College",3
+"3388","Uncategorized",2025-04-11,"University of Wyoming",17
+"3389","Uncategorized",2025-04-11,"Western Wyoming Community College",1
+"3390","Uncategorized",2025-04-18,"Casper College",1
+"3391","Uncategorized",2025-04-18,"Central Wyoming College",2
+"3392","Uncategorized",2025-04-18,"Gillette College",1
+"3393","Uncategorized",2025-04-18,"Laramie County Community College",3
+"3394","Uncategorized",2025-04-18,"University of Wyoming",17
+"3395","Uncategorized",2025-04-18,"Western Wyoming Community College",1
+"3396","Uncategorized",2025-04-25,"Casper College",1
+"3397","Uncategorized",2025-04-25,"Central Wyoming College",2
+"3398","Uncategorized",2025-04-25,"Gillette College",1
+"3399","Uncategorized",2025-04-25,"Laramie County Community College",3
+"3400","Uncategorized",2025-04-25,"University of Wyoming",16
+"3401","Uncategorized",2025-04-25,"Western Wyoming Community College",1
+"3402","Uncategorized",2025-05-02,"Central Wyoming College",1
+"3403","Uncategorized",2025-05-02,"Gillette College",2
+"3404","Uncategorized",2025-05-02,"Laramie County Community College",3
+"3405","Uncategorized",2025-05-02,"University of Wyoming",15
+"3406","Uncategorized",2025-05-02,"Western Wyoming Community College",1
+"3407","Uncategorized",2025-05-09,"Central Wyoming College",1
+"3408","Uncategorized",2025-05-09,"Gillette College",2
+"3409","Uncategorized",2025-05-09,"Laramie County Community College",3
+"3410","Uncategorized",2025-05-09,"University of Wyoming",12
+"3411","Uncategorized",2025-05-09,"Western Wyoming Community College",1
+"3412","Uncategorized",2025-05-16,"Central Wyoming College",1
+"3413","Uncategorized",2025-05-16,"Gillette College",2
+"3414","Uncategorized",2025-05-16,"Laramie County Community College",3
+"3415","Uncategorized",2025-05-16,"University of Wyoming",13
+"3416","Uncategorized",2025-05-16,"Western Wyoming Community College",1
+"3417","Uncategorized",2025-05-23,"Central Wyoming College",1
+"3418","Uncategorized",2025-05-23,"Laramie County Community College",3
+"3419","Uncategorized",2025-05-23,"University of Wyoming",14
+"3420","Uncategorized",2025-05-23,"Western Wyoming Community College",1
+"3421","Uncategorized",2025-05-30,"Central Wyoming College",2
+"3422","Uncategorized",2025-05-30,"Laramie County Community College",5
+"3423","Uncategorized",2025-05-30,"University of Wyoming",12
+"3424","Uncategorized",2025-05-30,"Western Wyoming Community College",1
+"3425","Uncategorized",2025-06-06,"Central Wyoming College",2
+"3426","Uncategorized",2025-06-06,"Laramie County Community College",5
+"3427","Uncategorized",2025-06-06,"Sheridan College",1
+"3428","Uncategorized",2025-06-06,"University of Wyoming",14
+"3429","Uncategorized",2025-06-06,"Western Wyoming Community College",1
+"3430","Uncategorized",2025-06-13,"Central Wyoming College",2
+"3431","Uncategorized",2025-06-13,"Laramie County Community College",5
+"3432","Uncategorized",2025-06-13,"Sheridan College",1
+"3433","Uncategorized",2025-06-13,"University of Wyoming",14
+"3434","Uncategorized",2025-06-13,"Western Wyoming Community College",1
+"3435","Uncategorized",2025-06-20,"Central Wyoming College",2
+"3436","Uncategorized",2025-06-20,"Laramie County Community College",4
+"3437","Uncategorized",2025-06-20,"Sheridan College",1
+"3438","Uncategorized",2025-06-20,"University of Wyoming",14
+"3439","Uncategorized",2025-06-20,"Western Wyoming Community College",1
+"3440","Uncategorized",2025-06-27,"Central Wyoming College",2
+"3441","Uncategorized",2025-06-27,"Laramie County Community College",2
+"3442","Uncategorized",2025-06-27,"Sheridan College",1
+"3443","Uncategorized",2025-06-27,"University of Wyoming",13
+"3444","Uncategorized",2025-06-27,"Western Wyoming Community College",1
+"3445","Uncategorized",2025-07-04,"Central Wyoming College",2
+"3446","Uncategorized",2025-07-04,"Laramie County Community College",2
+"3447","Uncategorized",2025-07-04,"Sheridan College",1
+"3448","Uncategorized",2025-07-04,"University of Wyoming",13
+"3449","Uncategorized",2025-07-04,"Western Wyoming Community College",1
+"3450","Uncategorized",2025-07-11,"Central Wyoming College",1
+"3451","Uncategorized",2025-07-11,"Laramie County Community College",1
+"3452","Uncategorized",2025-07-11,"University of Wyoming",10
+"3453","Uncategorized",2025-07-11,"Western Wyoming Community College",1
+"3454","Uncategorized",2025-07-18,"Central Wyoming College",1
+"3455","Uncategorized",2025-07-18,"Laramie County Community College",1
+"3456","Uncategorized",2025-07-18,"University of Wyoming",7
+"3457","Uncategorized",2025-07-18,"Western Wyoming Community College",1
+"3458","Uncategorized",2025-07-25,"Central Wyoming College",2
+"3459","Uncategorized",2025-07-25,"Laramie County Community College",2
+"3460","Uncategorized",2025-07-25,"University of Wyoming",8
+"3461","Uncategorized",2025-07-25,"Western Wyoming Community College",1
+"3462","Uncategorized",2025-08-01,"Central Wyoming College",2
+"3463","Uncategorized",2025-08-01,"Laramie County Community College",2
+"3464","Uncategorized",2025-08-01,"University of Wyoming",8
+"3465","Uncategorized",2025-08-01,"Western Wyoming Community College",1
+"3466","Uncategorized",2025-08-08,"Central Wyoming College",2
+"3467","Uncategorized",2025-08-08,"Laramie County Community College",2
+"3468","Uncategorized",2025-08-08,"University of Wyoming",8
+"3469","Uncategorized",2025-08-08,"Western Wyoming Community College",1
+"3470","Uncategorized",2025-08-15,"Central Wyoming College",2
+"3471","Uncategorized",2025-08-15,"Laramie County Community College",1
+"3472","Uncategorized",2025-08-15,"University of Wyoming",8
+"3473","Uncategorized",2025-08-15,"Western Wyoming Community College",1
+"3474","Uncategorized",2025-08-22,"Central Wyoming College",1
+"3475","Uncategorized",2025-08-22,"Laramie County Community College",1
+"3476","Uncategorized",2025-08-22,"University of Wyoming",10
+"3477","Uncategorized",2025-08-22,"Western Wyoming Community College",1
+"3478","Uncategorized",2025-08-29,"Casper College",1
+"3479","Uncategorized",2025-08-29,"Central Wyoming College",2
+"3480","Uncategorized",2025-08-29,"Laramie County Community College",2
+"3481","Uncategorized",2025-08-29,"University of Wyoming",10
+"3482","Uncategorized",2025-08-29,"Western Wyoming Community College",1
+"3483","Uncategorized",2025-09-05,"Casper College",1
+"3484","Uncategorized",2025-09-05,"Central Wyoming College",2
+"3485","Uncategorized",2025-09-05,"Laramie County Community College",2
+"3486","Uncategorized",2025-09-05,"University of Wyoming",9
+"3487","Uncategorized",2025-09-05,"Western Wyoming Community College",1
+"3488","Uncategorized",2025-09-12,"Central Wyoming College",2
+"3489","Uncategorized",2025-09-12,"Laramie County Community College",2
+"3490","Uncategorized",2025-09-12,"University of Wyoming",8
+"3491","Uncategorized",2025-09-12,"Western Wyoming Community College",1
+"3492","Uncategorized",2025-09-19,"Central Wyoming College",3
+"3493","Uncategorized",2025-09-19,"Laramie County Community College",2
+"3494","Uncategorized",2025-09-19,"University of Wyoming",10
+"3495","Uncategorized",2025-09-19,"Western Wyoming Community College",2
+"3496","Uncategorized",2025-09-26,"Central Wyoming College",3
+"3497","Uncategorized",2025-09-26,"Laramie County Community College",2
+"3498","Uncategorized",2025-09-26,"University of Wyoming",9
+"3499","Uncategorized",2025-09-26,"Western Wyoming Community College",2
+"3500","Uncategorized",2025-10-03,"Central Wyoming College",3
+"3501","Uncategorized",2025-10-03,"Laramie County Community College",3
+"3502","Uncategorized",2025-10-03,"University of Wyoming",8
+"3503","Uncategorized",2025-10-03,"Western Wyoming Community College",2
+"3504","Uncategorized",2025-10-10,"Central Wyoming College",3
+"3505","Uncategorized",2025-10-10,"Laramie County Community College",3
+"3506","Uncategorized",2025-10-10,"University of Wyoming",8
+"3507","Uncategorized",2025-10-10,"Western Wyoming Community College",2
+"3508","Uncategorized",2025-10-17,"Central Wyoming College",3
+"3509","Uncategorized",2025-10-17,"Laramie County Community College",3
+"3510","Uncategorized",2025-10-17,"University of Wyoming",10
+"3511","Uncategorized",2025-10-17,"Western Wyoming Community College",2
+"3512","Uncategorized",2025-10-24,"Central Wyoming College",3
+"3513","Uncategorized",2025-10-24,"Laramie County Community College",3
+"3514","Uncategorized",2025-10-24,"University of Wyoming",9
+"3515","Uncategorized",2025-10-24,"Western Wyoming Community College",2
+"3516","Uncategorized",2025-10-31,"Central Wyoming College",3
+"3517","Uncategorized",2025-10-31,"Eastern Wyoming Community College",1
+"3518","Uncategorized",2025-10-31,"Laramie County Community College",4
+"3519","Uncategorized",2025-10-31,"University of Wyoming",7
+"3520","Uncategorized",2025-10-31,"Western Wyoming Community College",2
+"3521","Uncategorized",2025-11-07,"Central Wyoming College",3
+"3522","Uncategorized",2025-11-07,"Eastern Wyoming Community College",1
+"3523","Uncategorized",2025-11-07,"Laramie County Community College",4
+"3524","Uncategorized",2025-11-07,"University of Wyoming",9
+"3525","Uncategorized",2025-11-07,"Western Wyoming Community College",2
+"3526","Uncategorized",2025-11-14,"Central Wyoming College",2
+"3527","Uncategorized",2025-11-14,"Eastern Wyoming Community College",1
+"3528","Uncategorized",2025-11-14,"Laramie County Community College",4
+"3529","Uncategorized",2025-11-14,"University of Wyoming",8
+"3530","Uncategorized",2025-11-14,"Western Wyoming Community College",2
+"3531","Uncategorized",2025-11-21,"Central Wyoming College",2
+"3532","Uncategorized",2025-11-21,"Eastern Wyoming Community College",1
+"3533","Uncategorized",2025-11-21,"Laramie County Community College",4
+"3534","Uncategorized",2025-11-21,"University of Wyoming",10
+"3535","Uncategorized",2025-11-21,"Western Wyoming Community College",2
+"3536","Uncategorized",2025-11-28,"Central Wyoming College",2
+"3537","Uncategorized",2025-11-28,"Eastern Wyoming Community College",1
+"3538","Uncategorized",2025-11-28,"Laramie County Community College",3
+"3539","Uncategorized",2025-11-28,"University of Wyoming",10
+"3540","Uncategorized",2025-11-28,"Western Wyoming Community College",2
+"3541","Uncategorized",2025-12-05,"Central Wyoming College",2
+"3542","Uncategorized",2025-12-05,"Eastern Wyoming Community College",1
+"3543","Uncategorized",2025-12-05,"Laramie County Community College",3
+"3544","Uncategorized",2025-12-05,"University of Wyoming",9
+"3545","Uncategorized",2025-12-05,"Western Wyoming Community College",2
+"3546","Uncategorized",2025-12-12,"Central Wyoming College",2
+"3547","Uncategorized",2025-12-12,"Eastern Wyoming Community College",1
+"3548","Uncategorized",2025-12-12,"Laramie County Community College",3
+"3549","Uncategorized",2025-12-12,"University of Wyoming",8
+"3550","Uncategorized",2025-12-12,"Western Wyoming Community College",2
+"3551","Uncategorized",2025-12-19,"Casper College",1
+"3552","Uncategorized",2025-12-19,"Central Wyoming College",2
+"3553","Uncategorized",2025-12-19,"Eastern Wyoming Community College",1
+"3554","Uncategorized",2025-12-19,"Laramie County Community College",3
+"3555","Uncategorized",2025-12-19,"University of Wyoming",6
+"3556","Uncategorized",2025-12-19,"Western Wyoming Community College",2
+"3557","Uncategorized",2025-12-26,"Casper College",1
+"3558","Uncategorized",2025-12-26,"Central Wyoming College",2
+"3559","Uncategorized",2025-12-26,"Eastern Wyoming Community College",1
+"3560","Uncategorized",2025-12-26,"Laramie County Community College",3
+"3561","Uncategorized",2025-12-26,"University of Wyoming",6
+"3562","Uncategorized",2025-12-26,"Western Wyoming Community College",2
+"3563","Uncategorized",2026-01-02,"Casper College",1
+"3564","Uncategorized",2026-01-02,"Central Wyoming College",2
+"3565","Uncategorized",2026-01-02,"Eastern Wyoming Community College",1
+"3566","Uncategorized",2026-01-02,"Laramie County Community College",3
+"3567","Uncategorized",2026-01-02,"University of Wyoming",6
+"3568","Uncategorized",2026-01-02,"Western Wyoming Community College",2
+"3569","Uncategorized",2026-01-09,"Casper College",1
+"3570","Uncategorized",2026-01-09,"Central Wyoming College",2
+"3571","Uncategorized",2026-01-09,"Eastern Wyoming Community College",1
+"3572","Uncategorized",2026-01-09,"Laramie County Community College",4
+"3573","Uncategorized",2026-01-09,"University of Wyoming",7
+"3574","Uncategorized",2026-01-09,"Western Wyoming Community College",3
+"3575","Uncategorized",2026-01-16,"Casper College",1
+"3576","Uncategorized",2026-01-16,"Central Wyoming College",2
+"3577","Uncategorized",2026-01-16,"Eastern Wyoming Community College",1
+"3578","Uncategorized",2026-01-16,"Laramie County Community College",2
+"3579","Uncategorized",2026-01-16,"University of Wyoming",8
+"3580","Uncategorized",2026-01-16,"Western Wyoming Community College",3
+"3581","Uncategorized",2026-01-23,"Casper College",1
+"3582","Uncategorized",2026-01-23,"Central Wyoming College",2
+"3583","Uncategorized",2026-01-23,"Eastern Wyoming Community College",1
+"3584","Uncategorized",2026-01-23,"Laramie County Community College",2
+"3585","Uncategorized",2026-01-23,"University of Wyoming",8
+"3586","Uncategorized",2026-01-23,"Western Wyoming Community College",3
+"3587","Uncategorized",2026-01-30,"Casper College",1
+"3588","Uncategorized",2026-01-30,"Central Wyoming College",2
+"3589","Uncategorized",2026-01-30,"Eastern Wyoming Community College",1
+"3590","Uncategorized",2026-01-30,"Laramie County Community College",2
+"3591","Uncategorized",2026-01-30,"University of Wyoming",9
+"3592","Uncategorized",2026-01-30,"Western Wyoming Community College",3
+"3593","Uncategorized",2026-02-06,"Casper College",1
+"3594","Uncategorized",2026-02-06,"Eastern Wyoming Community College",1
+"3595","Uncategorized",2026-02-06,"Laramie County Community College",2
+"3596","Uncategorized",2026-02-06,"University of Wyoming",10
+"3597","Uncategorized",2026-02-06,"Western Wyoming Community College",3
+"3598","Uncategorized",2026-02-13,"Casper College",1
+"3599","Uncategorized",2026-02-13,"Eastern Wyoming Community College",1
+"3600","Uncategorized",2026-02-13,"Laramie County Community College",2
+"3601","Uncategorized",2026-02-13,"University of Wyoming",14
+"3602","Uncategorized",2026-02-13,"Western Wyoming Community College",3
+"3603","Uncategorized",2026-02-20,"Casper College",2
+"3604","Uncategorized",2026-02-20,"Eastern Wyoming Community College",1
+"3605","Uncategorized",2026-02-20,"Laramie County Community College",2
+"3606","Uncategorized",2026-02-20,"University of Wyoming",15
+"3607","Uncategorized",2026-02-20,"Western Wyoming Community College",3
+"3608","Uncategorized",2026-02-27,"Casper College",3
+"3609","Uncategorized",2026-02-27,"Eastern Wyoming Community College",1
+"3610","Uncategorized",2026-02-27,"Laramie County Community College",2
+"3611","Uncategorized",2026-02-27,"University of Wyoming",15
+"3612","Uncategorized",2026-02-27,"Western Wyoming Community College",2
+"3613","Uncategorized",2026-08-03,"Central Wyoming College",1
+"3614","Uncategorized",2026-08-03,"Gillette College",1

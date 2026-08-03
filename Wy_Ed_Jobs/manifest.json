@@ -3808,28 +3808,28 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "f06e8a1573a0d072cb45bd9a94d9c0e8"
+      "checksum": "0d2d11999a0d3ad5e9026f65f09f4e90"
     },
     "allnow.csv": {
-      "checksum": "642d2dba263275d711e843e697c9e61b"
+      "checksum": "68814bb5d6ba7434e04652ce27847c20"
     },
     "allsum_he.csv": {
-      "checksum": "c65c15cea07173b5b6f871b63d2977bf"
+      "checksum": "44ad2f1773629eabae93471241485313"
     },
     "allsum.csv": {
-      "checksum": "14f87ac87768469452e8097f9b654316"
+      "checksum": "bdee4003c1e61fe3f6747ce0bc724a0c"
     },
     "app.R": {
       "checksum": "7e88cbdc75d6307b48d829210d037e38"
     },
     "combinedclean.csv": {
-      "checksum": "6e1b5f4d19dc4f82d37d77388daab08f"
+      "checksum": "586ebb4690ab42623750096e372d151f"
     },
     "hedata.xlsx": {
-      "checksum": "fa6a72b14f34b8f586cb7c58c4706d56"
+      "checksum": "050d2e98fa308ed837cd4def3a5d2950"
     },
     "k12jobanalysis.csv": {
-      "checksum": "7b4022ba9221e1cf519e169fb156a15c"
+      "checksum": "631e5eb90c43fae1c8c6dd16e06f5c90"
     },
     "salarymap.csv": {
       "checksum": "6a287c0e25478e533a9fcb162479337a"
