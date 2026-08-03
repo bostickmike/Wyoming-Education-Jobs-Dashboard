@@ -70,20 +70,28 @@ jobs:
       - name: Sanity-check the new data before committing anything
         run: Rscript .github/scripts/sanity_check.R
 
+      # These three steps are diagnostic/alerting only (see drift_check.R's
+      # header comment) -- a bug in any of them must never block the actual
+      # data commit + Connect Cloud redeploy below, which is the part that
+      # actually matters and was already working reliably before this was
+      # added.
       - name: Check each source for drift against its own history
+        continue-on-error: true
         run: Rscript .github/scripts/check_drift.R
 
       - name: Corroborate any flagged sources with a live chromote check
+        continue-on-error: true
         env:
           CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
-          if [ "$(tail -n +2 /tmp/drift_flagged.csv | wc -l)" -gt 0 ]; then
+          if [ -f /tmp/drift_flagged.csv ] && [ "$(tail -n +2 /tmp/drift_flagged.csv | wc -l)" -gt 0 ]; then
             Rscript .github/scripts/corroborate_drift.R
           else
             echo "Nothing flagged, skipping."
           fi
 
       - name: File or update a GitHub Issue if anything needs a human look
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
