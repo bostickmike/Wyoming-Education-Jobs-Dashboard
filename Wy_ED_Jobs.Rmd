@@ -182,7 +182,7 @@ source("direct_api_scrapers.R")
 # migrates to this platform in the future and isn't yet in this table will
 # safely fall through to being treated as SchoolSpring and logged as an
 # error rather than silently returning nothing.
-redrover_org_ids <- c(jcsd1 = "3146")
+redrover_org_ids <- c(jcsd1 = "3146", hotsprings1 = "3034")
 
 springerjoblinks <- read.csv("springer_job_links.csv", stringsAsFactors = FALSE)
 
@@ -295,7 +295,54 @@ ted<- read.csv("all_tedk12_job_listings.csv")
 
 springer<- read.csv("all_springer_job_listings.csv")
 
-other<- readxl::read_excel("otherjobs.xlsx")
+# The 12 districts not on any major platform were previously hand-
+# maintained in otherjobs.xlsx (no code in this repo ever wrote that
+# file -- it was 5 months stale). Replaced with a real pipeline: WSBA's
+# statewide vacancies page (clean structured data, but confirmed
+# incomplete -- misses ~60-75% of real postings, systematically dropping
+# classified/support/substitute/coaching roles) combined with each
+# district's own page (heuristic per-platform extraction, deduplicated
+# against that district's WSBA entries by normalized title). See
+# misc_district_scrapers.R's header comment for the full platform
+# breakdown and known limitations.
+source("scrape_helpers.R")
+source("direct_api_scrapers.R")
+source("misc_district_scrapers.R")
+
+other <- safe_scrape(
+  "Miscellaneous K-12 districts (WSBA + own pages)",
+  scrape_fn = function() {
+    fetch_all_misc_district_postings(
+      chromote_session_factory = function() chromote::ChromoteSession$new()
+    )
+  },
+  expected_cols = c("title", "date_posted", "position", "location", "url", "District")
+)
+
+# Laramie Montessori Charter School: not a school district at all (so it
+# has no natural home in misc_district_registry, which is keyed by
+# District), but was found to have its own clean structured source
+# (Paylocity) while investigating Wyoming's charter schools -- see
+# direct_api_scrapers.R::fetch_paylocity_jobs(). Snowy Range Academy, the
+# other real charter school found, already surfaces via WSBA with no
+# extra code needed since WSBA already treats it as a standalone org.
+laramie_montessori <- safe_scrape(
+  "Laramie Montessori Charter School",
+  scrape_fn = function() fetch_paylocity_jobs("70f7d03b-6c9f-4106-8e70-9d781a8bbcba", "Laramie-Montessori-School-Inc"),
+  expected_cols = c("Title", "Location", "Posted_Date", "Link")
+)
+if (nrow(laramie_montessori) > 0) {
+  laramie_montessori <- data.frame(
+    title = laramie_montessori$Title,
+    date_posted = laramie_montessori$Posted_Date,
+    position = NA_character_,
+    location = laramie_montessori$Location,
+    url = laramie_montessori$Link,
+    District = "Laramie Montessori Charter School",
+    stringsAsFactors = FALSE
+  )
+  other <- dplyr::bind_rows(other, laramie_montessori)
+}
 
 frontline <- frontline %>%
   mutate(date_posted = standardize_date(date_posted))
