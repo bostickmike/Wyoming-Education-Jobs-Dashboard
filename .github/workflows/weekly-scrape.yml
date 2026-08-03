@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   scrape:
@@ -68,6 +69,37 @@ jobs:
 
       - name: Sanity-check the new data before committing anything
         run: Rscript .github/scripts/sanity_check.R
+
+      - name: Check each source for drift against its own history
+        run: Rscript .github/scripts/check_drift.R
+
+      - name: Corroborate any flagged sources with a live chromote check
+        env:
+          CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
+        run: |
+          if [ "$(tail -n +2 /tmp/drift_flagged.csv | wc -l)" -gt 0 ]; then
+            Rscript .github/scripts/corroborate_drift.R
+          else
+            echo "Nothing flagged, skipping."
+          fi
+
+      - name: File or update a GitHub Issue if anything needs a human look
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f /tmp/drift_report.md ]; then
+            echo "No report generated, nothing to file."
+            exit 0
+          fi
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "in:title \"Scraper drift check\"" --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body-file /tmp/drift_report.md
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "Scraper drift check: sources need review" \
+              --body-file /tmp/drift_report.md
+          fi
 
       - name: Regenerate the Connect Cloud manifest
         run: |
