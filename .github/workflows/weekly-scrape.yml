@@ -153,6 +153,7 @@ jobs:
             Wy_Ed_Jobs/he_institution_weekly_totals.csv \
             Wy_Ed_Jobs/salarymap2.csv \
             Wy_Ed_Jobs/salarymap.csv \
+            Wy_Ed_Jobs/k12_salary_history.csv \
             Wy_Ed_Jobs/manifest.json \
             Archived_HE_Data/*.xlsx \
             Archivek12_Data/*.csv

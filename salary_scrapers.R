@@ -195,3 +195,56 @@ parse_wsba_superintendent_salary_page <- function(page_data) {
     mutate(District = canonicalize_wsba_district_name(District)) %>%
     select(District, Superintendent_Salary_Days)
 }
+
+# ---------------------------------------------------------------------------
+# K-12 salary history archive
+# ---------------------------------------------------------------------------
+#
+# WSBA has no public historical archive of prior settlement documents --
+# checked the actual source page directly (2026-08-05), it only ever shows
+# the current year's PDF, old ones aren't kept anywhere public. So unlike
+# IPEDS (queryable by year indefinitely, see
+# ipeds_salary_scraper.R::fetch_ipeds_he_salary_trend()), the only way to
+# build a multi-year K-12 salary trend is to start capturing our own
+# snapshot now and let it accumulate as WSBA republishes each year. This
+# only appends a new row when Salary_Year actually changes (not every
+# weekly pipeline run), so the archive stays one row per district per
+# year, not 52 duplicate rows for the same year.
+
+# Pure decision logic, testable without file I/O: given the archive's
+# existing recorded years and this run's salary year, does a new
+# snapshot need to be appended?
+needs_k12_salary_archive_update <- function(existing_years, current_year) {
+  !is.na(current_year) && !(current_year %in% existing_years)
+}
+
+archive_k12_salary_snapshot <- function(salarymap2, history_path) {
+  current_year <- unique(stats::na.omit(salarymap2$Salary_Year))
+  if (length(current_year) != 1) {
+    message("K-12 salary archive: Salary_Year isn't a single consistent value this run, skipping archive.")
+    return(invisible(FALSE))
+  }
+  current_year <- current_year[1]
+
+  existing <- if (file.exists(history_path)) {
+    read.csv(history_path, stringsAsFactors = FALSE)
+  } else {
+    data.frame(District = character(0), Salary_Year = character(0),
+               Teacher_Base_Salary = numeric(0), Superintendent_Salary = numeric(0),
+               stringsAsFactors = FALSE)
+  }
+
+  if (!needs_k12_salary_archive_update(existing$Salary_Year, current_year)) {
+    message("K-12 salary archive: ", current_year, " already recorded, no new snapshot needed.")
+    return(invisible(FALSE))
+  }
+
+  snapshot <- salarymap2 %>%
+    filter(Salary_Year == current_year) %>%
+    select(District, Salary_Year, Teacher_Base_Salary, Superintendent_Salary)
+
+  updated <- bind_rows(existing, snapshot)
+  write.csv(updated, history_path, row.names = FALSE)
+  message("K-12 salary archive: appended ", nrow(snapshot), " district snapshot(s) for ", current_year, ".")
+  invisible(TRUE)
+}

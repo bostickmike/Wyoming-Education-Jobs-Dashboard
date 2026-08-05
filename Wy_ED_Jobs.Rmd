@@ -531,6 +531,12 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
            Salary_Source)
 
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+
+  # Starts building a multi-year K-12 salary trend -- WSBA has no public
+  # historical archive (unlike IPEDS, checked directly 2026-08-05), so
+  # this only accumulates real history going forward, one snapshot per
+  # new Salary_Year.
+  archive_k12_salary_snapshot(salarymap2, file.path("Wy_Ed_Jobs", "k12_salary_history.csv"))
 } else {
   message("WSBA salary fetch failed for one or both documents -- leaving salarymap2.csv untouched this run.")
 }
@@ -913,9 +919,30 @@ if (nrow(he_salary) > 0) {
   # the actual dollar figures change.
   salarymap <- salarymap %>%
     left_join(he_salary, by = "Name") %>%
-    mutate(Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)") %>%
+    mutate(Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)")
+
+  # Multi-year salary trend (current + 2 prior years) -- IPEDS is
+  # queryable by year indefinitely, unlike WSBA (no public historical
+  # archive; checked directly 2026-08-05). Pivoted to generic "N years
+  # ago" column names, not literal year numbers, so the schema stays
+  # stable as the calendar year rolls over -- app.R derives the real
+  # year labels from Salary_Year - 1, Salary_Year - 2.
+  salary_trend <- fetch_ipeds_he_salary_trend(n_years = 3)
+  if (nrow(salary_trend) > 0) {
+    latest_year <- max(salary_trend$Year)
+    salary_trend_wide <- salary_trend %>%
+      mutate(YearsAgo = latest_year - Year) %>%
+      filter(YearsAgo > 0) %>%
+      select(Name, YearsAgo, Faculty_Avg_Salary) %>%
+      tidyr::pivot_wider(names_from = YearsAgo, values_from = Faculty_Avg_Salary,
+                          names_glue = "Faculty_Avg_Salary_Y{YearsAgo}Ago")
+    salarymap <- salarymap %>% left_join(salary_trend_wide, by = "Name")
+  }
+
+  salarymap <- salarymap %>%
     select(Name, Longitude, Latitude, Link, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
-           Faculty_Count, Salary_Year, Salary_Note, Salary_Source)
+           Faculty_Count, Salary_Year, Salary_Note, Salary_Source,
+           starts_with("Faculty_Avg_Salary_Y"))
 
   write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 } else {

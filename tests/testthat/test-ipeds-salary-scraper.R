@@ -58,3 +58,20 @@ test_that("parse_ipeds_he_salaries returns an empty, correctly-shaped frame when
   expect_equal(names(result), c("Name", "Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor",
                                  "Faculty_Count", "Salary_Year", "Salary_Note"))
 })
+
+test_that("parse_ipeds_salary_trend_year extracts one row per institution with the given year attached", {
+  df <- read.csv(test_path("fixtures", "ipeds_wy_salaries_2024.csv"))
+  result <- parse_ipeds_salary_trend_year(df, 2024)
+
+  expect_equal(nrow(result), 9)
+  expect_true(all(result$Year == 2024))
+
+  uw <- result[result$Name == "University of Wyoming", ]
+  expect_equal(uw$Faculty_Avg_Salary, 98302.828571, tolerance = 1e-4)
+})
+
+test_that("parse_ipeds_salary_trend_year returns an empty, correctly-shaped frame when given no rows", {
+  result <- parse_ipeds_salary_trend_year(data.frame(), 2024)
+  expect_equal(nrow(result), 0)
+  expect_equal(names(result), c("Name", "Year", "Faculty_Avg_Salary"))
+})

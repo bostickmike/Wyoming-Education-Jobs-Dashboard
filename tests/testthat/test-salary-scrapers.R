@@ -76,3 +76,54 @@ test_that("fetch_wsba_superintendent_salary extracts all 48 districts, deduplica
   expect_true(is.na(campbell$Superintendent_Salary))
   expect_true(is.na(campbell$Superintendent_Contract_Days))
 })
+
+test_that("needs_k12_salary_archive_update flags a genuinely new year and skips an already-recorded one", {
+  expect_true(needs_k12_salary_archive_update(c("2024-2025"), "2025-2026"))
+  expect_false(needs_k12_salary_archive_update(c("2024-2025", "2025-2026"), "2025-2026"))
+  expect_false(needs_k12_salary_archive_update(character(0), NA_character_))
+})
+
+test_that("archive_k12_salary_snapshot creates the archive on first run and appends on a new year", {
+  history_path <- withr::local_tempfile(fileext = ".csv")
+
+  salarymap2_y1 <- data.frame(
+    District = c("Albany County School District 1", "Big Horn School District 1"),
+    Salary_Year = "2025-2026",
+    Teacher_Base_Salary = c(51500, 56750),
+    Superintendent_Salary = c(174000, 152140),
+    stringsAsFactors = FALSE
+  )
+
+  expect_true(archive_k12_salary_snapshot(salarymap2_y1, history_path))
+  archived <- read.csv(history_path, stringsAsFactors = FALSE)
+  expect_equal(nrow(archived), 2)
+  expect_equal(unique(archived$Salary_Year), "2025-2026")
+
+  # Same year again (e.g. next week's pipeline run) -- no-op, no duplicate rows.
+  expect_false(archive_k12_salary_snapshot(salarymap2_y1, history_path))
+  archived_again <- read.csv(history_path, stringsAsFactors = FALSE)
+  expect_equal(nrow(archived_again), 2)
+
+  # A genuinely new year -- appended, old year's rows preserved.
+  salarymap2_y2 <- salarymap2_y1
+  salarymap2_y2$Salary_Year <- "2026-2027"
+  salarymap2_y2$Teacher_Base_Salary <- c(53000, 58500)
+
+  expect_true(archive_k12_salary_snapshot(salarymap2_y2, history_path))
+  archived_final <- read.csv(history_path, stringsAsFactors = FALSE)
+  expect_equal(nrow(archived_final), 4)
+  expect_setequal(unique(archived_final$Salary_Year), c("2025-2026", "2026-2027"))
+})
+
+test_that("archive_k12_salary_snapshot skips archiving when Salary_Year isn't a single consistent value", {
+  history_path <- withr::local_tempfile(fileext = ".csv")
+  inconsistent <- data.frame(
+    District = c("Albany County School District 1", "Big Horn School District 1"),
+    Salary_Year = c("2025-2026", "2026-2027"),
+    Teacher_Base_Salary = c(51500, 56750),
+    Superintendent_Salary = c(174000, 152140),
+    stringsAsFactors = FALSE
+  )
+  expect_false(archive_k12_salary_snapshot(inconsistent, history_path))
+  expect_false(file.exists(history_path))
+})

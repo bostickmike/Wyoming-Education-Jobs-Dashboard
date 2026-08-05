@@ -522,12 +522,14 @@ map_k12 <- mapdata2_k12 %>%
                            TeacherCurrentCount / Teachers_Total_FTE, NA_real_),
     Vacancy_Numerator = TeacherCurrentCount, Vacancy_Denominator = Teachers_Total_FTE,
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
+    Faculty_Avg_Salary_Y1Ago = NA_real_, Faculty_Avg_Salary_Y2Ago = NA_real_,
     Salary_Note = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
-         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
+         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
+         Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
@@ -573,7 +575,8 @@ map_he <- mapdata2_he %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
-         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
+         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
+         Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
@@ -1321,6 +1324,9 @@ server <- function(input, output, session) {
     he_rows <- combined_map_data %>% filter(Type == "Higher Ed Institution")
     year <- unique(na.omit(he_rows$Salary_Year))
     year_label <- if (length(year) > 0) year[1] else "current"
+    year_int <- suppressWarnings(as.integer(year_label))
+    y1_label <- if (!is.na(year_int)) as.character(year_int - 1) else "1 year ago"
+    y2_label <- if (!is.na(year_int)) as.character(year_int - 2) else "2 years ago"
 
     df <- he_rows %>%
       arrange(desc(CurrentCount)) %>%
@@ -1330,6 +1336,8 @@ server <- function(input, output, session) {
         `New This Week` = WeeklyNew,
         `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
         AvgFacultySalary = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
+        AvgFacultySalaryY1 = ifelse(is.na(Faculty_Avg_Salary_Y1Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y1Ago)),
+        AvgFacultySalaryY2 = ifelse(is.na(Faculty_Avg_Salary_Y2Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y2Ago)),
         ProfessorAvgSalary = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
         `Faculty Count` = Faculty_Count,
         # Short plain-text label, not the full Salary_Note sentence --
@@ -1340,6 +1348,8 @@ server <- function(input, output, session) {
         Note = ifelse(is.na(Salary_Note), "", "Shared reporting w/ Sheridan & Gillette")
       )
     names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg Faculty Salary (", year_label, ")")
+    names(df)[names(df) == "AvgFacultySalaryY1"] <- paste0("Avg Faculty Salary (", y1_label, ")")
+    names(df)[names(df) == "AvgFacultySalaryY2"] <- paste0("Avg Faculty Salary (", y2_label, ")")
     names(df)[names(df) == "ProfessorAvgSalary"] <- paste0("Professor Avg Salary (", year_label, ")")
 
     datatable(df, filter = "top", extensions = "Buttons",

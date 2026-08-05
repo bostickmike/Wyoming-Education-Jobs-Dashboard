@@ -119,6 +119,46 @@ fetch_ipeds_he_salaries <- function() {
   parse_ipeds_he_salaries(latest$data, latest$year)
 }
 
+# Pure transformation for one year of trend data -- kept separate from the
+# network fetch below so it's testable against a captured fixture. Only
+# the headline "all ranks combined" figure is extracted -- Professor-rank/
+# Faculty_Count/Salary_Note aren't needed for a multi-year trend, just the
+# one number worth comparing year over year.
+parse_ipeds_salary_trend_year <- function(df, year) {
+  if (nrow(df) == 0) {
+    return(data.frame(Name = character(0), Year = integer(0), Faculty_Avg_Salary = numeric(0)))
+  }
+  overall <- df %>%
+    filter(academic_rank == 99, contract_length == 99, sex == 99) %>%
+    transmute(unitid, Faculty_Avg_Salary = clean_ipeds_value(average_salary))
+  IPEDS_UNITID_MAP %>%
+    left_join(overall, by = "unitid") %>%
+    transmute(Name, Year = year, Faculty_Avg_Salary)
+}
+
+# Faculty_Avg_Salary going back n_years, for a multi-year salary trend
+# alongside fetch_ipeds_he_salaries()'s single latest-year figure. Unlike
+# WSBA (which only ever exposes the current + one prior year with no
+# public historical archive -- checked directly 2026-08-05, confirmed no
+# archive exists), IPEDS is queryable by year going back indefinitely, so
+# this is straightforward: just re-run parse_ipeds_salary_trend_year() for
+# each of the last few years. Returns long format (one row per Name x
+# Year) since that's the more composable shape; callers pivot wide if
+# they need it.
+fetch_ipeds_he_salary_trend <- function(n_years = 3) {
+  latest <- find_latest_ipeds_salary_year()
+  if (is.na(latest$year)) {
+    return(data.frame(Name = character(0), Year = integer(0), Faculty_Avg_Salary = numeric(0)))
+  }
+
+  years <- seq(latest$year, latest$year - n_years + 1)
+  rows <- lapply(years, function(y) {
+    df <- if (y == latest$year) latest$data else fetch_ipeds_wy_salaries_for_year(y)
+    parse_ipeds_salary_trend_year(df, y)
+  })
+  bind_rows(rows)
+}
+
 # ---------------------------------------------------------------------------
 # Sheridan/Gillette split watch
 # ---------------------------------------------------------------------------
