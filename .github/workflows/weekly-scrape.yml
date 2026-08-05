@@ -90,6 +90,14 @@ jobs:
             echo "Nothing flagged, skipping."
           fi
 
+      # Runs after corroborate_drift.R (which overwrites, not appends,
+      # /tmp/drift_report.md) so a flagged salary source never gets
+      # silently clobbered by that step running afterward -- see
+      # check_salary_drift.R's own append-if-exists logic.
+      - name: Check salary source coverage against its known-fixed universe
+        continue-on-error: true
+        run: Rscript .github/scripts/check_salary_drift.R
+
       - name: File or update a GitHub Issue if anything needs a human look
         continue-on-error: true
         env:
@@ -141,6 +149,8 @@ jobs:
             Wy_Ed_Jobs/hedata.xlsx \
             Wy_Ed_Jobs/k12jobanalysis.csv \
             Wy_Ed_Jobs/facultydata.csv \
+            Wy_Ed_Jobs/salarymap2.csv \
+            Wy_Ed_Jobs/salarymap.csv \
             Wy_Ed_Jobs/manifest.json \
             Archived_HE_Data/*.xlsx \
             Archivek12_Data/*.csv

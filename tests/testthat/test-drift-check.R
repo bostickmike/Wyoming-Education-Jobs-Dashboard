@@ -53,6 +53,27 @@ test_that("flag_drift treats a source missing from current data as a count of ze
   expect_equal(flagged$count, 0)
 })
 
+test_that("check_salary_coverage flags a source that fell below its expected count", {
+  flagged <- check_salary_coverage("K-12 teacher base salary (WSBA)", actual = 12, expected = 48)
+  expect_equal(flagged$name, "K-12 teacher base salary (WSBA)")
+  expect_equal(flagged$expected, 48)
+  expect_equal(flagged$actual, 12)
+})
+
+test_that("check_salary_coverage returns NULL when a source meets its expected count", {
+  expect_null(check_salary_coverage("K-12 teacher base salary (WSBA)", actual = 48, expected = 48))
+})
+
+test_that("check_salary_coverage supports a tolerance below the ideal expected count", {
+  # IPEDS Professor-rank coverage is legitimately sparse (some two-year
+  # colleges report no "Professor" rank at all) -- min_ok lets a check use
+  # a looser floor than the full expected universe without that being
+  # confused with actual drift.
+  expect_null(check_salary_coverage("HE avg faculty salary (IPEDS)", actual = 8, expected = 9, min_ok = 8))
+  flagged <- check_salary_coverage("HE avg faculty salary (IPEDS)", actual = 5, expected = 9, min_ok = 8)
+  expect_equal(flagged$actual, 5)
+})
+
 test_that("score_page_text_for_job_signal identifies real hidden postings as likely_broken", {
   # Real fixture: this is the actual Sweetwater County SD1 page text that
   # exposed the Applitrack encoding bug -- 69 real postings, scraper said 0.

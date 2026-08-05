@@ -74,6 +74,26 @@ flag_drift <- function(current_counts, baseline, min_weeks = 2, drop_threshold =
 }
 
 # --------------------------------------------------------------------------
+# Tier 0: salary-source structural/coverage checks
+# --------------------------------------------------------------------------
+
+# Salary data (WSBA for K-12, IPEDS for Higher Ed -- see salary_scrapers.R
+# and ipeds_salary_scraper.R) has a small, essentially fixed universe (48
+# WY school districts, 9 WY public HE institutions) and changes far less
+# often than job postings (once a year, not weekly), so a trailing
+# statistical baseline like flag_drift() doesn't fit. Instead this is a
+# hard assertion against that known universe size: a parser silently
+# extracting fewer matched records than the known-fixed count is the same
+# failure signature as the Applitrack encoding bug -- the scrape "succeeds"
+# (safe_scrape logs status "ok", n_rows > 0) while quietly returning much
+# less real data than before, because the source changed its page/PDF/API
+# layout out from under the parser.
+check_salary_coverage <- function(name, actual, expected, min_ok = expected) {
+  if (actual >= min_ok) return(NULL)
+  data.frame(name = name, expected = expected, actual = actual, stringsAsFactors = FALSE)
+}
+
+# --------------------------------------------------------------------------
 # Source name -> public URL lookup, for the chromote corroboration step
 # --------------------------------------------------------------------------
 
