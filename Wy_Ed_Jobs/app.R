@@ -201,7 +201,7 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       id = "sidebar_tabs",
-      menuItem("Introduction", tabName = "intro", icon = icon("home")),
+      menuItem("Map", tabName = "intro", icon = icon("home")),
       menuItem("K-12 Careers", tabName = "k12_root", icon = icon("school"),
                menuSubItem("Jobs Table", tabName = "k12_table"),
                menuSubItem("Longitudinal Teacher Trends", tabName = "k12_trends"),
@@ -493,6 +493,12 @@ server <- function(input, output, session) {
   observe({
     df <- map_filtered()
 
+    # A marker click always just opens its popup (leaflet's default) --
+    # navigating away from the map has to be a second, deliberate action,
+    # so the "View all jobs" link below fires a Shiny input from inside
+    # the popup itself rather than reacting to the marker click event,
+    # which used to fire at the same instant as the popup opened and
+    # immediately navigated away before it could be read.
     popups <- with(df, paste0(
       "<div><strong>", Name, "</strong><br/>", Type, "</div>",
       "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
@@ -502,7 +508,13 @@ server <- function(input, output, session) {
              paste0("<div>Starting salary: ", scales::dollar(Start_Salary),
                     " &ndash; ", scales::dollar(Top_Salary), " (", Salary_Year, ")</div>"),
              ""),
-      "<div><a href='", Link, "' target='_blank'>Careers page</a></div>"
+      "<div style='margin-top:6px;'>",
+      "<a href='", Link, "' target='_blank'>Careers page</a>",
+      " &nbsp;|&nbsp; ",
+      "<a href='#' onclick=\"Shiny.setInputValue('popup_view_jobs', '",
+      gsub("'", "&#39;", Name, fixed = TRUE),
+      "', {priority: 'event'}); return false;\">View all jobs &rarr;</a>",
+      "</div>"
     ))
 
     leafletProxy("combined_map", data = df) %>%
@@ -515,17 +527,16 @@ server <- function(input, output, session) {
       )
   })
 
-  observeEvent(input$combined_map_marker_click, {
-    click <- input$combined_map_marker_click
-    req(click$id)
-    row <- combined_map_data %>% filter(Name == click$id)
+  observeEvent(input$popup_view_jobs, {
+    entity <- input$popup_view_jobs
+    row <- combined_map_data %>% filter(Name == entity)
     req(nrow(row) > 0)
 
     if (row$Type[1] == "K-12 District") {
-      selected_district(click$id)
+      selected_district(entity)
       updateTabItems(session, "sidebar_tabs", "k12_table")
     } else {
-      selected_institution(click$id)
+      selected_institution(entity)
       updateTabItems(session, "sidebar_tabs", "he_table")
     }
   })
