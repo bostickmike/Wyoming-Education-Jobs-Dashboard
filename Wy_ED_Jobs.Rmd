@@ -841,5 +841,39 @@ Allnow_he<- rbind(henowsum, henowinstsum)
 write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"))
 ```
 
+### Higher Ed faculty salary data, from IPEDS via the Urban Institute's Education Data Portal API
+```{r ipeds he salary data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("ipeds_salary_scraper.R")
+
+he_salary <- safe_scrape(
+  "IPEDS instructional staff salaries (WY)",
+  scrape_fn = fetch_ipeds_he_salaries,
+  expected_cols = c("Name", "Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor",
+                     "Faculty_Count", "Salary_Year", "Salary_Note")
+)
+
+# Static geo/link fields (Longitude, Latitude, Link) stay hand-maintained --
+# only the salary figures get refreshed from IPEDS each run.
+salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+  select(Name, Longitude, Latitude, Link)
+
+if (nrow(he_salary) > 0) {
+  salarymap <- salarymap %>%
+    left_join(he_salary, by = "Name") %>%
+    mutate(
+      Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)",
+      Salary_Updated = as.character(Sys.Date())
+    ) %>%
+    select(Name, Longitude, Latitude, Link, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
+           Faculty_Count, Salary_Year, Salary_Note, Salary_Source, Salary_Updated)
+
+  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
+} else {
+  message("IPEDS salary fetch failed -- leaving salarymap.csv untouched this run.")
+}
+```
+
 
 

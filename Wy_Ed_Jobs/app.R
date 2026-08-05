@@ -69,7 +69,8 @@ ccdata <- read_xlsx("hedata.xlsx") %>%
   rename(`Date Posted` = Posted_Date)
 ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Link, '</a>')
 
-mapdata2_he <- read.csv("salarymap.csv")
+mapdata2_he <- read.csv("salarymap.csv") %>%
+  mutate(Salary_Year = as.character(Salary_Year))
 
 hesum_he <- read.csv("allsum_he.csv") %>%
   filter(Category != "Uncategorized")
@@ -247,11 +248,15 @@ map_k12 <- mapdata2_k12 %>%
     CurrentCount = coalesce(CurrentCount, 0L),
     WeeklyNew = coalesce(WeeklyNew, 0L),
     SampleTitles = coalesce(SampleTitles, ""),
-    Type = "K-12 District"
+    Type = "K-12 District",
+    Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
+    Salary_Note = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
-         Superintendent_Salary, Superintendent_Contract_Days, Salary_Source, Salary_Updated, County)
+         Superintendent_Salary, Superintendent_Contract_Days,
+         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
+         Salary_Source, Salary_Updated, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -268,13 +273,15 @@ map_he <- mapdata2_he %>%
     WeeklyNew = coalesce(WeeklyNew, 0L),
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "Higher Ed Institution",
-    Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_, Salary_Year = NA_character_,
+    Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
-    Salary_Source = NA_character_, Salary_Updated = NA_character_, County = NA_character_
+    County = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
-         Superintendent_Salary, Superintendent_Contract_Days, Salary_Source, Salary_Updated, County)
+         Superintendent_Salary, Superintendent_Contract_Days,
+         Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
+         Salary_Source, Salary_Updated, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -604,6 +611,16 @@ server <- function(input, output, session) {
              ""),
       ifelse(!is.na(Superintendent_Salary),
              paste0("<div>Superintendent salary: ", scales::dollar(Superintendent_Salary), "</div>"),
+             ""),
+      ifelse(!is.na(Faculty_Avg_Salary),
+             paste0("<div>Avg. faculty salary: ", scales::dollar(Faculty_Avg_Salary),
+                    ifelse(!is.na(Faculty_Avg_Salary_Professor),
+                           paste0(" (Professor rank: ", scales::dollar(Faculty_Avg_Salary_Professor), ")"),
+                           ""),
+                    " &middot; ", Salary_Year, "</div>"),
+             ""),
+      ifelse(!is.na(Salary_Note),
+             paste0("<div style='font-size:0.85em;color:#666;'>", Salary_Note, "</div>"),
              ""),
       ifelse(!is.na(Salary_Source),
              paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source,

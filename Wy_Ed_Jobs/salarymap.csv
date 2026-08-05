@@ -1,10 +1,10 @@
-Name,Longitude,Latitude,Link
-Casper College,-106.326712,42.832788,https://phe.tbe.taleo.net/phe03/ats/careers/v2/searchResults?org=CASPER&cws=40
-Central Wyoming College,-108.426738,43.030556,https://www.schooljobs.com/careers/cwc
-Eastern Wyoming Community College,-104.190823,42.079354,https://ewc.peopleadmin.com/postings/search?page=
-Gillette College,-105.5072,44.2617,https://www.gillettecollege.org/careers/
-Laramie County Community College,-104.778789,41.104288,https://careers-lccc.icims.com/jobs/search?pr=
-Northwest College,-108.7621,44.7604,https://northwestcollege.simplehire.com/postings/search?page=
-Sheridan College,-106.943,44.7647,https://jobs.sheridan.edu/postings/search?page=
-University of Wyoming,-105.57931,41.311773,https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions?
-Western Wyoming Community College,-109.237126,41.590964,https://wwcwy.peopleadmin.com/postings/search?page=
+"Name","Longitude","Latitude","Link","Faculty_Avg_Salary","Faculty_Avg_Salary_Professor","Faculty_Count","Salary_Year","Salary_Note","Salary_Source","Salary_Updated"
+"Casper College",-106.326712,42.832788,"https://phe.tbe.taleo.net/phe03/ats/careers/v2/searchResults?org=CASPER&cws=40",69721.925,NA,120,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Central Wyoming College",-108.426738,43.030556,"https://www.schooljobs.com/careers/cwc",64047.4375,69916.666667,64,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Eastern Wyoming Community College",-104.190823,42.079354,"https://ewc.peopleadmin.com/postings/search?page=",59298.909091,69916.2,33,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Gillette College",-105.5072,44.2617,"https://www.gillettecollege.org/careers/",69755.951613,82409.3,62,"2024","Reported by Northern Wyoming Community College District, which includes both Sheridan College and Gillette College -- IPEDS does not break this figure out by campus.","IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Laramie County Community College",-104.778789,41.104288,"https://careers-lccc.icims.com/jobs/search?pr=",78985.263158,NA,133,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Northwest College",-108.7621,44.7604,"https://northwestcollege.simplehire.com/postings/search?page=",66619.54717,81372.666667,53,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Sheridan College",-106.943,44.7647,"https://jobs.sheridan.edu/postings/search?page=",69755.951613,82409.3,62,"2024","Reported by Northern Wyoming Community College District, which includes both Sheridan College and Gillette College -- IPEDS does not break this figure out by campus.","IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"University of Wyoming",-105.57931,41.311773,"https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions?",98302.828571,127093.120879,700,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
+"Western Wyoming Community College",-109.237126,41.590964,"https://wwcwy.peopleadmin.com/postings/search?page=",68473.439394,81668.375,66,"2024",NA,"IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)","2026-08-04"
