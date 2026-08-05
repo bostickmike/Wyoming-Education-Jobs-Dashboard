@@ -28,7 +28,8 @@ test_that("HE longitudinal 'Total' view is not double-counted", {
     session$setInputs(
       inst_trend = "Total",
       he_category = sort(unique(env$hesum_he$Category)),
-      he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date))
+      he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)),
+      he_chart_type = "all"
     )
 
     windowed <- he_windowed()
@@ -40,9 +41,12 @@ test_that("HE longitudinal 'Total' view is not double-counted", {
       dplyr::group_by(Category) %>%
       dplyr::summarize(sum = sum(sum), .groups = "drop")
 
+    # hesum_he now carries a Job_Type column (Full Time vs Adjunct/Part-Time);
+    # "All Jobs" mode sums across it, so the expected total does too.
     expected <- env$hesum_he %>%
       dplyr::filter(Archive_Date == latest_date, Institution == "Total") %>%
-      dplyr::select(Category, sum)
+      dplyr::group_by(Category) %>%
+      dplyr::summarize(sum = sum(sum), .groups = "drop")
 
     merged <- dplyr::inner_join(observed, expected, by = "Category", suffix = c("_observed", "_expected"))
     expect_gt(nrow(merged), 0)
@@ -88,7 +92,8 @@ test_that("HE and K-12 reactives don't error across every institution/district",
   shiny::testServer(env$server, {
     for (inst in sort(unique(env$hesum_he$Institution))) {
       session$setInputs(inst_trend = inst, he_category = sort(unique(env$hesum_he$Category)),
-                         he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)))
+                         he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)),
+                         he_chart_type = "all")
       expect_no_error(he_windowed())
       expect_no_error(output$he_longitudinal_plot)
     }

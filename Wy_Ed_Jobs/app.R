@@ -55,7 +55,7 @@ ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Lin
 mapdata2_he <- read.csv("salarymap.csv")
 
 hesum_he <- read.csv("allsum_he.csv") %>%
-  filter(Category != "Uncategorized", Job_Type == "Instructor/Teacher/Faculty")
+  filter(Category != "Uncategorized")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
 he_dates <- sort(unique(hesum_he$Archive_Date))
@@ -326,9 +326,6 @@ ui <- dashboardPage(
           width = "100%"
         ),
         
-        radioButtons("k12_chart_type", NULL, choices = c("Line" = "line", "Stacked Area" = "area"),
-                     selected = "line", inline = TRUE),
-
         # Plot output
         withSpinner(plotlyOutput("k12_longitudinal_plot"))
       ),
@@ -396,8 +393,11 @@ ui <- dashboardPage(
           width = "100%"
         ),
         
-        radioButtons("he_chart_type", NULL, choices = c("Line" = "line", "Stacked Area" = "area"),
-                     selected = "line", inline = TRUE),
+        radioButtons("he_chart_type", NULL, choices = c(
+          "All Jobs" = "all",
+          "Full Time" = "Instructor/Teacher/Faculty",
+          "Part Time" = "Adjunct/Part-Time Faculty"
+        ), selected = "all", inline = TRUE),
 
         # Plot output
         withSpinner(plotlyOutput("he_longitudinal_plot"))),
@@ -596,29 +596,20 @@ server <- function(input, output, session) {
     # Get the exact dates in the filtered data
     all_dates <- sort(unique(df$Archive_Date))
 
-    base <- ggplot(df, aes(
+    p <- ggplot(df, aes(
       x = Archive_Date,
       y = sum,
+      color = Broad_Category,
       group = Broad_Category,
       text = paste0(
         "Date: ", Archive_Date, "<br>",
         "Category: ", Broad_Category, "<br>",
         "Postings: ", sum
       )
-    ))
-
-    p <- if (identical(input$k12_chart_type, "area")) {
-      base + aes(fill = Broad_Category) +
-        geom_area(position = "stack") +
-        scale_fill_manual(values = K12_CATEGORY_COLORS)
-    } else {
-      base + aes(color = Broad_Category) +
-        geom_line() +
-        geom_point(size = 1) +
-        scale_color_manual(values = K12_CATEGORY_COLORS)
-    }
-
-    p <- p +
+    )) +
+      geom_line() +
+      geom_point(size = 1) +
+      scale_color_manual(values = K12_CATEGORY_COLORS) +
       labs(x = "Archive Date", y = "Number of Postings") +
       scale_x_date(
         breaks = all_dates,      # show every date exactly
@@ -677,17 +668,26 @@ server <- function(input, output, session) {
 
   # ---- Reactive filtered dataset by institution + Category ----
   filtered_hesum <- reactive({
-    req(input$inst_trend, input$he_category)
-    
+    req(input$inst_trend, input$he_category, input$he_chart_type)
+
     # Filter by institution
     df <- if (input$inst_trend == "Total") {
       hesum_he
     } else {
       hesum_he %>% filter(Institution == input$inst_trend)
     }
-    
+
     # Filter by Category (vector match)
-    df %>% filter(Category %in% input$he_category)
+    df <- df %>% filter(Category %in% input$he_category)
+
+    # Filter by Job_Type -- "all" sums Full Time + Part Time together
+    # (the group_by/summarize below combines whatever rows are present),
+    # otherwise scope down to just the selected Job_Type.
+    if (!identical(input$he_chart_type, "all")) {
+      df <- df %>% filter(Job_Type == input$he_chart_type)
+    }
+
+    df
   })
   
   # ---- Update slider based on filtered data ----
@@ -745,29 +745,20 @@ server <- function(input, output, session) {
       mutate(Category = factor(Category))
     
     # Plot
-    base <- ggplot(df, aes(
+    p <- ggplot(df, aes(
       x = Archive_Date,
       y = sum,
+      color = Category,
       group = Category,
       text = paste0(
         "Date: ", Archive_Date, "<br>",
         "Category: ", Category, "<br>",
         "Postings: ", sum
       )
-    ))
-
-    p <- if (identical(input$he_chart_type, "area")) {
-      base + aes(fill = Category) +
-        geom_area(position = "stack") +
-        scale_fill_manual(values = HE_CATEGORY_COLORS)
-    } else {
-      base + aes(color = Category) +
-        geom_line() +
-        geom_point(size = 1) +
-        scale_color_manual(values = HE_CATEGORY_COLORS)
-    }
-
-    p <- p +
+    )) +
+      geom_line() +
+      geom_point(size = 1) +
+      scale_color_manual(values = HE_CATEGORY_COLORS) +
       labs(x = "Archive Date", y = "Number of Postings") +
       theme_minimal() +
       theme(
