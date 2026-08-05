@@ -240,15 +240,29 @@ k12_sample_titles <- combineddata %>%
   summarize(SampleTitles = paste(head(Title, 3), collapse = "; "), .groups = "drop")
 k12_weekly_new <- k12_new_this_week %>% count(District, name = "WeeklyNew")
 
+# Teacher-only current postings (k12_history is already scoped to
+# position == "Teacher", same as the Teacher Trends tabs), for a vacancy
+# rate scoped consistently with its denominator (Teachers_Total_FTE from
+# CCD, also teacher-only) -- dividing ALL open postings (bus drivers,
+# coaches, custodians, etc. included) by teacher FTE would overstate the
+# rate by mixing categories that don't correspond to each other.
+k12_teacher_current_counts <- k12_history %>%
+  filter(Archive_Date == max(Archive_Date)) %>%
+  count(District, name = "TeacherCurrentCount")
+
 map_k12 <- mapdata2_k12 %>%
   left_join(k12_current_counts, by = c("Name" = "District")) %>%
   left_join(k12_sample_titles, by = c("Name" = "District")) %>%
   left_join(k12_weekly_new, by = c("Name" = "District")) %>%
+  left_join(k12_teacher_current_counts, by = c("Name" = "District")) %>%
   mutate(
     CurrentCount = coalesce(CurrentCount, 0L),
     WeeklyNew = coalesce(WeeklyNew, 0L),
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "K-12 District",
+    TeacherCurrentCount = coalesce(TeacherCurrentCount, 0L),
+    Vacancy_Rate = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE > 0,
+                           TeacherCurrentCount / Teachers_Total_FTE, NA_real_),
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
     Salary_Note = NA_character_
   ) %>%
@@ -256,7 +270,7 @@ map_k12 <- mapdata2_k12 %>%
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Salary_Source, Salary_Updated, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -264,15 +278,29 @@ he_sample_titles <- ccdata %>%
   summarize(SampleTitles = paste(head(Title, 3), collapse = "; "), .groups = "drop")
 he_weekly_new <- he_new_this_week %>% count(Institution, name = "WeeklyNew")
 
+# he_history is already scoped to Job_Type == "Instructor/Teacher/Faculty"
+# (full-time only, excluding the standing adjunct pool) -- matches
+# Faculty_Count's own scope, since IPEDS's salaries-instructional-staff
+# survey only covers full-time instructional staff. Mixing in
+# Adjunct/Part-Time postings here would overstate the rate the same way
+# using CurrentCount (all K-12 job categories) would on the K-12 side.
+he_faculty_current_counts <- he_history %>%
+  filter(Archive_Date == max(Archive_Date)) %>%
+  count(Institution, name = "FacultyCurrentCount")
+
 map_he <- mapdata2_he %>%
   left_join(he_current_counts, by = c("Name" = "Institution")) %>%
   left_join(he_sample_titles, by = c("Name" = "Institution")) %>%
   left_join(he_weekly_new, by = c("Name" = "Institution")) %>%
+  left_join(he_faculty_current_counts, by = c("Name" = "Institution")) %>%
   mutate(
     CurrentCount = coalesce(CurrentCount, 0L),
     WeeklyNew = coalesce(WeeklyNew, 0L),
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "Higher Ed Institution",
+    FacultyCurrentCount = coalesce(FacultyCurrentCount, 0L),
+    Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count > 0,
+                           FacultyCurrentCount / Faculty_Count, NA_real_),
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
     County = NA_character_
@@ -281,7 +309,7 @@ map_he <- mapdata2_he %>%
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Salary_Source, Salary_Updated, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -616,6 +644,10 @@ server <- function(input, output, session) {
       "<div><strong>", Name, "</strong><br/>", Type, "</div>",
       "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
       "<div>New this week: ", WeeklyNew, "</div>",
+      ifelse(!is.na(Vacancy_Rate),
+             paste0("<div>", ifelse(Type == "K-12 District", "Teacher", "Faculty"),
+                    " vacancy rate: ", scales::percent(Vacancy_Rate, accuracy = 0.1), "</div>"),
+             ""),
       ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
       ifelse(!is.na(Teacher_Base_Salary),
              paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),

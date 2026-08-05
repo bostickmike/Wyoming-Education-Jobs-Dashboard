@@ -525,6 +525,34 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
 }
 ```
 
+### K-12 teacher FTE (staff headcount), from NCES's Common Core of Data via the Urban Institute API
+```{r ccd teacher fte data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("ccd_staff_scraper.R")
+
+teacher_fte <- safe_scrape(
+  "CCD district teacher FTE (WY)",
+  scrape_fn = fetch_ccd_teacher_fte,
+  expected_cols = c("District", "Teachers_Total_FTE", "Enrollment", "CCD_Year")
+)
+
+salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
+
+if (nrow(teacher_fte) > 0) {
+  salarymap2 <- salarymap2 %>%
+    left_join(teacher_fte, by = "District") %>%
+    mutate(
+      CCD_Source = "NCES Common Core of Data via Urban Institute Education Data Portal (educationdata.urban.org)",
+      CCD_Updated = as.character(Sys.Date())
+    )
+
+  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+} else {
+  message("CCD teacher FTE fetch failed -- leaving salarymap2.csv untouched this run.")
+}
+```
+
 
 ## Time to scrape Wyoming Higher Education Data
 ### This chunk scrapes LCCC's data
