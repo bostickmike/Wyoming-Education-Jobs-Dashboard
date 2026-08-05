@@ -16,7 +16,11 @@ library(shinycssloaders)
 #--------------------------------------------------
 combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
   select(District, title, position, location, date_posted, url) %>%
-  mutate(District = str_squish(as.character(District)))
+  mutate(District = str_squish(as.character(District))) %>%
+  arrange(District, title) %>%
+  mutate(url = paste0('<a href="', url, '" target="_blank">', url, '</a>')) %>%
+  rename(Title = title, Position = position, Location = location,
+         `Date Posted` = date_posted, Link = url)
 
 mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
   mutate(Start_Salary = as.numeric(gsub("[^0-9.]", "", Start_Salary)),
@@ -44,7 +48,8 @@ k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
 #--------------------------------------------------
 ccdata <- read_xlsx("hedata.xlsx") %>%
   select(Institution, Title, Location, Posted_Date, Link) %>%
-  arrange(Institution, Title)
+  arrange(Institution, Title) %>%
+  rename(`Date Posted` = Posted_Date)
 ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Link, '</a>')
 
 mapdata2_he <- read.csv("salarymap.csv")
@@ -437,7 +442,7 @@ server <- function(input, output, session) {
 
   # -------- K-12 --------
   output$k12_jobs <- renderDT({
-    datatable(combineddata, filter = "top", extensions = "Buttons",
+    datatable(combineddata, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
   
@@ -577,7 +582,7 @@ server <- function(input, output, session) {
 })
   # -------- Higher Ed --------
   output$he_jobs <- renderDT({
-    datatable(ccdata, escape = FALSE, extensions = "Buttons",
+    datatable(ccdata, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
   
