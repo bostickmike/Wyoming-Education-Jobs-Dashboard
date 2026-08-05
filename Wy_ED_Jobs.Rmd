@@ -372,7 +372,8 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name))
 # below can't silently drift apart.
 
 combinedclean <- combined %>%
-  mutate(position = classify_k12_position(title)) %>%
+  mutate(position = classify_k12_position(title),
+         District = canonicalize_k12_district(District)) %>%
   dplyr::select(title, date_posted, position, location, url, District)
 
 write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'))
