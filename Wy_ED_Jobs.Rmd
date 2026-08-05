@@ -534,14 +534,17 @@ library(dplyr)
 source("scrape_helpers.R")
 source("direct_api_scrapers.R")
 
-# Western is also NEOGOV, once pointed at its real current URL
-# (schooljobs.com/careers/westernwyoming -- the old wwccwy.peopleadmin.com
-# target was NXDOMAIN, fixed earlier this session). At the time this was
-# written Western had zero open postings; fetch_neogov_postings() returns
-# a correctly-empty (not error) result in that case, confirmed live.
+# Western is on the same PeopleAdmin platform as Eastern/Sheridan/
+# Northwest, not NEOGOV -- a prior investigation mistyped the domain as
+# "wwccwy.peopleadmin.com" (double-c), got NXDOMAIN, and wrongly concluded
+# Western had migrated to schooljobs.com/careers/westernwyoming (a real
+# NEOGOV agency slug that happens to return a valid "0 jobs found" page,
+# not Western's actual career site). The real domain is
+# "wwcwy.peopleadmin.com" (single-c) -- confirmed live with 46 real open
+# postings, silently missed by the NEOGOV version for an unknown period.
 western_raw <- safe_scrape(
   "Western Wyoming Community College",
-  scrape_fn = function() fetch_neogov_postings("https://www.schooljobs.com", "westernwyoming"),
+  scrape_fn = function() fetch_peopleadmin_atom("https://wwcwy.peopleadmin.com/postings/all_jobs", "Western Wyoming Campus"),
   expected_cols = c("Title", "Location", "Posted_Date", "Link")
 )
 

@@ -128,12 +128,39 @@ parse_peopleadmin_atom <- function(xml_text, location_fallback) {
 # job-list fragment instead of the full page shell around an empty
 # container -- found by tracing the page's real network traffic with
 # chromote, not by guessing.
+#
+# The listing is paginated at 10 per page (`page` query param, 1-indexed);
+# the fragment gives no total-count field to check against, so this pages
+# until a page comes back with zero cards. Confirmed live that omitting
+# `page` entirely is byte-identical to `page = 1`, so every request goes
+# through the same code path. Missing this loop previously silently
+# truncated any agency with more than 10 open postings to just the first
+# page (caught live: Central Wyoming College and Gillette College both
+# currently have postings on page 2 that a single unpaginated request
+# would have dropped).
 fetch_neogov_postings <- function(base_domain, agency_slug) {
-  resp <- request(paste0(base_domain, "/careers/home/index")) %>%
-    req_url_query(agency = agency_slug, sort = "PositionTitle", isDescendingSort = "false") %>%
-    req_headers(`X-Requested-With` = "XMLHttpRequest") %>%
-    req_perform()
-  parse_neogov_html(resp_body_string(resp), base_domain)
+  all_pages <- list()
+  page <- 1
+  repeat {
+    resp <- request(paste0(base_domain, "/careers/home/index")) %>%
+      req_url_query(agency = agency_slug, sort = "PositionTitle", isDescendingSort = "false", page = page) %>%
+      req_headers(`X-Requested-With` = "XMLHttpRequest") %>%
+      req_perform()
+
+    page_result <- parse_neogov_html(resp_body_string(resp), base_domain)
+    if (nrow(page_result) == 0) break
+
+    all_pages[[length(all_pages) + 1]] <- page_result
+    page <- page + 1
+  }
+
+  if (length(all_pages) == 0) {
+    return(data.frame(Title = character(0), Location = character(0),
+                       Posted_Date = character(0), Link = character(0),
+                       stringsAsFactors = FALSE))
+  }
+
+  dplyr::bind_rows(all_pages)
 }
 
 parse_neogov_html <- function(html_text, base_domain) {

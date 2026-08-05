@@ -83,7 +83,11 @@ flag_drift <- function(current_counts, baseline, min_weeks = 2, drop_threshold =
 he_institution_urls <- c(
   "Laramie County Community College"  = "https://www.governmentjobs.com/careers/lcccwy",
   "Casper College"                    = "https://www.schooljobs.com/careers/caspercollege",
-  "Western Wyoming Community College" = "https://www.schooljobs.com/careers/westernwyoming",
+  # Was schooljobs.com/careers/westernwyoming (a real but wrong NEOGOV
+  # agency, found returning a plausible "0 jobs found" page instead of an
+  # error) -- Western is actually on PeopleAdmin like Eastern/Sheridan/
+  # Northwest; see Wy_ED_Jobs.Rmd's "western wyoming" chunk for the story.
+  "Western Wyoming Community College" = "https://wwcwy.peopleadmin.com/postings/all_jobs",
   "Central Wyoming College"           = "https://www.schooljobs.com/careers/cwc",
   "Gillette College"                  = "https://www.schooljobs.com/careers/gillettecollege",
   "Eastern Wyoming Community College" = "https://ewc.peopleadmin.com/postings/all_jobs",

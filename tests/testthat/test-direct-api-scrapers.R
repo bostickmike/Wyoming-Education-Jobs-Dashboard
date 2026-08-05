@@ -90,6 +90,40 @@ test_that("parse_neogov_html returns zero rows (not an error) when the fragment 
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
 
+test_that("fetch_neogov_postings follows pagination instead of only fetching page 1", {
+  # Regression: fetch_neogov_postings previously fetched only the
+  # unparameterized first page and never followed NEOGOV's own pagination
+  # (10 postings per page), silently truncating any agency with more than
+  # 10 open postings. Confirmed live: Central Wyoming College (14 real
+  # postings) and Gillette College (16) were both being cut to 10. This
+  # mocks a 3-request sequence -- a full page 1 (the real 10-row fixture),
+  # a partial page 2 (1 row), and an empty page 3 -- and checks the loop
+  # both collects every page and stops once a page comes back empty.
+  page1 <- paste(readLines(test_path("fixtures", "neogov_cwc.html"), warn = FALSE), collapse = "\n")
+  page2 <- '<ul class="unstyled search-results-listing-container job-listing-container ">
+    <li class="list-item" data-job-id="9999999">
+      <h3 class="job-item-link-container">
+        <a class="item-details-link" href="/careers/cwc/jobs/9999999/extra-adjunct">Extra Adjunct</a>
+      </h3>
+      <ul class="list-meta"><li>Riverton</li></ul>
+      <div class="list-published"><span class="list-entry-starts"><span>Posted 1 day ago</span></span></div>
+    </li>
+  </ul>'
+  page3 <- '<div class="jobs-not-found-container"><h2 class="not-found-text">No jobs at this time.</h2></div>'
+
+  httr2::local_mocked_responses(list(
+    httr2::response(200, body = charToRaw(page1)),
+    httr2::response(200, body = charToRaw(page2)),
+    httr2::response(200, body = charToRaw(page3))
+  ))
+
+  result <- fetch_neogov_postings("https://www.schooljobs.com", "cwc")
+
+  expect_equal(nrow(result), 11)
+  expect_true("Extra Adjunct" %in% result$Title)
+  expect_true(any(grepl("^https://www.schooljobs.com/careers/cwc/jobs/9999999", result$Link)))
+})
+
 test_that("parse_schoolspring_json extracts fields and builds a per-job link", {
   fixture <- '{"success":true,"message":"","validationErrors":[],"value":{"page":1,"size":25,"jobsList":[
     {"jobId":5846934,"employer":"Sundance Secondary","title":"High Needs SPED Paraprofessional","location":"Sundance, Wyoming","displayDate":"2026-07-22T06:00:00"},
