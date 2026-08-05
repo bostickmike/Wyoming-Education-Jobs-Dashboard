@@ -277,6 +277,13 @@ k12_weekly_new <- k12_new_this_week %>% count(District, name = "WeeklyNew")
 # CCD, also teacher-only) -- dividing ALL open postings (bus drivers,
 # coaches, custodians, etc. included) by teacher FTE would overstate the
 # rate by mixing categories that don't correspond to each other.
+# Vacancy rate needs a minimum FTE to be a meaningful comparison -- 1
+# opening out of 1 teacher is a "100%" rate that isn't really comparable
+# to Laramie County's ~5% on a base of 1,067 teachers. Currently a no-op
+# against real data (every WY district/institution has 15+ FTE), but
+# keeps a future small entity from producing a noisy, misleading rate.
+VACANCY_RATE_MIN_FTE <- 10
+
 k12_teacher_current_counts <- k12_history %>%
   filter(Archive_Date == max(Archive_Date)) %>%
   count(District, name = "TeacherCurrentCount")
@@ -292,7 +299,7 @@ map_k12 <- mapdata2_k12 %>%
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "K-12 District",
     TeacherCurrentCount = coalesce(TeacherCurrentCount, 0L),
-    Vacancy_Rate = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE > 0,
+    Vacancy_Rate = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE >= VACANCY_RATE_MIN_FTE,
                            TeacherCurrentCount / Teachers_Total_FTE, NA_real_),
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
     Salary_Note = NA_character_
@@ -330,7 +337,13 @@ map_he <- mapdata2_he %>%
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "Higher Ed Institution",
     FacultyCurrentCount = coalesce(FacultyCurrentCount, 0L),
-    Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count > 0,
+    # Sheridan College and Gillette College (flagged via Salary_Note) share
+    # one IPEDS-reported Faculty_Count -- dividing either institution's own
+    # posting count by that joint total isn't a real per-campus rate (it
+    # inflated Sheridan to 66% in testing, since its numerator is compared
+    # against a denominator that's really Sheridan+Gillette combined), so
+    # both are suppressed here rather than shown as if they were exact.
+    Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count >= VACANCY_RATE_MIN_FTE & is.na(Salary_Note),
                            FacultyCurrentCount / Faculty_Count, NA_real_),
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
@@ -425,6 +438,14 @@ ui <- dashboardPage(
               tableOutput("top_k12_districts")),
           box(title = "Top Higher Ed Hiring Institutions This Week", width = 6, status = "primary",
               tableOutput("top_he_institutions"))
+        ),
+        fluidRow(
+          box(title = "Highest Teacher Vacancy Rate", width = 6, status = "primary",
+              withSpinner(plotlyOutput("k12_vacancy_leaderboard", height = 320)),
+              helpText("Districts with at least", VACANCY_RATE_MIN_FTE, "teacher FTE.")),
+          box(title = "Highest Faculty Vacancy Rate", width = 6, status = "primary",
+              withSpinner(plotlyOutput("he_vacancy_leaderboard", height = 320)),
+              helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty."))
         ),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
             paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
@@ -617,6 +638,50 @@ server <- function(input, output, session) {
   })
   output$top_he_institutions <- renderTable({
     ccdata %>% count(Institution, sort = TRUE, name = "Open Postings") %>% head(5)
+  })
+
+  # Vacancy-rate leaderboards -- a different question from the raw-count
+  # tables above ("who's short-staffed relative to their size" rather than
+  # "who's hiring the most"), so they sit alongside rather than replacing
+  # them. Same horizontal-bar, ranked-descending pattern as the Current
+  # Trends charts. combined_map_data's Vacancy_Rate is already NA below
+  # VACANCY_RATE_MIN_FTE, so no separate floor check is needed here.
+  output$k12_vacancy_leaderboard <- renderPlotly({
+    df <- combined_map_data %>%
+      filter(Type == "K-12 District", !is.na(Vacancy_Rate)) %>%
+      arrange(desc(Vacancy_Rate)) %>%
+      head(8)
+    req(nrow(df) > 0)
+
+    plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
+                            text = paste0(Name, ": ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
+      geom_bar(stat = "identity", fill = "#2a78d6") +
+      geom_text(aes(label = scales::percent(Vacancy_Rate, accuracy = 0.1)), hjust = -0.15, size = 3) +
+      labs(x = NULL, y = "Teacher vacancy rate") +
+      scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+      coord_flip() +
+      theme_minimal()
+
+    ggplotly(plot, tooltip = "text")
+  })
+
+  output$he_vacancy_leaderboard <- renderPlotly({
+    df <- combined_map_data %>%
+      filter(Type == "Higher Ed Institution", !is.na(Vacancy_Rate)) %>%
+      arrange(desc(Vacancy_Rate)) %>%
+      head(8)
+    req(nrow(df) > 0)
+
+    plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
+                            text = paste0(Name, ": ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
+      geom_bar(stat = "identity", fill = "#4a3aa7") +
+      geom_text(aes(label = scales::percent(Vacancy_Rate, accuracy = 0.1)), hjust = -0.15, size = 3) +
+      labs(x = NULL, y = "Faculty vacancy rate") +
+      scale_y_continuous(labels = scales::percent, expand = expansion(mult = c(0, 0.2))) +
+      coord_flip() +
+      theme_minimal()
+
+    ggplotly(plot, tooltip = "text")
   })
 
   # -------- New This Week --------
@@ -851,13 +916,17 @@ server <- function(input, output, session) {
   # labels rotated on a vertical x-axis were overlapping the axis title
   # and legend (confirmed visually 2026-08-05). reorder(..., Sum) is exact
   # here since Sum is already one row per category, no grouping needed.
-  # No legend -- fill is 1:1 with the category, which is already the
-  # y-axis label on every bar, so a color-swatch legend would just repeat
-  # the same names a second time.
+  # No legend, no "Category" axis title -- fill is 1:1 with the category,
+  # which is already the label on every bar, so either one would just
+  # repeat the same names a second time. The axis title also has a real
+  # ggplotly() bug: its theme margin isn't respected through conversion,
+  # so at the Detailed level it renders vertically centered on top of the
+  # tick-label column instead of clear to the left (confirmed visually
+  # 2026-08-05) -- dropping it sidesteps that rather than fighting it.
   plot <- ggplot(df, aes(x = reorder(Broad_Category, Sum), y = Sum, fill = Broad_Category)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = Sum), hjust = -0.2, size = 3) +
-    labs(x = "Category", y = "Number of Postings") +
+    labs(x = NULL, y = "Number of Postings") +
     scale_fill_manual(values = palette) +
     coord_flip() +
     theme_minimal() +
@@ -1021,14 +1090,17 @@ server <- function(input, output, session) {
     # same fix as k12_current_plot. Category_Total (not Sum) drives the
     # sort since each category has two stacked rows (FT/PT); reorder()'s
     # default mean-of-Sum would rank a mostly-FT category differently than
-    # its true total some of the time.
+    # its true total some of the time. No "Category" axis title -- same
+    # ggplotly() margin bug as k12_current_plot (renders on top of the
+    # tick-label column instead of clear to the left); the legend stays
+    # since it encodes Job_Type, a separate dimension from the labels.
     p <- ggplot(df, aes(
       x = reorder(Category, Category_Total), y = Sum, fill = Job_Type,
       text = paste0("Category: ", Category, "<br>", "Type: ", Job_Type, "<br>", "Postings: ", Sum)
     )) +
       geom_bar(stat = "identity", position = "stack") +
       geom_text(aes(label = Sum), position = position_stack(vjust = 0.5), size = 3) +
-      labs(x = "Category", y = "Number of Postings", fill = "Position Type") +
+      labs(x = NULL, y = "Number of Postings", fill = NULL) +
       scale_fill_manual(values = HE_JOB_TYPE_COLORS) +
       coord_flip() +
       theme_minimal() +
