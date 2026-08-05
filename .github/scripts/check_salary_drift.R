@@ -7,6 +7,7 @@
 # continue-on-error on this step).
 
 source("drift_check.R")
+source("ipeds_salary_scraper.R")
 
 k12 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), stringsAsFactors = FALSE)
 he <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), stringsAsFactors = FALSE)
@@ -30,31 +31,67 @@ flags <- rbind(
   check_salary_coverage("HE avg faculty salary (IPEDS)", sum(!is.na(he$Faculty_Avg_Salary)), expected = 9L, min_ok = 8L)
 )
 
-if (is.null(flags) || nrow(flags) == 0) {
-  cat("Salary source coverage looks healthy.\n")
+if (!is.null(flags) && nrow(flags) > 0) print(flags)
+
+coverage_lines <- if (is.null(flags) || nrow(flags) == 0) {
+  character(0)
+} else {
+  lines <- c(
+    paste0("Automated salary-source coverage check flagged ", nrow(flags), " source(s) as of ", Sys.Date(), "."),
+    "",
+    "Unlike the job-posting drift check above, these are hard assertions against a known, essentially-fixed universe (48 WY school districts, 9 WY public HE institutions) rather than a trailing statistical baseline -- salary data updates far less often (once a year, not weekly), so a genuine week-to-week dip isn't expected. A source landing below its expected count usually means the source changed its page/PDF/API layout and the parser is silently extracting less real data, not that Wyoming lost school districts or colleges.",
+    ""
+  )
+  for (i in seq_len(nrow(flags))) {
+    r <- flags[i, ]
+    lines <- c(lines, sprintf("- **%s**: expected >= %d, got %d", r$name, r$expected, r$actual))
+  }
+  c(lines, "")
+}
+
+# Sheridan College and Gillette College are in the process of splitting
+# from their shared parent entity -- app.R suppresses Vacancy_Rate for
+# both until IPEDS starts reporting them separately (see
+# ipeds_salary_scraper.R's "Sheridan/Gillette split watch" section). This
+# is a real live network check (unlike the coverage check above, which
+# only reads the already-rendered CSVs), so a transient API failure here
+# should surface as "couldn't check" rather than silently doing nothing.
+split_result <- tryCatch(
+  fetch_sheridan_gillette_split_check(),
+  error = function(e) NULL
+)
+
+split_lines <- if (is.null(split_result)) {
+  c(
+    "Could not check whether IPEDS has started reporting Sheridan College and Gillette College separately -- the directory API call failed. Not necessarily a problem (could be a transient network issue), but worth a manual check if it keeps happening.",
+    ""
+  )
+} else if (nrow(split_result) > 0) {
+  c(
+    paste0("IPEDS now reports a NEW unitid for Sheridan/Gillette as of ", Sys.Date(), " -- they may have finished splitting into two separate colleges:"),
+    "",
+    paste0("- unitid ", split_result$unitid, ": ", split_result$inst_name),
+    "",
+    "If this is real, update IPEDS_UNITID_MAP in ipeds_salary_scraper.R to the new unitid(s) and remove the Vacancy_Rate suppression for Sheridan/Gillette in Wy_Ed_Jobs/app.R (both currently keyed off the shared Salary_Note flag).",
+    ""
+  )
+} else {
+  character(0)
+}
+
+if (length(coverage_lines) == 0 && length(split_lines) == 0) {
+  cat("Salary source coverage looks healthy, and Sheridan/Gillette are still reported jointly as expected.\n")
   quit(status = 0, save = "no")
 }
 
-print(flags)
-
-lines <- c(
-  paste0("Automated salary-source coverage check flagged ", nrow(flags), " source(s) as of ", Sys.Date(), "."),
-  "",
-  "Unlike the job-posting drift check above, these are hard assertions against a known, essentially-fixed universe (48 WY school districts, 9 WY public HE institutions) rather than a trailing statistical baseline -- salary data updates far less often (once a year, not weekly), so a genuine week-to-week dip isn't expected. A source landing below its expected count usually means the source changed its page/PDF/API layout and the parser is silently extracting less real data, not that Wyoming lost school districts or colleges.",
-  ""
-)
-for (i in seq_len(nrow(flags))) {
-  r <- flags[i, ]
-  lines <- c(lines, sprintf("- **%s**: expected >= %d, got %d", r$name, r$expected, r$actual))
-}
-lines <- c(lines, "")
+report_lines <- c(coverage_lines, split_lines)
 
 # Append to the same report the job-posting drift check may have already
 # started, so both land in one GitHub Issue/comment instead of two separate
 # threads.
 if (file.exists("/tmp/drift_report.md")) {
-  write(c("", "---", "", lines), file = "/tmp/drift_report.md", append = TRUE)
+  write(c("", "---", "", report_lines), file = "/tmp/drift_report.md", append = TRUE)
 } else {
-  writeLines(lines, "/tmp/drift_report.md")
+  writeLines(report_lines, "/tmp/drift_report.md")
 }
-cat("Flagged salary sources written to /tmp/drift_report.md\n")
+cat("Flagged items written to /tmp/drift_report.md\n")

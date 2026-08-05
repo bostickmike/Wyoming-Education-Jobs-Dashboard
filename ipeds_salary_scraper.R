@@ -118,3 +118,74 @@ fetch_ipeds_he_salaries <- function() {
   latest <- find_latest_ipeds_salary_year()
   parse_ipeds_he_salaries(latest$data, latest$year)
 }
+
+# ---------------------------------------------------------------------------
+# Sheridan/Gillette split watch
+# ---------------------------------------------------------------------------
+#
+# Sheridan College and Gillette College are historically one accredited
+# entity (Northern Wyoming Community College District, unitid 240666) but
+# are in the process of splitting into two separate colleges -- so
+# IPEDS_UNITID_MAP's hardcoded shared unitid above, and app.R's suppression
+# of Vacancy_Rate for both (see combined_map_data's Salary_Note check),
+# will eventually go stale once IPEDS starts reporting them separately.
+# When that happens, a NEW unitid will show up in the WY institution
+# directory with an inst_name containing "Gillette" or "Sheridan" that
+# ISN'T 240666 -- this checks for exactly that, so the split is a one-line
+# assertion someone can act on instead of something to remember to
+# recheck by hand.
+IPEDS_COLLEGE_DIRECTORY_ENDPOINT <- "https://educationdata.urban.org/api/v1/college-university/ipeds/directory"
+
+# Unlike salaries-instructional-staff, the directory endpoint's records
+# have real JSON nulls (e.g. a college with no CBSA assignment) mixed in
+# with populated fields, which breaks fetch_ipeds_paginated()'s per-record
+# as.data.frame() -- same issue ccd_staff_scraper.R hit for the same
+# reason. simplifyVector = TRUE hands the conversion off to jsonlite,
+# which turns nulls into NA correctly. Kept separate from
+# fetch_ipeds_paginated() rather than changing it, since that function is
+# already tested working for the salary endpoint and doesn't need this.
+fetch_ipeds_directory_paginated <- function(url) {
+  pages <- list()
+  while (!is.null(url)) {
+    resp <- request(url) %>% req_perform() %>% resp_body_json(simplifyVector = TRUE)
+    pages[[length(pages) + 1]] <- resp$results
+    url <- resp[["next"]]
+  }
+  if (length(pages) == 0) return(data.frame())
+  bind_rows(pages)
+}
+
+fetch_ipeds_wy_college_directory_for_year <- function(year) {
+  url <- paste0(IPEDS_COLLEGE_DIRECTORY_ENDPOINT, "/", year, "/?fips=56")
+  fetch_ipeds_directory_paginated(url)
+}
+
+find_latest_ipeds_directory_year <- function(start_year = as.integer(format(Sys.Date(), "%Y")),
+                                              years_back = 5) {
+  for (year in seq(start_year, start_year - years_back)) {
+    df <- fetch_ipeds_wy_college_directory_for_year(year)
+    if (nrow(df) > 0) return(list(year = year, data = df))
+  }
+  list(year = NA_integer_, data = data.frame())
+}
+
+# Pure transformation, kept separate from the network fetch above so it can
+# be tested against a captured fixture. Returns a data frame of newly-found
+# unitids if the split has happened, or a 0-row frame (not NULL, so callers
+# don't need a special case) if Sheridan/Gillette are still reported jointly.
+check_sheridan_gillette_still_joint <- function(directory_df) {
+  empty <- data.frame(unitid = integer(0), inst_name = character(0), stringsAsFactors = FALSE)
+  if (nrow(directory_df) == 0) return(empty)
+
+  split_candidates <- directory_df[
+    grepl("Gillette|Sheridan", directory_df$inst_name, ignore.case = TRUE) &
+      directory_df$unitid != 240666,
+  ]
+  if (nrow(split_candidates) == 0) return(empty)
+  split_candidates[, c("unitid", "inst_name")]
+}
+
+fetch_sheridan_gillette_split_check <- function() {
+  latest <- find_latest_ipeds_directory_year()
+  check_sheridan_gillette_still_joint(latest$data)
+}
