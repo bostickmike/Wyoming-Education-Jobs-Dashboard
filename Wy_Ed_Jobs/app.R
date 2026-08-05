@@ -9,6 +9,7 @@ library(plotly)
 library(scales)
 library(stringr)
 library(readxl)
+library(shinycssloaders)
 
 #--------------------------------------------------
 # Load K-12 data
@@ -142,7 +143,7 @@ he_new_this_week <- {
 #--------------------------------------------------
 ui <- dashboardPage(
   skin = 'black',
-  dashboardHeader(title = "Wyoming Education Careers (In development)"),
+  dashboardHeader(title = "Wyoming Education Careers"),
   dashboardSidebar(
     sidebarMenu(
       menuItem("Introduction", tabName = "intro", icon = icon("home")),
@@ -257,7 +258,7 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "k12_collmap",
-        leafletOutput("k12_map", height = 800)
+        withSpinner(leafletOutput("k12_map", height = 800))
       ),
       
       
@@ -304,8 +305,11 @@ ui <- dashboardPage(
           width = "100%"
         ),
         
+        radioButtons("k12_chart_type", NULL, choices = c("Line" = "line", "Stacked Area" = "area"),
+                     selected = "line", inline = TRUE),
+
         # Plot output
-        plotlyOutput("k12_longitudinal_plot")
+        withSpinner(plotlyOutput("k12_longitudinal_plot"))
       ),
       
       tabItem(
@@ -318,12 +322,12 @@ ui <- dashboardPage(
           selected = "Total"
         ),
         
-        plotlyOutput("k12_current_plot")
+        withSpinner(plotlyOutput("k12_current_plot"))
       ),
       
       # ------------------ Higher Ed ------------------
       tabItem(tabName = "he_table", DTOutput("he_jobs")),
-      tabItem(tabName = "he_collmap", leafletOutput("he_map", height = 800)),
+      tabItem(tabName = "he_collmap", withSpinner(leafletOutput("he_map", height = 800))),
       tabItem(
         tabName = "he_trends",
         
@@ -368,13 +372,16 @@ ui <- dashboardPage(
           width = "100%"
         ),
         
+        radioButtons("he_chart_type", NULL, choices = c("Line" = "line", "Stacked Area" = "area"),
+                     selected = "line", inline = TRUE),
+
         # Plot output
-        plotlyOutput("he_longitudinal_plot")),
+        withSpinner(plotlyOutput("he_longitudinal_plot"))),
       
       tabItem(tabName = "he_current",
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
-              plotlyOutput("he_current_plot")),
+              withSpinner(plotlyOutput("he_current_plot"))),
 
       tabItem(
         tabName = "he_new",
@@ -506,26 +513,35 @@ server <- function(input, output, session) {
     
     # Get the exact dates in the filtered data
     all_dates <- sort(unique(df$Archive_Date))
-    
-    p <- ggplot(df, aes(
+
+    base <- ggplot(df, aes(
       x = Archive_Date,
       y = sum,
-      color = Broad_Category,
       group = Broad_Category,
       text = paste0(
         "Date: ", Archive_Date, "<br>",
         "Category: ", Broad_Category, "<br>",
         "Postings: ", sum
       )
-    )) +
-      geom_line() +
-      geom_point(size = 1) +
+    ))
+
+    p <- if (identical(input$k12_chart_type, "area")) {
+      base + aes(fill = Broad_Category) +
+        geom_area(position = "stack") +
+        scale_fill_manual(values = K12_CATEGORY_COLORS)
+    } else {
+      base + aes(color = Broad_Category) +
+        geom_line() +
+        geom_point(size = 1) +
+        scale_color_manual(values = K12_CATEGORY_COLORS)
+    }
+
+    p <- p +
       labs(x = "Archive Date", y = "Number of Postings") +
       scale_x_date(
         breaks = all_dates,      # show every date exactly
         labels = scales::date_format("%b %d")
       ) +
-      scale_color_manual(values = K12_CATEGORY_COLORS) +
       theme_minimal() +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
@@ -535,7 +551,7 @@ server <- function(input, output, session) {
         legend.text = element_text(size = 8),
         legend.title = element_text(size = 10)
       )
-    
+
     ggplotly(p, height = 500, tooltip = "text")
   })
   
@@ -651,21 +667,30 @@ server <- function(input, output, session) {
       mutate(Category = factor(Category))
     
     # Plot
-    p <- ggplot(df, aes(
+    base <- ggplot(df, aes(
       x = Archive_Date,
       y = sum,
-      color = Category,
       group = Category,
       text = paste0(
         "Date: ", Archive_Date, "<br>",
         "Category: ", Category, "<br>",
         "Postings: ", sum
       )
-    )) +
-      geom_line() +
-      geom_point(size = 1) +
+    ))
+
+    p <- if (identical(input$he_chart_type, "area")) {
+      base + aes(fill = Category) +
+        geom_area(position = "stack") +
+        scale_fill_manual(values = HE_CATEGORY_COLORS)
+    } else {
+      base + aes(color = Category) +
+        geom_line() +
+        geom_point(size = 1) +
+        scale_color_manual(values = HE_CATEGORY_COLORS)
+    }
+
+    p <- p +
       labs(x = "Archive Date", y = "Number of Postings") +
-      scale_color_manual(values = HE_CATEGORY_COLORS) +
       theme_minimal() +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8),

@@ -44,7 +44,7 @@ jobs:
             # manifest. Omitting these once already broke every Connect
             # Cloud redeploy silently (manifest missing shiny entirely).
             "shiny", "shinydashboard", "shinyWidgets", "DT", "data.table",
-            "leaflet", "plotly", "scales"
+            "leaflet", "plotly", "scales", "shinycssloaders"
           ))'
 
       - name: Install Chrome (for the 4 Apptegy misc-district scrapers)
@@ -117,7 +117,7 @@ jobs:
         run: |
           Rscript -e '
           m <- jsonlite::fromJSON("Wy_Ed_Jobs/manifest.json", simplifyVector = FALSE)
-          required <- c("shiny", "shinydashboard", "shinyWidgets", "DT", "data.table", "leaflet", "plotly", "scales")
+          required <- c("shiny", "shinydashboard", "shinyWidgets", "DT", "data.table", "leaflet", "plotly", "scales", "shinycssloaders")
           missing <- setdiff(required, names(m$packages))
           if (length(missing) > 0) {
             stop(sprintf(
