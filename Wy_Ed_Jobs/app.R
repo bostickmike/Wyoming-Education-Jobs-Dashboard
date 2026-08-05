@@ -66,6 +66,63 @@ make_sparkline_svg <- function(series, accent = "#2a78d6") {
   )
 }
 
+# Statewide week-over-week delta for the KPI tiles -- aggregation smooths
+# individual-entity noise into a real signal (confirmed against real data
+# 2026-08-05: statewide K-12 totals move ~20-50/week, HE climbed steadily
+# 439->487 over 4 weeks, but per-district week-over-week deltas have a
+# median absolute value of 0 -- see find_biggest_mover()'s longer window
+# below for why that metric uses a different timeframe).
+compute_wow_delta <- function(weekly_totals) {
+  totals <- weekly_totals %>% group_by(Archive_Date) %>% summarize(n = sum(n), .groups = "drop") %>% arrange(Archive_Date)
+  if (nrow(totals) < 2) return(NA_integer_)
+  tail(totals$n, 1) - tail(totals$n, 2)[1]
+}
+
+# "Biggest mover" needs a longer window than a week to mean anything --
+# individual districts/institutions are mostly flat week-to-week (median
+# absolute change 0 in real data), but real movement shows up over ~3+
+# weeks (Natrona SD1 +22 postings, University of Wyoming +52, both over
+# a 4-week span). Picks the nearest available snapshot at least
+# min_days_back before the latest date rather than a fixed index, since
+# archive cadence isn't perfectly regular (multiple same-week CI test
+# runs exist historically -- see Archivek12_Data's 2026-08-03 entries).
+find_biggest_mover <- function(weekly_totals, name_col, min_days_back = 21) {
+  dates <- sort(unique(weekly_totals$Archive_Date))
+  if (length(dates) < 2) return(NULL)
+  latest <- max(dates)
+  candidates <- dates[dates <= latest - min_days_back]
+  if (length(candidates) == 0) return(NULL)
+  prior <- max(candidates)
+
+  wide <- weekly_totals %>%
+    filter(Archive_Date %in% c(latest, prior)) %>%
+    tidyr::pivot_wider(names_from = Archive_Date, values_from = n, values_fill = 0)
+  names(wide)[names(wide) == as.character(prior)] <- "Prior"
+  names(wide)[names(wide) == as.character(latest)] <- "Latest"
+  wide$Delta <- wide$Latest - wide$Prior
+
+  top <- wide %>% arrange(desc(abs(Delta))) %>% slice(1)
+  list(name = top[[name_col]], prior = top$Prior, latest = top$Latest, delta = top$Delta,
+       prior_date = prior, latest_date = latest)
+}
+
+render_mover_box <- function(mover, label) {
+  if (is.null(mover)) return(NULL)
+  arrow <- if (mover$delta >= 0) "▲" else "▼"
+  delta_color <- if (mover$delta >= 0) "#1baf7a" else "#e34948"
+  box(width = 12, status = "info",
+      div(
+        tags$span(style = "font-weight:bold;", paste0(label, ": ")),
+        tags$span(mover$name),
+        tags$span(style = paste0("color:", delta_color, "; font-weight:bold; margin-left:8px;"),
+                   paste0(arrow, " ", abs(mover$delta))),
+        tags$span(style = "color:#999; font-size:0.85em; margin-left:6px;",
+                   paste0("(", mover$prior, " → ", mover$latest,
+                          " since ", format(mover$prior_date, "%b %d"), ")"))
+      )
+  )
+}
+
 k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
   mutate(District = str_squish(as.character(District)),
          Broad_Category = dplyr::recode(Broad_Category,
@@ -400,16 +457,34 @@ map_he <- mapdata2_he %>%
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
+# Map marker size/color -- radius scaled by sqrt(CurrentCount), not
+# CurrentCount directly, since a circle's perceived size is its area, not
+# its radius (linear scaling would visually overstate the gap between a
+# 10-opening and a 100-opening district). Color is a single-hue sequential
+# ramp on Vacancy_Rate (a bounded 0-100% "severity" dimension that pairs
+# naturally with size-as-volume) rather than salary, which would need two
+# separate ramps for K-12 vs. HE's different pay scales. Domain is fixed
+# from the full unfiltered dataset so the color scale (and legend) don't
+# shift as the K-12/HE checkbox filter changes what's on screen.
+MAP_MARKER_MIN_RADIUS <- 6
+MAP_MARKER_MAX_RADIUS <- 24
+map_marker_radius <- function(current_count) {
+  pmin(MAP_MARKER_MAX_RADIUS, MAP_MARKER_MIN_RADIUS + 1.2 * sqrt(current_count))
+}
+vacancy_rate_domain <- range(combined_map_data$Vacancy_Rate, na.rm = TRUE)
+vacancy_rate_palette <- colorNumeric(palette = "YlOrRd", domain = vacancy_rate_domain, na.color = "#9e9e9e")
+
 #--------------------------------------------------
 # UI
 #--------------------------------------------------
 ui <- dashboardPage(
   skin = 'black',
-  dashboardHeader(title = "Wyoming Education Careers"),
+  dashboardHeader(title = "Wyo Edu Jobs"),
   dashboardSidebar(
     sidebarMenu(
       id = "sidebar_tabs",
-      menuItem("Map", tabName = "intro", icon = icon("home")),
+      menuItem("Home", tabName = "intro", icon = icon("house")),
+      menuItem("Map", tabName = "map_tab", icon = icon("map-location-dot")),
       menuItem("K-12 Careers", tabName = "k12_root", icon = icon("school"),
                menuSubItem("Jobs Table", tabName = "k12_table"),
                menuSubItem("District Summary", tabName = "k12_summary"),
@@ -429,6 +504,13 @@ ui <- dashboardPage(
   dashboardBody(
     tags$head(
       tags$style(HTML("
+    /* AdminLTE's header logo box clips long titles by default (was
+       already truncating the shorter old title too) -- shrinking the
+       font is safer than widening the box, which is fixed-width and
+       tightly coupled to the sidebar-toggle button's position. */
+    .main-header .logo {
+      font-size: 19px;
+    }
     .leaflet-tooltip {
       max-width: 800px !important;  /* make tooltip wide */
       min-width: 400px !important;  /* optional: ensures minimum width */
@@ -468,15 +550,9 @@ ui <- dashboardPage(
           valueBoxOutput("kpi_he_total", width = 4),
           valueBoxOutput("kpi_last_refreshed", width = 4)
         ),
-        box(width = 12, title = "Where the openings are", status = "primary",
-            checkboxGroupInput(
-              "map_types", "Show:",
-              choices = c("K-12 Districts" = "K-12 District", "Higher Ed Institutions" = "Higher Ed Institution"),
-              selected = c("K-12 District", "Higher Ed Institution"),
-              inline = TRUE
-            ),
-            withSpinner(leafletOutput("combined_map", height = 600)),
-            helpText("Only locations with current openings are shown. Click a marker to jump to its filtered Jobs Table.")
+        fluidRow(
+          column(width = 6, uiOutput("k12_biggest_mover")),
+          column(width = 6, uiOutput("he_biggest_mover"))
         ),
         fluidRow(
           box(title = "Top K-12 Hiring Districts This Week", width = 6, status = "primary",
@@ -494,6 +570,21 @@ ui <- dashboardPage(
         ),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
             paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
+      ),
+
+      tabItem(
+        tabName = "map_tab",
+        h1("Where the Openings Are"),
+        box(width = 12, title = "Wyoming Education Job Openings Map", status = "primary",
+            checkboxGroupInput(
+              "map_types", "Show:",
+              choices = c("K-12 Districts" = "K-12 District", "Higher Ed Institutions" = "Higher Ed Institution"),
+              selected = c("K-12 District", "Higher Ed Institution"),
+              inline = TRUE
+            ),
+            withSpinner(leafletOutput("combined_map", height = 650)),
+            helpText("Only locations with current openings are shown. Circle size reflects current openings; color reflects teacher/faculty vacancy rate where available. Click a marker to jump to its filtered Jobs Table.")
+        )
       ),
 
       tabItem(
@@ -676,16 +767,35 @@ server <- function(input, output, session) {
   selected_institution <- reactiveVal(NULL)
 
   # -------- Intro KPIs --------
+  # Week-over-week delta as a subtitle line -- compute_wow_delta() works at
+  # the statewide-total level specifically because that's where the signal
+  # is real (see its definition above for why individual-entity deltas
+  # aren't used here).
+  wow_delta_ui <- function(delta) {
+    if (is.na(delta)) return(NULL)
+    arrow <- if (delta >= 0) "▲" else "▼"
+    tags$div(style = "font-size: 0.85em; margin-top: 2px;", paste0(arrow, " ", abs(delta), " vs last week"))
+  }
+
   output$kpi_k12_total <- renderValueBox({
-    valueBox(format(nrow(combineddata), big.mark = ","), "Open K-12 Postings",
+    valueBox(format(nrow(combineddata), big.mark = ","),
+             tagList("Open K-12 Postings", wow_delta_ui(compute_wow_delta(k12_district_weekly_totals))),
              icon = icon("school"), color = "blue")
   })
   output$kpi_he_total <- renderValueBox({
-    valueBox(format(nrow(ccdata), big.mark = ","), "Open Higher Ed Postings",
+    valueBox(format(nrow(ccdata), big.mark = ","),
+             tagList("Open Higher Ed Postings", wow_delta_ui(compute_wow_delta(he_institution_weekly_totals))),
              icon = icon("university"), color = "purple")
   })
   output$kpi_last_refreshed <- renderValueBox({
     valueBox(last_refreshed_date, "Last Refreshed", icon = icon("calendar"), color = "green")
+  })
+
+  output$k12_biggest_mover <- renderUI({
+    render_mover_box(find_biggest_mover(k12_district_weekly_totals, "District"), "Biggest K-12 mover")
+  })
+  output$he_biggest_mover <- renderUI({
+    render_mover_box(find_biggest_mover(he_institution_weekly_totals, "Institution"), "Biggest Higher Ed mover")
   })
 
   output$top_k12_districts <- renderTable({
@@ -819,8 +929,18 @@ server <- function(input, output, session) {
   output$combined_map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
-      setView(lng = -107.5, lat = 43, zoom = 7)
+      setView(lng = -107.5, lat = 43, zoom = 7) %>%
+      addLegend(position = "bottomright", pal = vacancy_rate_palette, values = vacancy_rate_domain,
+                title = "Vacancy rate", labFormat = labelFormat(suffix = "%", transform = function(x) 100 * x),
+                na.label = "N/A")
   })
+  # The map now lives on its own "Map" tab, not the default active one --
+  # without this, the marker-update observe() below fires (and calls
+  # leafletProxy()) before the browser has ever rendered/registered the
+  # widget, since shinydashboard doesn't render hidden tabs' outputs by
+  # default. Confirmed live 2026-08-05: markers silently never appeared,
+  # "Couldn't find map with id combined_map" in the browser console.
+  outputOptions(output, "combined_map", suspendWhenHidden = FALSE)
 
   map_filtered <- reactive({
     df <- combined_map_data %>% filter(Type %in% input$map_types, CurrentCount > 0)
@@ -882,7 +1002,10 @@ server <- function(input, output, session) {
       clearMarkers() %>%
       addCircleMarkers(
         lng = ~Longitude, lat = ~Latitude,
-        fillOpacity = 0.8,
+        radius = ~map_marker_radius(CurrentCount),
+        fillColor = ~vacancy_rate_palette(Vacancy_Rate),
+        color = "#333333", weight = 1,
+        fillOpacity = 0.85,
         layerId = ~Name,
         popup = popups
       )
