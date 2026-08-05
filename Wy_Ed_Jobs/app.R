@@ -35,6 +35,16 @@ k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
 
 k12sum$Archive_Date <- as.Date(k12sum$Archive_Date)
 
+# The source aggregation (group_by + summarize) only produces a row for a
+# Broad_Category/Archive_Date/District combination that actually had at
+# least one posting -- a week with zero postings for a category is simply
+# absent, not an explicit 0. geom_line() then draws straight through that
+# gap, silently connecting the surrounding weeks and making it look like
+# the count never dropped. tidyr::complete() fills every combination that
+# doesn't exist with a real 0 so the line actually dips.
+k12sum <- k12sum %>%
+  tidyr::complete(Broad_Category, Archive_Date, District, fill = list(sum = 0))
+
 
 k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
   mutate(Broad_Category = dplyr::recode(Broad_Category,
@@ -58,6 +68,12 @@ hesum_he <- read.csv("allsum_he.csv") %>%
   filter(Category != "Uncategorized")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
+
+# Same gap-filling as k12sum above -- a Category/Institution/Job_Type
+# combination with zero postings in a given week is simply missing from
+# the source aggregation, not an explicit 0.
+hesum_he <- hesum_he %>%
+  tidyr::complete(Category, Archive_Date, Institution, Job_Type, fill = list(sum = 0))
 he_dates <- sort(unique(hesum_he$Archive_Date))
 WINDOW_WEEKS <- 52
 hesum_he$Category<- as.factor(hesum_he$Category)
