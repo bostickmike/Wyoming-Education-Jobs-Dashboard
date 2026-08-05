@@ -742,6 +742,11 @@ facultydata <- combined_cat %>%
   filter(Job_Type == "Instructor/Teacher/Faculty") %>%
   mutate(Category = classify_he_faculty_category(Title))
 write.csv(facultydata, "facultydata.csv")
+
+# Also shipped into Wy_Ed_Jobs/ (mirroring k12jobanalysis.csv's pattern) so
+# the deployed app has row-level, multi-week HE data for the "new this
+# week" view -- the root-level copy above stays gitignored/local-only.
+write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"))
 hesum <- facultydata %>%
   group_by(Category, Archive_Date) %>%
   summarize(

@@ -140,6 +140,7 @@ jobs:
             Wy_Ed_Jobs/allnow_he.csv \
             Wy_Ed_Jobs/hedata.xlsx \
             Wy_Ed_Jobs/k12jobanalysis.csv \
+            Wy_Ed_Jobs/facultydata.csv \
             Wy_Ed_Jobs/manifest.json \
             Archived_HE_Data/*.xlsx \
             Archivek12_Data/*.csv

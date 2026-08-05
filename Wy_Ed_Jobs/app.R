@@ -62,6 +62,82 @@ henowsum_he <- read.csv("allnow_he.csv") %>%
 last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
 
 #--------------------------------------------------
+# Category colors -- one fixed hex per category, shared by every chart in
+# its section, so a category is never a different color on the current-
+# snapshot chart than on the longitudinal chart. First 8 slots (by
+# all-time volume) are the validated categorical palette from the dataviz
+# skill (fixed order, CVD-checked); slots past 8 extend it with additional
+# well-separated hues for the lower-volume categories rather than
+# reusing/cycling a slot.
+#--------------------------------------------------
+K12_CATEGORY_COLORS <- c(
+  "Special Education" = "#2a78d6",
+  "Elementary"         = "#eb6834",
+  "STEM"               = "#1baf7a",
+  "Music"              = "#eda100",
+  "CTE"                = "#e87ba4",
+  "Engl. LA"           = "#008300",
+  "Language"           = "#4a3aa7",
+  "Soc. St."           = "#e34948",
+  "Physical Education" = "#8B5E34",
+  "Early Childhood"    = "#5C7A99",
+  "Art"                = "#7A7A3D"
+)
+
+HE_CATEGORY_COLORS <- c(
+  "CTE"                  = "#2a78d6",
+  "The Arts"             = "#eb6834",
+  "Science"              = "#1baf7a",
+  "Humanities"           = "#eda100",
+  "Math"                 = "#e87ba4",
+  "Social Science"       = "#008300",
+  "Culinary/Hospitality" = "#4a3aa7",
+  "History"              = "#e34948",
+  "Library"              = "#8B5E34",
+  "Education"            = "#5C7A99",
+  "Legal"                = "#7A7A3D",
+  "Physical Education"   = "#767671"
+)
+
+#--------------------------------------------------
+# "New this week" -- row-level history, diffed against the previous
+# archived week by (identity columns), scoped to Teacher/Faculty postings
+# same as the rest of the trend tabs (k12jobanalysis.csv/facultydata.csv
+# are already filtered that way upstream).
+#--------------------------------------------------
+k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
+  mutate(Archive_Date = as.Date(Archive_Date))
+
+k12_new_this_week <- {
+  dates <- sort(unique(k12_history$Archive_Date))
+  if (length(dates) >= 2) {
+    latest <- dates[length(dates)]
+    previous <- dates[length(dates) - 1]
+    k12_history %>%
+      filter(Archive_Date == latest) %>%
+      anti_join(k12_history %>% filter(Archive_Date == previous), by = c("title", "location", "District"))
+  } else {
+    k12_history[0, ]
+  }
+}
+
+he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
+  mutate(Archive_Date = as.Date(Archive_Date))
+
+he_new_this_week <- {
+  dates <- sort(unique(he_history$Archive_Date))
+  if (length(dates) >= 2) {
+    latest <- dates[length(dates)]
+    previous <- dates[length(dates) - 1]
+    he_history %>%
+      filter(Archive_Date == latest) %>%
+      anti_join(he_history %>% filter(Archive_Date == previous), by = c("Title", "Location", "Institution"))
+  } else {
+    he_history[0, ]
+  }
+}
+
+#--------------------------------------------------
 # UI
 #--------------------------------------------------
 ui <- dashboardPage(
@@ -74,13 +150,15 @@ ui <- dashboardPage(
                menuSubItem("Jobs Table", tabName = "k12_table"),
                menuSubItem("District Locations", tabName = "k12_collmap"),
                menuSubItem("Longitudinal Teacher Trends", tabName = "k12_trends"),
-               menuSubItem("Current Teacher Trends", tabName = "k12_current")
+               menuSubItem("Current Teacher Trends", tabName = "k12_current"),
+               menuSubItem("New This Week", tabName = "k12_new")
       ),
       menuItem("Higher Ed Careers", tabName = "he_root", icon = icon("university"),
                menuSubItem("Jobs Table", tabName = "he_table"),
                menuSubItem("Institution Locations", tabName = "he_collmap"),
                menuSubItem("Longitudinal Faculty Trends", tabName = "he_trends"),
-               menuSubItem("Current Faculty Trends", tabName = "he_current")
+               menuSubItem("Current Faculty Trends", tabName = "he_current"),
+               menuSubItem("New This Week", tabName = "he_new")
       )
     )
   ),
@@ -153,13 +231,29 @@ ui <- dashboardPage(
               div(class = "intro-text",
                   h1("Education Jobs in Wyoming")
               )
+          ),
+          fluidRow(
+            valueBoxOutput("kpi_k12_total", width = 4),
+            valueBoxOutput("kpi_he_total", width = 4),
+            valueBoxOutput("kpi_last_refreshed", width = 4)
+          ),
+          fluidRow(
+            box(title = "Top K-12 Hiring Districts This Week", width = 6, status = "primary",
+                tableOutput("top_k12_districts")),
+            box(title = "Top Higher Ed Hiring Institutions This Week", width = 6, status = "primary",
+                tableOutput("top_he_institutions"))
           )
         )
       ),
-      
+
       tabItem(
         tabName = "k12_table",
         DTOutput("k12_jobs")
+      ),
+      tabItem(
+        tabName = "k12_new",
+        h4("New teacher postings since the previous weekly snapshot"),
+        DTOutput("k12_new_table")
       ),
       tabItem(
         tabName = "k12_collmap",
@@ -176,14 +270,14 @@ ui <- dashboardPage(
         fluidRow(
           column(
             width = 6,  # half the row
-            selectInput(
+            pickerInput(
               "broad_category",
-              "Choose Teacher Category (Hold Ctrl for multiple selections)",
+              "Choose Teacher Category:",
               choices  = sort(unique(k12sum$Broad_Category)),
               selected = sort(unique(k12sum$Broad_Category)),
               multiple = TRUE,
-              selectize = FALSE,
-              width = "100%"
+              width = "100%",
+              options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
             )
           ),
           column(
@@ -237,14 +331,14 @@ ui <- dashboardPage(
         fluidRow(
           column(
             width = 6,
-            selectInput(
+            pickerInput(
               "he_category",
-              "Choose Category (Hold Ctrl for multiple selections)",
+              "Choose Category:",
               choices  = sort(unique(hesum_he$Category)),
               selected = sort(unique(hesum_he$Category)),
               multiple = TRUE,
-              selectize = FALSE,
-              width = "100%"
+              width = "100%",
+              options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
             )
           ),
           column(
@@ -280,7 +374,13 @@ ui <- dashboardPage(
       tabItem(tabName = "he_current",
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
-              plotlyOutput("he_current_plot"))
+              plotlyOutput("he_current_plot")),
+
+      tabItem(
+        tabName = "he_new",
+        h4("New faculty postings since the previous weekly snapshot"),
+        DTOutput("he_new_table")
+      )
     )
   )
 )
@@ -294,9 +394,44 @@ server <- function(input, output, session) {
   
   
   
+  # -------- Intro KPIs --------
+  output$kpi_k12_total <- renderValueBox({
+    valueBox(format(nrow(combineddata), big.mark = ","), "Open K-12 Postings",
+             icon = icon("school"), color = "blue")
+  })
+  output$kpi_he_total <- renderValueBox({
+    valueBox(format(nrow(ccdata), big.mark = ","), "Open Higher Ed Postings",
+             icon = icon("university"), color = "purple")
+  })
+  output$kpi_last_refreshed <- renderValueBox({
+    valueBox(last_refreshed_date, "Last Refreshed", icon = icon("calendar"), color = "green")
+  })
+
+  output$top_k12_districts <- renderTable({
+    combineddata %>% count(District, sort = TRUE, name = "Open Postings") %>% head(5)
+  })
+  output$top_he_institutions <- renderTable({
+    ccdata %>% count(Institution, sort = TRUE, name = "Open Postings") %>% head(5)
+  })
+
+  # -------- New This Week --------
+  output$k12_new_table <- renderDT({
+    datatable(
+      k12_new_this_week %>% select(title, District, location, Broad_Category, url),
+      options = list(scrollX = TRUE)
+    )
+  })
+  output$he_new_table <- renderDT({
+    datatable(
+      he_new_this_week %>% select(Title, Institution, Location, Category, Link),
+      options = list(scrollX = TRUE)
+    )
+  })
+
   # -------- K-12 --------
   output$k12_jobs <- renderDT({
-    datatable(combineddata, filter = "top", options = list(scrollX = TRUE))
+    datatable(combineddata, filter = "top", extensions = "Buttons",
+              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
   
   output$k12_map <- renderLeaflet({
@@ -390,6 +525,7 @@ server <- function(input, output, session) {
         breaks = all_dates,      # show every date exactly
         labels = scales::date_format("%b %d")
       ) +
+      scale_color_manual(values = K12_CATEGORY_COLORS) +
       theme_minimal() +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
@@ -412,7 +548,7 @@ server <- function(input, output, session) {
     geom_bar(stat = "identity") +
     geom_text(aes(label = Sum), vjust = -0.3) +
     labs(x = "Category", y = "Number of Postings") +
-    scale_fill_brewer(palette = "Set3") +
+    scale_fill_manual(values = K12_CATEGORY_COLORS) +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7), 
           legend.position = "bottom", 
@@ -425,7 +561,8 @@ server <- function(input, output, session) {
 })
   # -------- Higher Ed --------
   output$he_jobs <- renderDT({
-    datatable(ccdata, escape = FALSE, options = list(scrollX = TRUE))
+    datatable(ccdata, escape = FALSE, extensions = "Buttons",
+              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
   
   
@@ -528,6 +665,7 @@ server <- function(input, output, session) {
       geom_line() +
       geom_point(size = 1) +
       labs(x = "Archive Date", y = "Number of Postings") +
+      scale_color_manual(values = HE_CATEGORY_COLORS) +
       theme_minimal() +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
@@ -537,13 +675,13 @@ server <- function(input, output, session) {
         legend.text = element_text(size = 8),
         legend.title = element_text(size = 10)
       )
-    
+
     ggplotly(p, height = 500, tooltip = "text")
   })
-  
-  
-  
-  
+
+
+
+
   output$he_current_plot <- renderPlotly({
     df <- henowsum_he %>% filter(Institution == input$inst_current)
    
@@ -551,7 +689,7 @@ server <- function(input, output, session) {
       geom_bar(stat = "identity") +
       geom_text(aes(label = Sum), nudge_y = 0.05 * max(df$Sum)) +
       labs(x = "Category", y = "Number of Postings") +
-      scale_fill_viridis_d() +
+      scale_fill_manual(values = HE_CATEGORY_COLORS) +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7),
             legend.position = "bottom",

@@ -7,7 +7,7 @@
 .quarto
 .positai
 scrape_log.csv
-facultydata.csv
+/facultydata.csv
 
 # Mark's shared working folder: contains a live OpenAI API key
 # (OpenAI.txt) plus large RSelenium binaries (geckodriver.exe,
