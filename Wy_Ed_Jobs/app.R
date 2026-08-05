@@ -66,6 +66,33 @@ make_sparkline_svg <- function(series, accent = "#2a78d6") {
   )
 }
 
+# Larger, monochrome-white variant for the KPI tiles' icon slot -- replaces
+# the plain school/university icon with the same last-12-weeks trend
+# shown on the Top Hiring tables, since a colored valueBox background
+# doesn't have room for a second color scheme to read clearly.
+make_sparkline_svg_light <- function(series) {
+  series <- series[!is.na(series)]
+  if (length(series) < 2) return("")
+
+  w <- 160; h <- 80; pad <- 6
+  rng <- range(series)
+  span <- diff(rng)
+  if (span == 0) span <- 1
+
+  n <- length(series)
+  step_x <- (w - pad * 2) / (n - 1)
+  xs <- pad + (seq_len(n) - 1) * step_x
+  ys <- pad + (1 - (series - rng[1]) / span) * (h - pad * 2)
+
+  line_path <- paste0(ifelse(seq_along(xs) == 1, "M", "L"), round(xs, 1), ",", round(ys, 1), collapse = " ")
+  area_path <- paste0(line_path, " L", round(xs[n], 1), ",", h - pad, " L", round(xs[1], 1), ",", h - pad, " Z")
+
+  sprintf(
+    '<svg width="%d" height="%d" viewBox="0 0 %d %d"><path d="%s" fill="rgba(255,255,255,0.18)" stroke="none"></path><path d="%s" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="%s" cy="%s" r="3.5" fill="#ffffff"></circle></svg>',
+    w, h, w, h, area_path, line_path, round(xs[n], 1), round(ys[n], 1)
+  )
+}
+
 # Statewide week-over-week delta for the KPI tiles -- aggregation smooths
 # individual-entity noise into a real signal (confirmed against real data
 # 2026-08-05: statewide K-12 totals move ~20-50/week, HE climbed steadily
@@ -781,15 +808,30 @@ server <- function(input, output, session) {
     tags$div(style = "font-size: 0.85em; margin-top: 2px;", paste0(arrow, " ", abs(delta), " vs last week"))
   }
 
+  # Statewide last-12-week trend, for the KPI tiles' icon slot -- replaces
+  # the plain school/university icon (previously a static hero-photo
+  # stand-in) with the same information the sparkline redesign already
+  # added everywhere else, since that space was otherwise just decorative.
+  statewide_weekly_series <- function(weekly_totals) {
+    weekly_totals %>%
+      group_by(Archive_Date) %>%
+      summarize(n = sum(n), .groups = "drop") %>%
+      arrange(Archive_Date) %>%
+      tail(12) %>%
+      pull(n)
+  }
+
   output$kpi_k12_total <- renderValueBox({
     valueBox(format(nrow(combineddata), big.mark = ","),
              tagList("Open K-12 Postings", wow_delta_ui(compute_wow_delta(k12_district_weekly_totals))),
-             icon = icon("school"), color = "blue")
+             icon = tags$i(HTML(make_sparkline_svg_light(statewide_weekly_series(k12_district_weekly_totals)))),
+             color = "blue")
   })
   output$kpi_he_total <- renderValueBox({
     valueBox(format(nrow(ccdata), big.mark = ","),
              tagList("Open Higher Ed Postings", wow_delta_ui(compute_wow_delta(he_institution_weekly_totals))),
-             icon = icon("university"), color = "purple")
+             icon = tags$i(HTML(make_sparkline_svg_light(statewide_weekly_series(he_institution_weekly_totals)))),
+             color = "purple")
   })
   output$kpi_last_refreshed <- renderValueBox({
     valueBox(last_refreshed_date, "Last Refreshed", icon = icon("calendar"), color = "green")
