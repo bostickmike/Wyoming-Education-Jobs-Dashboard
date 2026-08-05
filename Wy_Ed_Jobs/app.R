@@ -23,8 +23,7 @@ combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
          `Date Posted` = date_posted, Link = url)
 
 mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
-  mutate(Start_Salary = as.numeric(gsub("[^0-9.]", "", Start_Salary)),
-         Top_Salary   = as.numeric(gsub("[^0-9.]", "", Top_Salary)))
+  rename(Name = District)
 
 k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
   mutate(District = str_squish(as.character(District)),
@@ -251,7 +250,8 @@ map_k12 <- mapdata2_k12 %>%
     Type = "K-12 District"
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
-         Link = Job_Link, Start_Salary, Top_Salary, Salary_Year, County)
+         Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
+         Superintendent_Salary, Superintendent_Contract_Days, Salary_Source, Salary_Updated, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -268,10 +268,13 @@ map_he <- mapdata2_he %>%
     WeeklyNew = coalesce(WeeklyNew, 0L),
     SampleTitles = coalesce(SampleTitles, ""),
     Type = "Higher Ed Institution",
-    Start_Salary = NA_real_, Top_Salary = NA_real_, Salary_Year = NA_character_, County = NA_character_
+    Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_, Salary_Year = NA_character_,
+    Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
+    Salary_Source = NA_character_, Salary_Updated = NA_character_, County = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
-         Link, Start_Salary, Top_Salary, Salary_Year, County)
+         Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
+         Superintendent_Salary, Superintendent_Contract_Days, Salary_Source, Salary_Updated, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -592,9 +595,19 @@ server <- function(input, output, session) {
       "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
       "<div>New this week: ", WeeklyNew, "</div>",
       ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
-      ifelse(!is.na(Start_Salary),
-             paste0("<div>Starting salary: ", scales::dollar(Start_Salary),
-                    " &ndash; ", scales::dollar(Top_Salary), " (", Salary_Year, ")</div>"),
+      ifelse(!is.na(Teacher_Base_Salary),
+             paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),
+                    ifelse(!is.na(Teacher_Base_Salary_Prior_Year),
+                           paste0(" (", scales::dollar(Teacher_Base_Salary_Prior_Year), " prior year)"),
+                           ""),
+                    " &middot; ", Salary_Year, "</div>"),
+             ""),
+      ifelse(!is.na(Superintendent_Salary),
+             paste0("<div>Superintendent salary: ", scales::dollar(Superintendent_Salary), "</div>"),
+             ""),
+      ifelse(!is.na(Salary_Source),
+             paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source,
+                    " (updated ", Salary_Updated, ")</div>"),
              ""),
       "<div style='margin-top:6px;'>",
       "<a href='", Link, "' target='_blank'>Careers page</a>",

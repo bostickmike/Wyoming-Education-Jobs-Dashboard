@@ -28,7 +28,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev libpoppler-cpp-dev
 
       - name: Install R packages
         run: |
@@ -37,7 +37,7 @@ jobs:
             "rmarkdown", "dplyr", "purrr", "readr", "readxl", "rvest",
             "stringr", "tidyverse", "writexl", "xml2", "jsonlite",
             "httr2", "lubridate", "chromote", "rsconnect", "testthat",
-            "withr", "here",
+            "withr", "here", "pdftools",
             # app.R dependencies -- these never run in this workflow, but
             # rsconnect::writeManifest() can only capture a package if it
             # is actually installed in the environment generating the

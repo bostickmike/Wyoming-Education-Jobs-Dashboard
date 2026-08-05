@@ -480,6 +480,51 @@ list<-unique(k12jobs$District)
 write.csv(list, "list.csv")
 ```
 
+### K-12 salary data, from WSBA's publicly shared PDFs
+```{r wsba salary data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("salary_scrapers.R")
+
+teacher_salary <- safe_scrape(
+  "WSBA teacher salary settlements",
+  scrape_fn = fetch_wsba_teacher_salary,
+  expected_cols = c("District", "Base_Salary_Prior_Year", "Base_Salary_Current_Year", "Salary_Year")
+)
+
+superintendent_salary <- safe_scrape(
+  "WSBA superintendent salaries",
+  scrape_fn = fetch_wsba_superintendent_salary,
+  expected_cols = c("District", "Superintendent_Salary", "Superintendent_Contract_Days")
+)
+
+# Static geo/link fields (County, Latitude, Longitude, Link, Job_Link)
+# stay hand-maintained -- only the salary figures get refreshed from WSBA
+# each run. District is already canonical in the file on disk.
+salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
+  select(District, County, Latitude, Longitude, Link, Job_Link)
+
+if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
+  salarymap2 <- salarymap2 %>%
+    left_join(teacher_salary, by = "District") %>%
+    left_join(superintendent_salary, by = "District") %>%
+    rename(Teacher_Base_Salary = Base_Salary_Current_Year,
+           Teacher_Base_Salary_Prior_Year = Base_Salary_Prior_Year) %>%
+    mutate(
+      Salary_Source = "WSBA (wsba-wy.org)",
+      Salary_Updated = as.character(Sys.Date())
+    ) %>%
+    select(District, County, Latitude, Longitude, Link, Job_Link,
+           Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
+           Superintendent_Salary, Superintendent_Contract_Days,
+           Salary_Source, Salary_Updated)
+
+  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+} else {
+  message("WSBA salary fetch failed for one or both documents -- leaving salarymap2.csv untouched this run.")
+}
+```
+
 
 ## Time to scrape Wyoming Higher Education Data
 ### This chunk scrapes LCCC's data
