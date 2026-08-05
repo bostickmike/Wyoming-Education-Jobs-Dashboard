@@ -101,7 +101,7 @@ test_that("HE and K-12 reactives don't error across every institution/district",
     }
     for (inst in sort(unique(env$henowsum_he$Institution))) {
       session$setInputs(inst_current = inst, he_detail_level_current = "detail")
-      expect_no_error(output$he_current_plot)
+      expect_no_error(output$he_current_trends_table)
     }
 
     for (d in sort(unique(env$k12sum$District))) {
@@ -113,7 +113,7 @@ test_that("HE and K-12 reactives don't error across every institution/district",
     }
     for (d in sort(unique(env$k12nowsum$District))) {
       session$setInputs(district_current = d, k12_detail_level_current = "detail")
-      expect_no_error(output$k12_current_plot)
+      expect_no_error(output$k12_current_trends_table)
     }
   })
 })

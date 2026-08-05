@@ -93,6 +93,84 @@ make_sparkline_svg_light <- function(series) {
   )
 }
 
+# Current Trends table -- replaces what used to be a horizontal bar chart
+# plus a separate sparkline table. Once every bar was already labeled
+# with its exact count and a table below repeated those same numbers,
+# the bar chart wasn't earning its space (user feedback 2026-08-05).
+# One row per category: current count, a 12-week sparkline, and delta
+# vs month/quarter/year ago. Week-over-week is deliberately not included
+# here -- confirmed against real data it's pure noise at the category
+# level (median absolute delta 0), the same finding that shaped
+# find_biggest_mover()'s window above. Month is weak but real signal
+# (median 1); quarter is strong (median 4) but conflates the actual
+# within-year seasonal hiring cycle (e.g. Elementary postings peak in
+# spring, trough in late summer) with real change; year isolates
+# genuine year-over-year movement by comparing two points at the same
+# place in that cycle (confirmed distinct from quarter with real data:
+# Elementary was -31 quarter-over-quarter but only -17 year-over-year
+# for the same "now").
+#
+# history: data.frame(Category, Archive_Date, n) already filtered to
+# one district/institution and already summed across any other
+# dimension (e.g. HE's Job_Type, so this shows category totals, not an
+# FT/PT breakdown -- the FT/PT split isn't lost, just no longer show
+# here since the bar chart carrying it is gone; Jobs Table / New This
+# Week still show individual postings).
+build_current_trends_table <- function(history, accent) {
+  dates <- sort(unique(history$Archive_Date))
+  if (length(dates) == 0) return(NULL)
+  latest <- max(dates)
+
+  nearest_on_or_before <- function(target) {
+    candidates <- dates[dates <= target]
+    if (length(candidates) == 0) return(NA)
+    max(candidates)
+  }
+  month_ago <- nearest_on_or_before(latest - 28)
+  quarter_ago <- nearest_on_or_before(latest - 90)
+  year_ago <- nearest_on_or_before(latest - 365)
+
+  current <- history %>%
+    filter(Archive_Date == latest) %>%
+    group_by(Category) %>%
+    summarize(`Current Postings` = sum(n), .groups = "drop") %>%
+    arrange(desc(`Current Postings`))
+  if (nrow(current) == 0) return(NULL)
+
+  value_at <- function(cat, date) {
+    if (is.na(date)) return(NA_integer_)
+    v <- history$n[history$Category == cat & history$Archive_Date == date]
+    if (length(v) == 0) 0L else sum(v)
+  }
+  fmt_delta <- function(now, then) {
+    if (is.na(then)) return("<span style='color:#999;'>—</span>")
+    d <- now - then
+    color <- if (d > 0) "#1baf7a" else if (d < 0) "#e34948" else "#999999"
+    arrow <- if (d >= 0) "▲" else "▼"
+    sprintf("<span style='color:%s;'>%s %d</span>", color, arrow, abs(d))
+  }
+
+  current$`Last 12 Weeks` <- vapply(current$Category, function(cat) {
+    series <- history %>%
+      filter(Category == cat) %>%
+      group_by(Archive_Date) %>%
+      summarize(n = sum(n), .groups = "drop") %>%
+      arrange(Archive_Date) %>%
+      tail(12) %>%
+      pull(n)
+    make_sparkline_svg(series, accent = accent)
+  }, character(1))
+
+  current$`vs Month Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, month_ago)),
+                                    current$Category, current$`Current Postings`)
+  current$`vs Quarter Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, quarter_ago)),
+                                      current$Category, current$`Current Postings`)
+  current$`vs Year Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, year_ago)),
+                                   current$Category, current$`Current Postings`)
+
+  current
+}
+
 # Statewide week-over-week delta for the KPI tiles -- aggregation smooths
 # individual-entity noise into a real signal (confirmed against real data
 # 2026-08-05: statewide K-12 totals move ~20-50/week, HE climbed steadily
@@ -694,9 +772,7 @@ ui <- dashboardPage(
           selected = "Total"
         ),
 
-        withSpinner(plotlyOutput("k12_current_plot")),
-        h4("Trend by category (last 12 weeks)", style = "margin-top: 20px;"),
-        div(style = "overflow-x: auto;", tableOutput("k12_current_sparklines"))
+        div(style = "overflow-x: auto;", withSpinner(tableOutput("k12_current_trends_table")))
       ),
 
       # ------------------ Higher Ed ------------------
@@ -773,9 +849,7 @@ ui <- dashboardPage(
                            selected = "agg", inline = TRUE),
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
-              withSpinner(plotlyOutput("he_current_plot")),
-              h4("Trend by category (last 12 weeks)", style = "margin-top: 20px;"),
-              div(style = "overflow-x: auto;", tableOutput("he_current_sparklines"))),
+              div(style = "overflow-x: auto;", withSpinner(tableOutput("he_current_trends_table")))),
 
       tabItem(
         tabName = "he_new",
@@ -1174,70 +1248,16 @@ server <- function(input, output, session) {
   
 
   
-  output$k12_current_plot <- renderPlotly({
-    req(input$k12_detail_level_current)
-    src <- if (identical(input$k12_detail_level_current, "detail")) k12nowsum else k12nowsum_agg
-    df <- src %>%
-      filter(District == input$district_current) %>%
-      mutate(Pct = Sum / sum(Sum))
-    palette <- if (identical(input$k12_detail_level_current, "detail")) K12_CATEGORY_COLORS_DETAIL else K12_CATEGORY_COLORS_AGG
-
-  # Horizontal bars, sorted so the largest category reads at the top like
-  # a ranked list -- with up to 18 categories at the Detailed level, long
-  # labels rotated on a vertical x-axis were overlapping the axis title
-  # and legend (confirmed visually 2026-08-05). reorder(..., Sum) is exact
-  # here since Sum is already one row per category, no grouping needed.
-  # No legend, no "Category" axis title -- fill is 1:1 with the category,
-  # which is already the label on every bar, so either one would just
-  # repeat the same names a second time. The axis title also has a real
-  # ggplotly() bug: its theme margin isn't respected through conversion,
-  # so at the Detailed level it renders vertically centered on top of the
-  # tick-label column instead of clear to the left (confirmed visually
-  # 2026-08-05) -- dropping it sidesteps that rather than fighting it.
-  # Custom hover text -- without it, ggplotly() falls back to its default,
-  # which shows the raw reorder(Broad_Category, Sum) expression and
-  # duplicates the category name (confirmed visually 2026-08-05, genuinely
-  # bad). Share of this district's current postings is a natural
-  # complement to the raw count, distinct from the trend sparkline table
-  # below the chart, not overlapping it.
-  plot <- ggplot(df, aes(x = reorder(Broad_Category, Sum), y = Sum, fill = Broad_Category,
-                          text = paste0(Broad_Category, ": ", Sum, " posting", ifelse(Sum == 1, "", "s"),
-                                        " (", scales::percent(Pct, accuracy = 0.1), " of current openings)"))) +
-    geom_bar(stat = "identity") +
-    geom_text(aes(label = Sum), hjust = -0.2, size = 3) +
-    labs(x = NULL, y = "Number of Postings") +
-    scale_fill_manual(values = palette) +
-    coord_flip() +
-    theme_minimal() +
-    theme(legend.position = "none")
-
-  ggplotly(plot, tooltip = "text")
-})
-
-  # Companion sparkline table -- lets the raw current count (bar) and the
-  # recent trend (line) live side by side without cramming both into one
-  # plotly chart, reusing the same make_sparkline_svg() pattern as the
-  # Top Hiring tables. Pulls from k12sum/k12sum_agg (the longitudinal
-  # data, already loaded) rather than the current-snapshot-only
-  # k12nowsum/k12nowsum_agg the bar chart above uses.
-  output$k12_current_sparklines <- renderTable({
+  output$k12_current_trends_table <- renderTable({
     req(input$k12_detail_level_current)
     hist_src <- if (identical(input$k12_detail_level_current, "detail")) k12sum else k12sum_agg
-    now_src <- if (identical(input$k12_detail_level_current, "detail")) k12nowsum else k12nowsum_agg
+    history <- hist_src %>%
+      filter(District == input$district_current) %>%
+      transmute(Category = Broad_Category, Archive_Date, n = sum)
 
-    now <- now_src %>% filter(District == input$district_current) %>% arrange(desc(Sum))
-    req(nrow(now) > 0)
-
-    now$`Last 12 Weeks` <- vapply(now$Broad_Category, function(cat) {
-      series <- hist_src %>%
-        filter(District == input$district_current, Broad_Category == cat) %>%
-        arrange(Archive_Date) %>%
-        tail(12) %>%
-        pull(sum)
-      make_sparkline_svg(series, accent = "#2a78d6")
-    }, character(1))
-
-    now %>% select(Category = Broad_Category, `Current Postings` = Sum, `Last 12 Weeks`)
+    result <- build_current_trends_table(history, accent = "#2a78d6")
+    req(!is.null(result))
+    result
   }, sanitize.text.function = function(x) x)
 
   # -------- Higher Ed --------
@@ -1406,78 +1426,20 @@ server <- function(input, output, session) {
 
 
 
-  output$he_current_plot <- renderPlotly({
-    req(input$he_detail_level_current)
-    src <- if (identical(input$he_detail_level_current, "detail")) henowsum_he else henowsum_he_agg
-    df <- src %>%
-      filter(Institution == input$inst_current) %>%
-      mutate(Job_Type = dplyr::recode(Job_Type,
-        "Instructor/Teacher/Faculty" = "Full-Time Faculty",
-        "Adjunct/Part-Time Faculty" = "Adjunct/Part-Time"
-      )) %>%
-      group_by(Category) %>%
-      mutate(Category_Total = sum(Sum), Pct_of_Category = Sum / Category_Total) %>%
-      ungroup()
-
-    # Horizontal bars, sorted so the largest category reads at the top --
-    # same fix as k12_current_plot. Category_Total (not Sum) drives the
-    # sort since each category has two stacked rows (FT/PT); reorder()'s
-    # default mean-of-Sum would rank a mostly-FT category differently than
-    # its true total some of the time. No "Category" axis title -- same
-    # ggplotly() margin bug as k12_current_plot (renders on top of the
-    # tick-label column instead of clear to the left); the legend stays
-    # since it encodes Job_Type, a separate dimension from the labels.
-    # Hover adds each segment's share of its category (FT/PT composition)
-    # as the extra context, distinct from the trend sparkline table below.
-    p <- ggplot(df, aes(
-      x = reorder(Category, Category_Total), y = Sum, fill = Job_Type,
-      text = paste0(Category, " — ", Job_Type, ": ", Sum,
-                    " (", scales::percent(Pct_of_Category, accuracy = 0.1), " of this category's ",
-                    Category_Total, " postings)")
-    )) +
-      geom_bar(stat = "identity", position = "stack") +
-      geom_text(aes(label = Sum), position = position_stack(vjust = 0.5), size = 3) +
-      labs(x = NULL, y = "Number of Postings", fill = NULL) +
-      scale_fill_manual(values = HE_JOB_TYPE_COLORS) +
-      coord_flip() +
-      theme_minimal() +
-      theme(legend.position = "bottom",
-            legend.key.size = unit(0.5, "cm"),
-            legend.box.spacing = unit(0.2, "cm"),
-            legend.text = element_text(size = 8),
-            legend.title = element_text(size = 10))
-
-    ggplotly(p, tooltip = "text")
-  })
-
-  # Companion sparkline table -- same purpose as k12_current_sparklines
-  # above. Sums across Job_Type (FT + PT) per category to match the bar
-  # chart's Category_Total, since the trend here is "how has this
-  # category moved," not a FT/PT breakdown (the bars already show that).
-  output$he_current_sparklines <- renderTable({
+  # Sums across Job_Type (FT + PT) per category -- this table shows "how
+  # has this category moved," not a FT/PT breakdown (which lived in the
+  # now-removed stacked bar chart; Jobs Table / New This Week still show
+  # individual postings with their own Job_Type if that split matters).
+  output$he_current_trends_table <- renderTable({
     req(input$he_detail_level_current)
     hist_src <- if (identical(input$he_detail_level_current, "detail")) hesum_he else hesum_he_agg
-    now_src <- if (identical(input$he_detail_level_current, "detail")) henowsum_he else henowsum_he_agg
-
-    now <- now_src %>%
+    history <- hist_src %>%
       filter(Institution == input$inst_current) %>%
-      group_by(Category) %>%
-      summarize(`Current Postings` = sum(Sum), .groups = "drop") %>%
-      arrange(desc(`Current Postings`))
-    req(nrow(now) > 0)
+      transmute(Category, Archive_Date, n = sum)
 
-    now$`Last 12 Weeks` <- vapply(now$Category, function(cat) {
-      series <- hist_src %>%
-        filter(Institution == input$inst_current, Category == cat) %>%
-        group_by(Archive_Date) %>%
-        summarize(n = sum(sum), .groups = "drop") %>%
-        arrange(Archive_Date) %>%
-        tail(12) %>%
-        pull(n)
-      make_sparkline_svg(series, accent = "#4a3aa7")
-    }, character(1))
-
-    now
+    result <- build_current_trends_table(history, accent = "#4a3aa7")
+    req(!is.null(result))
+    result
   }, sanitize.text.function = function(x) x)
 }
 
