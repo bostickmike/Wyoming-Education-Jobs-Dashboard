@@ -412,12 +412,14 @@ ui <- dashboardPage(
       menuItem("Map", tabName = "intro", icon = icon("home")),
       menuItem("K-12 Careers", tabName = "k12_root", icon = icon("school"),
                menuSubItem("Jobs Table", tabName = "k12_table"),
+               menuSubItem("District Summary", tabName = "k12_summary"),
                menuSubItem("Longitudinal Teacher Trends", tabName = "k12_trends"),
                menuSubItem("Current Teacher Trends", tabName = "k12_current"),
                menuSubItem("New This Week", tabName = "k12_new")
       ),
       menuItem("Higher Ed Careers", tabName = "he_root", icon = icon("university"),
                menuSubItem("Jobs Table", tabName = "he_table"),
+               menuSubItem("Institution Summary", tabName = "he_summary"),
                menuSubItem("Longitudinal Faculty Trends", tabName = "he_trends"),
                menuSubItem("Current Faculty Trends", tabName = "he_current"),
                menuSubItem("New This Week", tabName = "he_new")
@@ -500,6 +502,11 @@ ui <- dashboardPage(
         DTOutput("k12_jobs")
       ),
       tabItem(
+        tabName = "k12_summary",
+        h4("One row per district -- current openings, teacher vacancy rate, and salary data"),
+        DTOutput("k12_summary_table")
+      ),
+      tabItem(
         tabName = "k12_new",
         h4("New teacher postings since the previous weekly snapshot"),
         DTOutput("k12_new_table")
@@ -577,6 +584,11 @@ ui <- dashboardPage(
         tabName = "he_table",
         uiOutput("he_filter_status"),
         DTOutput("he_jobs")
+      ),
+      tabItem(
+        tabName = "he_summary",
+        h4("One row per institution -- current openings, faculty vacancy rate, and salary data"),
+        DTOutput("he_summary_table")
       ),
       tabItem(
         tabName = "he_trends",
@@ -778,6 +790,30 @@ server <- function(input, output, session) {
     )
   })
   observeEvent(input$clear_k12_filter, { selected_district(NULL) })
+
+  # District Summary -- everything the map popups show (vacancy rate,
+  # salary figures, source/date), but as a real exportable table instead
+  # of something only visible one marker at a time.
+  output$k12_summary_table <- renderDT({
+    df <- combined_map_data %>%
+      filter(Type == "K-12 District") %>%
+      arrange(desc(CurrentCount)) %>%
+      transmute(
+        District = Name,
+        County,
+        `Current Openings` = CurrentCount,
+        `New This Week` = WeeklyNew,
+        `Teacher Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
+        `Teacher Base Salary` = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
+        `Prior Year` = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
+        `Salary Year` = Salary_Year,
+        `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary)),
+        `Salary Source` = Salary_Source,
+        `Salary Updated` = Salary_Updated
+      )
+    datatable(df, filter = "top", extensions = "Buttons",
+              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 48))
+  })
 
   # -------- Combined map (Introduction tab) --------
   output$combined_map <- renderLeaflet({
@@ -1015,6 +1051,33 @@ server <- function(input, output, session) {
   })
   observeEvent(input$clear_he_filter, { selected_institution(NULL) })
 
+  # Institution Summary -- same purpose as k12_summary_table above: the
+  # map popups' data as a real exportable table, not one marker at a time.
+  output$he_summary_table <- renderDT({
+    df <- combined_map_data %>%
+      filter(Type == "Higher Ed Institution") %>%
+      arrange(desc(CurrentCount)) %>%
+      transmute(
+        Institution = Name,
+        `Current Openings` = CurrentCount,
+        `New This Week` = WeeklyNew,
+        `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
+        `Avg Faculty Salary` = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
+        `Professor Avg Salary` = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
+        `Faculty Count` = Faculty_Count,
+        `Salary Year` = Salary_Year,
+        # Short plain-text label, not the full Salary_Note sentence --
+        # that blew out Sheridan/Gillette's row height next to every other
+        # institution's single-line rows (confirmed visually 2026-08-05).
+        # Kept plain text rather than an HTML tooltip so the CSV/copy
+        # export buttons still produce clean text, not raw markup.
+        Note = ifelse(is.na(Salary_Note), "", "Shared reporting w/ Sheridan & Gillette"),
+        `Salary Source` = Salary_Source,
+        `Salary Updated` = Salary_Updated
+      )
+    datatable(df, filter = "top", extensions = "Buttons",
+              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 9))
+  })
 
   observeEvent(input$he_detail_level_trends, {
     cats <- if (identical(input$he_detail_level_trends, "detail")) {
