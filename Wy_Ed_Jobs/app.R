@@ -851,6 +851,9 @@ server <- function(input, output, session) {
   # labels rotated on a vertical x-axis were overlapping the axis title
   # and legend (confirmed visually 2026-08-05). reorder(..., Sum) is exact
   # here since Sum is already one row per category, no grouping needed.
+  # No legend -- fill is 1:1 with the category, which is already the
+  # y-axis label on every bar, so a color-swatch legend would just repeat
+  # the same names a second time.
   plot <- ggplot(df, aes(x = reorder(Broad_Category, Sum), y = Sum, fill = Broad_Category)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = Sum), hjust = -0.2, size = 3) +
@@ -858,11 +861,7 @@ server <- function(input, output, session) {
     scale_fill_manual(values = palette) +
     coord_flip() +
     theme_minimal() +
-    theme(legend.position = "bottom",
-          legend.key.size = unit(0.5, "cm"),
-          legend.box.spacing = unit(0.2, "cm"),
-          legend.text = element_text(size = 8),
-          legend.title = element_text(size = 10))
+    theme(legend.position = "none")
 
   ggplotly(plot)
 })
