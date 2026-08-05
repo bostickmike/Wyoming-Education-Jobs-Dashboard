@@ -55,7 +55,7 @@ ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Lin
 mapdata2_he <- read.csv("salarymap.csv")
 
 hesum_he <- read.csv("allsum_he.csv") %>%
-  filter(Category != "Uncategorized")
+  filter(Category != "Uncategorized", Job_Type == "Instructor/Teacher/Faculty")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
 he_dates <- sort(unique(hesum_he$Archive_Date))
@@ -105,6 +105,15 @@ HE_CATEGORY_COLORS <- c(
   "Physical Education"   = "#767671"
 )
 
+# Full-time-vs-adjunct split for the "Current Faculty Trends" stacked bar
+# only -- Category is already on that chart's x-axis, so color there
+# encodes Job_Type instead (coloring by Category too would be redundant
+# with position). Top two validated categorical slots for max contrast.
+HE_JOB_TYPE_COLORS <- c(
+  "Full-Time Faculty" = "#2a78d6",
+  "Adjunct/Part-Time"  = "#eb6834"
+)
+
 #--------------------------------------------------
 # "New this week" -- row-level history, diffed against the previous
 # archived week by (identity columns), scoped to Teacher/Faculty postings
@@ -128,7 +137,8 @@ k12_new_this_week <- {
 }
 
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
-  mutate(Archive_Date = as.Date(Archive_Date))
+  mutate(Archive_Date = as.Date(Archive_Date)) %>%
+  filter(Job_Type == "Instructor/Teacher/Faculty")
 
 he_new_this_week <- {
   dates <- sort(unique(he_history$Archive_Date))
@@ -244,23 +254,14 @@ ui <- dashboardPage(
           valueBoxOutput("kpi_last_refreshed", width = 4)
         ),
         box(width = 12, title = "Where the openings are", status = "primary",
-            fluidRow(
-              column(
-                width = 7,
-                checkboxGroupInput(
-                  "map_types", "Show:",
-                  choices = c("K-12 Districts" = "K-12 District", "Higher Ed Institutions" = "Higher Ed Institution"),
-                  selected = c("K-12 District", "Higher Ed Institution"),
-                  inline = TRUE
-                )
-              ),
-              column(
-                width = 5,
-                checkboxInput("map_hide_zero", "Hide locations with no current openings", value = FALSE)
-              )
+            checkboxGroupInput(
+              "map_types", "Show:",
+              choices = c("K-12 Districts" = "K-12 District", "Higher Ed Institutions" = "Higher Ed Institution"),
+              selected = c("K-12 District", "Higher Ed Institution"),
+              inline = TRUE
             ),
             withSpinner(leafletOutput("combined_map", height = 600)),
-            helpText("Click a marker to jump to its filtered Jobs Table.")
+            helpText("Only locations with current openings are shown. Click a marker to jump to its filtered Jobs Table.")
         ),
         fluidRow(
           box(title = "Top K-12 Hiring Districts This Week", width = 6, status = "primary",
@@ -485,8 +486,7 @@ server <- function(input, output, session) {
   })
 
   map_filtered <- reactive({
-    df <- combined_map_data %>% filter(Type %in% input$map_types)
-    if (isTRUE(input$map_hide_zero)) df <- df %>% filter(CurrentCount > 0)
+    df <- combined_map_data %>% filter(Type %in% input$map_types, CurrentCount > 0)
     df
   })
 
@@ -786,13 +786,21 @@ server <- function(input, output, session) {
 
 
   output$he_current_plot <- renderPlotly({
-    df <- henowsum_he %>% filter(Institution == input$inst_current)
-   
-    p <- ggplot(df, aes(x = Category, y = Sum, fill = Category)) +
-      geom_bar(stat = "identity") +
-      geom_text(aes(label = Sum), nudge_y = 0.05 * max(df$Sum)) +
-      labs(x = "Category", y = "Number of Postings") +
-      scale_fill_manual(values = HE_CATEGORY_COLORS) +
+    df <- henowsum_he %>%
+      filter(Institution == input$inst_current) %>%
+      mutate(Job_Type = dplyr::recode(Job_Type,
+        "Instructor/Teacher/Faculty" = "Full-Time Faculty",
+        "Adjunct/Part-Time Faculty" = "Adjunct/Part-Time"
+      ))
+
+    p <- ggplot(df, aes(
+      x = Category, y = Sum, fill = Job_Type,
+      text = paste0("Category: ", Category, "<br>", "Type: ", Job_Type, "<br>", "Postings: ", Sum)
+    )) +
+      geom_bar(stat = "identity", position = "stack") +
+      geom_text(aes(label = Sum), position = position_stack(vjust = 0.5), size = 3) +
+      labs(x = "Category", y = "Number of Postings", fill = "Position Type") +
+      scale_fill_manual(values = HE_JOB_TYPE_COLORS) +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7),
             legend.position = "bottom",
@@ -800,8 +808,8 @@ server <- function(input, output, session) {
             legend.box.spacing = unit(0.2, "cm"),
             legend.text = element_text(size = 8),
             legend.title = element_text(size = 10))
-    
-    ggplotly(p)
+
+    ggplotly(p, tooltip = "text")
   })
 }
 

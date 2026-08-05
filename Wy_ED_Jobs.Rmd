@@ -739,25 +739,31 @@ combined_cat <- combined_HE_data %>%
   mutate(Job_Type = classify_he_job_type(Title))
 
 facultydata <- combined_cat %>%
-  filter(Job_Type == "Instructor/Teacher/Faculty") %>%
+  filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title))
 write.csv(facultydata, "facultydata.csv")
 
 # Also shipped into Wy_Ed_Jobs/ (mirroring k12jobanalysis.csv's pattern) so
 # the deployed app has row-level, multi-week HE data for the "new this
 # week" view -- the root-level copy above stays gitignored/local-only.
+# facultydata now includes both full-time-ish and Adjunct/Part-Time
+# faculty (Job_Type column distinguishes them) so the "Current Faculty
+# Trends" chart can show a full-time/part-time stacked breakdown; the
+# Longitudinal Trends and New This Week views filter back down to
+# Job_Type == "Instructor/Teacher/Faculty" in app.R to keep their existing,
+# unchanged meaning ("faculty hiring", not incl. the standing adjunct pool).
 write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"))
 hesum <- facultydata %>%
-  group_by(Category, Archive_Date) %>%
+  group_by(Category, Archive_Date, Job_Type) %>%
   summarize(
     sum = n()
   ) %>%
   ungroup()%>%
   mutate(Institution = "Total")%>%
-  select(Category, Archive_Date, Institution, sum)
+  select(Category, Archive_Date, Institution, Job_Type, sum)
 
 hesuminst<- facultydata%>%
-  group_by(Category, Archive_Date, Institution)%>%
+  group_by(Category, Archive_Date, Institution, Job_Type)%>%
   summarise(
     sum = n()
   )%>%
@@ -770,7 +776,7 @@ henow<- facultydata%>%
   filter(Archive_Date == max(Archive_Date))
 
 henowsum <- henow %>%
-  group_by(Category) %>%
+  group_by(Category, Job_Type) %>%
   summarize(
     Sum = n()
   ) %>%
@@ -778,12 +784,12 @@ henowsum <- henow %>%
   mutate(Institution = "Total")
 
 henowinstsum<- henow %>%
-  group_by(Category, Institution)%>%
+  group_by(Category, Institution, Job_Type)%>%
   summarize(
     Sum = n()
   ) %>%
   ungroup()%>%
-  select(Category, Sum, Institution)
+  select(Category, Sum, Institution, Job_Type)
 
 Allnow_he<- rbind(henowsum, henowinstsum)
 
