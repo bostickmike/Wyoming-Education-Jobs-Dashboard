@@ -117,3 +117,27 @@ test_that("HE and K-12 reactives don't error across every institution/district",
     }
   })
 })
+
+test_that("make_sparkline_svg draws a rising trend with a green endpoint and a falling trend with a red one", {
+  env <- load_app()
+
+  rising <- env$make_sparkline_svg(c(10, 15, 20))
+  expect_match(rising, "^<svg")
+  expect_match(rising, "#1baf7a", fixed = TRUE)
+
+  falling <- env$make_sparkline_svg(c(20, 15, 10))
+  expect_match(falling, "#e34948", fixed = TRUE)
+
+  flat <- env$make_sparkline_svg(c(10, 10, 10))
+  expect_match(flat, "#999999", fixed = TRUE)
+})
+
+test_that("make_sparkline_svg handles too little data without erroring", {
+  env <- load_app()
+
+  expect_equal(env$make_sparkline_svg(numeric(0)), "")
+  expect_equal(env$make_sparkline_svg(c(5)), "")
+  expect_equal(env$make_sparkline_svg(c(NA, NA)), "")
+  # One real value plus NAs still isn't enough to draw a line between two points.
+  expect_equal(env$make_sparkline_svg(c(5, NA, NA)), "")
+})

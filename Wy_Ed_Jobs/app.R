@@ -25,6 +25,47 @@ combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
 mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
   rename(Name = District)
 
+# Weekly ALL-category posting totals per district/institution (not scoped
+# to Teacher/Faculty like k12_history/he_history below) -- powers the
+# sparkline trend next to each entity's raw count on the Top Hiring
+# tables, matching that same all-category count rather than a
+# teacher/faculty-only proxy that wouldn't line up with the number shown.
+k12_district_weekly_totals <- read.csv("k12_district_weekly_totals.csv", fileEncoding = "UTF-8") %>%
+  mutate(Archive_Date = as.Date(Archive_Date))
+he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fileEncoding = "UTF-8") %>%
+  mutate(Archive_Date = as.Date(Archive_Date))
+
+# Tiny inline trend chart (no axes/legend, just the shape of a trend) for
+# the Top Hiring tables -- lets "31 openings" read differently depending
+# on whether that's a district climbing steadily or one that just posted a
+# batch this week, without a separate chart. Plain SVG string templating
+# rather than a real ggplot/plotly render, since this needs to be cheap
+# enough to generate per table row.
+make_sparkline_svg <- function(series, accent = "#2a78d6") {
+  series <- series[!is.na(series)]
+  if (length(series) < 2) return("")
+
+  w <- 96; h <- 28; pad <- 3
+  rng <- range(series)
+  span <- diff(rng)
+  if (span == 0) span <- 1
+
+  n <- length(series)
+  step_x <- (w - pad * 2) / (n - 1)
+  xs <- pad + (seq_len(n) - 1) * step_x
+  ys <- pad + (1 - (series - rng[1]) / span) * (h - pad * 2)
+
+  line_path <- paste0(ifelse(seq_along(xs) == 1, "M", "L"), round(xs, 1), ",", round(ys, 1), collapse = " ")
+  area_path <- paste0(line_path, " L", round(xs[n], 1), ",", h - pad, " L", round(xs[1], 1), ",", h - pad, " Z")
+
+  dot_color <- if (series[n] > series[1]) "#1baf7a" else if (series[n] < series[1]) "#e34948" else "#999999"
+
+  sprintf(
+    '<svg width="%d" height="%d" viewBox="0 0 %d %d" style="vertical-align:middle;"><path d="%s" fill="%s22" stroke="none"></path><path d="%s" fill="none" stroke="%s" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="%s" cy="%s" r="2.5" fill="%s"></circle></svg>',
+    w, h, w, h, area_path, accent, line_path, accent, round(xs[n], 1), round(ys[n], 1), dot_color
+  )
+}
+
 k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
   mutate(District = str_squish(as.character(District)),
          Broad_Category = dplyr::recode(Broad_Category,
@@ -301,6 +342,7 @@ map_k12 <- mapdata2_k12 %>%
     TeacherCurrentCount = coalesce(TeacherCurrentCount, 0L),
     Vacancy_Rate = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE >= VACANCY_RATE_MIN_FTE,
                            TeacherCurrentCount / Teachers_Total_FTE, NA_real_),
+    Vacancy_Numerator = TeacherCurrentCount, Vacancy_Denominator = Teachers_Total_FTE,
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
     Salary_Note = NA_character_
   ) %>%
@@ -308,7 +350,7 @@ map_k12 <- mapdata2_k12 %>%
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Vacancy_Rate, Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, Salary_Updated, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -345,6 +387,7 @@ map_he <- mapdata2_he %>%
     # both are suppressed here rather than shown as if they were exact.
     Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count >= VACANCY_RATE_MIN_FTE & is.na(Salary_Note),
                            FacultyCurrentCount / Faculty_Count, NA_real_),
+    Vacancy_Numerator = FacultyCurrentCount, Vacancy_Denominator = Faculty_Count,
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
     County = NA_character_
@@ -353,7 +396,7 @@ map_he <- mapdata2_he %>%
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Vacancy_Rate, Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, Salary_Updated, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -634,11 +677,30 @@ server <- function(input, output, session) {
   })
 
   output$top_k12_districts <- renderTable({
-    combineddata %>% count(District, sort = TRUE, name = "Open Postings") %>% head(5)
-  })
+    top <- combineddata %>% count(District, sort = TRUE, name = "Open Postings") %>% head(5)
+    top$`Last 12 Weeks` <- vapply(top$District, function(d) {
+      series <- k12_district_weekly_totals %>%
+        filter(District == d) %>%
+        arrange(Archive_Date) %>%
+        tail(12) %>%
+        pull(n)
+      make_sparkline_svg(series, accent = "#2a78d6")
+    }, character(1))
+    top
+  }, sanitize.text.function = function(x) x)
+
   output$top_he_institutions <- renderTable({
-    ccdata %>% count(Institution, sort = TRUE, name = "Open Postings") %>% head(5)
-  })
+    top <- ccdata %>% count(Institution, sort = TRUE, name = "Open Postings") %>% head(5)
+    top$`Last 12 Weeks` <- vapply(top$Institution, function(inst) {
+      series <- he_institution_weekly_totals %>%
+        filter(Institution == inst) %>%
+        arrange(Archive_Date) %>%
+        tail(12) %>%
+        pull(n)
+      make_sparkline_svg(series, accent = "#4a3aa7")
+    }, character(1))
+    top
+  }, sanitize.text.function = function(x) x)
 
   # Vacancy-rate leaderboards -- a different question from the raw-count
   # tables above ("who's short-staffed relative to their size" rather than
@@ -654,7 +716,8 @@ server <- function(input, output, session) {
     req(nrow(df) > 0)
 
     plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
-                            text = paste0(Name, ": ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
+                            text = paste0(Name, ": ", Vacancy_Numerator, " / ", Vacancy_Denominator,
+                                          " = ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
       geom_bar(stat = "identity", fill = "#2a78d6") +
       geom_text(aes(label = scales::percent(Vacancy_Rate, accuracy = 0.1)), hjust = -0.15, size = 3) +
       labs(x = NULL, y = "Teacher vacancy rate") +
@@ -673,7 +736,8 @@ server <- function(input, output, session) {
     req(nrow(df) > 0)
 
     plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
-                            text = paste0(Name, ": ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
+                            text = paste0(Name, ": ", Vacancy_Numerator, " / ", Vacancy_Denominator,
+                                          " = ", scales::percent(Vacancy_Rate, accuracy = 0.1)))) +
       geom_bar(stat = "identity", fill = "#4a3aa7") +
       geom_text(aes(label = scales::percent(Vacancy_Rate, accuracy = 0.1)), hjust = -0.15, size = 3) +
       labs(x = NULL, y = "Faculty vacancy rate") +

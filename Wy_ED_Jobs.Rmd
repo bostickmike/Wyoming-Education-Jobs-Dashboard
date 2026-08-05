@@ -422,6 +422,14 @@ k12jobs <- k12jobs %>%
 
 write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'))
 
+# Per-district weekly posting totals (ALL categories, not just Teacher) --
+# powers the sparkline trend shown next to each district's raw count on
+# the landing page's "Top K-12 Hiring Districts" table. Built from the
+# same combinedclean used above, just not filtered to position == "Teacher".
+k12_district_weekly_totals <- combinedclean %>%
+  count(District, Archive_Date, name = "n")
+write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
+
 
 #Database for all dates by category
 # Dedup key is title+location, not title alone: two different schools in the
@@ -815,6 +823,15 @@ facultydata <- combined_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title))
 write.csv(facultydata, "facultydata.csv")
+
+# Per-institution weekly posting totals (ALL categories/job types, not
+# just full-time faculty) -- powers the sparkline trend shown next to
+# each institution's raw count on the landing page's "Top Higher Ed
+# Hiring Institutions" table. Built from combined_HE_data before the
+# Job_Type/faculty-only filter above.
+he_institution_weekly_totals <- combined_HE_data %>%
+  count(Institution, Archive_Date, name = "n")
+write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
 
 # Also shipped into Wy_Ed_Jobs/ (mirroring k12jobanalysis.csv's pattern) so
 # the deployed app has row-level, multi-week HE data for the "new this

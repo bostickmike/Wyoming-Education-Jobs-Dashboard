@@ -149,6 +149,8 @@ jobs:
             Wy_Ed_Jobs/hedata.xlsx \
             Wy_Ed_Jobs/k12jobanalysis.csv \
             Wy_Ed_Jobs/facultydata.csv \
+            Wy_Ed_Jobs/k12_district_weekly_totals.csv \
+            Wy_Ed_Jobs/he_institution_weekly_totals.csv \
             Wy_Ed_Jobs/salarymap2.csv \
             Wy_Ed_Jobs/salarymap.csv \
             Wy_Ed_Jobs/manifest.json \
