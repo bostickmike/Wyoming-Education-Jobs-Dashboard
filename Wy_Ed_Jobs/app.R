@@ -92,23 +92,38 @@ henowsum_he <- read.csv("allnow_he.csv") %>%
 last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
 
 #--------------------------------------------------
-# Aggregated rollups -- a 2026-08-04 audit found several badly-oversized,
+# Simple rollups -- a 2026-08-04 audit found several badly-oversized,
 # artificially-merged categories (K-12 "Special Education" alone was 3,239
 # postings; HE "CTE" was 5,834, three times the next-largest real
 # category) and split them into coherent sub-groups. That's more accurate,
 # but too many categories at once makes the longitudinal line charts an
-# unreadable tangle. Both levels stay available -- "Aggregated" collapses
-# the splits back into their original combined buckets (what the charts
-# looked like before the split), "Detailed" shows the full breakdown --
-# via a toggle, rather than picking one and losing the other.
+# unreadable tangle -- and a first attempt at an "Aggregated" view that
+# just undid those specific splits (13-16 categories) turned out to still
+# be nearly as busy as "Detailed" (16-18 categories), not a real second
+# option. "Simple" instead collapses every detailed category into ~5 broad
+# groups chosen from real posting volume (see git history for the specific
+# percentages), matching how school/college staffing is actually organized
+# -- e.g. K-12 elementary-generalist vs special-ed vs secondary-subject vs
+# CTE vs enrichment, HE by division. Both levels stay available via a
+# toggle rather than picking one and losing the other.
 #--------------------------------------------------
 k12_collapse_map <- c(
+  "Elementary" = "Elementary & Early Childhood",
+  "Early Childhood" = "Elementary & Early Childhood",
   "SpEd - General" = "Special Education",
   "SpEd - Resource/LS" = "Special Education",
-  "Math" = "STEM",
-  "Science" = "STEM",
+  "Math" = "Core Academic",
+  "Science" = "Core Academic",
+  "Engl. LA" = "Core Academic",
+  "Soc. St." = "Core Academic",
+  "Language" = "Core Academic",
   "CTE - Trades/Ag" = "CTE",
-  "CTE - Biz/Family" = "CTE"
+  "CTE - Biz/Family" = "CTE",
+  "Music" = "Arts & Enrichment",
+  "Art" = "Arts & Enrichment",
+  "Physical Education" = "Arts & Enrichment",
+  "Library Media" = "Arts & Enrichment",
+  "Gifted and Talented" = "Arts & Enrichment"
 )
 
 k12sum_agg <- k12sum %>%
@@ -122,9 +137,24 @@ k12nowsum_agg <- k12nowsum %>%
   summarize(Sum = sum(Sum), .groups = "drop")
 
 he_collapse_map <- c(
-  "CTE - Trades & Engineering" = "CTE",
-  "CTE - Health Sciences" = "CTE",
-  "CTE - Business & Computing" = "CTE"
+  "CTE - Trades & Engineering" = "CTE / Career-Technical",
+  "CTE - Health Sciences" = "CTE / Career-Technical",
+  "CTE - Business & Computing" = "CTE / Career-Technical",
+  "Culinary/Hospitality" = "CTE / Career-Technical",
+  "Science" = "STEM",
+  "Math" = "STEM",
+  "Humanities" = "Humanities & Social Sciences",
+  "Social Science" = "Humanities & Social Sciences",
+  "History" = "Humanities & Social Sciences",
+  "Language" = "Humanities & Social Sciences",
+  "Criminal Justice" = "Humanities & Social Sciences",
+  "Legal" = "Humanities & Social Sciences",
+  "Human Services" = "Humanities & Social Sciences",
+  "Education" = "Humanities & Social Sciences",
+  "The Arts" = "Arts & Physical Education",
+  "Physical Education" = "Arts & Physical Education",
+  "Extension/Outreach" = "Extension/Outreach & Library",
+  "Library" = "Extension/Outreach & Library"
 )
 
 hesum_he_agg <- hesum_he %>%
@@ -144,17 +174,18 @@ henowsum_he_agg <- henowsum_he %>%
 # all-time volume) are the validated categorical palette from the dataviz
 # skill (fixed order, CVD-checked); slots past 8 extend it with additional
 # well-separated hues for the lower-volume categories rather than
-# reusing/cycling a slot. Separate palettes for the Aggregated and Detailed
+# reusing/cycling a slot. Separate palettes for the Simple and Detailed
 # views since they're different category sets, not just different labels.
 #--------------------------------------------------
 EXT_HUES <- c("#8B5E34", "#5C7A99", "#7A7A3D", "#767671", "#2E8B87",
               "#C77DA8", "#B8860B", "#6B5B95", "#4A6670", "#D97757")
 BASE8 <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948")
 
-K12_CATEGORY_COLORS_AGG <- setNames(c(BASE8, EXT_HUES[1:5]), c(
-  "Special Education", "Elementary", "STEM", "Music", "CTE",
-  "Engl. LA", "Language", "Soc. St.", "Physical Education", "Early Childhood",
-  "Art", "Library Media", "Gifted and Talented"
+# Ordered by real posting volume: Special Education 28%, Core Academic 27%,
+# Elementary & Early Childhood 22%, Arts & Enrichment 15%, CTE 9%.
+K12_CATEGORY_COLORS_AGG <- setNames(BASE8[1:5], c(
+  "Special Education", "Core Academic", "Elementary & Early Childhood",
+  "Arts & Enrichment", "CTE"
 ))
 
 K12_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES[1:8]), c(
@@ -164,11 +195,11 @@ K12_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES[1:8]), c(
   "Gifted and Talented"
 ))
 
-HE_CATEGORY_COLORS_AGG <- setNames(c(BASE8, EXT_HUES[1:8]), c(
-  "CTE", "Science", "The Arts", "Humanities", "Social Science",
-  "Extension/Outreach", "Math", "History", "Education", "Culinary/Hospitality",
-  "Physical Education", "Library", "Language", "Criminal Justice", "Legal",
-  "Human Services"
+# Ordered by real posting volume: CTE/Career-Technical 45%, Humanities &
+# Social Sciences 21%, STEM 19%, Arts & PE 9%, Extension/Outreach & Library 6%.
+HE_CATEGORY_COLORS_AGG <- setNames(BASE8[1:5], c(
+  "CTE / Career-Technical", "Humanities & Social Sciences", "STEM",
+  "Arts & Physical Education", "Extension/Outreach & Library"
 ))
 
 HE_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES), c(
@@ -415,7 +446,7 @@ ui <- dashboardPage(
         tabName = "k12_trends",
 
         radioButtons("k12_detail_level_trends", "Category detail:",
-                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     choices = c("Simple" = "agg", "Detailed" = "detail"),
                      selected = "agg", inline = TRUE),
 
         # Row for category + district
@@ -464,7 +495,7 @@ ui <- dashboardPage(
         tabName = "k12_current",
 
         radioButtons("k12_detail_level_current", "Category detail:",
-                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     choices = c("Simple" = "agg", "Detailed" = "detail"),
                      selected = "agg", inline = TRUE),
 
         selectInput(
@@ -487,7 +518,7 @@ ui <- dashboardPage(
         tabName = "he_trends",
 
         radioButtons("he_detail_level_trends", "Category detail:",
-                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     choices = c("Simple" = "agg", "Detailed" = "detail"),
                      selected = "agg", inline = TRUE),
 
         # Row for Category + Institution
@@ -542,7 +573,7 @@ ui <- dashboardPage(
       
       tabItem(tabName = "he_current",
               radioButtons("he_detail_level_current", "Category detail:",
-                           choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                           choices = c("Simple" = "agg", "Detailed" = "detail"),
                            selected = "agg", inline = TRUE),
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
@@ -712,7 +743,7 @@ server <- function(input, output, session) {
   #------------Filter for longitudinal plot--------
   
   # Toggling detail level swaps both the underlying dataset and the
-  # picker's own choices (Aggregated and Detailed are different category
+  # picker's own choices (Simple and Detailed are different category
   # name sets, not just different labels on the same data).
   observeEvent(input$k12_detail_level_trends, {
     cats <- if (identical(input$k12_detail_level_trends, "detail")) {
