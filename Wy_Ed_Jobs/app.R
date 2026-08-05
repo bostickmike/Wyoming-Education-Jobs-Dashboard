@@ -487,6 +487,22 @@ k12_weekly_new <- k12_new_this_week %>% count(District, name = "WeeklyNew")
 # keeps a future small entity from producing a noisy, misleading rate.
 VACANCY_RATE_MIN_FTE <- 10
 
+# Live links for the Summary tables' source footnotes -- see
+# salary_scrapers.R / ipeds_salary_scraper.R's own header comments for why
+# these are the canonical pages to check if a fetch ever starts failing.
+WSBA_SALARY_SOURCE_URL <- "https://sites.google.com/wsba-wy.org/my-wsba/wy-education-salaries"
+IPEDS_SALARY_SOURCE_URL <- "https://educationdata.urban.org"
+
+# WSBA's Salary_Year is a "2025-2026"-style school-year range -- the prior
+# year is that same range shifted back by one, not a separate value we
+# fetch. Used to put the actual year in the K-12 summary table's column
+# headers instead of a generic "Prior Year" label.
+prior_school_year_label <- function(year_label) {
+  parts <- regmatches(year_label, gregexpr("[0-9]{4}", year_label))[[1]]
+  if (length(parts) != 2) return(NA_character_)
+  paste0(as.integer(parts[1]) - 1, "-", as.integer(parts[2]) - 1)
+}
+
 k12_teacher_current_counts <- k12_history %>%
   filter(Archive_Date == max(Archive_Date)) %>%
   count(District, name = "TeacherCurrentCount")
@@ -512,7 +528,7 @@ map_k12 <- mapdata2_k12 %>%
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -558,7 +574,7 @@ map_he <- mapdata2_he %>%
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, Salary_Updated, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -700,7 +716,8 @@ ui <- dashboardPage(
       tabItem(
         tabName = "k12_summary",
         h4("One row per district -- current openings, teacher vacancy rate, and salary data"),
-        DTOutput("k12_summary_table")
+        DTOutput("k12_summary_table"),
+        uiOutput("k12_summary_footnote")
       ),
       tabItem(
         tabName = "k12_new",
@@ -784,7 +801,8 @@ ui <- dashboardPage(
       tabItem(
         tabName = "he_summary",
         h4("One row per institution -- current openings, faculty vacancy rate, and salary data"),
-        DTOutput("he_summary_table")
+        DTOutput("he_summary_table"),
+        uiOutput("he_summary_footnote")
       ),
       tabItem(
         tabName = "he_trends",
@@ -1025,8 +1043,12 @@ server <- function(input, output, session) {
   # salary figures, source/date), but as a real exportable table instead
   # of something only visible one marker at a time.
   output$k12_summary_table <- renderDT({
-    df <- combined_map_data %>%
-      filter(Type == "K-12 District") %>%
+    k12_rows <- combined_map_data %>% filter(Type == "K-12 District")
+    year <- unique(na.omit(k12_rows$Salary_Year))
+    current_label <- if (length(year) > 0) year[1] else "current year"
+    prior_label <- if (length(year) > 0) prior_school_year_label(year[1]) else "prior year"
+
+    df <- k12_rows %>%
       arrange(desc(CurrentCount)) %>%
       transmute(
         District = Name,
@@ -1034,15 +1056,32 @@ server <- function(input, output, session) {
         `Current Openings` = CurrentCount,
         `New This Week` = WeeklyNew,
         `Teacher Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
-        `Teacher Base Salary` = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
-        `Prior Year` = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
-        `Salary Year` = Salary_Year,
-        `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary)),
-        `Salary Source` = Salary_Source,
-        `Salary Updated` = Salary_Updated
+        TeacherBaseSalary = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
+        TeacherBaseSalaryPrior = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
+        `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary))
       )
+    # Real year in the header instead of a generic "Prior Year" label --
+    # cleaner than a separate Salary Year column repeating the same value
+    # in every row.
+    names(df)[names(df) == "TeacherBaseSalary"] <- paste0("Teacher Base Salary (", current_label, ")")
+    names(df)[names(df) == "TeacherBaseSalaryPrior"] <- paste0("Teacher Base Salary (", prior_label, ")")
+
     datatable(df, filter = "top", extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 48))
+  })
+
+  # Salary_Year and Salary_Source are the same for every district (one
+  # WSBA document covers all 48 for one school year) -- a column repeating
+  # an identical value 48 times isn't information, so it's a single
+  # footnote with a live link instead.
+  output$k12_summary_footnote <- renderUI({
+    year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "K-12 District"]))
+    source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "K-12 District"]))
+    req(length(year) > 0, length(source) > 0)
+    helpText(
+      "Salary data:", source[1], paste0("(", year[1], " school year)"), "—",
+      tags$a(href = WSBA_SALARY_SOURCE_URL, target = "_blank", "wsba-wy.org")
+    )
   })
 
   # -------- Combined map (Introduction tab) --------
@@ -1106,8 +1145,7 @@ server <- function(input, output, session) {
              paste0("<div style='font-size:0.85em;color:#666;'>", Salary_Note, "</div>"),
              ""),
       ifelse(!is.na(Salary_Source),
-             paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source,
-                    " (updated ", Salary_Updated, ")</div>"),
+             paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source, "</div>"),
              ""),
       "<div style='margin-top:6px;'>",
       "<a href='", Link, "' target='_blank'>Careers page</a>",
@@ -1280,29 +1318,45 @@ server <- function(input, output, session) {
   # Institution Summary -- same purpose as k12_summary_table above: the
   # map popups' data as a real exportable table, not one marker at a time.
   output$he_summary_table <- renderDT({
-    df <- combined_map_data %>%
-      filter(Type == "Higher Ed Institution") %>%
+    he_rows <- combined_map_data %>% filter(Type == "Higher Ed Institution")
+    year <- unique(na.omit(he_rows$Salary_Year))
+    year_label <- if (length(year) > 0) year[1] else "current"
+
+    df <- he_rows %>%
       arrange(desc(CurrentCount)) %>%
       transmute(
         Institution = Name,
         `Current Openings` = CurrentCount,
         `New This Week` = WeeklyNew,
         `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
-        `Avg Faculty Salary` = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
-        `Professor Avg Salary` = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
+        AvgFacultySalary = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
+        ProfessorAvgSalary = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
         `Faculty Count` = Faculty_Count,
-        `Salary Year` = Salary_Year,
         # Short plain-text label, not the full Salary_Note sentence --
         # that blew out Sheridan/Gillette's row height next to every other
         # institution's single-line rows (confirmed visually 2026-08-05).
         # Kept plain text rather than an HTML tooltip so the CSV/copy
         # export buttons still produce clean text, not raw markup.
-        Note = ifelse(is.na(Salary_Note), "", "Shared reporting w/ Sheridan & Gillette"),
-        `Salary Source` = Salary_Source,
-        `Salary Updated` = Salary_Updated
+        Note = ifelse(is.na(Salary_Note), "", "Shared reporting w/ Sheridan & Gillette")
       )
+    names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg Faculty Salary (", year_label, ")")
+    names(df)[names(df) == "ProfessorAvgSalary"] <- paste0("Professor Avg Salary (", year_label, ")")
+
     datatable(df, filter = "top", extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 9))
+  })
+
+  # Salary_Year and Salary_Source are the same for every institution (one
+  # IPEDS survey year covers all 9) -- same reasoning as
+  # k12_summary_footnote above.
+  output$he_summary_footnote <- renderUI({
+    year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "Higher Ed Institution"]))
+    source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "Higher Ed Institution"]))
+    req(length(year) > 0, length(source) > 0)
+    helpText(
+      "Salary data:", source[1], paste0("(", year[1], " data)"), "—",
+      tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org")
+    )
   })
 
   observeEvent(input$he_detail_level_trends, {

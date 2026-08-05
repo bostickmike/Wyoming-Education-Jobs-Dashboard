@@ -519,14 +519,16 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
     left_join(superintendent_salary, by = "District") %>%
     rename(Teacher_Base_Salary = Base_Salary_Current_Year,
            Teacher_Base_Salary_Prior_Year = Base_Salary_Prior_Year) %>%
-    mutate(
-      Salary_Source = "WSBA (wsba-wy.org)",
-      Salary_Updated = as.character(Sys.Date())
-    ) %>%
+    # No "last updated" timestamp -- this data only changes once a year
+    # (WSBA republishes a new Salary_Year settlement document), so a date
+    # stamped fresh on every weekly pipeline run would just mislead people
+    # into thinking the dollar figures themselves refresh that often.
+    # Salary_Year is the real freshness signal.
+    mutate(Salary_Source = "WSBA (wsba-wy.org)") %>%
     select(District, County, Latitude, Longitude, Link, Job_Link,
            Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
            Superintendent_Salary, Superintendent_Contract_Days,
-           Salary_Source, Salary_Updated)
+           Salary_Source)
 
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 } else {
@@ -549,12 +551,11 @@ teacher_fte <- safe_scrape(
 salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
 
 if (nrow(teacher_fte) > 0) {
+  # No "last updated" timestamp -- same reasoning as the WSBA/IPEDS salary
+  # chunks. CCD_Year is the real freshness signal for this data.
   salarymap2 <- salarymap2 %>%
     left_join(teacher_fte, by = "District") %>%
-    mutate(
-      CCD_Source = "NCES Common Core of Data via Urban Institute Education Data Portal (educationdata.urban.org)",
-      CCD_Updated = as.character(Sys.Date())
-    )
+    mutate(CCD_Source = "NCES Common Core of Data via Urban Institute Education Data Portal (educationdata.urban.org)")
 
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 } else {
@@ -906,14 +907,15 @@ salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "
   select(Name, Longitude, Latitude, Link)
 
 if (nrow(he_salary) > 0) {
+  # No "last updated" timestamp -- same reasoning as the WSBA chunk above.
+  # IPEDS reports this annually (Salary_Year is the real freshness signal),
+  # so stamping today's date every weekly run would misrepresent how often
+  # the actual dollar figures change.
   salarymap <- salarymap %>%
     left_join(he_salary, by = "Name") %>%
-    mutate(
-      Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)",
-      Salary_Updated = as.character(Sys.Date())
-    ) %>%
+    mutate(Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)") %>%
     select(Name, Longitude, Latitude, Link, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
-           Faculty_Count, Salary_Year, Salary_Note, Salary_Source, Salary_Updated)
+           Faculty_Count, Salary_Year, Salary_Note, Salary_Source)
 
   write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 } else {
