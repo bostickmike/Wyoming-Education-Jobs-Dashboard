@@ -144,6 +144,55 @@ he_new_this_week <- {
 }
 
 #--------------------------------------------------
+# Combined map dataset -- one row per K-12 district or HE institution,
+# merging each entity's existing location/salary reference data with a
+# live current-openings count, a couple of sample current titles, and a
+# new-this-week count (reusing k12_new_this_week/he_new_this_week above,
+# so it's the same Teacher/Faculty-scoped definition of "new" as the New
+# This Week tabs, not a separate metric).
+#--------------------------------------------------
+k12_current_counts <- combineddata %>% count(District, name = "CurrentCount")
+k12_sample_titles <- combineddata %>%
+  group_by(District) %>%
+  summarize(SampleTitles = paste(head(Title, 3), collapse = "; "), .groups = "drop")
+k12_weekly_new <- k12_new_this_week %>% count(District, name = "WeeklyNew")
+
+map_k12 <- mapdata2_k12 %>%
+  left_join(k12_current_counts, by = c("Name" = "District")) %>%
+  left_join(k12_sample_titles, by = c("Name" = "District")) %>%
+  left_join(k12_weekly_new, by = c("Name" = "District")) %>%
+  mutate(
+    CurrentCount = coalesce(CurrentCount, 0L),
+    WeeklyNew = coalesce(WeeklyNew, 0L),
+    SampleTitles = coalesce(SampleTitles, ""),
+    Type = "K-12 District"
+  ) %>%
+  select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
+         Link = Job_Link, Start_Salary, Top_Salary, Salary_Year, County)
+
+he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
+he_sample_titles <- ccdata %>%
+  group_by(Institution) %>%
+  summarize(SampleTitles = paste(head(Title, 3), collapse = "; "), .groups = "drop")
+he_weekly_new <- he_new_this_week %>% count(Institution, name = "WeeklyNew")
+
+map_he <- mapdata2_he %>%
+  left_join(he_current_counts, by = c("Name" = "Institution")) %>%
+  left_join(he_sample_titles, by = c("Name" = "Institution")) %>%
+  left_join(he_weekly_new, by = c("Name" = "Institution")) %>%
+  mutate(
+    CurrentCount = coalesce(CurrentCount, 0L),
+    WeeklyNew = coalesce(WeeklyNew, 0L),
+    SampleTitles = coalesce(SampleTitles, ""),
+    Type = "Higher Ed Institution",
+    Start_Salary = NA_real_, Top_Salary = NA_real_, Salary_Year = NA_character_, County = NA_character_
+  ) %>%
+  select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
+         Link, Start_Salary, Top_Salary, Salary_Year, County)
+
+combined_map_data <- bind_rows(map_k12, map_he)
+
+#--------------------------------------------------
 # UI
 #--------------------------------------------------
 ui <- dashboardPage(
@@ -151,17 +200,16 @@ ui <- dashboardPage(
   dashboardHeader(title = "Wyoming Education Careers"),
   dashboardSidebar(
     sidebarMenu(
+      id = "sidebar_tabs",
       menuItem("Introduction", tabName = "intro", icon = icon("home")),
       menuItem("K-12 Careers", tabName = "k12_root", icon = icon("school"),
                menuSubItem("Jobs Table", tabName = "k12_table"),
-               menuSubItem("District Locations", tabName = "k12_collmap"),
                menuSubItem("Longitudinal Teacher Trends", tabName = "k12_trends"),
                menuSubItem("Current Teacher Trends", tabName = "k12_current"),
                menuSubItem("New This Week", tabName = "k12_new")
       ),
       menuItem("Higher Ed Careers", tabName = "he_root", icon = icon("university"),
                menuSubItem("Jobs Table", tabName = "he_table"),
-               menuSubItem("Institution Locations", tabName = "he_collmap"),
                menuSubItem("Longitudinal Faculty Trends", tabName = "he_trends"),
                menuSubItem("Current Faculty Trends", tabName = "he_current"),
                menuSubItem("New This Week", tabName = "he_new")
@@ -189,71 +237,44 @@ ui <- dashboardPage(
       # ------------------ Global Introduction ------------------
       tabItem(
         tabName = "intro",
-        fluidPage(
-          tags$style(HTML("
-            .intro-background {
-              background-image: url('tree.jpg'); 
-              background-size: cover; 
-              background-position: center; 
-              height: 100vh;
-              position: relative;
-              color: white;
-              padding: 0;
-              margin: 0;
-            }
-            .coed-logo {
-              position: absolute;
-              top: 50px;  
-              right: 20px;
-              width: auto;
-              height: 85px;
-              z-index: 10;
-            }
-            .refresh-info {
-              position: absolute; 
-              top: 20px; 
-              left: 20px;
-              background-color: rgba(255, 255, 255, 0.8); 
-              color: red; 
-              padding: 5px 10px; 
-              border: 1px solid red; 
-              border-radius: 5px;
-              z-index: 10;
-              font-weight: bold;
-            }
-            .intro-text {
-              position: absolute;
-              bottom: 15%;
-              width: 100%;
-              text-align: center;
-              font-size: 2.5em;
-              color: white;
-              z-index: 5;
-            }
-          ")),
-          div(class = "intro-background",
-              div(class = "refresh-info", paste("Refreshed on:", last_refreshed_date)),
-              img(src = "mark.png", class = "coed-logo"),
-              div(class = "intro-text",
-                  h1("Education Jobs in Wyoming")
+        h1("Education Jobs in Wyoming"),
+        fluidRow(
+          valueBoxOutput("kpi_k12_total", width = 4),
+          valueBoxOutput("kpi_he_total", width = 4),
+          valueBoxOutput("kpi_last_refreshed", width = 4)
+        ),
+        box(width = 12, title = "Where the openings are", status = "primary",
+            fluidRow(
+              column(
+                width = 7,
+                checkboxGroupInput(
+                  "map_types", "Show:",
+                  choices = c("K-12 Districts" = "K-12 District", "Higher Ed Institutions" = "Higher Ed Institution"),
+                  selected = c("K-12 District", "Higher Ed Institution"),
+                  inline = TRUE
+                )
+              ),
+              column(
+                width = 5,
+                checkboxInput("map_hide_zero", "Hide locations with no current openings", value = FALSE)
               )
-          ),
-          fluidRow(
-            valueBoxOutput("kpi_k12_total", width = 4),
-            valueBoxOutput("kpi_he_total", width = 4),
-            valueBoxOutput("kpi_last_refreshed", width = 4)
-          ),
-          fluidRow(
-            box(title = "Top K-12 Hiring Districts This Week", width = 6, status = "primary",
-                tableOutput("top_k12_districts")),
-            box(title = "Top Higher Ed Hiring Institutions This Week", width = 6, status = "primary",
-                tableOutput("top_he_institutions"))
-          )
-        )
+            ),
+            withSpinner(leafletOutput("combined_map", height = 600)),
+            helpText("Click a marker to jump to its filtered Jobs Table.")
+        ),
+        fluidRow(
+          box(title = "Top K-12 Hiring Districts This Week", width = 6, status = "primary",
+              tableOutput("top_k12_districts")),
+          box(title = "Top Higher Ed Hiring Institutions This Week", width = 6, status = "primary",
+              tableOutput("top_he_institutions"))
+        ),
+        div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
+            paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
       ),
 
       tabItem(
         tabName = "k12_table",
+        uiOutput("k12_filter_status"),
         DTOutput("k12_jobs")
       ),
       tabItem(
@@ -261,13 +282,7 @@ ui <- dashboardPage(
         h4("New teacher postings since the previous weekly snapshot"),
         DTOutput("k12_new_table")
       ),
-      tabItem(
-        tabName = "k12_collmap",
-        withSpinner(leafletOutput("k12_map", height = 800))
-      ),
-      
-      
-      
+
       # ------------------ K-12 ------------------
       tabItem(
         tabName = "k12_trends",
@@ -331,8 +346,11 @@ ui <- dashboardPage(
       ),
       
       # ------------------ Higher Ed ------------------
-      tabItem(tabName = "he_table", DTOutput("he_jobs")),
-      tabItem(tabName = "he_collmap", withSpinner(leafletOutput("he_map", height = 800))),
+      tabItem(
+        tabName = "he_table",
+        uiOutput("he_filter_status"),
+        DTOutput("he_jobs")
+      ),
       tabItem(
         tabName = "he_trends",
         
@@ -402,10 +420,12 @@ ui <- dashboardPage(
 # Server
 #--------------------------------------------------
 server <- function(input, output, session) {
-  
-  
-  
-  
+
+  # Set by clicking a marker on the combined map; cleared by the "Show
+  # All" button on each Jobs Table tab.
+  selected_district <- reactiveVal(NULL)
+  selected_institution <- reactiveVal(NULL)
+
   # -------- Intro KPIs --------
   output$kpi_k12_total <- renderValueBox({
     valueBox(format(nrow(combineddata), big.mark = ","), "Open K-12 Postings",
@@ -442,29 +462,75 @@ server <- function(input, output, session) {
 
   # -------- K-12 --------
   output$k12_jobs <- renderDT({
-    datatable(combineddata, filter = "top", escape = FALSE, extensions = "Buttons",
+    df <- combineddata
+    if (!is.null(selected_district())) df <- df %>% filter(District == selected_district())
+    datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
-  
-  output$k12_map <- renderLeaflet({
-    leaflet(data = mapdata2_k12) %>%
+
+  output$k12_filter_status <- renderUI({
+    if (is.null(selected_district())) return(NULL)
+    div(style = "margin-bottom: 10px;",
+        strong(paste("Showing:", selected_district())),
+        actionButton("clear_k12_filter", "Show All Districts", class = "btn-xs", style = "margin-left: 10px;")
+    )
+  })
+  observeEvent(input$clear_k12_filter, { selected_district(NULL) })
+
+  # -------- Combined map (Introduction tab) --------
+  output$combined_map <- renderLeaflet({
+    leaflet() %>%
       addTiles() %>%
+      setView(lng = -107.5, lat = 43, zoom = 6)
+  })
+
+  map_filtered <- reactive({
+    df <- combined_map_data %>% filter(Type %in% input$map_types)
+    if (isTRUE(input$map_hide_zero)) df <- df %>% filter(CurrentCount > 0)
+    df
+  })
+
+  observe({
+    df <- map_filtered()
+
+    popups <- with(df, paste0(
+      "<div><strong>", Name, "</strong><br/>", Type, "</div>",
+      "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
+      "<div>New this week: ", WeeklyNew, "</div>",
+      ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
+      ifelse(!is.na(Start_Salary),
+             paste0("<div>Starting salary: ", scales::dollar(Start_Salary),
+                    " &ndash; ", scales::dollar(Top_Salary), " (", Salary_Year, ")</div>"),
+             ""),
+      "<div><a href='", Link, "' target='_blank'>Careers page</a></div>"
+    ))
+
+    leafletProxy("combined_map", data = df) %>%
+      clearMarkers() %>%
       addCircleMarkers(
-        group = "name", 
-        fillOpacity = 0.8, 
-        lng = ~Longitude, 
-        lat = ~Latitude,
-        popup = ~lapply(paste0(
-          "<div><strong>Name:</strong> ", Name, "</div>",
-          "<div><strong>Start Salary:</strong> ", scales::dollar(Start_Salary), "</div>",
-          "<div><strong>Top Salary:</strong> ", scales::dollar(Top_Salary), "</div>",
-          "<div><strong>Year:</strong> ", Salary_Year, "</div>",
-          "<div><strong>County:</strong> ", County, "</div>",
-          "<div><strong>Job_Link:</strong> <a href='", Job_Link, "' target='_blank'>", Job_Link, "</a></div>"
-        ), htmltools::HTML)
+        lng = ~Longitude, lat = ~Latitude,
+        fillOpacity = 0.8,
+        layerId = ~Name,
+        popup = popups
       )
   })
-  
+
+  observeEvent(input$combined_map_marker_click, {
+    click <- input$combined_map_marker_click
+    req(click$id)
+    row <- combined_map_data %>% filter(Name == click$id)
+    req(nrow(row) > 0)
+
+    if (row$Type[1] == "K-12 District") {
+      selected_district(click$id)
+      updateTabItems(session, "sidebar_tabs", "k12_table")
+    } else {
+      selected_institution(click$id)
+      updateTabItems(session, "sidebar_tabs", "he_table")
+    }
+  })
+
+
   # ---- DATA SCOPE: District + Broad Category ----------------------------
   
   #------------Filter for longitudinal plot--------
@@ -582,26 +648,22 @@ server <- function(input, output, session) {
 })
   # -------- Higher Ed --------
   output$he_jobs <- renderDT({
-    datatable(ccdata, filter = "top", escape = FALSE, extensions = "Buttons",
+    df <- ccdata
+    if (!is.null(selected_institution())) df <- df %>% filter(Institution == selected_institution())
+    datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
-  
-  
-  output$he_map <- renderLeaflet({
-    leaflet(mapdata2_he) %>%
-      addTiles() %>%
-      addCircleMarkers(
-        lng = ~Longitude,
-        lat = ~Latitude,
-        fillOpacity = 0.8,
-        popup = ~lapply(paste0(
-          "<strong>Name:</strong> ", Name, "<br/>",
-          "<strong>Job Links:</strong> <a href='", Link, "' target='_blank'>", Link, "</a>"
-        ), htmltools::HTML)
-      )
+
+  output$he_filter_status <- renderUI({
+    if (is.null(selected_institution())) return(NULL)
+    div(style = "margin-bottom: 10px;",
+        strong(paste("Showing:", selected_institution())),
+        actionButton("clear_he_filter", "Show All Institutions", class = "btn-xs", style = "margin-left: 10px;")
+    )
   })
-  
-  
+  observeEvent(input$clear_he_filter, { selected_institution(NULL) })
+
+
   # ---- Reactive filtered dataset by institution + Category ----
   filtered_hesum <- reactive({
     req(input$inst_trend, input$he_category)
