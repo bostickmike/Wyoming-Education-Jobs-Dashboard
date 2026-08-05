@@ -323,6 +323,21 @@ ui <- dashboardPage(
       font-size: 14px;
       display: inline-block;
     }
+  ")),
+      tags$script(HTML("
+    // On mobile, AdminLTE's sidebar opens as a full-width overlay (body
+    // gets a 'sidebar-open' class) and, unlike the desktop mini-sidebar
+    // behavior, never closes itself after a link is clicked -- it stays
+    // open over the content until manually toggled. Only real navigation
+    // links carry data-toggle='tab' (a treeview parent like 'K-12 Careers'
+    // that just expands/collapses its submenu doesn't), so this closes the
+    // sidebar specifically when the user has actually navigated somewhere,
+    // not when they're just opening a category.
+    $(document).on('click', '.sidebar-menu a[data-toggle=\"tab\"]', function() {
+      if ($(window).width() < 768) {
+        $('body').removeClass('sidebar-open');
+      }
+    });
   "))
     )
     ,
@@ -580,7 +595,7 @@ server <- function(input, output, session) {
   output$combined_map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%
-      setView(lng = -107.5, lat = 43, zoom = 6)
+      setView(lng = -107.5, lat = 43, zoom = 7)
   })
 
   map_filtered <- reactive({
