@@ -29,7 +29,8 @@ test_that("HE longitudinal 'Total' view is not double-counted", {
       inst_trend = "Total",
       he_category = sort(unique(env$hesum_he$Category)),
       he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)),
-      he_chart_type = "all"
+      he_chart_type = "all",
+      he_detail_level_trends = "detail"
     )
 
     windowed <- he_windowed()
@@ -64,7 +65,8 @@ test_that("K-12 longitudinal 'Total' view is still not double-counted", {
     session$setInputs(
       district_trend = "Total",
       broad_category = sort(unique(env$k12sum$Broad_Category)),
-      k12_scroll = c(min(env$k12sum$Archive_Date), max(env$k12sum$Archive_Date))
+      k12_scroll = c(min(env$k12sum$Archive_Date), max(env$k12sum$Archive_Date)),
+      k12_detail_level_trends = "detail"
     )
 
     windowed <- df_windowed()
@@ -93,23 +95,24 @@ test_that("HE and K-12 reactives don't error across every institution/district",
     for (inst in sort(unique(env$hesum_he$Institution))) {
       session$setInputs(inst_trend = inst, he_category = sort(unique(env$hesum_he$Category)),
                          he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)),
-                         he_chart_type = "all")
+                         he_chart_type = "all", he_detail_level_trends = "detail")
       expect_no_error(he_windowed())
       expect_no_error(output$he_longitudinal_plot)
     }
     for (inst in sort(unique(env$henowsum_he$Institution))) {
-      session$setInputs(inst_current = inst)
+      session$setInputs(inst_current = inst, he_detail_level_current = "detail")
       expect_no_error(output$he_current_plot)
     }
 
     for (d in sort(unique(env$k12sum$District))) {
       session$setInputs(district_trend = d, broad_category = sort(unique(env$k12sum$Broad_Category)),
-                         k12_scroll = c(min(env$k12sum$Archive_Date), max(env$k12sum$Archive_Date)))
+                         k12_scroll = c(min(env$k12sum$Archive_Date), max(env$k12sum$Archive_Date)),
+                         k12_detail_level_trends = "detail")
       expect_no_error(df_windowed())
       expect_no_error(output$k12_longitudinal_plot)
     }
     for (d in sort(unique(env$k12nowsum$District))) {
-      session$setInputs(district_current = d)
+      session$setInputs(district_current = d, k12_detail_level_current = "detail")
       expect_no_error(output$k12_current_plot)
     }
   })

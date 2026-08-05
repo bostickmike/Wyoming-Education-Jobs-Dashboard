@@ -30,7 +30,11 @@ k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
   mutate(District = str_squish(as.character(District)),
          Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
-                                        "Secondary Social Studies" = "Soc. St.")) %>%
+                                        "Secondary Social Studies" = "Soc. St.",
+                                        "Special Education - General" = "SpEd - General",
+                                        "Special Education - Resource/Life Skills" = "SpEd - Resource/LS",
+                                        "CTE - Trades, Ag & Technical" = "CTE - Trades/Ag",
+                                        "CTE - Business & Family Sciences" = "CTE - Biz/Family")) %>%
   filter(Broad_Category != "Other")
 
 k12sum$Archive_Date <- as.Date(k12sum$Archive_Date)
@@ -49,7 +53,11 @@ k12sum <- k12sum %>%
 k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
   mutate(Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
-                                        "Secondary Social Studies" = "Soc. St."),
+                                        "Secondary Social Studies" = "Soc. St.",
+                                        "Special Education - General" = "SpEd - General",
+                                        "Special Education - Resource/Life Skills" = "SpEd - Resource/LS",
+                                        "CTE - Trades, Ag & Technical" = "CTE - Trades/Ag",
+                                        "CTE - Business & Family Sciences" = "CTE - Biz/Family"),
          District = str_squish(iconv(District, from = "", to = "UTF-8"))) %>%
   filter(Broad_Category != "Other")
 
@@ -84,42 +92,91 @@ henowsum_he <- read.csv("allnow_he.csv") %>%
 last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
 
 #--------------------------------------------------
+# Aggregated rollups -- a 2026-08-04 audit found several badly-oversized,
+# artificially-merged categories (K-12 "Special Education" alone was 3,239
+# postings; HE "CTE" was 5,834, three times the next-largest real
+# category) and split them into coherent sub-groups. That's more accurate,
+# but too many categories at once makes the longitudinal line charts an
+# unreadable tangle. Both levels stay available -- "Aggregated" collapses
+# the splits back into their original combined buckets (what the charts
+# looked like before the split), "Detailed" shows the full breakdown --
+# via a toggle, rather than picking one and losing the other.
+#--------------------------------------------------
+k12_collapse_map <- c(
+  "SpEd - General" = "Special Education",
+  "SpEd - Resource/LS" = "Special Education",
+  "Math" = "STEM",
+  "Science" = "STEM",
+  "CTE - Trades/Ag" = "CTE",
+  "CTE - Biz/Family" = "CTE"
+)
+
+k12sum_agg <- k12sum %>%
+  mutate(Broad_Category = dplyr::recode(Broad_Category, !!!k12_collapse_map)) %>%
+  group_by(Broad_Category, Archive_Date, District) %>%
+  summarize(sum = sum(sum), .groups = "drop")
+
+k12nowsum_agg <- k12nowsum %>%
+  mutate(Broad_Category = dplyr::recode(Broad_Category, !!!k12_collapse_map)) %>%
+  group_by(Broad_Category, District) %>%
+  summarize(Sum = sum(Sum), .groups = "drop")
+
+he_collapse_map <- c(
+  "CTE - Trades & Engineering" = "CTE",
+  "CTE - Health Sciences" = "CTE",
+  "CTE - Business & Computing" = "CTE"
+)
+
+hesum_he_agg <- hesum_he %>%
+  mutate(Category = dplyr::recode(as.character(Category), !!!he_collapse_map)) %>%
+  group_by(Category, Archive_Date, Institution, Job_Type) %>%
+  summarize(sum = sum(sum), .groups = "drop")
+
+henowsum_he_agg <- henowsum_he %>%
+  mutate(Category = dplyr::recode(Category, !!!he_collapse_map)) %>%
+  group_by(Category, Institution, Job_Type) %>%
+  summarize(Sum = sum(Sum), .groups = "drop")
+
+#--------------------------------------------------
 # Category colors -- one fixed hex per category, shared by every chart in
 # its section, so a category is never a different color on the current-
 # snapshot chart than on the longitudinal chart. First 8 slots (by
 # all-time volume) are the validated categorical palette from the dataviz
 # skill (fixed order, CVD-checked); slots past 8 extend it with additional
 # well-separated hues for the lower-volume categories rather than
-# reusing/cycling a slot.
+# reusing/cycling a slot. Separate palettes for the Aggregated and Detailed
+# views since they're different category sets, not just different labels.
 #--------------------------------------------------
-K12_CATEGORY_COLORS <- c(
-  "Special Education" = "#2a78d6",
-  "Elementary"         = "#eb6834",
-  "STEM"               = "#1baf7a",
-  "Music"              = "#eda100",
-  "CTE"                = "#e87ba4",
-  "Engl. LA"           = "#008300",
-  "Language"           = "#4a3aa7",
-  "Soc. St."           = "#e34948",
-  "Physical Education" = "#8B5E34",
-  "Early Childhood"    = "#5C7A99",
-  "Art"                = "#7A7A3D"
-)
+EXT_HUES <- c("#8B5E34", "#5C7A99", "#7A7A3D", "#767671", "#2E8B87",
+              "#C77DA8", "#B8860B", "#6B5B95", "#4A6670", "#D97757")
+BASE8 <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948")
 
-HE_CATEGORY_COLORS <- c(
-  "CTE"                  = "#2a78d6",
-  "The Arts"             = "#eb6834",
-  "Science"              = "#1baf7a",
-  "Humanities"           = "#eda100",
-  "Math"                 = "#e87ba4",
-  "Social Science"       = "#008300",
-  "Culinary/Hospitality" = "#4a3aa7",
-  "History"              = "#e34948",
-  "Library"              = "#8B5E34",
-  "Education"            = "#5C7A99",
-  "Legal"                = "#7A7A3D",
-  "Physical Education"   = "#767671"
-)
+K12_CATEGORY_COLORS_AGG <- setNames(c(BASE8, EXT_HUES[1:5]), c(
+  "Special Education", "Elementary", "STEM", "Music", "CTE",
+  "Engl. LA", "Language", "Soc. St.", "Physical Education", "Early Childhood",
+  "Art", "Library Media", "Gifted and Talented"
+))
+
+K12_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES[1:8]), c(
+  "Elementary", "SpEd - General", "SpEd - Resource/LS", "Music", "Math",
+  "Engl. LA", "Science", "CTE - Trades/Ag", "Language", "CTE - Biz/Family",
+  "Soc. St.", "Physical Education", "Early Childhood", "Art", "Library Media",
+  "Gifted and Talented"
+))
+
+HE_CATEGORY_COLORS_AGG <- setNames(c(BASE8, EXT_HUES[1:8]), c(
+  "CTE", "Science", "The Arts", "Humanities", "Social Science",
+  "Extension/Outreach", "Math", "History", "Education", "Culinary/Hospitality",
+  "Physical Education", "Library", "Language", "Criminal Justice", "Legal",
+  "Human Services"
+))
+
+HE_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES), c(
+  "CTE - Trades & Engineering", "Science", "CTE - Health Sciences", "CTE - Business & Computing",
+  "The Arts", "Humanities", "Social Science", "Extension/Outreach", "Math",
+  "History", "Education", "Culinary/Hospitality", "Physical Education",
+  "Library", "Language", "Criminal Justice", "Legal", "Human Services"
+))
 
 # Full-time-vs-adjunct split for the "Current Faculty Trends" stacked bar
 # only -- Category is already on that chart's x-axis, so color there
@@ -303,7 +360,11 @@ ui <- dashboardPage(
       # ------------------ K-12 ------------------
       tabItem(
         tabName = "k12_trends",
-        
+
+        radioButtons("k12_detail_level_trends", "Category detail:",
+                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     selected = "agg", inline = TRUE),
+
         # Row for category + district
         fluidRow(
           column(
@@ -311,8 +372,8 @@ ui <- dashboardPage(
             pickerInput(
               "broad_category",
               "Choose Teacher Category:",
-              choices  = sort(unique(k12sum$Broad_Category)),
-              selected = sort(unique(k12sum$Broad_Category)),
+              choices  = sort(unique(k12sum_agg$Broad_Category)),
+              selected = sort(unique(k12sum_agg$Broad_Category)),
               multiple = TRUE,
               width = "100%",
               options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
@@ -348,14 +409,18 @@ ui <- dashboardPage(
       
       tabItem(
         tabName = "k12_current",
-        
+
+        radioButtons("k12_detail_level_current", "Category detail:",
+                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     selected = "agg", inline = TRUE),
+
         selectInput(
           "district_current",
           "Choose District:",
           choices = sort(unique(k12nowsum$District)),
           selected = "Total"
         ),
-        
+
         withSpinner(plotlyOutput("k12_current_plot"))
       ),
       
@@ -367,7 +432,11 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "he_trends",
-        
+
+        radioButtons("he_detail_level_trends", "Category detail:",
+                     choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                     selected = "agg", inline = TRUE),
+
         # Row for Category + Institution
         fluidRow(
           column(
@@ -375,8 +444,8 @@ ui <- dashboardPage(
             pickerInput(
               "he_category",
               "Choose Category:",
-              choices  = sort(unique(hesum_he$Category)),
-              selected = sort(unique(hesum_he$Category)),
+              choices  = sort(unique(hesum_he_agg$Category)),
+              selected = sort(unique(hesum_he_agg$Category)),
               multiple = TRUE,
               width = "100%",
               options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
@@ -419,6 +488,9 @@ ui <- dashboardPage(
         withSpinner(plotlyOutput("he_longitudinal_plot"))),
       
       tabItem(tabName = "he_current",
+              radioButtons("he_detail_level_current", "Category detail:",
+                           choices = c("Aggregated" = "agg", "Detailed" = "detail"),
+                           selected = "agg", inline = TRUE),
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
               withSpinner(plotlyOutput("he_current_plot"))),
@@ -562,10 +634,24 @@ server <- function(input, output, session) {
   
   #------------Filter for longitudinal plot--------
   
+  # Toggling detail level swaps both the underlying dataset and the
+  # picker's own choices (Aggregated and Detailed are different category
+  # name sets, not just different labels on the same data).
+  observeEvent(input$k12_detail_level_trends, {
+    cats <- if (identical(input$k12_detail_level_trends, "detail")) {
+      sort(unique(k12sum$Broad_Category))
+    } else {
+      sort(unique(k12sum_agg$Broad_Category))
+    }
+    updatePickerInput(session, "broad_category", choices = cats, selected = cats)
+  }, ignoreInit = TRUE)
+
   filtered_k12sum <- reactive({
-    req(input$district_trend, input$broad_category)
-    
-    k12sum %>%
+    req(input$district_trend, input$broad_category, input$k12_detail_level_trends)
+
+    base <- if (identical(input$k12_detail_level_trends, "detail")) k12sum else k12sum_agg
+
+    base %>%
       dplyr::filter(
         # District filter
         input$district_trend == "Total" |
@@ -625,7 +711,7 @@ server <- function(input, output, session) {
     )) +
       geom_line() +
       geom_point(size = 1) +
-      scale_color_manual(values = K12_CATEGORY_COLORS) +
+      scale_color_manual(values = if (identical(input$k12_detail_level_trends, "detail")) K12_CATEGORY_COLORS_DETAIL else K12_CATEGORY_COLORS_AGG) +
       labs(x = "Archive Date", y = "Number of Postings") +
       scale_x_date(
         breaks = all_dates,      # show every date exactly
@@ -647,13 +733,16 @@ server <- function(input, output, session) {
 
   
   output$k12_current_plot <- renderPlotly({
-    df <- k12nowsum %>% filter(District == input$district_current)
-    
+    req(input$k12_detail_level_current)
+    src <- if (identical(input$k12_detail_level_current, "detail")) k12nowsum else k12nowsum_agg
+    df <- src %>% filter(District == input$district_current)
+    palette <- if (identical(input$k12_detail_level_current, "detail")) K12_CATEGORY_COLORS_DETAIL else K12_CATEGORY_COLORS_AGG
+
   plot <- ggplot(df, aes(x = Broad_Category, y = Sum, fill = Broad_Category)) +
     geom_bar(stat = "identity") +
     geom_text(aes(label = Sum), vjust = -0.3) +
     labs(x = "Category", y = "Number of Postings") +
-    scale_fill_manual(values = K12_CATEGORY_COLORS) +
+    scale_fill_manual(values = palette) +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7), 
           legend.position = "bottom", 
@@ -682,15 +771,26 @@ server <- function(input, output, session) {
   observeEvent(input$clear_he_filter, { selected_institution(NULL) })
 
 
+  observeEvent(input$he_detail_level_trends, {
+    cats <- if (identical(input$he_detail_level_trends, "detail")) {
+      sort(unique(hesum_he$Category))
+    } else {
+      sort(unique(hesum_he_agg$Category))
+    }
+    updatePickerInput(session, "he_category", choices = cats, selected = cats)
+  }, ignoreInit = TRUE)
+
   # ---- Reactive filtered dataset by institution + Category ----
   filtered_hesum <- reactive({
-    req(input$inst_trend, input$he_category, input$he_chart_type)
+    req(input$inst_trend, input$he_category, input$he_chart_type, input$he_detail_level_trends)
+
+    base <- if (identical(input$he_detail_level_trends, "detail")) hesum_he else hesum_he_agg
 
     # Filter by institution
     df <- if (input$inst_trend == "Total") {
-      hesum_he
+      base
     } else {
-      hesum_he %>% filter(Institution == input$inst_trend)
+      base %>% filter(Institution == input$inst_trend)
     }
 
     # Filter by Category (vector match)
@@ -774,7 +874,7 @@ server <- function(input, output, session) {
     )) +
       geom_line() +
       geom_point(size = 1) +
-      scale_color_manual(values = HE_CATEGORY_COLORS) +
+      scale_color_manual(values = if (identical(input$he_detail_level_trends, "detail")) HE_CATEGORY_COLORS_DETAIL else HE_CATEGORY_COLORS_AGG) +
       labs(x = "Archive Date", y = "Number of Postings") +
       theme_minimal() +
       theme(
@@ -793,7 +893,9 @@ server <- function(input, output, session) {
 
 
   output$he_current_plot <- renderPlotly({
-    df <- henowsum_he %>%
+    req(input$he_detail_level_current)
+    src <- if (identical(input$he_detail_level_current, "detail")) henowsum_he else henowsum_he_agg
+    df <- src %>%
       filter(Institution == input$inst_current) %>%
       mutate(Job_Type = dplyr::recode(Job_Type,
         "Instructor/Teacher/Faculty" = "Full-Time Faculty",

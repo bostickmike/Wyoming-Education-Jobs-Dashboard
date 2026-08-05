@@ -36,7 +36,7 @@ test_that("classify_k12_position covers the remaining coarse buckets", {
 })
 
 test_that("classify_k12_subject checks Special Education ahead of subject keywords", {
-  expect_equal(classify_k12_subject("Special Education Math Teacher"), "Special Education")
+  expect_equal(classify_k12_subject("Special Education Math Teacher"), "Special Education - General")
 })
 
 test_that("classify_k12_subject covers representative subject areas", {
@@ -58,7 +58,8 @@ test_that("classify_k12_broad_category maps Language correctly (regression for '
 })
 
 test_that("classify_k12_broad_category covers other mappings and the catchall", {
-  expect_equal(classify_k12_broad_category("Special Education"), "Special Education")
+  expect_equal(classify_k12_broad_category("Special Education - General"), "Special Education - General")
+  expect_equal(classify_k12_broad_category("Special Education - Resource/Life Skills"), "Special Education - Resource/Life Skills")
   expect_equal(classify_k12_broad_category("Elementary Education"), "Elementary")
   expect_equal(classify_k12_broad_category("Uncategorized"), "Other")
   expect_equal(classify_k12_broad_category("Nonsense Category"), "Other")
