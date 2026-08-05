@@ -846,19 +846,24 @@ server <- function(input, output, session) {
     df <- src %>% filter(District == input$district_current)
     palette <- if (identical(input$k12_detail_level_current, "detail")) K12_CATEGORY_COLORS_DETAIL else K12_CATEGORY_COLORS_AGG
 
-  plot <- ggplot(df, aes(x = Broad_Category, y = Sum, fill = Broad_Category)) +
+  # Horizontal bars, sorted so the largest category reads at the top like
+  # a ranked list -- with up to 18 categories at the Detailed level, long
+  # labels rotated on a vertical x-axis were overlapping the axis title
+  # and legend (confirmed visually 2026-08-05). reorder(..., Sum) is exact
+  # here since Sum is already one row per category, no grouping needed.
+  plot <- ggplot(df, aes(x = reorder(Broad_Category, Sum), y = Sum, fill = Broad_Category)) +
     geom_bar(stat = "identity") +
-    geom_text(aes(label = Sum), vjust = -0.3) +
+    geom_text(aes(label = Sum), hjust = -0.2, size = 3) +
     labs(x = "Category", y = "Number of Postings") +
     scale_fill_manual(values = palette) +
+    coord_flip() +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7), 
-          legend.position = "bottom", 
-          legend.key.size = unit(0.5, "cm"), 
-          legend.box.spacing = unit(0.2, "cm"), 
-          legend.text = element_text(size = 8), 
+    theme(legend.position = "bottom",
+          legend.key.size = unit(0.5, "cm"),
+          legend.box.spacing = unit(0.2, "cm"),
+          legend.text = element_text(size = 8),
           legend.title = element_text(size = 10))
-  
+
   ggplotly(plot)
 })
   # -------- Higher Ed --------
@@ -1008,19 +1013,27 @@ server <- function(input, output, session) {
       mutate(Job_Type = dplyr::recode(Job_Type,
         "Instructor/Teacher/Faculty" = "Full-Time Faculty",
         "Adjunct/Part-Time Faculty" = "Adjunct/Part-Time"
-      ))
+      )) %>%
+      group_by(Category) %>%
+      mutate(Category_Total = sum(Sum)) %>%
+      ungroup()
 
+    # Horizontal bars, sorted so the largest category reads at the top --
+    # same fix as k12_current_plot. Category_Total (not Sum) drives the
+    # sort since each category has two stacked rows (FT/PT); reorder()'s
+    # default mean-of-Sum would rank a mostly-FT category differently than
+    # its true total some of the time.
     p <- ggplot(df, aes(
-      x = Category, y = Sum, fill = Job_Type,
+      x = reorder(Category, Category_Total), y = Sum, fill = Job_Type,
       text = paste0("Category: ", Category, "<br>", "Type: ", Job_Type, "<br>", "Postings: ", Sum)
     )) +
       geom_bar(stat = "identity", position = "stack") +
       geom_text(aes(label = Sum), position = position_stack(vjust = 0.5), size = 3) +
       labs(x = "Category", y = "Number of Postings", fill = "Position Type") +
       scale_fill_manual(values = HE_JOB_TYPE_COLORS) +
+      coord_flip() +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 22.5, hjust = 1, size = 7),
-            legend.position = "bottom",
+      theme(legend.position = "bottom",
             legend.key.size = unit(0.5, "cm"),
             legend.box.spacing = unit(0.2, "cm"),
             legend.text = element_text(size = 8),
