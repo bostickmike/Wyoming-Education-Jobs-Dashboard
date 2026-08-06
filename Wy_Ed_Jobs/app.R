@@ -717,6 +717,9 @@ ui <- dashboardPage(
               withSpinner(plotlyOutput("he_vacancy_leaderboard", height = 320)),
               helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty."))
         ),
+        div(style = "color:#999; font-size:0.8em; padding: 0 5px 5px;",
+            "K-12 vacancy rate is current teacher postings ÷ CCD teacher FTE; Higher Ed vacancy rate is current instructor/faculty postings ÷ IPEDS full-time instructional staff. ",
+            "The two use different staffing sources and reporting years — compare rates within a type (district vs. district, institution vs. institution), not across K-12 and Higher Ed."),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
             paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
       ),
@@ -732,7 +735,7 @@ ui <- dashboardPage(
               inline = TRUE
             ),
             withSpinner(leafletOutput("combined_map", height = 650)),
-            helpText("Only locations with current openings are shown. Circle size reflects current openings; color reflects teacher/faculty vacancy rate where available. Click a marker to jump to its filtered Jobs Table.")
+            helpText("Only locations with current openings are shown. Circle size reflects current openings; color reflects teacher/faculty vacancy rate where available. Click a marker to jump to its filtered Jobs Table. K-12 and Higher Ed vacancy rates use different staffing sources (CCD vs. IPEDS) and years -- the shared color scale is for a rough at-a-glance read, not a precise cross-type comparison.")
         )
       ),
 
