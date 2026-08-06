@@ -586,7 +586,13 @@ map_k12 <- mapdata2_k12 %>%
     Vacancy_Rate_Shared = FALSE,
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
     Faculty_Avg_Salary_Y1Ago = NA_real_, Faculty_Avg_Salary_Y2Ago = NA_real_,
-    Salary_Note = NA_character_
+    Salary_Note = NA_character_,
+    # Already fetched from CCD alongside Teachers_Total_FTE (same API call
+    # in ccd_staff_scraper.R) but never surfaced anywhere in the app until
+    # now -- Students_Per_Teacher is a real class-size-ish proxy a
+    # prospective teacher would want, at zero additional scraping cost.
+    Students_Per_Teacher = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE > 0,
+                                   Enrollment / Teachers_Total_FTE, NA_real_)
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -594,7 +600,7 @@ map_k12 <- mapdata2_k12 %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage)
+         Data_Coverage, Enrollment, Students_Per_Teacher)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -651,7 +657,14 @@ map_he <- mapdata2_he %>%
     # Every HE institution is scraped from a genuine structured job-board
     # platform (NEOGOV/PeopleAdmin/Oracle) -- there's no "misc" tier on the
     # HE side, unlike K-12's Data_Coverage from misc_district_registry.
-    Data_Coverage = "Full"
+    Data_Coverage = "Full",
+    # IPEDS does publish fall enrollment (confirmed live via the same
+    # Urban Institute API family this project already uses for salaries --
+    # college-university/ipeds/fall-enrollment), but pulling and testing
+    # that is real follow-up work, not done yet -- these stay NA rather
+    # than silently missing from combined_map_data's schema, matching
+    # K-12's Enrollment/Students_Per_Teacher columns existing here too.
+    Enrollment = NA_real_, Students_Per_Teacher = NA_real_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -659,7 +672,7 @@ map_he <- mapdata2_he %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage)
+         Data_Coverage, Enrollment, Students_Per_Teacher)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -1190,6 +1203,8 @@ server <- function(input, output, session) {
         `Posting Data` = Data_Coverage,
         `New This Week` = WeeklyNew,
         `Teacher Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
+        Enrollment,
+        `Students per Teacher` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
         TeacherBaseSalary = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
         TeacherBaseSalaryPrior = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
         `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary))
@@ -1271,6 +1286,10 @@ server <- function(input, output, session) {
                     "</div>"),
              ""),
       ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
+      ifelse(!is.na(Students_Per_Teacher),
+             paste0("<div>Students per teacher: ", sprintf("%.1f", Students_Per_Teacher),
+                    " (", format(Enrollment, big.mark = ","), " students)</div>"),
+             ""),
       ifelse(!is.na(Teacher_Base_Salary),
              paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),
                     ifelse(!is.na(Teacher_Base_Salary_Prior_Year),

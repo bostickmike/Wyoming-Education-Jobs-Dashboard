@@ -290,3 +290,33 @@ test_that("the Home-tab data-issue banner renders when there are load issues, an
     expect_false(is.null(output$data_load_issues_banner))
   })
 })
+
+test_that("Students_Per_Teacher is computed for K-12 districts and left NA (not missing) for HE institutions", {
+  # Regression for the enrichment-data addition: Enrollment was already
+  # fetched from CCD alongside Teachers_Total_FTE but never surfaced
+  # anywhere -- Students_Per_Teacher is Enrollment / Teachers_Total_FTE,
+  # zero additional scraping. HE side has no IPEDS enrollment pull yet,
+  # so both columns should exist (not be silently absent) and be NA there,
+  # not just missing from combined_map_data's schema.
+  env <- load_app()
+  expect_true(all(c("Enrollment", "Students_Per_Teacher") %in% names(env$combined_map_data)))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(all(is.na(he$Students_Per_Teacher)))
+
+  k12_with_fte <- env$combined_map_data[env$combined_map_data$Type == "K-12 District" &
+                                           !is.na(env$combined_map_data$Vacancy_Denominator) &
+                                           env$combined_map_data$Vacancy_Denominator > 0, ]
+  skip_if(nrow(k12_with_fte) == 0, "no K-12 rows with teacher FTE in committed data -- skipping")
+  expect_true(any(!is.na(k12_with_fte$Students_Per_Teacher)))
+  # Loose sanity range, not a tight real-world one -- most WY districts sit
+  # roughly 10-16 students per teacher, but small/rural districts can be
+  # real outliers on either side (confirmed: Weston County SD7 genuinely
+  # reports ~36 in CCD's own data, 859 students against a reported 24
+  # teacher FTE). This bound exists to catch a units/column mixup (e.g. a
+  # negative value or one in the thousands), not to assert what a
+  # plausible ratio looks like.
+  real_values <- k12_with_fte$Students_Per_Teacher[!is.na(k12_with_fte$Students_Per_Teacher)]
+  expect_true(all(real_values > 0 & real_values < 100))
+})
