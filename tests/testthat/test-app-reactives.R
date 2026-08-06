@@ -174,3 +174,29 @@ test_that("compute_vacancy_rate_domain falls back to a placeholder range instead
   expect_equal(env$compute_vacancy_rate_domain(c(NA_real_, NA_real_, NA_real_)), c(0, 1))
   expect_equal(env$compute_vacancy_rate_domain(c(0.05, NA_real_, 0.20)), c(0.05, 0.20))
 })
+
+test_that("Sheridan/Gillette get a shared joint vacancy rate instead of NA", {
+  # Regression for switching from "suppress both to NA" to "both show the
+  # same combined rate" -- see map_he's Vacancy_Rate_Shared comment.
+  env <- load_app()
+  sg <- env$combined_map_data[env$combined_map_data$Name %in% c("Sheridan College", "Gillette College"), ]
+  skip_if(nrow(sg) < 2, "Sheridan/Gillette rows not both present in committed data -- skipping")
+
+  expect_true(all(sg$Vacancy_Rate_Shared))
+  expect_false(any(is.na(sg$Vacancy_Rate)))
+  # Same joint numerator/denominator/rate for both rows, not each one's own
+  # independent count -- that's the whole point of "shared."
+  expect_equal(sg$Vacancy_Numerator[1], sg$Vacancy_Numerator[2])
+  expect_equal(sg$Vacancy_Denominator[1], sg$Vacancy_Denominator[2])
+  expect_equal(sg$Vacancy_Rate[1], sg$Vacancy_Rate[2])
+  # Internally consistent: the displayed rate really is numerator/denominator.
+  expect_equal(sg$Vacancy_Rate, sg$Vacancy_Numerator / sg$Vacancy_Denominator)
+})
+
+test_that("an institution not flagged via Salary_Note gets its own independent vacancy rate", {
+  env <- load_app()
+  uw <- env$combined_map_data[env$combined_map_data$Name == "University of Wyoming", ]
+  skip_if(nrow(uw) == 0, "University of Wyoming row not present in committed data -- skipping")
+
+  expect_false(uw$Vacancy_Rate_Shared)
+})

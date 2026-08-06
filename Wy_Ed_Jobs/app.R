@@ -533,6 +533,7 @@ map_k12 <- mapdata2_k12 %>%
     Vacancy_Rate = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE >= VACANCY_RATE_MIN_FTE,
                            TeacherCurrentCount / Teachers_Total_FTE, NA_real_),
     Vacancy_Numerator = TeacherCurrentCount, Vacancy_Denominator = Teachers_Total_FTE,
+    Vacancy_Rate_Shared = FALSE,
     Faculty_Avg_Salary = NA_real_, Faculty_Avg_Salary_Professor = NA_real_, Faculty_Count = NA_real_,
     Faculty_Avg_Salary_Y1Ago = NA_real_, Faculty_Avg_Salary_Y2Ago = NA_real_,
     Salary_Note = NA_character_
@@ -542,7 +543,7 @@ map_k12 <- mapdata2_k12 %>%
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -575,11 +576,24 @@ map_he <- mapdata2_he %>%
     # one IPEDS-reported Faculty_Count -- dividing either institution's own
     # posting count by that joint total isn't a real per-campus rate (it
     # inflated Sheridan to 66% in testing, since its numerator is compared
-    # against a denominator that's really Sheridan+Gillette combined), so
-    # both are suppressed here rather than shown as if they were exact.
-    Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count >= VACANCY_RATE_MIN_FTE & is.na(Salary_Note),
-                           FacultyCurrentCount / Faculty_Count, NA_real_),
-    Vacancy_Numerator = FacultyCurrentCount, Vacancy_Denominator = Faculty_Count,
+    # against a denominator that's really Sheridan+Gillette combined).
+    # Rather than suppress both to NA, both show the same JOINT rate --
+    # their combined current postings over the one shared faculty count --
+    # since that's still a real, meaningful "how tight is staffing at this
+    # combined institution" figure, just not splittable by campus. Vacancy_
+    # Rate_Shared flags this so the UI can label it rather than presenting
+    # it as if it were campus-specific. Once IPEDS starts reporting them
+    # separately (watched by fetch_sheridan_gillette_split_check() in
+    # ipeds_salary_scraper.R), Faculty_Count will stop being identical for
+    # both rows and this collapses back to each institution's own rate with
+    # no code change needed here.
+    Vacancy_Rate_Shared = !is.na(Salary_Note),
+    Vacancy_Numerator = ifelse(Vacancy_Rate_Shared,
+                                sum(FacultyCurrentCount[!is.na(Salary_Note)]),
+                                FacultyCurrentCount),
+    Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count >= VACANCY_RATE_MIN_FTE,
+                           Vacancy_Numerator / Faculty_Count, NA_real_),
+    Vacancy_Denominator = Faculty_Count,
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
     County = NA_character_
@@ -589,7 +603,7 @@ map_he <- mapdata2_he %>%
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Salary_Source, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -715,7 +729,8 @@ ui <- dashboardPage(
               helpText("Districts with at least", VACANCY_RATE_MIN_FTE, "teacher FTE.")),
           box(title = "Highest Faculty Vacancy Rate", width = 6, status = "primary",
               withSpinner(plotlyOutput("he_vacancy_leaderboard", height = 320)),
-              helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty."))
+              helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty.",
+                        "* Sheridan College and Gillette College are reported jointly by IPEDS and share one combined rate."))
         ),
         div(style = "color:#999; font-size:0.8em; padding: 0 5px 5px;",
             "K-12 vacancy rate is current teacher postings ÷ CCD teacher FTE; Higher Ed vacancy rate is current instructor/faculty postings ÷ IPEDS full-time instructional staff. ",
@@ -1029,7 +1044,12 @@ server <- function(input, output, session) {
     df <- combined_map_data %>%
       filter(Type == "Higher Ed Institution", !is.na(Vacancy_Rate)) %>%
       arrange(desc(Vacancy_Rate)) %>%
-      head(8)
+      head(8) %>%
+      # Sheridan/Gillette carry a marked *-suffixed label rather than their
+      # plain name, since this is the one place their joint rate sits next
+      # to genuinely campus-specific rates with nothing else distinguishing
+      # them -- see Vacancy_Rate_Shared's definition in map_he above.
+      mutate(Name = ifelse(Vacancy_Rate_Shared, paste0(Name, " *"), Name))
     validate(need(nrow(df) > 0, "No institutions currently meet the minimum-FTE threshold for a vacancy rate."))
 
     plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
@@ -1158,7 +1178,11 @@ server <- function(input, output, session) {
       "<div>New this week: ", WeeklyNew, "</div>",
       ifelse(!is.na(Vacancy_Rate),
              paste0("<div>", ifelse(Type == "K-12 District", "Teacher", "Faculty"),
-                    " vacancy rate: ", scales::percent(Vacancy_Rate, accuracy = 0.1), "</div>"),
+                    " vacancy rate: ", scales::percent(Vacancy_Rate, accuracy = 0.1),
+                    ifelse(Vacancy_Rate_Shared,
+                           " <span style='color:#666;'>(combined Sheridan + Gillette figure -- see note below)</span>",
+                           ""),
+                    "</div>"),
              ""),
       ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
       ifelse(!is.na(Teacher_Base_Salary),
@@ -1378,8 +1402,10 @@ server <- function(input, output, session) {
         # that blew out Sheridan/Gillette's row height next to every other
         # institution's single-line rows (confirmed visually 2026-08-05).
         # Kept plain text rather than an HTML tooltip so the CSV/copy
-        # export buttons still produce clean text, not raw markup.
-        Note = ifelse(is.na(Salary_Note), "", "Shared reporting w/ Sheridan & Gillette")
+        # export buttons still produce clean text, not raw markup. Now
+        # mentions the vacancy rate too, since that's a combined figure
+        # here as well (see Vacancy_Rate_Shared), not just salary.
+        Note = ifelse(is.na(Salary_Note), "", "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette")
       )
     names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg Faculty Salary (", year_label, ")")
     names(df)[names(df) == "AvgFacultySalaryY1"] <- paste0("Avg Faculty Salary (", y1_label, ")")

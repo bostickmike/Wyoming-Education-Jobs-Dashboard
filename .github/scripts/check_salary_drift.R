@@ -50,12 +50,14 @@ coverage_lines <- if (is.null(flags) || nrow(flags) == 0) {
 }
 
 # Sheridan College and Gillette College are in the process of splitting
-# from their shared parent entity -- app.R suppresses Vacancy_Rate for
-# both until IPEDS starts reporting them separately (see
-# ipeds_salary_scraper.R's "Sheridan/Gillette split watch" section). This
-# is a real live network check (unlike the coverage check above, which
-# only reads the already-rendered CSVs), so a transient API failure here
-# should surface as "couldn't check" rather than silently doing nothing.
+# from their shared parent entity -- app.R shows both a shared JOINT
+# Vacancy_Rate (combined postings / the one shared IPEDS faculty count,
+# flagged via Vacancy_Rate_Shared) until IPEDS starts reporting them
+# separately (see ipeds_salary_scraper.R's "Sheridan/Gillette split watch"
+# section). This is a real live network check (unlike the coverage check
+# above, which only reads the already-rendered CSVs), so a transient API
+# failure here should surface as "couldn't check" rather than silently
+# doing nothing.
 split_result <- tryCatch(
   fetch_sheridan_gillette_split_check(),
   error = function(e) NULL
@@ -72,7 +74,7 @@ split_lines <- if (is.null(split_result)) {
     "",
     paste0("- unitid ", split_result$unitid, ": ", split_result$inst_name),
     "",
-    "If this is real, update IPEDS_UNITID_MAP in ipeds_salary_scraper.R to the new unitid(s) and remove the Vacancy_Rate suppression for Sheridan/Gillette in Wy_Ed_Jobs/app.R (both currently keyed off the shared Salary_Note flag).",
+    "If this is real, update IPEDS_UNITID_MAP in ipeds_salary_scraper.R to the new unitid(s). That's the only change needed: parse_ipeds_he_salaries()'s Salary_Note only fires for unitid == 240666, so it (and everything downstream keyed off it -- Wy_Ed_Jobs/app.R's Vacancy_Rate_Shared in map_he) will automatically go back to each institution having its own real, independent Faculty_Count and vacancy rate once neither institution maps to 240666 anymore.",
     ""
   )
 } else {
