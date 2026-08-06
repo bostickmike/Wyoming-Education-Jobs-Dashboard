@@ -359,7 +359,17 @@ other <- other %>%
 combined<- rbind(frontline, ted, springer, other)%>%
   mutate(Archive_Date = Sys.Date())
 
-
+# fix_title_encoding() (k12_he_classification.R) is applied here, once, at
+# the point titles first enter the pipeline -- not just inside
+# classify_k12_position()/classify_k12_subject() below, which only fixed a
+# private copy used for regex matching and discarded it. Without this, a
+# title with a raw Windows-1252 byte (an en dash in a time range, etc.) from
+# any non-Applitrack source (TedK12/SchoolSpring/RedRover/misc-district) would
+# classify correctly but still archive and display with the mangled byte,
+# since the archived CSV below and combinedclean's `title` column both come
+# from this same `combined` object.
+combined <- combined %>%
+  mutate(title = fix_title_encoding(title))
 
 file_name <- paste0("combined_", Sys.Date(), ".csv")
 

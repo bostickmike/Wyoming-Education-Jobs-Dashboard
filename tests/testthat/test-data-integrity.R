@@ -61,3 +61,24 @@ test_that("no known name typos survive into the committed summary data", {
   expect_false("Lanugage" %in% k12$Broad_Category)
   expect_false(any(grepl("Count School District|Scholl District|Distrcit", k12$District)))
 })
+
+# Regression for the encoding bug where fix_title_encoding() only fixed a
+# private copy of the title used inside classify_k12_position()/
+# classify_k12_subject(), never the title actually shipped to the app --
+# a title with a raw Windows-1252 byte (e.g. an en dash) from any
+# non-Applitrack source would classify fine but still display mangled.
+# Checking the committed CSVs directly (rather than just unit-testing
+# fix_title_encoding() in isolation) is what actually catches a future call
+# site forgetting to apply the fix, the same way the typo checks above catch
+# a canonicalization call site being skipped.
+test_that("combinedclean.csv titles have no invalid-encoding or mojibake characters", {
+  d <- read_summary("combinedclean.csv")
+  expect_true(all(validEnc(d$title)))
+  expect_false(any(grepl("�", d$title)))
+})
+
+test_that("k12jobanalysis.csv titles have no invalid-encoding or mojibake characters", {
+  d <- read_summary("k12jobanalysis.csv")
+  expect_true(all(validEnc(d$title)))
+  expect_false(any(grepl("�", d$title)))
+})
