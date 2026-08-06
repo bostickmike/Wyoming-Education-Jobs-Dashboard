@@ -346,3 +346,27 @@ test_that("county-level Census context is present for K-12, absent (not missing)
   expect_equal(length(unique(siblings$Median_Household_Income)), 1)
   expect_equal(length(unique(siblings$Mining_Employment_Share)), 1)
 })
+
+test_that("Child_Poverty_Rate is district-level (unlike the county-level Census columns), so sibling districts can genuinely differ", {
+  # Regression for the SAIPE addition: unlike Median_Household_Income etc.
+  # (real county-level joins, correctly identical for sibling districts),
+  # Child_Poverty_Rate is a real DISTRICT-level figure and two districts in
+  # the same county are NOT expected to share it -- confirmed with real
+  # data (Fremont County SD2 and SD21 are both Fremont County but have very
+  # different real child poverty rates). Also present (NA) on HE rows.
+  env <- load_app()
+  expect_true("Child_Poverty_Rate" %in% names(env$combined_map_data))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(all(is.na(he$Child_Poverty_Rate)))
+
+  k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
+  k12_with_rate <- k12[!is.na(k12$Child_Poverty_Rate), ]
+  skip_if(nrow(k12_with_rate) == 0, "no K-12 rows with a child poverty rate in committed data -- skipping")
+  expect_true(all(k12_with_rate$Child_Poverty_Rate >= 0 & k12_with_rate$Child_Poverty_Rate <= 1))
+
+  fremont <- k12_with_rate[k12_with_rate$County == "Fremont County, Wyoming", ]
+  skip_if(nrow(fremont) < 2, "fewer than 2 mapped Fremont County districts with a rate in committed data -- skipping")
+  expect_true(length(unique(fremont$Child_Poverty_Rate)) > 1)
+})

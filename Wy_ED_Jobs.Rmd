@@ -591,6 +591,35 @@ if (nrow(county_context) > 0) {
 }
 ```
 
+### District-level child poverty rate, from the Census Bureau's SAIPE program
+```{r census saipe child poverty data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("census_acs_scraper.R")  # census_saipe_scraper.R reuses census_api_key()/clean_acs_value()/WY_STATE_FIPS from here
+source("census_saipe_scraper.R")
+
+child_poverty <- safe_scrape(
+  "Census SAIPE district child poverty rate (WY)",
+  scrape_fn = fetch_census_saipe_child_poverty,
+  expected_cols = c("District", "Child_Poverty_Rate", "SAIPE_Year")
+)
+
+if (nrow(child_poverty) > 0) {
+  # Joins on District, not County -- real district-level data (the closest
+  # free proxy to free/reduced-lunch eligibility at the actual district a
+  # posting is in), unlike the county-context chunk above. Fremont County
+  # School District 38 (Arapahoe Charter High School) is a confirmed real
+  # gap in SAIPE's own coverage -- left as a genuine NA after this join,
+  # not something to force-match.
+  salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of(c("Child_Poverty_Rate", "SAIPE_Year"))) %>%
+    left_join(child_poverty, by = "District")
+  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+} else {
+  message("Census SAIPE child poverty fetch failed -- leaving salarymap2.csv untouched this run.")
+}
+```
+
 
 ## Time to scrape Wyoming Higher Education Data
 ### This chunk scrapes LCCC's data

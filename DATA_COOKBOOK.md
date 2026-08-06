@@ -89,6 +89,8 @@ Not an archive — one current row per of Wyoming's 48 school districts. `Distri
 | `Mining_Employment_Share` | numeric | Census ACS 5-Year Subject Tables | County's civilian workforce share (0–1) employed in mining/oil & gas — the one figure here that helps explain *why* teacher pay varies across WY districts (energy counties pay more to compete with these wages), not just what things cost. |
 | `Population_Change_Pct` | numeric | Census ACS 5-Year | County population change vs. the same ACS product 5 years earlier — a slow-moving growth/decline signal, refreshed at the same "once a year is plenty" cadence as salary data despite the pipeline running weekly. |
 | `ACS_Year` | integer | Census ACS 5-Year | The ACS 5-Year vintage's end year (e.g. `2024` means the 2020–2024 5-year estimate) — the real freshness signal for the four columns above, same convention as `Salary_Year`/`CCD_Year`. |
+| `Child_Poverty_Rate` | numeric | Census SAIPE (`census_saipe_scraper.R`, weekly refresh) | **District-level**, unlike the five ACS columns above — the closest free proxy to free/reduced-lunch eligibility at the actual district a posting is in (SAIPE doesn't publish free/reduced-lunch counts directly). Two districts in the same county can and do differ meaningfully here (confirmed with real data: Fremont County SD2 and SD21 sit at 27–28% while Fremont County SD1 sits at 6%, despite sharing the exact same county-level income figure). Fremont County School District 38 (Arapahoe Charter High School) is a confirmed real gap in SAIPE's own coverage. |
+| `SAIPE_Year` | integer | Census SAIPE | The real freshness signal for `Child_Poverty_Rate`, same convention as `ACS_Year`. |
 
 ### `k12_salary_history.csv` — multi-year K-12 salary archive
 

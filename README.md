@@ -25,6 +25,7 @@ A live, weekly-updated dashboard of K-12 and higher education job openings acros
 | Higher ed faculty salary | IPEDS (federal Integrated Postsecondary Education Data System), via the Urban Institute Education Data Portal |
 | Higher ed faculty staffing (for vacancy rate) | IPEDS, same source |
 | County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly (K-12 only so far — joined onto each district's own county) |
+| District-level child poverty rate | US Census Bureau, [Small Area Income and Poverty Estimates (SAIPE)](https://www.census.gov/programs-surveys/saipe/data/datasets.html), via the same Census Data API — real per-district figures, not county-level like the row above |
 
 WSBA publishes only the current year's salary settlement with no public archive, so multi-year K-12 salary history is captured and grown by this project's own weekly pipeline going forward, one snapshot per new settlement year. IPEDS is queryable by year directly, so higher-ed salary already shows multiple years back.
 
@@ -45,6 +46,7 @@ A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regene
 - `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — the scraping, classification, and monitoring logic the pipeline sources.
 - `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
 - `census_acs_scraper.R` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
+- `census_saipe_scraper.R` — district-level child poverty rate from the Census Bureau's SAIPE program, joined directly onto each K-12 district (not county-level like `census_acs_scraper.R`).
 - `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
 - `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.
 - `.github/workflows/weekly-scrape.yml` — the automation described above.

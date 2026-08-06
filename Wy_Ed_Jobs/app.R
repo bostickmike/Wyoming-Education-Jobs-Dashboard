@@ -60,7 +60,7 @@ mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
                              "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
                              "Teachers_Total_FTE", "Data_Coverage", "Enrollment",
                              "Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share",
-                             "Population_Change_Pct", "ACS_Year"),
+                             "Population_Change_Pct", "ACS_Year", "Child_Poverty_Rate", "SAIPE_Year"),
                            "salarymap2.csv") %>%
   rename(Name = District)
 
@@ -603,7 +603,8 @@ map_k12 <- mapdata2_k12 %>%
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
          Data_Coverage, Enrollment, Students_Per_Teacher,
-         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year)
+         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
+         Child_Poverty_Rate, SAIPE_Year)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -675,7 +676,8 @@ map_he <- mapdata2_he %>%
     # rather than built here to keep this change to what's actually been
     # tested end to end; a real follow-up, not a permanent gap.
     Median_Household_Income = NA_real_, Median_Gross_Rent = NA_real_,
-    Mining_Employment_Share = NA_real_, Population_Change_Pct = NA_real_, ACS_Year = NA_integer_
+    Mining_Employment_Share = NA_real_, Population_Change_Pct = NA_real_, ACS_Year = NA_integer_,
+    Child_Poverty_Rate = NA_real_, SAIPE_Year = NA_integer_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -684,7 +686,8 @@ map_he <- mapdata2_he %>%
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
          Data_Coverage, Enrollment, Students_Per_Teacher,
-         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year)
+         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
+         Child_Poverty_Rate, SAIPE_Year)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -1235,7 +1238,13 @@ server <- function(input, output, session) {
         # WHY salaries vary across WY districts, not just what things cost.
         `County Mining/Energy Jobs` = ifelse(is.na(Mining_Employment_Share), NA_character_, scales::percent(Mining_Employment_Share, accuracy = 0.1)),
         `County Population Trend (5yr)` = ifelse(is.na(Population_Change_Pct), NA_character_,
-                                                   paste0(ifelse(Population_Change_Pct >= 0, "+", ""), scales::percent(Population_Change_Pct, accuracy = 0.1)))
+                                                   paste0(ifelse(Population_Change_Pct >= 0, "+", ""), scales::percent(Population_Change_Pct, accuracy = 0.1))),
+        # District-level, not county-level, unlike the four columns above --
+        # the closest free proxy to free/reduced-lunch eligibility at the
+        # actual district a posting is in (Census SAIPE doesn't publish
+        # free/reduced-lunch counts directly). A prospective teacher sizing
+        # up a district's student population, not just its town.
+        `District Child Poverty Rate` = ifelse(is.na(Child_Poverty_Rate), NA_character_, scales::percent(Child_Poverty_Rate, accuracy = 0.1))
       )
     # Real year in the header instead of a generic "Prior Year" label --
     # cleaner than a separate Salary Year column repeating the same value
@@ -1255,6 +1264,7 @@ server <- function(input, output, session) {
     year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "K-12 District"]))
     source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "K-12 District"]))
     acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "K-12 District"]))
+    saipe_year <- unique(na.omit(combined_map_data$SAIPE_Year[combined_map_data$Type == "K-12 District"]))
     req(length(year) > 0, length(source) > 0)
     tagList(
       helpText(
@@ -1267,6 +1277,14 @@ server <- function(input, output, session) {
           paste0("(", acs_year[1], ")"), "—",
           tags$a(href = "https://www.census.gov/data/developers/data-sets/acs-5year.html", target = "_blank", "census.gov"),
           ". County-level, not district-level -- sibling districts in the same county share the same figures."
+        )
+      },
+      if (length(saipe_year) > 0) {
+        helpText(
+          "District child poverty rate: US Census Bureau, Small Area Income and Poverty Estimates (SAIPE)",
+          paste0("(", saipe_year[1], ")"), "—",
+          tags$a(href = "https://www.census.gov/programs-surveys/saipe/data/datasets.html", target = "_blank", "census.gov/saipe"),
+          ". District-level (unlike the county context above)."
         )
       }
     )
@@ -1359,6 +1377,10 @@ server <- function(input, output, session) {
                            paste0(", ", scales::percent(Mining_Employment_Share, accuracy = 1), " of jobs in mining/energy"),
                            ""),
                     "</div>"),
+             ""),
+      ifelse(!is.na(Child_Poverty_Rate),
+             paste0("<div style='font-size:0.85em;color:#666;'>District: ",
+                    scales::percent(Child_Poverty_Rate, accuracy = 0.1), " child poverty rate</div>"),
              ""),
       "<div style='margin-top:6px;'>",
       "<a href='", Link, "' target='_blank'>Careers page</a>",

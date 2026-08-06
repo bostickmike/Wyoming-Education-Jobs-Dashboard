@@ -33,7 +33,7 @@ REQUIRED_SCHEMAS <- list(
                         "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
                         "Teachers_Total_FTE", "Data_Coverage", "Enrollment",
                         "Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share",
-                        "Population_Change_Pct", "ACS_Year"),
+                        "Population_Change_Pct", "ACS_Year", "Child_Poverty_Rate", "SAIPE_Year"),
   "facultydata.csv" = c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"),
   "allsum_he.csv" = c("Category", "Archive_Date", "Institution", "Job_Type", "sum"),
   "allnow_he.csv" = c("Category", "Job_Type", "Sum", "Institution"),
