@@ -374,7 +374,7 @@ combined <- combined %>%
 file_name <- paste0("combined_", Sys.Date(), ".csv")
 
 # Write the data to a CSV file with the new file name
-write.csv(combined, file=file.path('Archivek12_Data',file_name))
+write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FALSE)
 
 # Categorize positions in the "position" column of the "combinedclean" dataset.
 # classify_k12_position() lives in k12_he_classification.R (sourced above) so
@@ -386,7 +386,7 @@ combinedclean <- combined %>%
          District = canonicalize_k12_district(District)) %>%
   dplyr::select(title, date_posted, position, location, url, District)
 
-write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'))
+write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'), row.names = FALSE)
 
 
 #Munge the archived data and send files to Shiny
@@ -395,7 +395,11 @@ csv_files <- list.files("Archivek12_Data", pattern = "\\.csv$", full.names = TRU
 combined_k12_data <- csv_files %>%
   lapply(function(file) read.csv(file, colClasses = c("Archive_Date" = "character"))) %>%
   bind_rows() %>%
-  select(-X, -date_posted)
+  # any_of(), not a bare -X -- archives written before row.names=FALSE was
+  # standardized on every write.csv() call carry a stray write.csv()
+  # row-index column named "X"; any_of() drops it where present without
+  # erroring on files that no longer have it.
+  select(-any_of("X"), -date_posted)
 
 combined_k12_data <- combined_k12_data %>%
   mutate(Archive_Date = case_when(
@@ -431,7 +435,7 @@ k12jobs <- k12jobs %>%
 k12jobs <- k12jobs %>%
   mutate(Broad_Category = classify_k12_broad_category(Category))
 
-write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'))
+write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'), row.names = FALSE)
 
 # Per-district weekly posting totals (ALL categories, not just Teacher) --
 # powers the sparkline trend shown next to each district's raw count on
@@ -471,7 +475,7 @@ k12sum <- k12sumdistrict %>%
   select(Broad_Category, Archive_Date, District, sum)
 
 Allsum <- bind_rows(k12sum, k12sumdistrict)
-write.csv(Allsum, file=file.path('Wy_Ed_Jobs','allsum.csv'))
+write.csv(Allsum, file=file.path('Wy_Ed_Jobs','allsum.csv'), row.names = FALSE)
 
 #Database for all data now by category
 k12now <- k12jobs %>%
@@ -493,10 +497,10 @@ k12nowsum <- k12districtnowsum %>%
 
 Allnow <- bind_rows(k12nowsum, k12districtnowsum)
 
-write.csv(Allnow, file=file.path('Wy_Ed_Jobs','allnow.csv'))
+write.csv(Allnow, file=file.path('Wy_Ed_Jobs','allnow.csv'), row.names = FALSE)
 
 list<-unique(k12jobs$District)
-write.csv(list, "list.csv")
+write.csv(list, "list.csv", row.names = FALSE)
 ```
 
 ### K-12 salary data, from WSBA's publicly shared PDFs
@@ -840,7 +844,7 @@ combined_cat <- combined_HE_data %>%
 facultydata <- combined_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title))
-write.csv(facultydata, "facultydata.csv")
+write.csv(facultydata, "facultydata.csv", row.names = FALSE)
 
 # Per-institution weekly posting totals (ALL categories/job types, not
 # just full-time faculty) -- powers the sparkline trend shown next to
@@ -860,7 +864,7 @@ write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_
 # Longitudinal Trends and New This Week views filter back down to
 # Job_Type == "Instructor/Teacher/Faculty" in app.R to keep their existing,
 # unchanged meaning ("faculty hiring", not incl. the standing adjunct pool).
-write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"))
+write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
 hesum <- facultydata %>%
   group_by(Category, Archive_Date, Job_Type) %>%
   summarize(
@@ -878,7 +882,7 @@ hesuminst<- facultydata%>%
   ungroup()
 
 Allsum_he<-rbind(hesum, hesuminst)
-write.csv(Allsum_he, file = file.path("Wy_Ed_Jobs", "allsum_he.csv"))
+write.csv(Allsum_he, file = file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
 
 henow<- facultydata%>%
   filter(Archive_Date == max(Archive_Date))
@@ -901,7 +905,7 @@ henowinstsum<- henow %>%
 
 Allnow_he<- rbind(henowsum, henowinstsum)
 
-write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"))
+write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
 ```
 
 ### Higher Ed faculty salary data, from IPEDS via the Urban Institute's Education Data Portal API
