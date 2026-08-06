@@ -15,6 +15,13 @@
 # only part that needs live network) and a parse_*() function (pure logic
 # on already-fetched text/JSON, testable against a static fixture with no
 # network at all).
+#
+# TedK12 (fetch_tedk12_postings() below) was believed to need no change
+# from plain rvest with no browser -- turned out to be wrong (found
+# 2026-08-06): TedK12/PowerSchool Hire serves genuinely different content
+# depending on the request's User-Agent, not just a plain "no browser
+# needed" static page. See fetch_tedk12_postings()'s own comment for the
+# full story.
 
 suppressMessages({
   library(httr2)
@@ -459,4 +466,69 @@ parse_paylocity_jobs <- function(html_text) {
     Link = paste0("https://recruiting.paylocity.com/recruiting/jobs/Details/", jobs$JobId),
     stringsAsFactors = FALSE
   )
+}
+
+# ---------------------------------------------------------------------------
+# TedK12 (PowerSchool's "Hire" applicant tracking system)
+# ---------------------------------------------------------------------------
+
+# TedK12/PowerSchool Hire serves genuinely different content depending on
+# the request's User-Agent, not on whether a browser executes JS -- a
+# request with httr2's default UA gets a near-empty modern app shell
+# (rebranded "SchoolSpring" -- same corporate family, different product)
+# with zero job rows, while a request that identifies as a real browser
+# gets the real, classic jQuery-based job board with real
+# <tr id="JobList_N"> rows, structurally identical to what this scraper
+# has always expected. Confirmed 2026-08-06 by comparing a plain curl
+# fetch (empty shell, 3.7KB) against a chromote-rendered page (real
+# content, 112KB, 11+ real rows) for the exact same URL, then confirming
+# curl -A "<real browser UA>" alone reproduces the real content -- no
+# browser automation needed in production, just a real User-Agent header.
+#
+# This explains scrape_log.csv's flaky "ok"/"empty" alternation for the
+# same URL across different runs the same day: whichever UA a given
+# request happened to negotiate as (varies by R/httr2/curl version and
+# platform) determined which content came back. Same failure category as
+# the 2026-08-02/03 Applitrack encoding bug -- a subtle difference between
+# this scraper's request and a real browser's, not an actual site change.
+# Of the 5 WY districts on TedK12, only Goshen County SD1 has no other
+# source covering it (the other 4 also appear in springer_job_links.csv
+# via a working SchoolSpring API scrape, which is why this went unnoticed
+# in the final per-district counts).
+fetch_tedk12_postings <- function(url) {
+  resp <- request(url) %>%
+    req_user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36") %>%
+    req_perform()
+  parse_tedk12_postings(resp_body_string(resp), url)
+}
+
+# Same td:nth-child(1..4) = title/date/position/location structure the
+# original (pre-fix) plain rvest loop always used -- that part was never
+# wrong, only the missing User-Agent was. The header row's title cell
+# reads literally "Job Title" (its sortable-column link text); filtered
+# out the same way the original loop did.
+parse_tedk12_postings <- function(html_text, url) {
+  empty <- data.frame(title = character(0), date_posted = character(0), position = character(0),
+                       location = character(0), url = character(0), stringsAsFactors = FALSE)
+
+  page <- rvest::read_html(html_text)
+  rows <- rvest::html_nodes(page, "tr")
+  if (length(rows) == 0) return(empty)
+
+  # map_df() over zero matched <tr> elements returns a zero-COLUMN data
+  # frame (not just zero rows), since it has no iteration to infer column
+  # names from -- the `length(rows) == 0` guard above exists specifically
+  # to avoid falling into that case and hitting "Unknown or uninitialised
+  # column" warnings on the filter below.
+  result <- rows %>%
+    purrr::map_df(~{
+      title <- .x %>% rvest::html_node("td:nth-child(1) a") %>% rvest::html_text(trim = TRUE)
+      date_posted <- .x %>% rvest::html_node("td:nth-child(2)") %>% rvest::html_text(trim = TRUE)
+      position <- .x %>% rvest::html_node("td:nth-child(3)") %>% rvest::html_text(trim = TRUE)
+      location <- .x %>% rvest::html_node("td:nth-child(4)") %>% rvest::html_text(trim = TRUE)
+      data.frame(title = title, date_posted = date_posted, position = position,
+                 location = location, url = url, stringsAsFactors = FALSE)
+    })
+
+  result[!is.na(result$title) & nzchar(result$title) & result$title != "Job Title", , drop = FALSE]
 }

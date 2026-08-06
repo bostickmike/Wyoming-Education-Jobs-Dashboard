@@ -71,89 +71,46 @@ write.csv(all_jobs_df, "all_job_listings.csv", row.names = FALSE)
 
 ```
 
-### Loop k12 data from districts that use Tedd k12
+### Loop k12 data from districts that use Ted K12
 ```{r tedk12, message=FALSE, warning=FALSE, echo=TRUE}
 
-# Load required libraries
-library(rvest)
 library(dplyr)
-library(readr)
-library(purrr)
 source("scrape_helpers.R")
+source("direct_api_scrapers.R")
 
 # Read the CSV file containing the URLs
 tedjoblinks <- read.csv("tedk12_job_links.csv", stringsAsFactors = FALSE)
 
-# Initialize an empty data frame to store the job data
-all_ted_data <- data.frame(
-  title = character(),
-  date_posted = character(),
-  position = character(),
-  location = character(),
-  url = character(),
-  stringsAsFactors = FALSE
-)
+# fetch_tedk12_postings() (direct_api_scrapers.R) replaces a plain
+# read_html() loop that looked fine but was actually silently broken for
+# some fraction of runs -- TedK12/PowerSchool Hire serves a near-empty
+# modern app shell to a request with no real-browser User-Agent, not the
+# classic job board this scraper has always expected. Confirmed
+# 2026-08-06 via a chromote-rendered comparison; see that function's own
+# header comment for the full story. Each district still gets its own
+# safe_scrape() call so one dead/changed URL doesn't abort the rest.
+all_ted_data <- list()
 
-# Loop through each URL in the CSV file. No Selenium session here (plain
-# read_html against a static page), so each URL just needs its own
-# tryCatch + log entry -- one dead/changed URL no longer aborts every URL
-# after it in the CSV.
-for (i in 1:nrow(tedjoblinks)) {
-  url <- tedjoblinks$Job.Link[i]  # Using the Job.Link column for URLs
+for (i in seq_len(nrow(tedjoblinks))) {
+  url <- tedjoblinks$Job.Link[i]
+  district <- tedjoblinks$District[i]
 
-  jobs <- tryCatch({
-    # Read the HTML content of the page
-    page <- read_html(url)
-
-    # Extract job title, posting date, type, and location
-    result <- page %>%
-      html_nodes("tr") %>% # Assuming each job is within a <tr> element
-      map_df(~{
-        title <- .x %>%
-          html_node("td:nth-child(1) a") %>%
-          html_text(trim = TRUE)
-
-        date_posted <- .x %>%
-          html_node("td:nth-child(2)") %>%
-          html_text(trim = TRUE)
-
-        position <- .x %>%
-          html_node("td:nth-child(3)") %>%
-          html_text(trim = TRUE)
-
-        location <- .x %>%
-          html_node("td:nth-child(4)") %>%
-          html_text(trim = TRUE)
-
-        data.frame(
-          title = title,
-          date_posted = date_posted,
-          position = position,
-          location = location,
-          url = url,  # Add the URL to the data frame
-          stringsAsFactors = FALSE
-        )
-      })
-
-    log_scrape_result(url, status = if (nrow(result) > 0) "ok" else "empty", n_rows = nrow(result))
-    result
-  }, error = function(e) {
-    message("tedk12: error scraping ", url, ": ", conditionMessage(e))
-    log_scrape_result(url, status = "error", n_rows = 0, error_message = conditionMessage(e))
-    data.frame(title = character(), date_posted = character(), position = character(),
-               location = character(), url = character(), stringsAsFactors = FALSE)
-  })
-
-  # Append the jobs data to the all_jobs_data data frame
-  all_ted_data <- bind_rows(all_ted_data, jobs)
+  district_jobs <- safe_scrape(
+    district,
+    scrape_fn = function() fetch_tedk12_postings(url),
+    expected_cols = c("title", "date_posted", "position", "location", "url")
+  )
+  if (nrow(district_jobs) > 0) all_ted_data[[length(all_ted_data) + 1]] <- district_jobs
 }
 
-# Remove rows with NA or "Job Title" in the job_title column
-all_ted_data <- all_ted_data %>%
-  filter(!is.na(title) & title != "Job Title")
+all_ted_data <- if (length(all_ted_data) > 0) {
+  bind_rows(all_ted_data)
+} else {
+  data.frame(title = character(0), date_posted = character(0), position = character(0),
+             location = character(0), url = character(0), stringsAsFactors = FALSE)
+}
 
-all_ted_data<-left_join(all_ted_data, tedjoblinks, by = c("url" = "Job.Link"))
-
+all_ted_data <- left_join(all_ted_data, tedjoblinks, by = c("url" = "Job.Link"))
 
 # Save the extracted data to a CSV file
 write.csv(all_ted_data, "all_tedk12_job_listings.csv", row.names = FALSE)
