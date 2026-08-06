@@ -138,7 +138,16 @@ source("direct_api_scrapers.R")
 # migrates to this platform in the future and isn't yet in this table will
 # safely fall through to being treated as SchoolSpring and logged as an
 # error rather than silently returning nothing.
-redrover_org_ids <- c(jcsd1 = "3146", hotsprings1 = "3034")
+#
+# Fremont County School District 38 (Arapahoe Charter High School, its
+# only school) found 2026-08-06 while chasing down a persistent HTTP 500
+# on its old Applitrack tenant (fcsd38.applitrack.com) -- confirmed via
+# WSBA's own listing (which links to jobs.redroverk12.com/org/FCSD38/...)
+# that the district had fully migrated platforms, the same story as
+# Campbell/Fremont 25/Laramie 2's TedK12->SchoolSpring moves found the
+# same week. Moved from Frontline_job_links.csv (dead) to
+# springer_job_links.csv (real, live, 6 current postings confirmed).
+redrover_org_ids <- c(jcsd1 = "3146", hotsprings1 = "3034", FCSD38 = "3343")
 
 springerjoblinks <- read.csv("springer_job_links.csv", stringsAsFactors = FALSE)
 
