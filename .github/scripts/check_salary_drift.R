@@ -49,6 +49,63 @@ coverage_lines <- if (is.null(flags) || nrow(flags) == 0) {
   c(lines, "")
 }
 
+# --------------------------------------------------------------------------
+# Value plausibility -- catches a source that returns the RIGHT ROW COUNT
+# but the WRONG VALUES (a WSBA PDF column nudging just enough to misalign
+# salary_scrapers.R's hardcoded pixel windows is the concrete risk this
+# guards against; see drift_check.R::check_salary_yoy_plausibility()'s
+# header for the full reasoning). Neither check_salary_coverage() above
+# nor flag_drift() in check_drift.R can catch this shape of failure --
+# both only ever look at how many rows came back.
+# --------------------------------------------------------------------------
+k12_current <- setNames(k12$Teacher_Base_Salary, k12$District)
+k12_prior <- setNames(k12$Teacher_Base_Salary_Prior_Year, k12$District)
+k12_supt <- setNames(k12$Superintendent_Salary, k12$District)
+he_current <- setNames(he$Faculty_Avg_Salary, he$Name)
+he_y1ago <- setNames(he$Faculty_Avg_Salary_Y1Ago, he$Name)
+
+# Bounds are deliberately generous -- real WY 2025-2026 data sits at
+# $45k-$57k (teacher base) and $127k-$175k (superintendent); these bounds
+# exist to catch a parser reading a location code or a stray digit into a
+# dollar column, not to flag genuine, if unusual, salary growth over time.
+plausibility_flags <- list(
+  check_salary_value_bounds("K-12 teacher base salary (WSBA)", k12_current, min_ok = 25000, max_ok = 150000),
+  check_salary_value_bounds("K-12 superintendent salary (WSBA)", k12_supt, min_ok = 60000, max_ok = 350000),
+  check_salary_value_bounds("HE avg faculty salary (IPEDS)", he_current, min_ok = 30000, max_ok = 150000),
+  check_salary_yoy_plausibility(k12_current, k12_prior),
+  check_salary_yoy_plausibility(he_current, he_y1ago)
+)
+plausibility_flags <- plausibility_flags[!vapply(plausibility_flags, is.null, logical(1))]
+
+if (length(plausibility_flags) > 0) for (f in plausibility_flags) print(f)
+
+plausibility_lines <- if (length(plausibility_flags) == 0) {
+  character(0)
+} else {
+  lines <- c(
+    "Automated salary VALUE plausibility check flagged something worth a human look.",
+    "",
+    "Unlike the coverage check above (which only checks row counts), this checks whether the dollar figures themselves look sane -- either outside a generous real-world range, or a year-over-year change that's a statistical outlier against every other district's/institution's change this same run. Usually means a source's page/PDF/API layout shifted just enough to misparse values while still returning a plausible row count, not that the underlying number is really this different.",
+    ""
+  )
+  for (f in plausibility_flags) {
+    if ("min_ok" %in% names(f)) {
+      for (i in seq_len(nrow(f))) {
+        r <- f[i, ]
+        lines <- c(lines, sprintf("- **%s** (%s): $%s is outside the expected $%s-$%s range", r$name, r$entity,
+                                   format(r$value, big.mark = ","), format(r$min_ok, big.mark = ","), format(r$max_ok, big.mark = ",")))
+      }
+    } else {
+      for (i in seq_len(nrow(f))) {
+        r <- f[i, ]
+        lines <- c(lines, sprintf("- **%s**: $%s -> $%s (%+.1f%%), a real outlier vs. every other entity's change this run",
+                                   r$name, format(r$prior, big.mark = ","), format(r$current, big.mark = ","), r$pct_change * 100))
+      }
+    }
+  }
+  c(lines, "")
+}
+
 # Sheridan College and Gillette College are in the process of splitting
 # from their shared parent entity -- app.R shows both a shared JOINT
 # Vacancy_Rate (combined postings / the one shared IPEDS faculty count,
@@ -81,12 +138,12 @@ split_lines <- if (is.null(split_result)) {
   character(0)
 }
 
-if (length(coverage_lines) == 0 && length(split_lines) == 0) {
-  cat("Salary source coverage looks healthy, and Sheridan/Gillette are still reported jointly as expected.\n")
+if (length(coverage_lines) == 0 && length(plausibility_lines) == 0 && length(split_lines) == 0) {
+  cat("Salary source coverage and value plausibility look healthy, and Sheridan/Gillette are still reported jointly as expected.\n")
   quit(status = 0, save = "no")
 }
 
-report_lines <- c(coverage_lines, split_lines)
+report_lines <- c(coverage_lines, plausibility_lines, split_lines)
 
 # Append to the same report the job-posting drift check may have already
 # started, so both land in one GitHub Issue/comment instead of two separate

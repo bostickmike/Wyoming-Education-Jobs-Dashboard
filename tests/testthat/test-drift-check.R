@@ -74,6 +74,79 @@ test_that("check_salary_coverage supports a tolerance below the ideal expected c
   expect_equal(flagged$actual, 5)
 })
 
+test_that("check_salary_value_bounds flags a value outside the sane dollar range", {
+  actual <- c(A = 51000, B = 52500, C = 5)  # C is obvious garbage (a parser misread)
+  flagged <- check_salary_value_bounds("K-12 teacher base salary (WSBA)", actual, min_ok = 25000, max_ok = 150000)
+  expect_equal(flagged$entity, "C")
+  expect_equal(flagged$value, 5)
+})
+
+test_that("check_salary_value_bounds returns NULL when every value is in range", {
+  actual <- c(A = 51000, B = 52500, C = 48000)
+  expect_null(check_salary_value_bounds("K-12 teacher base salary (WSBA)", actual, min_ok = 25000, max_ok = 150000))
+})
+
+test_that("check_salary_value_bounds ignores NA rather than flagging it", {
+  actual <- c(A = 51000, B = NA_real_)
+  expect_null(check_salary_value_bounds("K-12 teacher base salary (WSBA)", actual, min_ok = 25000, max_ok = 150000))
+})
+
+test_that("check_salary_yoy_plausibility flags a district whose change is a real outlier against its peers", {
+  # 5 districts move a normal 2-6%; one (Z) jumps 47% -- the signature of a
+  # WSBA PDF column misalignment, not a real settlement.
+  prior <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000, Z = 50000)
+  current <- c(A = 51500, B = 49500, C = 53500, D = 50500, E = 53500, Z = 73500)
+  flagged <- check_salary_yoy_plausibility(current, prior)
+  expect_equal(flagged$name, "Z")
+  expect_equal(round(flagged$pct_change, 2), 0.47)
+})
+
+test_that("check_salary_yoy_plausibility does not flag a statewide event where every district moves a lot", {
+  # Same ~15% move across the board -- a real (if unusual) statewide
+  # settlement year, not a parser bug; no district is an outlier relative
+  # to its peers even though the hard ceiling alone would catch the wrong
+  # thing here if checked in isolation.
+  prior <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000)
+  current <- prior * 1.15
+  expect_null(check_salary_yoy_plausibility(current, prior))
+})
+
+test_that("check_salary_yoy_plausibility does not flag normal small variation", {
+  prior <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000)
+  current <- c(A = 51000, B = 49200, C = 53000, D = 50100, E = 51800)
+  expect_null(check_salary_yoy_plausibility(current, prior))
+})
+
+test_that("check_salary_yoy_plausibility returns NULL with too few comparable entities", {
+  prior <- c(A = 50000, B = 48000)
+  current <- c(A = 70000, B = 48500)
+  expect_null(check_salary_yoy_plausibility(current, prior))
+})
+
+test_that("check_salary_yoy_plausibility still flags an outlier when every peer moved by exactly zero (MAD == 0)", {
+  # Regression: when every OTHER entity's change is identical (here, all
+  # zero), stats::mad(pct_change) is itself 0 -- a naive "flag if the
+  # deviation exceeds a multiple of the spread" check then requires
+  # exceeding a threshold of 0 * mad_multiplier = 0, and an earlier faulty
+  # version of this function instead fell back to a threshold of Inf in
+  # this exact case, which made the outlier undetectable no matter how
+  # extreme. The fallback must make flagging EASIER when peer spread is
+  # near zero, not impossible.
+  prior <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000, Z = 50000)
+  current <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000, Z = 73500)
+  flagged <- check_salary_yoy_plausibility(current, prior)
+  expect_equal(flagged$name, "Z")
+})
+
+test_that("check_salary_yoy_plausibility does not flag a uniform statewide move even with zero peer spread", {
+  # Every district moves by the exact same multiplier -- spread is 0 (same
+  # edge case as above), but the move itself is below hard_ceiling, so
+  # nothing should be flagged.
+  prior <- c(A = 50000, B = 48000, C = 52000, D = 49000, E = 51000)
+  current <- prior * 1.15
+  expect_null(check_salary_yoy_plausibility(current, prior))
+})
+
 test_that("score_page_text_for_job_signal identifies real hidden postings as likely_broken", {
   # Real fixture: this is the actual Sweetwater County SD1 page text that
   # exposed the Applitrack encoding bug -- 69 real postings, scraper said 0.

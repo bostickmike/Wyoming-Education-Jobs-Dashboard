@@ -94,6 +94,94 @@ check_salary_coverage <- function(name, actual, expected, min_ok = expected) {
 }
 
 # --------------------------------------------------------------------------
+# Tier 0b: salary VALUE plausibility (as opposed to coverage/row-count)
+# --------------------------------------------------------------------------
+#
+# check_salary_coverage() above (and flag_drift() for job postings) only
+# ever check that a source returned enough ROWS -- neither one can catch a
+# source whose page/PDF layout shifted just enough to silently misparse
+# VALUES while still returning a plausible row count. The WSBA teacher-
+# salary PDF is the clearest real risk for exactly this: it's parsed by
+# hardcoded pixel-position windows (see salary_scrapers.R), so a column
+# nudge in a future WSBA export could swap or shift every district's
+# current/prior salary and still produce 48 rows, passing every check
+# above without anyone noticing.
+#
+# Two complementary checks, both pure functions:
+#   1. check_salary_value_bounds() -- a hard sanity range. Cheap, catches
+#      the most obvious garbage (a location code or a stray digit landing
+#      in a dollar column), but a bound wide enough to never false-positive
+#      on real salary growth is too wide to catch a subtler misalignment.
+#   2. check_salary_yoy_plausibility() -- real historical signal instead of
+#      a guessed bound. WSBA's own PDF already reports both the prior and
+#      current year's base salary in one scrape (Base_Salary_Prior_Year/
+#      Base_Salary_Current_Year), so every run already has 48 real
+#      district-level year-over-year changes to compare against EACH
+#      OTHER (cross-sectional), without needing this project's own
+#      multi-year archive to have accumulated enough history yet (as of
+#      2026-08-05 it has exactly one year -- see
+#      k12_salary_history.csv). A district moving 47% while every other
+#      district moved 2-6% is far more likely a parser misalignment than a
+#      genuine outlier settlement.
+
+# actual: named numeric vector (name = district/institution, value = salary).
+check_salary_value_bounds <- function(name, actual, min_ok, max_ok) {
+  bad <- actual < min_ok | actual > max_ok
+  bad[is.na(bad)] <- FALSE
+  if (!any(bad)) return(NULL)
+  data.frame(
+    name = name, entity = names(actual)[bad], value = unname(actual[bad]),
+    min_ok = min_ok, max_ok = max_ok, stringsAsFactors = FALSE
+  )
+}
+
+# current/prior: named numeric vectors (name = district/institution),
+# compared pairwise by name. Flags an entity whose |% change| both (a)
+# exceeds hard_ceiling outright (a settlement essentially never moves this
+# much in one real year) and (b) is a real statistical outlier against
+# every OTHER entity's change this same run (median absolute deviation,
+# robust to one or two entities genuinely having an unusual year) --
+# requiring both avoids flagging a single district with a real large
+# settlement while every other district also moved a lot (a real
+# statewide event, not a parser bug), and avoids flagging a small
+# percentage move that's just normal variation.
+check_salary_yoy_plausibility <- function(current, prior, hard_ceiling = 0.25, mad_multiplier = 5) {
+  common <- intersect(names(current), names(prior))
+  cur <- current[common]
+  pri <- prior[common]
+  valid <- !is.na(cur) & !is.na(pri) & pri != 0
+  if (sum(valid) < 3) return(NULL)  # too few points for a cross-sectional outlier check to mean anything
+
+  pct_change <- (cur[valid] - pri[valid]) / pri[valid]
+  center <- stats::median(pct_change)
+  spread <- stats::mad(pct_change)
+
+  is_outlier <- if (spread > 0) {
+    abs(pct_change - center) > mad_multiplier * spread & abs(pct_change) > hard_ceiling
+  } else {
+    # A zero spread means every peer moved by (near) the exact same amount
+    # -- a MAD-based threshold would then be 0, and "greater than 0" would
+    # flag ordinary tiny floating-point variation between otherwise-equal
+    # changes. Fall back to the hard ceiling alone: still lets a genuine
+    # uniform statewide move of, say, 15% through untouched (below the
+    # ceiling), while still catching one district at 47% against five
+    # peers that didn't move at all (this function's whole reason to
+    # exist), which a spread-based threshold of 0 could never do since
+    # nothing can exceed a threshold of Inf.
+    abs(pct_change) > hard_ceiling
+  }
+  if (!any(is_outlier)) return(NULL)
+
+  data.frame(
+    name = names(pct_change)[is_outlier],
+    prior = unname(pri[valid][is_outlier]),
+    current = unname(cur[valid][is_outlier]),
+    pct_change = unname(pct_change[is_outlier]),
+    stringsAsFactors = FALSE
+  )
+}
+
+# --------------------------------------------------------------------------
 # Source name -> public URL lookup, for the chromote corroboration step
 # --------------------------------------------------------------------------
 
