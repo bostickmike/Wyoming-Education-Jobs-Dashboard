@@ -542,6 +542,19 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
 } else {
   message("WSBA salary fetch failed for one or both documents -- leaving salarymap2.csv untouched this run.")
 }
+
+# District-level data-completeness classification (misc_district_scrapers.R)
+# -- refreshed unconditionally every run, not gated on the salary fetch
+# above, since it's a static structural fact about which platform each
+# district is scraped from, not something that can itself fail to fetch.
+# Every district not in misc_district_coverage_tiers() is scraped from a
+# genuine structured job-board platform, hence the coalesce to "Full".
+source("misc_district_scrapers.R")
+salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
+  select(-any_of("Data_Coverage")) %>%
+  left_join(misc_district_coverage_tiers(), by = "District") %>%
+  mutate(Data_Coverage = coalesce(Data_Coverage, "Full"))
+write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 ```
 
 ### K-12 teacher FTE (staff headcount), from NCES's Common Core of Data via the Urban Institute API

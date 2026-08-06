@@ -572,6 +572,50 @@ misc_district_registry <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Standalone orgs WSBA covers as their own "District" entry (see
+# parse_wsba_vacancies()'s comment on WSBA's "<...> - <org> - <location>,
+# Wyoming" line format) that aren't school districts and have no own-page
+# scraper of any kind -- WSBA is the only source for these, not a
+# supplement to one. Snowy Range Academy is the one confirmed case
+# (Laramie Montessori Charter School, the other real charter school found,
+# has its own clean Paylocity source instead -- see
+# direct_api_scrapers.R::fetch_paylocity_jobs() and Wy_ED_Jobs.Rmd's
+# charter-school block). Previously this project's own comments claimed
+# Snowy Range "already surfaces via WSBA with no extra code needed," which
+# turned out to be wrong: fetch_all_misc_district_postings() below only
+# ever pulled WSBA rows for districts actually IN misc_district_registry,
+# so Snowy Range's postings were silently dropped entirely -- confirmed
+# absent from every committed combinedclean.csv to date. This constant and
+# the loop below are the actual fix.
+WSBA_ONLY_ORGS <- c("Snowy Range Academy")
+
+# District-level data-completeness classification -- used by app.R to show
+# a real, visible badge on any district whose current-openings count is
+# measurably less complete than a platform-scraped district's, rather than
+# leaving that fact sitting only in this file's comments where an end user
+# viewing the dashboard has no way to see it.
+#
+# "Partial (WSBA + own page)": misc_district_registry's 12 districts --
+# WSBA (confirmed ~25-40% of real postings on its own) plus a heuristic
+# own-page scrape, deduplicated. Still meaningfully less complete than a
+# real structured job-board platform.
+# "Partial (WSBA only)": WSBA_ONLY_ORGS -- no own-page scraper exists at
+# all, so this is WSBA's ~25-40% coverage with nothing to supplement it.
+# Every other district (not returned here) is scraped from a genuine
+# structured platform and is implicitly "Full" -- callers coalesce a
+# missing match to that, rather than this function needing to enumerate
+# every fully-covered district too.
+misc_district_coverage_tiers <- function() {
+  data.frame(
+    District = c(misc_district_registry$District, WSBA_ONLY_ORGS),
+    Data_Coverage = c(
+      rep("Partial (WSBA + own page)", nrow(misc_district_registry)),
+      rep("Partial (WSBA only)", length(WSBA_ONLY_ORGS))
+    ),
+    stringsAsFactors = FALSE
+  )
+}
+
 # Fetches one district's own-page postings via the right platform-specific
 # function. Apptegy districts require a live chromote session (passed in
 # by the caller so all 4 districts can share one browser instance instead
@@ -647,6 +691,21 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
       combined$location <- NA_character_
       combined$District <- district
       all_rows[[length(all_rows) + 1]] <- combined
+    }
+  }
+
+  # WSBA-only orgs (see WSBA_ONLY_ORGS's comment) -- no own-page scrape or
+  # dedup needed, just WSBA's rows for that org name passed straight
+  # through, same shape as every other district's combined rows above.
+  for (org in WSBA_ONLY_ORGS) {
+    wsba_here <- wsba[wsba$District == org, , drop = FALSE]
+    if (nrow(wsba_here) > 0) {
+      all_rows[[length(all_rows) + 1]] <- data.frame(
+        title = wsba_here$Title, date_posted = wsba_here$Posted_Date,
+        position = NA_character_, location = NA_character_,
+        url = NA_character_, District = org,
+        stringsAsFactors = FALSE
+      )
     }
   }
 

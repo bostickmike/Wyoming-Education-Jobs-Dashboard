@@ -543,7 +543,8 @@ map_k12 <- mapdata2_k12 %>%
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
+         Data_Coverage)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -596,14 +597,19 @@ map_he <- mapdata2_he %>%
     Vacancy_Denominator = Faculty_Count,
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
-    County = NA_character_
+    County = NA_character_,
+    # Every HE institution is scraped from a genuine structured job-board
+    # platform (NEOGOV/PeopleAdmin/Oracle) -- there's no "misc" tier on the
+    # HE side, unlike K-12's Data_Coverage from misc_district_registry.
+    Data_Coverage = "Full"
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
-         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County)
+         Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
+         Data_Coverage)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -750,7 +756,7 @@ ui <- dashboardPage(
               inline = TRUE
             ),
             withSpinner(leafletOutput("combined_map", height = 650)),
-            helpText("Only locations with current openings are shown. Circle size reflects current openings; color reflects teacher/faculty vacancy rate where available. Click a marker to jump to its filtered Jobs Table. K-12 and Higher Ed vacancy rates use different staffing sources (CCD vs. IPEDS) and years -- the shared color scale is for a rough at-a-glance read, not a precise cross-type comparison.")
+            helpText("Only locations with current openings are shown. Circle size reflects current openings; color reflects teacher/faculty vacancy rate where available. Click a marker to jump to its filtered Jobs Table. K-12 and Higher Ed vacancy rates use different staffing sources (CCD vs. IPEDS) and years -- the shared color scale is for a rough at-a-glance read, not a precise cross-type comparison. A red 'Partial' badge means that district's postings come from Wyoming School Boards Association's statewide feed (which reliably captures only ~25-40% of real openings) instead of the district's own job board -- its current-openings count is a floor, not a complete count.")
         )
       ),
 
@@ -1111,6 +1117,13 @@ server <- function(input, output, session) {
         District = Name,
         County,
         `Current Openings` = CurrentCount,
+        # Real, sortable/filterable column -- not just a map badge or a
+        # buried code comment -- so "why does this district look quiet"
+        # is answerable directly from the exportable table, not just the
+        # map. "Full" is the overwhelming majority (every district on a
+        # real job-board platform); see the Map tab's helpText for what
+        # the partial tiers mean.
+        `Posting Data` = Data_Coverage,
         `New This Week` = WeeklyNew,
         `Teacher Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
         TeacherBaseSalary = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
@@ -1174,6 +1187,15 @@ server <- function(input, output, session) {
     # immediately navigated away before it could be read.
     popups <- with(df, paste0(
       "<div><strong>", Name, "</strong><br/>", Type, "</div>",
+      # Visible badge, not just a footnote or a code comment -- Data_Coverage
+      # is "Full" for every district on a real structured job-board platform;
+      # the ~25-40% (own page) / ~25-40% only (WSBA-only) partial tiers come
+      # from misc_district_coverage_tiers() in misc_district_scrapers.R.
+      ifelse(Data_Coverage != "Full",
+             paste0("<div style='margin:2px 0;'><span style='background:#fdecea;color:#a92f1e;",
+                    "font-size:0.78em;font-weight:bold;padding:1px 6px;border-radius:8px;'>",
+                    Data_Coverage, "</span></div>"),
+             ""),
       "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
       "<div>New this week: ", WeeklyNew, "</div>",
       ifelse(!is.na(Vacancy_Rate),

@@ -200,3 +200,23 @@ test_that("an institution not flagged via Salary_Note gets its own independent v
 
   expect_false(uw$Vacancy_Rate_Shared)
 })
+
+test_that("Data_Coverage is carried through to combined_map_data for both K-12 and HE", {
+  # Regression for the disclosure fix: misc-district data completeness used
+  # to live only in code comments, invisible to anyone using the dashboard.
+  # Every HE institution is "Full" (no misc tier on that side); K-12 has a
+  # real mix since misc_district_registry's 12 districts get a "Partial"
+  # tier via salarymap2.csv's Data_Coverage column.
+  env <- load_app()
+  expect_true("Data_Coverage" %in% names(env$combined_map_data))
+  expect_false(any(is.na(env$combined_map_data$Data_Coverage)))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(all(he$Data_Coverage == "Full"))
+
+  k12_partial <- env$combined_map_data[env$combined_map_data$Type == "K-12 District" &
+                                          env$combined_map_data$Data_Coverage != "Full", ]
+  skip_if(nrow(k12_partial) == 0, "no partial-coverage K-12 rows in committed data -- skipping")
+  expect_true(all(k12_partial$Data_Coverage == "Partial (WSBA + own page)"))
+})
