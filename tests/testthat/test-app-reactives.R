@@ -326,6 +326,34 @@ test_that("Students_Per_Teacher is computed for both K-12 districts (vs. Teacher
   expect_true(all(real_values > 0 & real_values < 100))
 })
 
+test_that("Enrollment_Change_Pct is a real institution-level 5-year trend for HE, and NA (not missing) for K-12", {
+  # Regression for the IPEDS enrollment-trend addition (2026-08-06):
+  # distinct from Population_Change_Pct (county-level, real for K-12 via
+  # the Census join, NA for HE) -- this is the institution-level mirror,
+  # real for HE via ipeds_enrollment_scraper.R, NA for K-12 (no district-
+  # level enrollment-trend pull exists). Both columns should coexist
+  # without colliding.
+  env <- load_app()
+  expect_true("Enrollment_Change_Pct" %in% names(env$combined_map_data))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(any(!is.na(he$Enrollment_Change_Pct)))
+  # Loose sanity range -- a real 5-year FTE swing of more than 90% at any
+  # WY public HE institution would be implausible and more likely a units
+  # error than genuine enrollment collapse/boom.
+  he_values <- he$Enrollment_Change_Pct[!is.na(he$Enrollment_Change_Pct)]
+  expect_true(all(he_values > -0.9 & he_values < 0.9))
+  # Not every institution moved the same direction (real data, not a
+  # hardcoded sign) -- Central Wyoming College grew while most others
+  # shrank over this window.
+  expect_true(any(he_values > 0) && any(he_values < 0))
+
+  k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
+  skip_if(nrow(k12) == 0, "no K-12 rows in committed data -- skipping")
+  expect_true(all(is.na(k12$Enrollment_Change_Pct)))
+})
+
 test_that("county-level Census context is present for both K-12 and HE, and K-12 sibling districts share values", {
   # Regression for the Census ACS county-context enrichment: real per-
   # county figures on both K-12 and HE rows (HE joined via salarymap.csv's

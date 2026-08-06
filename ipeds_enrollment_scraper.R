@@ -98,3 +98,40 @@ fetch_ipeds_he_enrollment <- function() {
   latest <- find_latest_ipeds_enrollment_year()
   parse_ipeds_he_enrollment(latest$data, latest$year)
 }
+
+# Institution enrollment trend vs. n_years_back -- HE's analogue of the
+# Census county context chunk's Population_Change_Pct, just computed from
+# IPEDS's own multi-year history at the institution level instead of two
+# ACS vintages at the county level. Arguably a more direct job-security
+# signal for a prospective faculty hire than county population is -- a
+# shrinking institution is a more specific risk than a shrinking county.
+# Kept as a pure join+compute function, separate from the two live
+# fetches, so it's testable without network access -- same shape as
+# census_acs_scraper.R's compute_population_change().
+compute_enrollment_change <- function(current, prior) {
+  if (nrow(current) == 0 || nrow(prior) == 0) {
+    return(data.frame(Name = character(0), Enrollment_Change_Pct = numeric(0), stringsAsFactors = FALSE))
+  }
+  current %>%
+    select(Name, Enrollment) %>%
+    inner_join(prior %>% select(Name, Enrollment_Prior = Enrollment), by = "Name") %>%
+    mutate(Enrollment_Change_Pct = ifelse(!is.na(Enrollment) & !is.na(Enrollment_Prior) & Enrollment_Prior > 0,
+                                           (Enrollment - Enrollment_Prior) / Enrollment_Prior, NA_real_)) %>%
+    select(Name, Enrollment_Change_Pct)
+}
+
+# trend_years_back = 5 matches the K-12 side's Population_Change_Pct
+# window -- Wyoming HE enrollment genuinely doesn't move meaningfully
+# week to week or even year to year, so this is refreshed at the same
+# "once a year is plenty" cadence as the rest of this pipeline's salary/
+# staffing data despite running weekly.
+fetch_ipeds_he_enrollment_trend <- function(trend_years_back = 5) {
+  latest <- find_latest_ipeds_enrollment_year()
+  if (is.na(latest$year)) {
+    return(data.frame(Name = character(0), Enrollment_Change_Pct = numeric(0), stringsAsFactors = FALSE))
+  }
+  current <- parse_ipeds_he_enrollment(latest$data, latest$year)
+  prior_year <- latest$year - trend_years_back
+  prior <- parse_ipeds_he_enrollment(fetch_ipeds_wy_enrollment_for_year(prior_year), prior_year)
+  compute_enrollment_change(current, prior)
+}

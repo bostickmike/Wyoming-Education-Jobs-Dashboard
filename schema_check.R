@@ -42,7 +42,8 @@ REQUIRED_SCHEMAS <- list(
                        "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
                        "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
                        "County", "Median_Household_Income", "Median_Gross_Rent",
-                       "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year", "Enrollment")
+                       "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year", "Enrollment",
+                       "Enrollment_Change_Pct")
 )
 
 REQUIRED_SCHEMAS_XLSX <- list(

@@ -334,7 +334,7 @@ mapdata2_he <- read.csv("salarymap.csv") %>%
                              "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
                              "County", "Median_Household_Income", "Median_Gross_Rent",
                              "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year",
-                             "Enrollment"),
+                             "Enrollment", "Enrollment_Change_Pct"),
                            "salarymap.csv") %>%
   mutate(Salary_Year = as.character(Salary_Year))
 
@@ -597,7 +597,14 @@ map_k12 <- mapdata2_k12 %>%
     # now -- Students_Per_Teacher is a real class-size-ish proxy a
     # prospective teacher would want, at zero additional scraping cost.
     Students_Per_Teacher = ifelse(!is.na(Teachers_Total_FTE) & Teachers_Total_FTE > 0,
-                                   Enrollment / Teachers_Total_FTE, NA_real_)
+                                   Enrollment / Teachers_Total_FTE, NA_real_),
+    # No district-level enrollment-trend equivalent on the K-12 side (CCD's
+    # own multi-year history isn't pulled here) -- HE's Enrollment_Change_
+    # Pct (institution-level, from ipeds_enrollment_scraper.R) is a
+    # different, institution-specific signal from Population_Change_Pct
+    # (county-level, already real here via the Census join above), not a
+    # duplicate of it.
+    Enrollment_Change_Pct = NA_real_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -605,7 +612,7 @@ map_k12 <- mapdata2_k12 %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher,
+         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
          Child_Poverty_Rate, SAIPE_Year)
 
@@ -672,6 +679,11 @@ map_he <- mapdata2_he %>%
     # headcount, already fetched for the vacancy-rate denominator.
     Students_Per_Teacher = ifelse(!is.na(Faculty_Count) & Faculty_Count > 0,
                                    Enrollment / Faculty_Count, NA_real_),
+    # Enrollment_Change_Pct also comes straight through from salarymap.csv
+    # (ipeds_enrollment_scraper.R's fetch_ipeds_he_enrollment_trend() -- a
+    # 5-year institution-level trend, HE's analogue of Population_Change_
+    # Pct below but at the institution rather than county level).
+    #
     # County/Median_Household_Income/Median_Gross_Rent/Mining_Employment_
     # Share/Population_Change_Pct/ACS_Year come straight from salarymap.csv
     # (mapdata2_he, joined via census_acs_scraper.R's fetch_census_county_
@@ -691,7 +703,7 @@ map_he <- mapdata2_he %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher,
+         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
          Child_Poverty_Rate, SAIPE_Year)
 
@@ -1354,6 +1366,14 @@ server <- function(input, output, session) {
                     sprintf("%.1f", Students_Per_Teacher),
                     " (", format(Enrollment, big.mark = ","), " students)</div>"),
              ""),
+      # Institution-level, HE only -- K-12's equivalent trend is county-
+      # level (Population_Change_Pct, shown further down alongside income/
+      # rent/mining share) since no district-level enrollment trend is
+      # pulled here.
+      ifelse(!is.na(Enrollment_Change_Pct),
+             paste0("<div>Enrollment trend (5yr): ", ifelse(Enrollment_Change_Pct >= 0, "+", ""),
+                    scales::percent(Enrollment_Change_Pct, accuracy = 0.1), "</div>"),
+             ""),
       ifelse(!is.na(Teacher_Base_Salary),
              paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),
                     ifelse(!is.na(Teacher_Base_Salary_Prior_Year),
@@ -1585,6 +1605,13 @@ server <- function(input, output, session) {
         # 2026-08-06 via ipeds_enrollment_scraper.R.
         Enrollment,
         `Students per Faculty` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
+        # 5-year enrollment trend, institution-level (IPEDS) -- the HE
+        # analogue of the K-12 District Summary table's county-level
+        # "County Population Trend (5yr)" column, but arguably a more
+        # direct signal here since it's the actual institution, not just
+        # its county.
+        `Enrollment Trend (5yr)` = ifelse(is.na(Enrollment_Change_Pct), NA_character_,
+                                           paste0(ifelse(Enrollment_Change_Pct >= 0, "+", ""), scales::percent(Enrollment_Change_Pct, accuracy = 0.1))),
         # County-level context (Census ACS 5-Year) -- same reasoning and
         # same source as the K-12 District Summary table's equivalent
         # columns, added 2026-08-06 once salarymap.csv gained a County

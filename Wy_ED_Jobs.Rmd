@@ -1021,6 +1021,19 @@ he_enrollment <- safe_scrape(
   expected_cols = c("Name", "Enrollment", "Enrollment_Year")
 )
 
+# 5-year enrollment trend -- HE's analogue of the Census county context
+# chunk's Population_Change_Pct, just at the institution level. A second,
+# independent safe_scrape() call (like teacher_salary/superintendent_
+# salary in the WSBA chunk above) rather than folded into
+# fetch_ipeds_he_enrollment() itself, so a trend-fetch failure (a missing
+# 5-years-back vintage) doesn't also block this week's current Enrollment
+# figure from updating.
+he_enrollment_trend <- safe_scrape(
+  "IPEDS fall enrollment 5-year trend (WY)",
+  scrape_fn = fetch_ipeds_he_enrollment_trend,
+  expected_cols = c("Name", "Enrollment_Change_Pct")
+)
+
 if (nrow(he_enrollment) > 0) {
   # No "last updated" timestamp -- same reasoning as every other salary/
   # staffing chunk. Enrollment_Year is the real freshness signal, matching
@@ -1036,6 +1049,20 @@ if (nrow(he_enrollment) > 0) {
   write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 } else {
   message("IPEDS fall enrollment fetch failed -- leaving salarymap.csv untouched this run.")
+}
+
+# Written as its own read-modify-write against the just-updated file above
+# (not folded into the same conditional block) so a trend-fetch failure
+# alone can't blank out last week's good Enrollment_Change_Pct values --
+# same "leave it alone, don't blank it out" behavior every other salary/
+# staffing chunk in this pipeline already has on a failed fetch.
+if (nrow(he_enrollment_trend) > 0) {
+  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of("Enrollment_Change_Pct")) %>%
+    left_join(he_enrollment_trend, by = "Name")
+  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
+} else {
+  message("IPEDS fall enrollment trend fetch failed -- leaving salarymap.csv's Enrollment_Change_Pct untouched this run.")
 }
 ```
 
