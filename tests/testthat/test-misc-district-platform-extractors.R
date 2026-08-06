@@ -275,3 +275,35 @@ test_that("parse_educational_networks_postings returns zero rows (not an error) 
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
+
+# ---------------------------------------------------------------------------
+# Prairie View Community School
+# ---------------------------------------------------------------------------
+
+test_that("parse_prairieview_postings scopes to headings strictly between Open Positions and Application Process (real captured headings)", {
+  # Regression: the page's OWN marketing headings ("Why Work With Us",
+  # "Mission-Driven Work", "Small, Collaborative Team", "Professional
+  # Growth", "Work-Life Balance", all before "Open Positions") and its
+  # application-process sub-steps ("Review the Job Description", "Submit
+  # Your Application", "Interview & Background Check", all after
+  # "Application Process") must NOT be mistaken for job titles -- this
+  # fixture is the real heading list captured live from the rendered page
+  # on 2026-08-06, in real page order.
+  headings_json <- read_fixture("prairieview_headings.json")
+  result <- parse_prairieview_postings(headings_json)
+
+  expect_equal(nrow(result), 4)
+  expect_equal(result$Title, c("Custodian / Maintenance", "Paraprofessional", "Substitute Teacher", "Bus Driver"))
+  expect_false(any(grepl("Why Work|Mission-Driven|Review the Job|Application Process", result$Title)))
+})
+
+test_that("parse_prairieview_postings returns zero rows (not an error) when neither section heading is present", {
+  result <- parse_prairieview_postings('["Home","About","Contact"]')
+  expect_equal(nrow(result), 0)
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+})
+
+test_that("parse_prairieview_postings returns zero rows when Open Positions has no headings before Application Process", {
+  result <- parse_prairieview_postings('["Employment","Open Positions","Application Process","Contact"]')
+  expect_equal(nrow(result), 0)
+})

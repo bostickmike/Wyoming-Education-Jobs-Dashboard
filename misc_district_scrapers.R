@@ -579,6 +579,53 @@ parse_apptegy_postings <- function(rendered_text) {
 }
 
 # ---------------------------------------------------------------------------
+# Prairie View Community School -- the second platform family that
+# genuinely needs a browser (found 2026-08-06)
+# ---------------------------------------------------------------------------
+
+# A modern client-side-rendered app (built with "Manus", per its own
+# window.__MANUS_HOST_DEV__ global -- confirmed via a plain fetch: raw HTML
+# has no posting text, only a JS bundle with no embedded job data baked in
+# at build time, unlike e.g. fetch_paylocity_jobs()'s window.pageData).
+# Real job titles are genuine <h1>-<h5> headings, unlike Apptegy's free
+# prose -- confirmed via a live DOM query, not just innerText, since
+# innerText's flattened line order didn't reliably put each title
+# immediately before its own description. Scoped to the headings strictly
+# between the page's own "Open Positions" and "Application Process"
+# section headings, so this doesn't also pick up the page's marketing
+# headings ("Why Work With Us", "Mission-Driven Work", etc.) -- same
+# section-scoping technique parse_wordpress_postings() already uses via
+# its own "Current Open Positions" heading, just needing a browser here
+# since this page never puts that text in server-rendered HTML at all.
+fetch_prairieview_postings <- function(chromote_session, url) {
+  chromote_session$Page$navigate(url)
+  chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
+  Sys.sleep(5)
+  headings_json <- chromote_session$Runtime$evaluate(
+    "JSON.stringify(Array.from(document.querySelectorAll('h1,h2,h3,h4,h5')).map(h => h.innerText.trim()).filter(t => t.length > 0))"
+  )$result$value
+  parse_prairieview_postings(headings_json)
+}
+
+parse_prairieview_postings <- function(headings_json) {
+  headings <- jsonlite::fromJSON(headings_json)
+  if (length(headings) == 0) return(empty_misc_result())
+
+  start_idx <- which(headings == "Open Positions")
+  end_idx <- which(headings == "Application Process")
+  if (length(start_idx) == 0 || length(end_idx) == 0 || end_idx[1] <= start_idx[1] + 1) {
+    return(empty_misc_result())
+  }
+
+  titles <- headings[(start_idx[1] + 1):(end_idx[1] - 1)]
+  titles <- titles[nzchar(titles)]
+  if (length(titles) == 0) return(empty_misc_result())
+
+  data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
+             Link = NA_character_, stringsAsFactors = FALSE)
+}
+
+# ---------------------------------------------------------------------------
 # Registry + orchestration
 # ---------------------------------------------------------------------------
 
@@ -606,7 +653,8 @@ misc_district_registry <- data.frame(
     "Weston County School District 1",
     "Weston County School District 7",
     "Cheyenne Classical Academy",
-    "Wyoming Classical Academy"
+    "Wyoming Classical Academy",
+    "Prairie View Community School"
   ),
   platform = c(
     "wordpress",
@@ -622,7 +670,8 @@ misc_district_registry <- data.frame(
     "edlio",
     "apptegy",
     "educational_networks",
-    "educational_networks"
+    "educational_networks",
+    "prairieview"
   ),
   url = c(
     "https://lcsd2.org/employment-opportunities/",
@@ -638,7 +687,8 @@ misc_district_registry <- data.frame(
     "https://www.wcsd1.org/apps/pages/Career_Opportunities",
     "https://www.weston7.org/o/wcsd/page/employment",
     "https://www.cheyenneclassical.org/employment",
-    "https://www.wyoclassical.org/employment"
+    "https://www.wyoclassical.org/employment",
+    "https://prairieviewschool.org/employment"
   ),
   stringsAsFactors = FALSE
 )
@@ -688,10 +738,10 @@ misc_district_coverage_tiers <- function() {
 }
 
 # Fetches one district's own-page postings via the right platform-specific
-# function. Apptegy districts require a live chromote session (passed in
-# by the caller so all 4 districts can share one browser instance instead
-# of paying startup cost per district); every other platform is plain
-# HTTP and ignores the session argument entirely.
+# function. Apptegy and Prairie View both require a live chromote session
+# (passed in by the caller so all districts needing one share a single
+# browser instance instead of paying startup cost per district); every
+# other platform is plain HTTP and ignores the session argument entirely.
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
   switch(platform,
     wordpress = fetch_wordpress_postings(url),
@@ -701,6 +751,7 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
     googlesites = fetch_googlesites_postings(url),
     educational_networks = fetch_educational_networks_postings(url),
     apptegy = fetch_apptegy_postings(chromote_session, url),
+    prairieview = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )
 }
@@ -720,10 +771,11 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
 #
 # chromote_session_factory: a zero-arg function returning a fresh
 # chromote session (e.g. \() chromote::ChromoteSession$new()), only
-# invoked (once) if the registry actually contains an Apptegy district.
-# Kept as an injected factory rather than a hard chromote::: call so this
-# function -- and everything except the 4 Apptegy districts within it --
-# stays testable without a real browser available.
+# invoked (once) if the registry actually contains a district on a
+# platform that needs a browser (currently Apptegy or Prairie View's
+# platform). Kept as an injected factory rather than a hard chromote:::
+# call so this function -- and everything except those districts within
+# it -- stays testable without a real browser available.
 fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   wsba <- safe_scrape(
     "WSBA statewide vacancies",
@@ -731,7 +783,8 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     expected_cols = c("Title", "District", "Location", "Posted_Date")
   )
 
-  apptegy_session <- if (any(misc_district_registry$platform == "apptegy") && !is.null(chromote_session_factory)) {
+  needs_browser <- any(misc_district_registry$platform %in% c("apptegy", "prairieview"))
+  browser_session <- if (needs_browser && !is.null(chromote_session_factory)) {
     chromote_session_factory()
   } else {
     NULL
@@ -746,7 +799,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
     own_postings <- safe_scrape(
       district,
-      scrape_fn = function() fetch_misc_district_postings(platform, url, apptegy_session),
+      scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session),
       expected_cols = c("Title", "Location", "Posted_Date", "Link")
     )
     own_postings <- dedupe_against_wsba(own_postings, wsba, district)
@@ -781,8 +834,8 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     }
   }
 
-  if (!is.null(apptegy_session)) {
-    tryCatch(apptegy_session$close(), error = function(e) NULL)
+  if (!is.null(browser_session)) {
+    tryCatch(browser_session$close(), error = function(e) NULL)
   }
 
   if (length(all_rows) == 0) {

@@ -13,15 +13,16 @@ mock_globals <- function(bindings) {
   }, envir = parent.frame())
 }
 
-test_that("misc_district_registry has exactly the 14 confirmed districts/schools, each with a known platform", {
-  # 12 real districts + 2 charter schools (Cheyenne Classical Academy,
-  # Wyoming Classical Academy, both on the Educational Networks CMS --
-  # found 2026-08-06) -- see the registry's own comment for why standalone
+test_that("misc_district_registry has exactly the 15 confirmed districts/schools, each with a known platform", {
+  # 12 real districts + 3 charter schools (Cheyenne Classical Academy and
+  # Wyoming Classical Academy on the Educational Networks CMS, Prairie
+  # View Community School on its own bespoke platform -- all found
+  # 2026-08-06) -- see the registry's own comment for why standalone
   # schools belong here too, not just LEAs.
-  expect_equal(nrow(misc_district_registry), 14)
+  expect_equal(nrow(misc_district_registry), 15)
   expect_true(all(misc_district_registry$platform %in%
-    c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "googlesites", "educational_networks")))
-  expect_equal(length(unique(misc_district_registry$District)), 14)
+    c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "googlesites", "educational_networks", "prairieview")))
+  expect_equal(length(unique(misc_district_registry$District)), 15)
 })
 
 test_that("misc_district_coverage_tiers labels the 12 registry districts and WSBA-only orgs distinctly", {
@@ -68,6 +69,7 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
     fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_googlesites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_apptegy_postings = function(session, url) data.frame(
       Title = c("K-6 Elementary Teacher", "SPED Paraprofessional"),  # first is a WSBA duplicate, second is new
       Location = NA_character_, Posted_Date = NA_character_, Link = NA_character_
@@ -104,6 +106,7 @@ test_that("fetch_all_misc_district_postings returns the right empty schema when 
     fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_googlesites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_apptegy_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0))
   ))
 
