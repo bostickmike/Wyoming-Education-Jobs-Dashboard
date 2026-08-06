@@ -70,6 +70,9 @@ jobs:
       - name: Sanity-check the new data before committing anything
         run: Rscript .github/scripts/sanity_check.R
 
+      - name: Verify every shipped dataset still has the columns app.R expects
+        run: Rscript .github/scripts/verify_schema.R
+
       # These three steps are diagnostic/alerting only (see drift_check.R's
       # header comment) -- a bug in any of them must never block the actual
       # data commit + Connect Cloud redeploy below, which is the part that

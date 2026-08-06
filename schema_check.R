@@ -1,0 +1,56 @@
+# Schema-drift guard for every dataset app.R reads by name.
+#
+# Every existing check in this repo (sanity_check.R, drift_check.R,
+# check_salary_drift.R's coverage/plausibility checks) validates the DATA:
+# how many rows, whether the numbers look sane. None of them check that the
+# COLUMNS a downstream pipeline chunk or app.R itself references by name
+# actually exist -- a chunk silently dropping or renaming a column (a
+# refactor typo, a classifier change that forgot to update a select()) would
+# still pass every one of those checks (they don't look at column names at
+# all) and then crash app.R with a cryptic "object 'Teachers_Total_FTE' not
+# found" for the first user who opens the dashboard after the bad deploy,
+# with nothing in the error identifying which upstream FILE is actually
+# responsible.
+#
+# check_file_schema() is the pure, testable half. .github/scripts/
+# verify_schema.R is the blocking runner (like sanity_check.R, not
+# diagnostic-only like drift_check.R) -- a missing column WILL break the
+# live app for every user, so this has to stop the commit, not just alert
+# about it after the fact.
+#
+# REQUIRED_SCHEMAS reflects the columns app.R actually reads by name from
+# each file (verified against app.R directly, not just "whatever columns
+# happen to be in the file today") -- k12_salary_history.csv is
+# deliberately absent since nothing in app.R reads it yet.
+REQUIRED_SCHEMAS <- list(
+  "combinedclean.csv" = c("title", "date_posted", "position", "location", "url", "District"),
+  "k12jobanalysis.csv" = c("title", "Archive_Date", "location", "District"),
+  "allsum.csv" = c("Broad_Category", "Archive_Date", "District", "sum"),
+  "allnow.csv" = c("Broad_Category", "Sum", "District"),
+  "k12_district_weekly_totals.csv" = c("District", "Archive_Date", "n"),
+  "salarymap2.csv" = c("District", "County", "Latitude", "Longitude", "Job_Link",
+                        "Teacher_Base_Salary", "Teacher_Base_Salary_Prior_Year", "Salary_Year",
+                        "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
+                        "Teachers_Total_FTE", "Data_Coverage"),
+  "facultydata.csv" = c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"),
+  "allsum_he.csv" = c("Category", "Archive_Date", "Institution", "Job_Type", "sum"),
+  "allnow_he.csv" = c("Category", "Job_Type", "Sum", "Institution"),
+  "he_institution_weekly_totals.csv" = c("Institution", "Archive_Date", "n"),
+  "salarymap.csv" = c("Name", "Longitude", "Latitude", "Link", "Faculty_Avg_Salary",
+                       "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
+                       "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago")
+)
+
+REQUIRED_SCHEMAS_XLSX <- list(
+  "hedata.xlsx" = c("Title", "Location", "Posted_Date", "Institution", "Link", "Archive_Date")
+)
+
+# Pure function: given one file's actual column names, which of the
+# required ones (if any) are missing? NULL if the schema is fine, so
+# callers can filter with Filter(Negate(is.null), ...) the same way other
+# check_*() functions in this repo do.
+check_file_schema <- function(file_name, actual_cols, required_cols) {
+  missing <- setdiff(required_cols, actual_cols)
+  if (length(missing) == 0) return(NULL)
+  data.frame(file = file_name, missing_column = missing, stringsAsFactors = FALSE)
+}

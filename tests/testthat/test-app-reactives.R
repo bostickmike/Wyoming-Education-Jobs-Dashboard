@@ -17,6 +17,26 @@ load_app <- function() {
   env
 }
 
+# Copies the real Wy_Ed_Jobs/ app folder into a scratch tempdir, applies
+# corrupt_fn to one file in the copy (not the real committed data), then
+# loads app.R from there -- for testing the schema guard's behavior when a
+# dataset is actually broken, without touching anything real.
+load_app_with_corrupted_file <- function(file_name, corrupt_fn) {
+  app_dir <- here::here("Wy_Ed_Jobs")
+  skip_if_not(dir.exists(app_dir), "Wy_Ed_Jobs/ not found -- skipping app tests")
+
+  scratch_dir <- withr::local_tempdir()
+  file.copy(list.files(app_dir, full.names = TRUE), scratch_dir, recursive = TRUE)
+  corrupt_fn(file.path(scratch_dir, file_name))
+
+  old_wd <- setwd(scratch_dir)
+  on.exit(setwd(old_wd), add = TRUE)
+
+  env <- new.env()
+  suppressMessages(sys.source("app.R", envir = env))
+  env
+}
+
 test_that("HE longitudinal 'Total' view is not double-counted", {
   # Regression for the HE double-counting bug: filtered_hesum() used to
   # return the entire hesum_he table (Total row + every institution's row)
@@ -219,4 +239,51 @@ test_that("Data_Coverage is carried through to combined_map_data for both K-12 a
                                           env$combined_map_data$Data_Coverage != "Full", ]
   skip_if(nrow(k12_partial) == 0, "no partial-coverage K-12 rows in committed data -- skipping")
   expect_true(all(k12_partial$Data_Coverage == "Partial (WSBA + own page)"))
+})
+
+test_that("clean committed data produces no schema-guard issues", {
+  env <- load_app()
+  expect_equal(env$DATA_LOAD_ISSUES, character(0))
+})
+
+test_that("a dataset missing an expected column degrades instead of crashing app.R, and names the source", {
+  # Regression for the "if something breaks, the dashboard should alert you
+  # which data source is broken" fix -- before validate_and_pad_schema(),
+  # this exact scenario (Teachers_Total_FTE silently dropped from
+  # salarymap2.csv) crashed app.R at load time with a bare "object
+  # 'Teachers_Total_FTE' not found", naming nothing.
+  env <- load_app_with_corrupted_file("salarymap2.csv", function(path) {
+    df <- read.csv(path)
+    df$Teachers_Total_FTE <- NULL
+    write.csv(df, path, row.names = FALSE)
+  })
+
+  expect_length(env$DATA_LOAD_ISSUES, 1)
+  expect_match(env$DATA_LOAD_ISSUES, "salarymap2\\.csv is missing expected column\\(s\\): Teachers_Total_FTE")
+  # The rest of the app still built successfully -- the missing column was
+  # padded with NA rather than left absent, so downstream code that
+  # references it by name (Vacancy_Rate's calculation) didn't hard-error.
+  expect_true(is.data.frame(env$combined_map_data))
+  expect_true(nrow(env$combined_map_data) > 0)
+})
+
+test_that("the Home-tab data-issue banner renders when there are load issues, and stays hidden when there aren't", {
+  env <- load_app()
+  shiny::testServer(env$server, {
+    # req(FALSE) inside renderUI surfaces as a shiny.silent.error when the
+    # output is accessed directly in testServer (rather than just quietly
+    # returning NULL, as it would when rendered normally in a browser) --
+    # that's the correct "nothing to show" signal here.
+    expect_error(output$data_load_issues_banner, class = "shiny.silent.error")
+  })
+
+  broken_env <- load_app_with_corrupted_file("salarymap2.csv", function(path) {
+    df <- read.csv(path)
+    df$Teachers_Total_FTE <- NULL
+    write.csv(df, path, row.names = FALSE)
+  })
+  shiny::testServer(broken_env$server, {
+    expect_no_error(output$data_load_issues_banner)
+    expect_false(is.null(output$data_load_issues_banner))
+  })
 })

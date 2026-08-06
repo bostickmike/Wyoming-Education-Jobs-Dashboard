@@ -12,9 +12,41 @@ library(readxl)
 library(shinycssloaders)
 
 #--------------------------------------------------
+# Schema guard -- if a pipeline chunk ever silently drops or renames a
+# column app.R references by name, the failure mode used to be a bare
+# "object 'Teachers_Total_FTE' not found" crash for the first user who
+# opened the dashboard after a bad deploy, with nothing identifying which
+# upstream FILE was actually responsible. The real prevention lives in
+# schema_check.R + .github/scripts/verify_schema.R at the repo root, which
+# blocks a schema-broken commit from ever reaching this deployed app in the
+# first place -- but this app folder is deployed standalone (Connect Cloud
+# only bundles Wy_Ed_Jobs/, not the repo root), so it can't source that
+# file directly. validate_and_pad_schema() is the deployed app's own last
+# line of defense: any dataset actually missing an expected column gets
+# that column backfilled with NA (so downstream mutate/select references
+# don't hard-crash the whole app for every feature) and the problem is
+# recorded in DATA_LOAD_ISSUES for a visible Home-tab banner instead of a
+# silent blank field or an opaque stack trace.
+#--------------------------------------------------
+DATA_LOAD_ISSUES <- character(0)
+
+validate_and_pad_schema <- function(df, required_cols, source_name) {
+  missing <- setdiff(required_cols, names(df))
+  if (length(missing) > 0) {
+    DATA_LOAD_ISSUES <<- c(DATA_LOAD_ISSUES, sprintf(
+      "%s is missing expected column(s): %s. That data will show blank until the pipeline is fixed.",
+      source_name, paste(missing, collapse = ", ")
+    ))
+    for (col in missing) df[[col]] <- NA
+  }
+  df
+}
+
+#--------------------------------------------------
 # Load K-12 data
 #--------------------------------------------------
 combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv") %>%
   select(District, title, position, location, date_posted, url) %>%
   mutate(District = str_squish(as.character(District))) %>%
   arrange(District, title) %>%
@@ -23,6 +55,11 @@ combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
          `Date Posted` = date_posted, Link = url)
 
 mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("District", "County", "Latitude", "Longitude", "Job_Link",
+                             "Teacher_Base_Salary", "Teacher_Base_Salary_Prior_Year", "Salary_Year",
+                             "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
+                             "Teachers_Total_FTE", "Data_Coverage"),
+                           "salarymap2.csv") %>%
   rename(Name = District)
 
 # Weekly ALL-category posting totals per district/institution (not scoped
@@ -31,8 +68,10 @@ mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
 # tables, matching that same all-category count rather than a
 # teacher/faculty-only proxy that wouldn't line up with the number shown.
 k12_district_weekly_totals <- read.csv("k12_district_weekly_totals.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("District", "Archive_Date", "n"), "k12_district_weekly_totals.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 
 # Tiny inline trend chart (no axes/legend, just the shape of a trend) for
@@ -241,6 +280,7 @@ render_mover_box <- function(mover, label) {
 }
 
 k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("Broad_Category", "Archive_Date", "District", "sum"), "allsum.csv") %>%
   mutate(District = str_squish(as.character(District)),
          Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
@@ -265,6 +305,7 @@ k12sum <- k12sum %>%
 
 
 k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("Broad_Category", "Sum", "District"), "allnow.csv") %>%
   mutate(Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
                                         "Secondary Social Studies" = "Soc. St.",
@@ -279,15 +320,21 @@ k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
 # Load Higher Ed data
 #--------------------------------------------------
 ccdata <- read_xlsx("hedata.xlsx") %>%
+  validate_and_pad_schema(c("Institution", "Title", "Location", "Posted_Date", "Link"), "hedata.xlsx") %>%
   select(Institution, Title, Location, Posted_Date, Link) %>%
   arrange(Institution, Title) %>%
   rename(`Date Posted` = Posted_Date)
 ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Link, '</a>')
 
 mapdata2_he <- read.csv("salarymap.csv") %>%
+  validate_and_pad_schema(c("Name", "Longitude", "Latitude", "Link", "Faculty_Avg_Salary",
+                             "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
+                             "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago"),
+                           "salarymap.csv") %>%
   mutate(Salary_Year = as.character(Salary_Year))
 
 hesum_he <- read.csv("allsum_he.csv") %>%
+  validate_and_pad_schema(c("Category", "Archive_Date", "Institution", "Job_Type", "sum"), "allsum_he.csv") %>%
   filter(Category != "Uncategorized")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
@@ -302,6 +349,7 @@ WINDOW_WEEKS <- 52
 hesum_he$Category<- as.factor(hesum_he$Category)
 
 henowsum_he <- read.csv("allnow_he.csv") %>%
+  validate_and_pad_schema(c("Category", "Job_Type", "Sum", "Institution"), "allnow_he.csv") %>%
   filter(Category != "Uncategorized")
 
 last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
@@ -440,6 +488,7 @@ HE_JOB_TYPE_COLORS <- c(
 # are already filtered that way upstream).
 #--------------------------------------------------
 k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("title", "Archive_Date", "location", "District"), "k12jobanalysis.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 
 k12_new_this_week <- {
@@ -456,6 +505,7 @@ k12_new_this_week <- {
 }
 
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
+  validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
   filter(Job_Type == "Instructor/Teacher/Faculty")
 
@@ -714,6 +764,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "intro",
         h1("Education Jobs in Wyoming"),
+        uiOutput("data_load_issues_banner"),
         fluidRow(
           valueBoxOutput("kpi_k12_total", width = 4),
           valueBoxOutput("kpi_he_total", width = 4),
@@ -940,6 +991,19 @@ server <- function(input, output, session) {
   # All" button on each Jobs Table tab.
   selected_district <- reactiveVal(NULL)
   selected_institution <- reactiveVal(NULL)
+
+  # DATA_LOAD_ISSUES is populated once at app startup (see
+  # validate_and_pad_schema() above) -- not reactive, but wrapped in
+  # renderUI/uiOutput anyway rather than inlined in the UI definition, so
+  # the exact same "which source is broken" list a maintainer would see in
+  # the R console is also visible to anyone using the deployed dashboard,
+  # instead of a blank field or a crash being the only symptom.
+  output$data_load_issues_banner <- renderUI({
+    req(length(DATA_LOAD_ISSUES) > 0)
+    box(width = 12, status = "danger", title = "Data issue detected",
+        tags$ul(lapply(DATA_LOAD_ISSUES, tags$li)),
+        helpText("This is a schema problem in the underlying data pipeline, not something wrong with your view of the dashboard -- the missing field(s) above need a pipeline fix."))
+  })
 
   # -------- Intro KPIs --------
   # Week-over-week delta as a subtitle line -- compute_wow_delta() works at
