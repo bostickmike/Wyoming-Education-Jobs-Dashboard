@@ -177,10 +177,22 @@ build_current_trends_table <- function(history, accent) {
 # 439->487 over 4 weeks, but per-district week-over-week deltas have a
 # median absolute value of 0 -- see find_biggest_mover()'s longer window
 # below for why that metric uses a different timeframe).
-compute_wow_delta <- function(weekly_totals) {
+#
+# Uses the same min_days_back-eligible-snapshot pattern as
+# find_biggest_mover() below rather than the literal last two distinct
+# dates -- archive cadence isn't perfectly regular (multiple same-week CI
+# test runs exist historically, see Archivek12_Data's 2026-08-03 entries),
+# and without this guard an extra same-week run would make "vs last week"
+# compare today against a snapshot from hours or a day earlier instead of a
+# real week ago, understating or fabricating the KPI tile's headline delta.
+compute_wow_delta <- function(weekly_totals, min_days_back = 5) {
   totals <- weekly_totals %>% group_by(Archive_Date) %>% summarize(n = sum(n), .groups = "drop") %>% arrange(Archive_Date)
   if (nrow(totals) < 2) return(NA_integer_)
-  tail(totals$n, 1) - tail(totals$n, 2)[1]
+  latest <- max(totals$Archive_Date)
+  candidates <- totals$Archive_Date[totals$Archive_Date <= latest - min_days_back]
+  if (length(candidates) == 0) return(NA_integer_)
+  prior <- max(candidates)
+  totals$n[totals$Archive_Date == latest] - totals$n[totals$Archive_Date == prior]
 }
 
 # "Biggest mover" needs a longer window than a week to mean anything --
@@ -595,7 +607,20 @@ MAP_MARKER_MAX_RADIUS <- 24
 map_marker_radius <- function(current_count) {
   pmin(MAP_MARKER_MAX_RADIUS, MAP_MARKER_MIN_RADIUS + 1.2 * sqrt(current_count))
 }
-vacancy_rate_domain <- range(combined_map_data$Vacancy_Rate, na.rm = TRUE)
+# If every Vacancy_Rate is NA (both the CCD and IPEDS staffing fetches
+# failing the same week, or a fresh checkout before either has ever
+# succeeded once), range(..., na.rm = TRUE) on an all-NA vector returns
+# c(Inf, -Inf) with a warning -- colorNumeric() then gets an invalid
+# domain and the map's color legend breaks for every user, not just the
+# vacancy-rate feature. Falls back to a placeholder 0-1 domain (never
+# actually used to color a marker, since every Vacancy_Rate would be NA
+# too, rendering na.color everywhere) so the legend itself stays valid.
+# Kept as its own function (rather than inlined) so the all-NA branch is
+# unit-testable without constructing a full combined_map_data.
+compute_vacancy_rate_domain <- function(vacancy_rate) {
+  if (all(is.na(vacancy_rate))) c(0, 1) else range(vacancy_rate, na.rm = TRUE)
+}
+vacancy_rate_domain <- compute_vacancy_rate_domain(combined_map_data$Vacancy_Rate)
 vacancy_rate_palette <- colorNumeric(palette = "YlOrRd", domain = vacancy_rate_domain, na.color = "#9e9e9e")
 
 #--------------------------------------------------
@@ -971,12 +996,18 @@ server <- function(input, output, session) {
   # them. Same horizontal-bar, ranked-descending pattern as the Current
   # Trends charts. combined_map_data's Vacancy_Rate is already NA below
   # VACANCY_RATE_MIN_FTE, so no separate floor check is needed here.
+  #
+  # validate(need()), not a bare req() -- req() would leave the box showing
+  # only its spinner forever if nothing qualifies (e.g. every staffing
+  # source failed this week), with no indication that's a real state and
+  # not just slow loading. Matches the friendly-message pattern the
+  # longitudinal charts already use below.
   output$k12_vacancy_leaderboard <- renderPlotly({
     df <- combined_map_data %>%
       filter(Type == "K-12 District", !is.na(Vacancy_Rate)) %>%
       arrange(desc(Vacancy_Rate)) %>%
       head(8)
-    req(nrow(df) > 0)
+    validate(need(nrow(df) > 0, "No districts currently meet the minimum-FTE threshold for a vacancy rate."))
 
     plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
                             text = paste0(Name, ": ", Vacancy_Numerator, " / ", Vacancy_Denominator,
@@ -996,7 +1027,7 @@ server <- function(input, output, session) {
       filter(Type == "Higher Ed Institution", !is.na(Vacancy_Rate)) %>%
       arrange(desc(Vacancy_Rate)) %>%
       head(8)
-    req(nrow(df) > 0)
+    validate(need(nrow(df) > 0, "No institutions currently meet the minimum-FTE threshold for a vacancy rate."))
 
     plot <- ggplot(df, aes(x = reorder(Name, Vacancy_Rate), y = Vacancy_Rate,
                             text = paste0(Name, ": ", Vacancy_Numerator, " / ", Vacancy_Denominator,

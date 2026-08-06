@@ -141,3 +141,36 @@ test_that("make_sparkline_svg handles too little data without erroring", {
   # One real value plus NAs still isn't enough to draw a line between two points.
   expect_equal(env$make_sparkline_svg(c(5, NA, NA)), "")
 })
+
+test_that("compute_wow_delta skips an extra same-week snapshot instead of comparing against it", {
+  env <- load_app()
+
+  # A real week-old snapshot, plus an extra same-week re-run 1 day before
+  # "latest" (the exact failure mode min_days_back guards against -- see
+  # Archivek12_Data's 2026-08-03 entries for a real historical example).
+  weekly <- data.frame(
+    Archive_Date = as.Date(c("2026-07-30", "2026-08-05", "2026-08-06")),
+    n = c(100, 108, 111)
+  )
+  # Without the gap guard this would return 111 - 108 = 3 (comparing
+  # against yesterday's extra run); with it, it should skip the too-recent
+  # 2026-08-05 snapshot and compare against the real week-old one.
+  expect_equal(env$compute_wow_delta(weekly), 111 - 100)
+})
+
+test_that("compute_wow_delta returns NA when no snapshot is old enough to count as 'last week'", {
+  env <- load_app()
+
+  weekly <- data.frame(
+    Archive_Date = as.Date(c("2026-08-05", "2026-08-06")),
+    n = c(50, 55)
+  )
+  expect_true(is.na(env$compute_wow_delta(weekly)))
+})
+
+test_that("compute_vacancy_rate_domain falls back to a placeholder range instead of Inf/-Inf when every rate is NA", {
+  env <- load_app()
+
+  expect_equal(env$compute_vacancy_rate_domain(c(NA_real_, NA_real_, NA_real_)), c(0, 1))
+  expect_equal(env$compute_vacancy_rate_domain(c(0.05, NA_real_, 0.20)), c(0.05, 0.20))
+})
