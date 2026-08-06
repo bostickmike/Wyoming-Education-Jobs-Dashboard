@@ -427,6 +427,68 @@ parse_googlesites_postings <- function(html_text) {
 }
 
 # ---------------------------------------------------------------------------
+# Educational Networks / "EN CMS" (Cheyenne Classical Academy, Wyoming
+# Classical Academy) -- found 2026-08-06 while investigating charter schools
+# not yet in this pipeline
+# ---------------------------------------------------------------------------
+
+# Server-rendered (a plain httr2 fetch with a real browser User-Agent
+# reproduces the full page -- confirmed by comparing against a chromote
+# render), but structurally the most free-form source in this file: each
+# posting is one hand-edited <td> in an "en-editable-table" CMS widget, with
+# no consistent internal markup between cells (even within the same
+# school's own table -- confirmed directly: some titles are wrapped in a
+# bold <span>, others aren't; the "NEW" tag sometimes shares the title's
+# own line, sometimes gets its own; "(All Positions Filled)" appears
+# inline after the title on some rows and on its own line on others).
+# Requires a real browser User-Agent for the same reason TedK12 does (see
+# fetch_tedk12_postings() in direct_api_scrapers.R) -- unrelated platforms,
+# same underlying cause (bot-detection-driven content negotiation).
+fetch_educational_networks_postings <- function(url) {
+  resp <- request(url) %>%
+    req_user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36") %>%
+    req_perform()
+  parse_educational_networks_postings(resp_body_string(resp))
+}
+
+# Rather than parse each cell's specific nested-span layout (too
+# inconsistent, per the header comment above), works off html_text2()'s
+# flattened text: strips the fixed, known action-link labels ("View Job
+# Posting"/"View Job Description"/"Apply Now" -- CMS-template button text,
+# never part of a real title) from wherever they appear in the cell, then
+# takes the first line of what's left as the title. A "(All Positions
+# Filled)" marker anywhere in the cell's full text excludes that posting
+# entirely -- it's a real posting that's no longer open, not a live one.
+# An empty title after stripping (a cell containing nothing but an "Apply
+# Now" button and no descriptive text at all -- confirmed a real case,
+# a stray/orphaned cell on Cheyenne Classical's page) is excluded too;
+# nzchar(NA_character_) is TRUE in R, so that check is written as an
+# explicit is.na() first, not folded into a single nzchar() condition.
+parse_educational_networks_postings <- function(html_text) {
+  page <- rvest::read_html(html_text)
+  cells <- rvest::html_elements(page, "table.en-editable-table td")
+  if (length(cells) == 0) return(empty_misc_result())
+
+  titles <- vapply(cells, function(cell) {
+    full_text <- trimws(rvest::html_text2(cell))
+    if (!nzchar(full_text)) return(NA_character_)
+    if (grepl("(?i)all positions filled", full_text, perl = TRUE)) return(NA_character_)
+
+    title <- sub("(?i)\\s*(view job posting|view job description|apply now).*$", "", full_text, perl = TRUE)
+    title <- trimws(strsplit(title, "\n")[[1]][1])
+    title <- trimws(sub("(?i)\\s*new\\s*$", "", title))
+    if (is.na(title) || !nzchar(title)) return(NA_character_)
+    title
+  }, character(1))
+
+  titles <- titles[!is.na(titles)]
+  if (length(titles) == 0) return(empty_misc_result())
+
+  data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
+             Link = NA_character_, stringsAsFactors = FALSE)
+}
+
+# ---------------------------------------------------------------------------
 # Apptegy (Niobrara County SD1, Platte County SD2, Sheridan County SD3,
 # Weston County SD7) -- the one platform family that genuinely needs a
 # browser
@@ -520,12 +582,15 @@ parse_apptegy_postings <- function(rendered_text) {
 # Registry + orchestration
 # ---------------------------------------------------------------------------
 
-# One row per district: canonical District name (matching the rest of the
-# K-12 pipeline's naming), which platform its own page is on, and that
-# page's URL. Everything except Apptegy's `platform` needs no extra
-# per-district config; schoolblocks_widget_title exists because a
-# different district on that same platform might title its equivalent
-# widget differently than Sublette 1's "Current Job Announcements".
+# One row per district or standalone charter school (the same broadening
+# WSBA_ONLY_ORGS already established for Snowy Range Academy -- these two
+# aren't LEAs either, just orgs with their own real, scrapable job page):
+# canonical name (matching the rest of the K-12 pipeline's naming), which
+# platform its own page is on, and that page's URL. Everything except
+# Apptegy's `platform` needs no extra per-district config;
+# schoolblocks_widget_title exists because a different district on that
+# same platform might title its equivalent widget differently than
+# Sublette 1's "Current Job Announcements".
 misc_district_registry <- data.frame(
   District = c(
     "Lincoln County School District 2",
@@ -539,7 +604,9 @@ misc_district_registry <- data.frame(
     "Uinta County School District 6",
     "Washakie County School District 2",
     "Weston County School District 1",
-    "Weston County School District 7"
+    "Weston County School District 7",
+    "Cheyenne Classical Academy",
+    "Wyoming Classical Academy"
   ),
   platform = c(
     "wordpress",
@@ -553,7 +620,9 @@ misc_district_registry <- data.frame(
     "googlesites",
     "edlio",
     "edlio",
-    "apptegy"
+    "apptegy",
+    "educational_networks",
+    "educational_networks"
   ),
   url = c(
     "https://lcsd2.org/employment-opportunities/",
@@ -567,7 +636,9 @@ misc_district_registry <- data.frame(
     "https://sites.google.com/lymanschools.org/ucsd6/home/job-openings",
     "https://www.wsh2.k12.wy.us/apps/pages/index.jsp?uREC_ID=440610&type=d&pREC_ID=1008214",
     "https://www.wcsd1.org/apps/pages/Career_Opportunities",
-    "https://www.weston7.org/o/wcsd/page/employment"
+    "https://www.weston7.org/o/wcsd/page/employment",
+    "https://www.cheyenneclassical.org/employment",
+    "https://www.wyoclassical.org/employment"
   ),
   stringsAsFactors = FALSE
 )
@@ -628,6 +699,7 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
     schoolblocks = fetch_schoolblocks_postings(url),
     edlio = fetch_edlio_postings(url),
     googlesites = fetch_googlesites_postings(url),
+    educational_networks = fetch_educational_networks_postings(url),
     apptegy = fetch_apptegy_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )

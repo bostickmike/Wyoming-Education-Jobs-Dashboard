@@ -225,3 +225,53 @@ test_that("parse_apptegy_postings returns zero rows (not an error) for rendered 
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
+
+# ---------------------------------------------------------------------------
+# Educational Networks / "EN CMS" (Cheyenne Classical Academy, Wyoming
+# Classical Academy)
+# ---------------------------------------------------------------------------
+
+test_that("parse_educational_networks_postings extracts real titles and excludes filled/empty cells (Cheyenne Classical's real page)", {
+  # Regression x3, all against this one real fixture:
+  # 1. A trailing " NEW" tag on the title's own line ("Paraeducator NEW")
+  #    must be stripped, not kept as part of the title.
+  # 2. "(All Positions Filled)" appears both on the title's own line
+  #    ("6th Grade Teacher (All Positions Filled)") and on its own
+  #    separate line two rows later ("K-7 Latin Teacher" / next line
+  #    "(All Positions Filled)") -- both must be excluded regardless of
+  #    which line the marker lands on.
+  # 3. A stray cell containing nothing but an "Apply Now" button (no
+  #    descriptive text at all) must not surface as a fake posting titled
+  #    "Apply Now" -- the real bug caught by this fixture during
+  #    development, via nzchar(NA_character_) being TRUE in R.
+  html <- read_fixture("educational_networks_cheyenne_classical.html")
+  result <- parse_educational_networks_postings(html)
+
+  expect_equal(nrow(result), 3)
+  expect_equal(sort(result$Title), sort(c("Paraeducator", "IT Support Technician", "Substitute Teacher Positions")))
+  expect_false(any(grepl("Filled", result$Title)))
+  expect_false("Apply Now" %in% result$Title)
+  expect_false(any(c("Instructional Coach", "Art Teacher", "K–7 Latin Teacher", "6th Grade Teacher",
+                      "Long-Term Substitute Teacher") %in% result$Title))
+})
+
+test_that("parse_educational_networks_postings extracts real titles from a differently-formatted table on the same platform (Wyoming Classical's real page)", {
+  # Same CMS platform as Cheyenne Classical, but its cells are formatted
+  # completely differently (no bold title span, title and the "VIEW JOB
+  # POSTING" link text sometimes concatenated with no separator at all --
+  # e.g. "Grades K-2 Classroom TeacherVIEW JOB POSTING") -- confirms the
+  # extraction isn't accidentally over-fit to one school's specific markup.
+  html <- read_fixture("educational_networks_wyoming_classical.html")
+  result <- parse_educational_networks_postings(html)
+
+  expect_equal(nrow(result), 19)
+  expect_true("Grades K-2 Classroom Teacher" %in% result$Title)
+  expect_true("Custodian" %in% result$Title)
+  expect_false(any(grepl("VIEW JOB POSTING", result$Title, ignore.case = TRUE)))
+})
+
+test_that("parse_educational_networks_postings returns zero rows (not an error) for a page with no matching table", {
+  result <- parse_educational_networks_postings("<html><body><p>Not this platform</p></body></html>")
+  expect_equal(nrow(result), 0)
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+})
