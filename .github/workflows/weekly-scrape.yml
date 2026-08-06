@@ -77,12 +77,17 @@ jobs:
       # header comment) -- a bug in any of them must never block the actual
       # data commit + Connect Cloud redeploy below, which is the part that
       # actually matters and was already working reliably before this was
-      # added.
+      # added. continue-on-error swallows a real crash in one of these into
+      # a silently-green step, though -- the "meta-check" step below is
+      # what catches THAT, so a bug in the alerting system itself doesn't
+      # go unnoticed just because it isn't allowed to block the pipeline.
       - name: Check each source for drift against its own history
+        id: check_drift
         continue-on-error: true
         run: Rscript .github/scripts/check_drift.R
 
       - name: Corroborate any flagged sources with a live chromote check
+        id: corroborate_drift
         continue-on-error: true
         env:
           CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
@@ -98,8 +103,38 @@ jobs:
       # silently clobbered by that step running afterward -- see
       # check_salary_drift.R's own append-if-exists logic.
       - name: Check salary source coverage against its known-fixed universe
+        id: check_salary_drift
         continue-on-error: true
         run: Rscript .github/scripts/check_salary_drift.R
+
+      # Closes the one real gap continue-on-error opens up: a bug that
+      # CRASHES one of the three monitoring steps above is indistinguishable
+      # from "ran fine, found nothing to report" unless something checks for
+      # it specifically -- steps.<id>.outcome is the raw pass/fail BEFORE
+      # continue-on-error suppresses it into a green conclusion, so this is
+      # the one place that distinction is still visible. Appends (not
+      # overwrites) /tmp/drift_report.md so a crash here rides along in the
+      # same Issue as any real drift findings, rather than being silent.
+      - name: Verify the monitoring steps themselves didn't crash
+        run: |
+          FAILED=""
+          [ "${{ steps.check_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_drift.R"
+          [ "${{ steps.corroborate_drift.outcome }}" = "failure" ] && FAILED="$FAILED corroborate_drift.R"
+          [ "${{ steps.check_salary_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_salary_drift.R"
+
+          if [ -z "$FAILED" ]; then
+            echo "All monitoring steps ran without crashing."
+            exit 0
+          fi
+
+          echo "Monitoring step(s) crashed:$FAILED -- see this run's logs for the actual error."
+          {
+            echo ""
+            echo "---"
+            echo ""
+            echo "**Monitoring self-check:** the following alerting step(s) crashed this run (continue-on-error kept the pipeline going, but this means their findings for this run -- if any -- may be incomplete or missing):$FAILED. See [this run's logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for the actual error."
+            echo ""
+          } >> /tmp/drift_report.md
 
       - name: File or update a GitHub Issue if anything needs a human look
         continue-on-error: true
