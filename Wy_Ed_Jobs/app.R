@@ -333,7 +333,8 @@ mapdata2_he <- read.csv("salarymap.csv") %>%
                              "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
                              "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
                              "County", "Median_Household_Income", "Median_Gross_Rent",
-                             "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year"),
+                             "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year",
+                             "Enrollment"),
                            "salarymap.csv") %>%
   mutate(Salary_Year = as.character(Salary_Year))
 
@@ -663,13 +664,14 @@ map_he <- mapdata2_he %>%
     # platform (NEOGOV/PeopleAdmin/Oracle) -- there's no "misc" tier on the
     # HE side, unlike K-12's Data_Coverage from misc_district_registry.
     Data_Coverage = "Full",
-    # IPEDS does publish fall enrollment (confirmed live via the same
-    # Urban Institute API family this project already uses for salaries --
-    # college-university/ipeds/fall-enrollment), but pulling and testing
-    # that is real follow-up work, not done yet -- these stay NA rather
-    # than silently missing from combined_map_data's schema, matching
-    # K-12's Enrollment/Students_Per_Teacher columns existing here too.
-    Enrollment = NA_real_, Students_Per_Teacher = NA_real_,
+    # Enrollment comes straight from salarymap.csv (mapdata2_he, joined via
+    # ipeds_enrollment_scraper.R's fetch_ipeds_he_enrollment() -- added
+    # 2026-08-06). Students_Per_Teacher is computed here the same way
+    # map_k12 computes it (Enrollment / Teachers_Total_FTE there), just
+    # against Faculty_Count instead -- IPEDS's own instructional-staff
+    # headcount, already fetched for the vacancy-rate denominator.
+    Students_Per_Teacher = ifelse(!is.na(Faculty_Count) & Faculty_Count > 0,
+                                   Enrollment / Faculty_Count, NA_real_),
     # County/Median_Household_Income/Median_Gross_Rent/Mining_Employment_
     # Share/Population_Change_Pct/ACS_Year come straight from salarymap.csv
     # (mapdata2_he, joined via census_acs_scraper.R's fetch_census_county_
@@ -1348,7 +1350,8 @@ server <- function(input, output, session) {
              ""),
       ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
       ifelse(!is.na(Students_Per_Teacher),
-             paste0("<div>Students per teacher: ", sprintf("%.1f", Students_Per_Teacher),
+             paste0("<div>Students per ", ifelse(Type == "K-12 District", "teacher", "faculty member"), ": ",
+                    sprintf("%.1f", Students_Per_Teacher),
                     " (", format(Enrollment, big.mark = ","), " students)</div>"),
              ""),
       ifelse(!is.na(Teacher_Base_Salary),
@@ -1577,6 +1580,11 @@ server <- function(input, output, session) {
         AvgFacultySalaryY2 = ifelse(is.na(Faculty_Avg_Salary_Y2Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y2Ago)),
         ProfessorAvgSalary = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
         `Faculty Count` = Faculty_Count,
+        # IPEDS fall enrollment (FTE) -- HE's analogue of the K-12 District
+        # Summary table's Enrollment/Students per Teacher columns, added
+        # 2026-08-06 via ipeds_enrollment_scraper.R.
+        Enrollment,
+        `Students per Faculty` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
         # County-level context (Census ACS 5-Year) -- same reasoning and
         # same source as the K-12 District Summary table's equivalent
         # columns, added 2026-08-06 once salarymap.csv gained a County

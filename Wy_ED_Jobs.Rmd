@@ -1008,6 +1008,37 @@ if (nrow(he_salary) > 0) {
 }
 ```
 
+### Higher ed institution fall enrollment (FTE), from IPEDS via the Urban Institute's Education Data Portal API
+```{r ipeds he enrollment data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("ipeds_salary_scraper.R")  # ipeds_enrollment_scraper.R reuses fetch_ipeds_paginated()/IPEDS_UNITID_MAP from here
+source("ipeds_enrollment_scraper.R")
+
+he_enrollment <- safe_scrape(
+  "IPEDS fall enrollment FTE (WY)",
+  scrape_fn = fetch_ipeds_he_enrollment,
+  expected_cols = c("Name", "Enrollment", "Enrollment_Year")
+)
+
+if (nrow(he_enrollment) > 0) {
+  # No "last updated" timestamp -- same reasoning as every other salary/
+  # staffing chunk. Enrollment_Year is the real freshness signal, matching
+  # salarymap2.csv's CCD_Year for the equivalent K-12 figure.
+  #
+  # Students_Per_Teacher is NOT stored here -- it's computed on the fly in
+  # app.R's map_he (Enrollment / Faculty_Count), the same way map_k12
+  # already computes it from Enrollment / Teachers_Total_FTE rather than
+  # storing a derived ratio in salarymap2.csv.
+  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of(c("Enrollment", "Enrollment_Year"))) %>%
+    left_join(he_enrollment, by = "Name")
+  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
+} else {
+  message("IPEDS fall enrollment fetch failed -- leaving salarymap.csv untouched this run.")
+}
+```
+
 ### Higher ed institution county-level context (income, rent, mining/energy employment share, population trend), from the Census Bureau's ACS 5-Year Estimates
 ```{r census county context data he, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)

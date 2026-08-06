@@ -291,19 +291,24 @@ test_that("the Home-tab data-issue banner renders when there are load issues, an
   })
 })
 
-test_that("Students_Per_Teacher is computed for K-12 districts and left NA (not missing) for HE institutions", {
+test_that("Students_Per_Teacher is computed for both K-12 districts (vs. Teachers_Total_FTE) and HE institutions (vs. Faculty_Count)", {
   # Regression for the enrichment-data addition: Enrollment was already
   # fetched from CCD alongside Teachers_Total_FTE but never surfaced
   # anywhere -- Students_Per_Teacher is Enrollment / Teachers_Total_FTE,
-  # zero additional scraping. HE side has no IPEDS enrollment pull yet,
-  # so both columns should exist (not be silently absent) and be NA there,
-  # not just missing from combined_map_data's schema.
+  # zero additional scraping. HE gained its own real IPEDS fall-enrollment
+  # pull 2026-08-06 (ipeds_enrollment_scraper.R), so both sides should now
+  # have real, non-NA values (not just present-but-NA columns).
   env <- load_app()
   expect_true(all(c("Enrollment", "Students_Per_Teacher") %in% names(env$combined_map_data)))
 
   he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
   skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
-  expect_true(all(is.na(he$Students_Per_Teacher)))
+  expect_true(any(!is.na(he$Students_Per_Teacher)))
+  he_values <- he$Students_Per_Teacher[!is.na(he$Students_Per_Teacher)]
+  # Same loose sanity range as the K-12 check below, not a tight real-
+  # world one -- just catching a units/sign error, not asserting what a
+  # plausible ratio looks like.
+  expect_true(all(he_values > 0 & he_values < 100))
 
   k12_with_fte <- env$combined_map_data[env$combined_map_data$Type == "K-12 District" &
                                            !is.na(env$combined_map_data$Vacancy_Denominator) &

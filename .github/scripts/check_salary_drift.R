@@ -28,7 +28,11 @@ he <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), stringsAsFactors = FALS
 # legitimately sparse at two-year colleges and isn't checked here).
 flags <- rbind(
   check_salary_coverage("K-12 teacher base salary (WSBA)", nrow(k12), expected = 48L),
-  check_salary_coverage("HE avg faculty salary (IPEDS)", sum(!is.na(he$Faculty_Avg_Salary)), expected = 9L, min_ok = 8L)
+  check_salary_coverage("HE avg faculty salary (IPEDS)", sum(!is.na(he$Faculty_Avg_Salary)), expected = 9L, min_ok = 8L),
+  # Added 2026-08-06 alongside ipeds_enrollment_scraper.R -- same known-
+  # fixed-universe reasoning as the salary check above, just for IPEDS's
+  # fall-enrollment (FTE) survey instead of its instructional-staff survey.
+  check_salary_coverage("HE fall enrollment FTE (IPEDS)", sum(!is.na(he$Enrollment)), expected = 9L, min_ok = 8L)
 )
 
 if (!is.null(flags) && nrow(flags) > 0) print(flags)
