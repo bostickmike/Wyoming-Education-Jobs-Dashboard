@@ -378,71 +378,50 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 
 # Categorize positions in the "position" column of the "combinedclean" dataset.
 # classify_k12_position() lives in k12_he_classification.R (sourced above) so
-# this week's raw jobs-table classification and the full-archive rebuild
-# below can't silently drift apart.
+# this week's raw jobs-table classification and the accumulated-history
+# append below can't silently drift apart.
 
 combinedclean <- combined %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
-  dplyr::select(title, date_posted, position, location, url, District)
+  dplyr::select(title, Archive_Date, date_posted, position, location, url, District)
 
 write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'), row.names = FALSE)
 
+#--------------------------------------------------------------------------
+# Append this week's newly classified rows onto the existing accumulated
+# history, instead of reprocessing every archived raw snapshot from
+# scratch every run -- see history_accumulator.R's header for why (100+
+# archive files and growing, O(all history) work every week on a 30-minute
+# CI budget). append_weekly_rows() is idempotent (a same-day re-run
+# replaces, not duplicates, that day's rows) and asserts the new week's
+# columns match the existing file's before writing anything.
+#
+# For disaster recovery, or to independently verify this incremental path
+# hasn't drifted, scripts/rebuild_k12_history_from_archive.R rebuilds these
+# same files from scratch from the raw archive -- that's also what
+# tests/testthat/test-history-accumulator.R checks this incremental path
+# against, using the real archived data in this repo.
+#--------------------------------------------------------------------------
+source("history_accumulator.R")
 
-#Munge the archived data and send files to Shiny
-csv_files <- list.files("Archivek12_Data", pattern = "\\.csv$", full.names = TRUE)
+this_week_k12jobs <- combinedclean %>%
+  filter(position == "Teacher") %>%
+  mutate(Category = classify_k12_subject(title),
+         Broad_Category = classify_k12_broad_category(Category)) %>%
+  dplyr::select(title, Archive_Date, position, location, url, District, Category, Broad_Category)
 
-combined_k12_data <- csv_files %>%
-  lapply(function(file) read.csv(file, colClasses = c("Archive_Date" = "character"))) %>%
-  bind_rows() %>%
-  # any_of(), not a bare -X -- archives written before row.names=FALSE was
-  # standardized on every write.csv() call carry a stray write.csv()
-  # row-index column named "X"; any_of() drops it where present without
-  # erroring on files that no longer have it.
-  select(-any_of("X"), -date_posted)
-
-combined_k12_data <- combined_k12_data %>%
-  mutate(Archive_Date = case_when(
-    grepl("/", Archive_Date) ~ as.Date(Archive_Date, format = "%m/%d/%Y"),
-    grepl("-", Archive_Date) ~ as.Date(Archive_Date, format = "%Y-%m-%d"),
-    TRUE ~ as.Date(NA)  # Corrected this line
-  ))
-
-dates <- as.data.frame(unique(combined_k12_data$Archive_Date))
-
-
-combined_k12_data$Archive_Date <- as.Date(combined_k12_data$Archive_Date)
-
-###################################################
-# Create Categories
-# position/Category/Broad_Category classification and District name
-# canonicalization all live in k12_he_classification.R (sourced in setup)
-# so this full-archive rebuild can't drift from the current-week block above.
-
-combinedclean <- combined_k12_data %>%
-  mutate(position = classify_k12_position(title)) %>%
-  dplyr::select(title, Archive_Date, position, location, url, District)
-
-combinedclean <- combinedclean %>%
-  mutate(District = canonicalize_k12_district(District))
-
-k12jobs <- combinedclean %>%
-  filter(position == "Teacher")
-
-k12jobs <- k12jobs %>%
-  mutate(Category = classify_k12_subject(title))
-
-k12jobs <- k12jobs %>%
-  mutate(Broad_Category = classify_k12_broad_category(Category))
-
+k12jobs <- append_weekly_rows(file.path("Wy_Ed_Jobs", "k12jobanalysis.csv"), this_week_k12jobs)
 write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'), row.names = FALSE)
 
 # Per-district weekly posting totals (ALL categories, not just Teacher) --
 # powers the sparkline trend shown next to each district's raw count on
 # the landing page's "Top K-12 Hiring Districts" table. Built from the
 # same combinedclean used above, just not filtered to position == "Teacher".
-k12_district_weekly_totals <- combinedclean %>%
+this_week_district_totals <- combinedclean %>%
   count(District, Archive_Date, name = "n")
+k12_district_weekly_totals <- append_weekly_rows(
+  file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), this_week_district_totals)
 write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
 
 
@@ -460,46 +439,55 @@ write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_week
 # combination for two genuinely different real postings; deduping across
 # district boundaries would silently collapse those into one and undercount
 # the Total relative to its own parts.
-k12sumdistrict <- k12jobs %>%
+#
+# Both this week's Total and per-district rows are computed from
+# this_week_k12jobs alone (one Archive_Date), not the full accumulated
+# k12jobs -- the group_by already includes Archive_Date, so each week's
+# counts are independent of every other week's, and only this week's
+# slice needs to be computed fresh.
+this_week_k12sumdistrict <- this_week_k12jobs %>%
   group_by(Broad_Category, Archive_Date, District) %>%
   summarize(
-    sum = n_distinct(paste(title, location))
-  ) %>%
-  ungroup()
+    sum = n_distinct(paste(title, location)),
+    .groups = "drop"
+  )
 
-k12sum <- k12sumdistrict %>%
+this_week_k12sum <- this_week_k12sumdistrict %>%
   group_by(Broad_Category, Archive_Date) %>%
-  summarize(sum = sum(sum)) %>%
-  ungroup() %>%
+  summarize(sum = sum(sum), .groups = "drop") %>%
   mutate(District = "Total") %>%
   select(Broad_Category, Archive_Date, District, sum)
 
-Allsum <- bind_rows(k12sum, k12sumdistrict)
+# Consistency check for the append logic itself, not the underlying data --
+# this week's Total must equal the sum of this week's own district rows
+# before either is ever written to the accumulated history. See
+# history_accumulator.R::check_total_matches_parts().
+check_total_matches_parts(this_week_k12sum, this_week_k12sumdistrict,
+                           group_cols = c("Broad_Category", "Archive_Date"))
+
+this_week_allsum <- bind_rows(this_week_k12sum, this_week_k12sumdistrict)
+Allsum <- append_weekly_rows(file.path("Wy_Ed_Jobs", "allsum.csv"), this_week_allsum)
 write.csv(Allsum, file=file.path('Wy_Ed_Jobs','allsum.csv'), row.names = FALSE)
 
-#Database for all data now by category
-k12now <- k12jobs %>%
-  filter(Archive_Date == max(Archive_Date))
-
-k12districtnowsum <- k12now %>%
-  group_by(Broad_Category, District) %>%
-  summarize(
-    Sum = n_distinct(paste(title, location))
-  ) %>%
+# Database for all data NOW by category -- always just this week's
+# snapshot, so unlike the datasets above this never needed the archive
+# rebuild in the first place; it's built straight from this week's own
+# district-level summary computed above.
+k12districtnowsum <- this_week_k12sumdistrict %>%
   ungroup() %>%
+  rename(Sum = sum) %>%
   select(Broad_Category, Sum, District)
 
 k12nowsum <- k12districtnowsum %>%
   group_by(Broad_Category) %>%
-  summarize(Sum = sum(Sum)) %>%
-  ungroup() %>%
+  summarize(Sum = sum(Sum), .groups = "drop") %>%
   mutate(District = "Total")
 
 Allnow <- bind_rows(k12nowsum, k12districtnowsum)
 
 write.csv(Allnow, file=file.path('Wy_Ed_Jobs','allnow.csv'), row.names = FALSE)
 
-list<-unique(k12jobs$District)
+list<-unique(this_week_k12jobs$District)
 write.csv(list, "list.csv", row.names = FALSE)
 ```
 
@@ -820,90 +808,94 @@ write_xlsx(hedata, path = file_name)
 write_xlsx(hedata, path = file.path("Archived_HE_Data", file_name))
 write_xlsx(hedata, path = file.path("Wy_Ed_Jobs", "hedata.xlsx"))
 
-csv_files <- list.files("Archived_HE_Data", pattern = "\\.xlsx$", full.names = TRUE)
-
-combined_HE_data <- csv_files %>%
-  lapply(read_xlsx) %>%   
-  bind_rows()
-
-combined_HE_data$Archive_Date <- as.Date(combined_HE_data$Archive_Date)
-
 # Fix historical institution-name typos before anything downstream keys off
 # Institution, so a college's history doesn't silently split across two
 # spellings (see canonicalize_he_institution() in k12_he_classification.R).
-combined_HE_data <- combined_HE_data %>%
+# Applied to this week's raw hedata AFTER the xlsx archive writes above, so
+# the archived raw snapshot keeps whatever spelling the scraper actually
+# produced that week (the historical record of what really happened),
+# while everything derived from here on uses the canonical name.
+hedata <- hedata %>%
   mutate(Institution = canonicalize_he_institution(Institution))
 
 # Job_Type/Category classification lives in k12_he_classification.R (sourced
 # in setup). Adjunct/pooled titles get their own Job_Type, separate from
 # "Instructor/Teacher/Faculty", so a standing adjunct-pool posting isn't
 # counted the same as full-time faculty hiring.
-combined_cat <- combined_HE_data %>%
+this_week_he_cat <- hedata %>%
   mutate(Job_Type = classify_he_job_type(Title))
 
-facultydata <- combined_cat %>%
+this_week_facultydata <- this_week_he_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title))
+
+#--------------------------------------------------------------------------
+# Append this week's newly classified rows onto the existing accumulated
+# history, instead of reprocessing every archived raw xlsx snapshot from
+# scratch every run. See history_accumulator.R's header (also sourced in
+# the K-12 chunk above -- sourcing again here is a cheap no-op) and
+# scripts/rebuild_he_history_from_archive.R for the disaster-recovery /
+# verification path.
+#--------------------------------------------------------------------------
+source("history_accumulator.R")
+
+facultydata <- append_weekly_rows(file.path("Wy_Ed_Jobs", "facultydata.csv"), as.data.frame(this_week_facultydata))
+# Also shipped to the repo root (gitignored/local-only) mirroring the
+# Wy_Ed_Jobs/ copy, same as before.
 write.csv(facultydata, "facultydata.csv", row.names = FALSE)
+write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
 
 # Per-institution weekly posting totals (ALL categories/job types, not
 # just full-time faculty) -- powers the sparkline trend shown next to
 # each institution's raw count on the landing page's "Top Higher Ed
-# Hiring Institutions" table. Built from combined_HE_data before the
-# Job_Type/faculty-only filter above.
-he_institution_weekly_totals <- combined_HE_data %>%
+# Hiring Institutions" table. Built from this week's hedata (already
+# canonicalized above) before the Job_Type/faculty-only filter.
+this_week_he_totals <- hedata %>%
   count(Institution, Archive_Date, name = "n")
+he_institution_weekly_totals <- append_weekly_rows(
+  file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), this_week_he_totals)
 write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
 
-# Also shipped into Wy_Ed_Jobs/ (mirroring k12jobanalysis.csv's pattern) so
-# the deployed app has row-level, multi-week HE data for the "new this
-# week" view -- the root-level copy above stays gitignored/local-only.
-# facultydata now includes both full-time-ish and Adjunct/Part-Time
-# faculty (Job_Type column distinguishes them) so the "Current Faculty
-# Trends" chart can show a full-time/part-time stacked breakdown; the
-# Longitudinal Trends and New This Week views filter back down to
-# Job_Type == "Instructor/Teacher/Faculty" in app.R to keep their existing,
-# unchanged meaning ("faculty hiring", not incl. the standing adjunct pool).
-write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
-hesum <- facultydata %>%
+# facultydata includes both full-time-ish and Adjunct/Part-Time faculty
+# (Job_Type column distinguishes them) so the "Current Faculty Trends"
+# chart can show a full-time/part-time stacked breakdown; the Longitudinal
+# Trends and New This Week views filter back down to Job_Type ==
+# "Instructor/Teacher/Faculty" in app.R to keep their existing, unchanged
+# meaning ("faculty hiring", not incl. the standing adjunct pool).
+#
+# Both this week's Total and per-institution rows are computed from
+# this_week_facultydata alone (one Archive_Date) -- same reasoning as the
+# K-12 allsum block above.
+this_week_hesum <- this_week_facultydata %>%
   group_by(Category, Archive_Date, Job_Type) %>%
-  summarize(
-    sum = n()
-  ) %>%
-  ungroup()%>%
-  mutate(Institution = "Total")%>%
+  summarize(sum = n(), .groups = "drop") %>%
+  mutate(Institution = "Total") %>%
   select(Category, Archive_Date, Institution, Job_Type, sum)
 
-hesuminst<- facultydata%>%
-  group_by(Category, Archive_Date, Institution, Job_Type)%>%
-  summarise(
-    sum = n()
-  )%>%
-  ungroup()
+this_week_hesuminst <- this_week_facultydata %>%
+  group_by(Category, Archive_Date, Institution, Job_Type) %>%
+  summarise(sum = n(), .groups = "drop")
 
-Allsum_he<-rbind(hesum, hesuminst)
+check_total_matches_parts(this_week_hesum, this_week_hesuminst,
+                           group_cols = c("Category", "Archive_Date", "Job_Type"))
+
+this_week_allsum_he <- bind_rows(this_week_hesum, this_week_hesuminst)
+Allsum_he <- append_weekly_rows(file.path("Wy_Ed_Jobs", "allsum_he.csv"), this_week_allsum_he)
 write.csv(Allsum_he, file = file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
 
-henow<- facultydata%>%
-  filter(Archive_Date == max(Archive_Date))
+# Database for all data NOW by category -- always just this week's
+# snapshot, built straight from this_week_facultydata (no history needed).
+henowsum <- this_week_hesum %>%
+  ungroup() %>%
+  rename(Sum = sum) %>%
+  select(Category, Job_Type, Sum, Institution)
 
-henowsum <- henow %>%
-  group_by(Category, Job_Type) %>%
-  summarize(
-    Sum = n()
-  ) %>%
-  ungroup()%>%
-  mutate(Institution = "Total")
-
-henowinstsum<- henow %>%
-  group_by(Category, Institution, Job_Type)%>%
-  summarize(
-    Sum = n()
-  ) %>%
-  ungroup()%>%
+henowinstsum <- this_week_facultydata %>%
+  group_by(Category, Institution, Job_Type) %>%
+  summarize(Sum = n(), .groups = "drop") %>%
   select(Category, Sum, Institution, Job_Type)
 
-Allnow_he<- rbind(henowsum, henowinstsum)
+Allnow_he <- rbind(henowsum, henowinstsum)
 
 write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
 ```

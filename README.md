@@ -39,10 +39,11 @@ A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regene
 
 ## Repository layout
 
-- `Wy_ED_Jobs.Rmd` — the single pipeline entry point: scrapes every source, classifies and cleans postings, builds every derived dataset the app reads, and ships them into `Wy_Ed_Jobs/`.
+- `Wy_ED_Jobs.Rmd` — the single pipeline entry point: scrapes every source, classifies and cleans postings, and appends this week's newly derived rows onto the accumulated datasets in `Wy_Ed_Jobs/`.
 - `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself.
 - `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — the scraping, classification, and monitoring logic the pipeline sources.
-- `Archivek12_Data/`, `Archived_HE_Data/` — one dated snapshot per week, going back to August 2024, powering every longitudinal chart.
+- `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
+- `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
 - `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.
 - `.github/workflows/weekly-scrape.yml` — the automation described above.
 
