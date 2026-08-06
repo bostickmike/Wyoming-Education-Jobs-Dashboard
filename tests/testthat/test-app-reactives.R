@@ -238,7 +238,10 @@ test_that("Data_Coverage is carried through to combined_map_data for both K-12 a
   k12_partial <- env$combined_map_data[env$combined_map_data$Type == "K-12 District" &
                                           env$combined_map_data$Data_Coverage != "Full", ]
   skip_if(nrow(k12_partial) == 0, "no partial-coverage K-12 rows in committed data -- skipping")
-  expect_true(all(k12_partial$Data_Coverage == "Partial (WSBA + own page)"))
+  # Both partial tiers are legitimate here: misc_district_registry's 12
+  # districts ("WSBA + own page"), plus WSBA_ONLY_ORGS entries like Snowy
+  # Range Academy ("WSBA only", no own-page scraper at all).
+  expect_true(all(k12_partial$Data_Coverage %in% c("Partial (WSBA + own page)", "Partial (WSBA only)")))
 })
 
 test_that("clean committed data produces no schema-guard issues", {

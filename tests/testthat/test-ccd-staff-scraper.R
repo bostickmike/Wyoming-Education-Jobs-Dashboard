@@ -54,8 +54,17 @@ test_that("parse_ccd_teacher_fte matches this project's canonical 48-district li
   df <- read.csv(test_path("fixtures", "ccd_wy_directory_2024.csv"))
   result <- parse_ccd_teacher_fte(df)
 
+  # salarymap2.csv now also carries a couple of charter schools (Snowy
+  # Range Academy, Laramie Montessori Charter School) alongside the 48 real
+  # school districts CCD's agency_type == 1 filter isolates -- charter
+  # schools aren't LEAs in CCD's own data model, so they're correctly
+  # absent from `result` and must be excluded here too, or this becomes a
+  # false "canonicalization is broken" failure rather than a real one.
+  # Every real district's name contains "School District"; the charter
+  # schools' names don't.
   k12 <- read.csv(here::here("Wy_Ed_Jobs", "salarymap2.csv"))
-  expect_setequal(result$District, k12$District)
+  real_districts <- k12$District[grepl("School District", k12$District)]
+  expect_setequal(result$District, real_districts)
 })
 
 test_that("parse_ccd_teacher_fte returns an empty, correctly-shaped frame when given no rows", {
