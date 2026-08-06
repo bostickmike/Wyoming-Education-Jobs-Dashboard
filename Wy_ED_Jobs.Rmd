@@ -1066,6 +1066,34 @@ if (nrow(he_enrollment_trend) > 0) {
 }
 ```
 
+### Higher ed institution Pell Grant recipient share, from the US Dept. of Education's Federal Student Aid office via the Urban Institute's Education Data Portal API
+```{r fsa he pell share data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("ipeds_salary_scraper.R")     # fsa_pell_scraper.R reuses fetch_ipeds_directory_paginated()/IPEDS_UNITID_MAP from here
+source("ipeds_enrollment_scraper.R") # ...and fetch_ipeds_wy_enrollment_for_year()/parse_ipeds_he_enrollment() from here
+source("fsa_pell_scraper.R")
+
+he_pell_share <- safe_scrape(
+  "FSA Pell Grant recipient share (WY)",
+  scrape_fn = fetch_ipeds_he_pell_share,
+  expected_cols = c("Name", "Pell_Recipient_Share", "Pell_Year")
+)
+
+if (nrow(he_pell_share) > 0) {
+  # No "last updated" timestamp -- same reasoning as every other salary/
+  # staffing chunk. Pell_Year is the real freshness signal (and, since FSA
+  # lags IPEDS by a couple of years, will typically read a year or more
+  # older than Enrollment_Year/Salary_Year above -- expected, not a bug).
+  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of(c("Pell_Recipient_Share", "Pell_Year"))) %>%
+    left_join(he_pell_share, by = "Name")
+  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
+} else {
+  message("FSA Pell Grant recipient share fetch failed -- leaving salarymap.csv untouched this run.")
+}
+```
+
 ### Higher ed institution county-level context (income, rent, mining/energy employment share, population trend), from the Census Bureau's ACS 5-Year Estimates
 ```{r census county context data he, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)

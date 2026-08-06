@@ -354,6 +354,24 @@ test_that("Enrollment_Change_Pct is a real institution-level 5-year trend for HE
   expect_true(all(is.na(k12$Enrollment_Change_Pct)))
 })
 
+test_that("Pell_Recipient_Share is real for HE (FSA) and NA (not missing) for K-12 (no SAIPE equivalent)", {
+  # Regression for the FSA Pell Grant addition (2026-08-06): the HE
+  # analogue of Child_Poverty_Rate (SAIPE, K-12-only) -- a different
+  # federal program since SAIPE itself has no HE equivalent.
+  env <- load_app()
+  expect_true(all(c("Pell_Recipient_Share", "Pell_Year") %in% names(env$combined_map_data)))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(any(!is.na(he$Pell_Recipient_Share)))
+  he_values <- he$Pell_Recipient_Share[!is.na(he$Pell_Recipient_Share)]
+  expect_true(all(he_values > 0 & he_values < 1))
+
+  k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
+  skip_if(nrow(k12) == 0, "no K-12 rows in committed data -- skipping")
+  expect_true(all(is.na(k12$Pell_Recipient_Share)))
+})
+
 test_that("county-level Census context is present for both K-12 and HE, and K-12 sibling districts share values", {
   # Regression for the Census ACS county-context enrichment: real per-
   # county figures on both K-12 and HE rows (HE joined via salarymap.csv's

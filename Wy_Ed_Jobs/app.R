@@ -334,9 +334,9 @@ mapdata2_he <- read.csv("salarymap.csv") %>%
                              "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
                              "County", "Median_Household_Income", "Median_Gross_Rent",
                              "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year",
-                             "Enrollment", "Enrollment_Change_Pct"),
+                             "Enrollment", "Enrollment_Change_Pct", "Pell_Recipient_Share", "Pell_Year"),
                            "salarymap.csv") %>%
-  mutate(Salary_Year = as.character(Salary_Year))
+  mutate(Salary_Year = as.character(Salary_Year), Pell_Year = as.character(Pell_Year))
 
 hesum_he <- read.csv("allsum_he.csv") %>%
   validate_and_pad_schema(c("Category", "Archive_Date", "Institution", "Job_Type", "sum"), "allsum_he.csv") %>%
@@ -604,7 +604,12 @@ map_k12 <- mapdata2_k12 %>%
     # different, institution-specific signal from Population_Change_Pct
     # (county-level, already real here via the Census join above), not a
     # duplicate of it.
-    Enrollment_Change_Pct = NA_real_
+    Enrollment_Change_Pct = NA_real_,
+    # No K-12 equivalent -- Pell Grant recipient share is an HE-specific
+    # federal program (FSA), the closest HE analogue to Child_Poverty_Rate
+    # below (which itself has no HE equivalent -- see that column's own
+    # comment on this K-12 side further down).
+    Pell_Recipient_Share = NA_real_, Pell_Year = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -612,7 +617,7 @@ map_k12 <- mapdata2_k12 %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct,
+         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct, Pell_Recipient_Share, Pell_Year,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
          Child_Poverty_Rate, SAIPE_Year)
 
@@ -695,6 +700,11 @@ map_he <- mapdata2_he %>%
     # SAIPE child poverty rate has no HE equivalent -- it's a K-12 school-
     # district-specific federal program (child poverty, not overall
     # poverty), and doesn't map onto a mostly-adult college student body.
+    # Pell_Recipient_Share/Pell_Year (fsa_pell_scraper.R, added 2026-08-06)
+    # come straight through from salarymap.csv instead -- the real HE
+    # analogue: share of students who are low-income, from a different
+    # federal program (FSA, not SAIPE) since SAIPE itself has no HE
+    # equivalent.
     Child_Poverty_Rate = NA_real_, SAIPE_Year = NA_integer_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
@@ -703,7 +713,7 @@ map_he <- mapdata2_he %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct,
+         Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct, Pell_Recipient_Share, Pell_Year,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
          Child_Poverty_Rate, SAIPE_Year)
 
@@ -1374,6 +1384,12 @@ server <- function(input, output, session) {
              paste0("<div>Enrollment trend (5yr): ", ifelse(Enrollment_Change_Pct >= 0, "+", ""),
                     scales::percent(Enrollment_Change_Pct, accuracy = 0.1), "</div>"),
              ""),
+      # HE only -- see Pell_Recipient_Share's map_he comment for why
+      # there's no K-12 equivalent.
+      ifelse(!is.na(Pell_Recipient_Share),
+             paste0("<div>Pell Grant recipients: ", scales::percent(Pell_Recipient_Share, accuracy = 0.1),
+                    " of students (", Pell_Year, ")</div>"),
+             ""),
       ifelse(!is.na(Teacher_Base_Salary),
              paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),
                     ifelse(!is.na(Teacher_Base_Salary_Prior_Year),
@@ -1612,6 +1628,14 @@ server <- function(input, output, session) {
         # its county.
         `Enrollment Trend (5yr)` = ifelse(is.na(Enrollment_Change_Pct), NA_character_,
                                            paste0(ifelse(Enrollment_Change_Pct >= 0, "+", ""), scales::percent(Enrollment_Change_Pct, accuracy = 0.1))),
+        # Share of students receiving a Pell Grant (FSA) -- the HE
+        # analogue of the K-12 District Summary table's "District Child
+        # Poverty Rate" column, a different federal program since SAIPE
+        # has no HE equivalent. Pell_Year usually trails Salary_Year/
+        # Enrollment's year (FSA's own data lags IPEDS's), so it's called
+        # out by name here rather than assumed to match.
+        `Pell Grant Recipient Share` = ifelse(is.na(Pell_Recipient_Share), NA_character_,
+                                               paste0(scales::percent(Pell_Recipient_Share, accuracy = 0.1), " (", Pell_Year, ")")),
         # County-level context (Census ACS 5-Year) -- same reasoning and
         # same source as the K-12 District Summary table's equivalent
         # columns, added 2026-08-06 once salarymap.csv gained a County
@@ -1648,6 +1672,7 @@ server <- function(input, output, session) {
     year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "Higher Ed Institution"]))
     source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "Higher Ed Institution"]))
     acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "Higher Ed Institution"]))
+    pell_year <- unique(na.omit(combined_map_data$Pell_Year[combined_map_data$Type == "Higher Ed Institution"]))
     req(length(year) > 0, length(source) > 0)
     tagList(
       helpText(
@@ -1659,6 +1684,14 @@ server <- function(input, output, session) {
           "County context (income, rent, mining/energy employment share, population trend): US Census Bureau, American Community Survey 5-Year Estimates",
           paste0("(", acs_year[1], ")"), "—",
           tags$a(href = "https://www.census.gov/data/developers/data-sets/acs-5year.html", target = "_blank", "census.gov")
+        )
+      },
+      if (length(pell_year) > 0) {
+        helpText(
+          "Pell Grant recipient share: US Dept. of Education, Federal Student Aid, via Urban Institute Education Data Portal",
+          paste0("(", pell_year[1], " data — usually a year or more older than the salary/enrollment figures above, since FSA's own data lags IPEDS's)"), "—",
+          tags$a(href = "https://educationdata.urban.org/documentation/colleges.html", target = "_blank", "educationdata.urban.org"),
+          ". Recipients ÷ that same year's IPEDS FTE enrollment — a headcount-over-FTE ratio, not two directly comparable counts."
         )
       }
     )

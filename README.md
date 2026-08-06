@@ -24,7 +24,8 @@ A live, weekly-updated dashboard of K-12 and higher education job openings acros
 | K-12 teacher staffing (for vacancy rate) | NCES Common Core of Data (CCD), via the [Urban Institute Education Data Portal](https://educationdata.urban.org) |
 | Higher ed faculty salary | IPEDS (federal Integrated Postsecondary Education Data System), via the Urban Institute Education Data Portal |
 | Higher ed faculty staffing (for vacancy rate) | IPEDS, same source |
-| Higher ed fall enrollment (FTE) | IPEDS via the Urban Institute Education Data Portal, a different survey component from the two rows above — powers a students-per-faculty figure, the HE analogue of K-12's students-per-teacher |
+| Higher ed fall enrollment (FTE) | IPEDS via the Urban Institute Education Data Portal, a different survey component from the two rows above — powers a students-per-faculty figure and a 5-year enrollment trend, the HE analogues of K-12's students-per-teacher and county population trend |
+| Higher ed Pell Grant recipient share | US Dept. of Education, Federal Student Aid, via the Urban Institute Education Data Portal — the HE analogue of K-12's district child poverty rate (a different federal program, since SAIPE has no HE equivalent) |
 | County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly — joined onto each K-12 district's own county and, since 2026-08-06, each HE institution's own county too |
 | District-level child poverty rate | US Census Bureau, [Small Area Income and Poverty Estimates (SAIPE)](https://www.census.gov/programs-surveys/saipe/data/datasets.html), via the same Census Data API — real per-district figures, not county-level like the row above |
 
