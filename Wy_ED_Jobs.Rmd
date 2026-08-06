@@ -962,10 +962,13 @@ he_salary <- safe_scrape(
                      "Faculty_Count", "Salary_Year", "Salary_Note")
 )
 
-# Static geo/link fields (Longitude, Latitude, Link) stay hand-maintained --
-# only the salary figures get refreshed from IPEDS each run.
+# Static geo/link fields (Longitude, Latitude, Link, County) stay hand-
+# maintained -- only the salary figures get refreshed from IPEDS each run.
+# County (added 2026-08-06) is the join key the census county context
+# chunk below needs; kept here in this early select() so it survives
+# untouched through this chunk the same way Longitude/Latitude/Link do.
 salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-  select(Name, Longitude, Latitude, Link)
+  select(Name, Longitude, Latitude, Link, County)
 
 if (nrow(he_salary) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA chunk above.
@@ -995,13 +998,51 @@ if (nrow(he_salary) > 0) {
   }
 
   salarymap <- salarymap %>%
-    select(Name, Longitude, Latitude, Link, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
+    select(Name, Longitude, Latitude, Link, County, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
            Faculty_Count, Salary_Year, Salary_Note, Salary_Source,
            starts_with("Faculty_Avg_Salary_Y"))
 
   write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 } else {
   message("IPEDS salary fetch failed -- leaving salarymap.csv untouched this run.")
+}
+```
+
+### Higher ed institution county-level context (income, rent, mining/energy employment share, population trend), from the Census Bureau's ACS 5-Year Estimates
+```{r census county context data he, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("census_acs_scraper.R")
+
+# Reuses the exact same fetch_census_county_context() pipeline as the K-12
+# chunk earlier in this file -- salarymap.csv's County column (hand-
+# maintained the same way Latitude/Longitude already are, added
+# 2026-08-06 -- each of Wyoming's 9 public HE institutions is a single
+# campus with one real home county) was the only thing missing to make
+# this join possible; no new scraper needed. Fetched independently rather
+# than reusing the K-12 chunk's `county_context` variable, matching every
+# other chunk in this file being self-contained and re-runnable on its
+# own -- this data changes at most once a year, so a second cheap fetch
+# costs nothing.
+county_context_he <- safe_scrape(
+  "Census ACS county context for HE institutions (WY)",
+  scrape_fn = fetch_census_county_context,
+  expected_cols = c("County", "Median_Household_Income", "Median_Gross_Rent",
+                     "Population", "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct")
+)
+
+if (nrow(county_context_he) > 0) {
+  # select(-any_of(...)) drops last run's copy first so a re-run doesn't
+  # produce .x/.y duplicates, only reached on a successful fetch -- same
+  # "never blank out last week's good values on a failed fetch" pattern
+  # the K-12 census chunk uses.
+  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
+                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct"))) %>%
+    left_join(county_context_he, by = "County")
+  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
+} else {
+  message("Census ACS county context fetch failed -- leaving salarymap.csv untouched this run.")
 }
 ```
 

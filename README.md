@@ -24,7 +24,7 @@ A live, weekly-updated dashboard of K-12 and higher education job openings acros
 | K-12 teacher staffing (for vacancy rate) | NCES Common Core of Data (CCD), via the [Urban Institute Education Data Portal](https://educationdata.urban.org) |
 | Higher ed faculty salary | IPEDS (federal Integrated Postsecondary Education Data System), via the Urban Institute Education Data Portal |
 | Higher ed faculty staffing (for vacancy rate) | IPEDS, same source |
-| County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly (K-12 only so far — joined onto each district's own county) |
+| County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly — joined onto each K-12 district's own county and, since 2026-08-06, each HE institution's own county too |
 | District-level child poverty rate | US Census Bureau, [Small Area Income and Poverty Estimates (SAIPE)](https://www.census.gov/programs-surveys/saipe/data/datasets.html), via the same Census Data API — real per-district figures, not county-level like the row above |
 
 WSBA publishes only the current year's salary settlement with no public archive, so multi-year K-12 salary history is captured and grown by this project's own weekly pipeline going forward, one snapshot per new settlement year. IPEDS is queryable by year directly, so higher-ed salary already shows multiple years back.
@@ -37,6 +37,7 @@ A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regene
 - A sanity check compares the new pull against the previous run and refuses to commit if either side dropped more than half its postings.
 - Drift detection flags any source whose posting count falls far below its own historical baseline, with a live `chromote` render of the page as corroboration before anything is filed as a GitHub Issue.
 - Salary-source coverage checks watch WSBA and IPEDS against their known, essentially-fixed universe (48 WY school districts, 9 WY public HE institutions) and flag if either starts returning noticeably less than expected.
+- The same coverage + value-plausibility checks run for the Census ACS/SAIPE sources (county income/rent/mining-share/population-trend, district child poverty) — flagging if fewer counties/districts come back than expected, or if a figure lands outside a generous sane range.
 - A dedicated check watches for IPEDS starting to report Sheridan College and Gillette College as separate institutions (they currently share one combined figure, since the two are in the process of splitting into separate colleges).
 
 ## Repository layout

@@ -331,7 +331,9 @@ ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Lin
 mapdata2_he <- read.csv("salarymap.csv") %>%
   validate_and_pad_schema(c("Name", "Longitude", "Latitude", "Link", "Faculty_Avg_Salary",
                              "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
-                             "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago"),
+                             "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
+                             "County", "Median_Household_Income", "Median_Gross_Rent",
+                             "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year"),
                            "salarymap.csv") %>%
   mutate(Salary_Year = as.character(Salary_Year))
 
@@ -657,7 +659,6 @@ map_he <- mapdata2_he %>%
     Vacancy_Denominator = Faculty_Count,
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
-    County = NA_character_,
     # Every HE institution is scraped from a genuine structured job-board
     # platform (NEOGOV/PeopleAdmin/Oracle) -- there's no "misc" tier on the
     # HE side, unlike K-12's Data_Coverage from misc_district_registry.
@@ -669,14 +670,17 @@ map_he <- mapdata2_he %>%
     # than silently missing from combined_map_data's schema, matching
     # K-12's Enrollment/Students_Per_Teacher columns existing here too.
     Enrollment = NA_real_, Students_Per_Teacher = NA_real_,
-    # Same reasoning -- each institution's real county is knowable (hand-
-    # maintainable the same way Latitude/Longitude already are) and would
-    # let HE reuse the exact same Census county-context data K-12 now has,
-    # but salarymap.csv has no County column yet to join on. Left NA
-    # rather than built here to keep this change to what's actually been
-    # tested end to end; a real follow-up, not a permanent gap.
-    Median_Household_Income = NA_real_, Median_Gross_Rent = NA_real_,
-    Mining_Employment_Share = NA_real_, Population_Change_Pct = NA_real_, ACS_Year = NA_integer_,
+    # County/Median_Household_Income/Median_Gross_Rent/Mining_Employment_
+    # Share/Population_Change_Pct/ACS_Year come straight from salarymap.csv
+    # (mapdata2_he, joined via census_acs_scraper.R's fetch_census_county_
+    # context() the same way K-12 gets it -- added 2026-08-06, each HE
+    # institution's real home county is now hand-maintained the same way
+    # Latitude/Longitude already are) -- no override needed here, unlike
+    # the K-12-only fields above.
+    #
+    # SAIPE child poverty rate has no HE equivalent -- it's a K-12 school-
+    # district-specific federal program (child poverty, not overall
+    # poverty), and doesn't map onto a mostly-adult college student body.
     Child_Poverty_Rate = NA_real_, SAIPE_Year = NA_integer_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
@@ -1564,6 +1568,7 @@ server <- function(input, output, session) {
       arrange(desc(CurrentCount)) %>%
       transmute(
         Institution = Name,
+        County,
         `Current Openings` = CurrentCount,
         `New This Week` = WeeklyNew,
         `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
@@ -1572,6 +1577,17 @@ server <- function(input, output, session) {
         AvgFacultySalaryY2 = ifelse(is.na(Faculty_Avg_Salary_Y2Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y2Ago)),
         ProfessorAvgSalary = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
         `Faculty Count` = Faculty_Count,
+        # County-level context (Census ACS 5-Year) -- same reasoning and
+        # same source as the K-12 District Summary table's equivalent
+        # columns, added 2026-08-06 once salarymap.csv gained a County
+        # column to join through. No child-poverty-rate column here (see
+        # map_he's Child_Poverty_Rate comment for why SAIPE has no HE
+        # equivalent).
+        `County Median Income` = ifelse(is.na(Median_Household_Income), NA_character_, scales::dollar(Median_Household_Income)),
+        `County Median Rent` = ifelse(is.na(Median_Gross_Rent), NA_character_, paste0(scales::dollar(Median_Gross_Rent), "/mo")),
+        `County Mining/Energy Jobs` = ifelse(is.na(Mining_Employment_Share), NA_character_, scales::percent(Mining_Employment_Share, accuracy = 0.1)),
+        `County Population Trend (5yr)` = ifelse(is.na(Population_Change_Pct), NA_character_,
+                                                   paste0(ifelse(Population_Change_Pct >= 0, "+", ""), scales::percent(Population_Change_Pct, accuracy = 0.1))),
         # Short plain-text label, not the full Salary_Note sentence --
         # that blew out Sheridan/Gillette's row height next to every other
         # institution's single-line rows (confirmed visually 2026-08-05).
@@ -1596,10 +1612,20 @@ server <- function(input, output, session) {
   output$he_summary_footnote <- renderUI({
     year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "Higher Ed Institution"]))
     source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "Higher Ed Institution"]))
+    acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "Higher Ed Institution"]))
     req(length(year) > 0, length(source) > 0)
-    helpText(
-      "Salary data:", source[1], paste0("(", year[1], " data)"), "—",
-      tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org")
+    tagList(
+      helpText(
+        "Salary data:", source[1], paste0("(", year[1], " data)"), "—",
+        tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org")
+      ),
+      if (length(acs_year) > 0) {
+        helpText(
+          "County context (income, rent, mining/energy employment share, population trend): US Census Bureau, American Community Survey 5-Year Estimates",
+          paste0("(", acs_year[1], ")"), "—",
+          tags$a(href = "https://www.census.gov/data/developers/data-sets/acs-5year.html", target = "_blank", "census.gov")
+        )
+      }
     )
   })
 

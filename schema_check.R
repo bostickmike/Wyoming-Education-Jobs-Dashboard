@@ -40,7 +40,9 @@ REQUIRED_SCHEMAS <- list(
   "he_institution_weekly_totals.csv" = c("Institution", "Archive_Date", "n"),
   "salarymap.csv" = c("Name", "Longitude", "Latitude", "Link", "Faculty_Avg_Salary",
                        "Faculty_Avg_Salary_Professor", "Faculty_Count", "Salary_Year",
-                       "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago")
+                       "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
+                       "County", "Median_Household_Income", "Median_Gross_Rent",
+                       "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year")
 )
 
 REQUIRED_SCHEMAS_XLSX <- list(

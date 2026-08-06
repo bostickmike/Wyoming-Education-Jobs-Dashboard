@@ -108,6 +108,14 @@ jobs:
         continue-on-error: true
         run: Rscript .github/scripts/check_salary_drift.R
 
+      # Same shape of check as check_salary_drift.R above, for the Census
+      # ACS/SAIPE sources (county income/rent/mining-share/population-trend,
+      # district child poverty) instead of WSBA/IPEDS salary data.
+      - name: Check Census source coverage and value plausibility
+        id: check_census_drift
+        continue-on-error: true
+        run: Rscript .github/scripts/check_census_drift.R
+
       # Closes the one real gap continue-on-error opens up: a bug that
       # CRASHES one of the three monitoring steps above is indistinguishable
       # from "ran fine, found nothing to report" unless something checks for
@@ -122,6 +130,7 @@ jobs:
           [ "${{ steps.check_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_drift.R"
           [ "${{ steps.corroborate_drift.outcome }}" = "failure" ] && FAILED="$FAILED corroborate_drift.R"
           [ "${{ steps.check_salary_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_salary_drift.R"
+          [ "${{ steps.check_census_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_census_drift.R"
 
           if [ -z "$FAILED" ]; then
             echo "All monitoring steps ran without crashing."
