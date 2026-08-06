@@ -64,6 +64,7 @@ jobs:
       - name: Run the scrape pipeline
         env:
           CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
           Rscript -e 'rmarkdown::render("Wy_ED_Jobs.Rmd")'
 

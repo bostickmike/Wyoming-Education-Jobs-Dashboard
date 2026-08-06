@@ -58,7 +58,9 @@ mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("District", "County", "Latitude", "Longitude", "Job_Link",
                              "Teacher_Base_Salary", "Teacher_Base_Salary_Prior_Year", "Salary_Year",
                              "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
-                             "Teachers_Total_FTE", "Data_Coverage"),
+                             "Teachers_Total_FTE", "Data_Coverage", "Enrollment",
+                             "Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share",
+                             "Population_Change_Pct", "ACS_Year"),
                            "salarymap2.csv") %>%
   rename(Name = District)
 
@@ -600,7 +602,8 @@ map_k12 <- mapdata2_k12 %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher)
+         Data_Coverage, Enrollment, Students_Per_Teacher,
+         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -664,7 +667,15 @@ map_he <- mapdata2_he %>%
     # that is real follow-up work, not done yet -- these stay NA rather
     # than silently missing from combined_map_data's schema, matching
     # K-12's Enrollment/Students_Per_Teacher columns existing here too.
-    Enrollment = NA_real_, Students_Per_Teacher = NA_real_
+    Enrollment = NA_real_, Students_Per_Teacher = NA_real_,
+    # Same reasoning -- each institution's real county is knowable (hand-
+    # maintainable the same way Latitude/Longitude already are) and would
+    # let HE reuse the exact same Census county-context data K-12 now has,
+    # but salarymap.csv has no County column yet to join on. Left NA
+    # rather than built here to keep this change to what's actually been
+    # tested end to end; a real follow-up, not a permanent gap.
+    Median_Household_Income = NA_real_, Median_Gross_Rent = NA_real_,
+    Mining_Employment_Share = NA_real_, Population_Change_Pct = NA_real_, ACS_Year = NA_integer_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
@@ -672,7 +683,8 @@ map_he <- mapdata2_he %>%
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
-         Data_Coverage, Enrollment, Students_Per_Teacher)
+         Data_Coverage, Enrollment, Students_Per_Teacher,
+         Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -1207,7 +1219,23 @@ server <- function(input, output, session) {
         `Students per Teacher` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
         TeacherBaseSalary = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
         TeacherBaseSalaryPrior = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
-        `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary))
+        `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary)),
+        # County-level context (Census ACS 5-Year) -- constant across
+        # sibling districts in the same county, same as any other county-
+        # level figure, and deliberately alongside the salary columns
+        # rather than off in a separate tab: "$46k pay in a county where
+        # median rent is $650/mo" is the actual comparison a prospective
+        # teacher is making, not two numbers looked up separately.
+        `County Median Income` = ifelse(is.na(Median_Household_Income), NA_character_, scales::dollar(Median_Household_Income)),
+        `County Median Rent` = ifelse(is.na(Median_Gross_Rent), NA_character_, paste0(scales::dollar(Median_Gross_Rent), "/mo")),
+        # Share of the county's civilian workforce in mining/oil & gas --
+        # Wyoming's energy-producing counties pay teachers measurably more
+        # specifically to compete with these wages for the same local
+        # labor pool, so this is the one column here that helps explain
+        # WHY salaries vary across WY districts, not just what things cost.
+        `County Mining/Energy Jobs` = ifelse(is.na(Mining_Employment_Share), NA_character_, scales::percent(Mining_Employment_Share, accuracy = 0.1)),
+        `County Population Trend (5yr)` = ifelse(is.na(Population_Change_Pct), NA_character_,
+                                                   paste0(ifelse(Population_Change_Pct >= 0, "+", ""), scales::percent(Population_Change_Pct, accuracy = 0.1)))
       )
     # Real year in the header instead of a generic "Prior Year" label --
     # cleaner than a separate Salary Year column repeating the same value
@@ -1226,10 +1254,21 @@ server <- function(input, output, session) {
   output$k12_summary_footnote <- renderUI({
     year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "K-12 District"]))
     source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "K-12 District"]))
+    acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "K-12 District"]))
     req(length(year) > 0, length(source) > 0)
-    helpText(
-      "Salary data:", source[1], paste0("(", year[1], " school year)"), "—",
-      tags$a(href = WSBA_SALARY_SOURCE_URL, target = "_blank", "wsba-wy.org")
+    tagList(
+      helpText(
+        "Salary data:", source[1], paste0("(", year[1], " school year)"), "—",
+        tags$a(href = WSBA_SALARY_SOURCE_URL, target = "_blank", "wsba-wy.org")
+      ),
+      if (length(acs_year) > 0) {
+        helpText(
+          "County context (income, rent, mining/energy employment share, population trend): US Census Bureau, American Community Survey 5-Year Estimates",
+          paste0("(", acs_year[1], ")"), "—",
+          tags$a(href = "https://www.census.gov/data/developers/data-sets/acs-5year.html", target = "_blank", "census.gov"),
+          ". County-level, not district-level -- sibling districts in the same county share the same figures."
+        )
+      }
     )
   })
 
@@ -1312,6 +1351,14 @@ server <- function(input, output, session) {
              ""),
       ifelse(!is.na(Salary_Source),
              paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source, "</div>"),
+             ""),
+      ifelse(!is.na(Median_Household_Income),
+             paste0("<div style='font-size:0.85em;color:#666;margin-top:4px;'>County: median income ",
+                    scales::dollar(Median_Household_Income), ", median rent ", scales::dollar(Median_Gross_Rent), "/mo",
+                    ifelse(!is.na(Mining_Employment_Share) & Mining_Employment_Share >= 0.05,
+                           paste0(", ", scales::percent(Mining_Employment_Share, accuracy = 1), " of jobs in mining/energy"),
+                           ""),
+                    "</div>"),
              ""),
       "<div style='margin-top:6px;'>",
       "<a href='", Link, "' target='_blank'>Careers page</a>",

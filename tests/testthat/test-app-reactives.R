@@ -320,3 +320,29 @@ test_that("Students_Per_Teacher is computed for K-12 districts and left NA (not 
   real_values <- k12_with_fte$Students_Per_Teacher[!is.na(k12_with_fte$Students_Per_Teacher)]
   expect_true(all(real_values > 0 & real_values < 100))
 })
+
+test_that("county-level Census context is present for K-12, absent (not missing) for HE, and sibling districts share values", {
+  # Regression for the Census ACS county-context enrichment: real per-
+  # county figures on K-12 rows, explicit NA placeholders (not silently
+  # absent columns) on HE rows since that side isn't built yet, and two
+  # districts in the same county (e.g. Weston County SD1 and SD7) must
+  # show the EXACT same county-level figures, not two different ones --
+  # this is a county-level join, not a district-level one.
+  env <- load_app()
+  census_cols <- c("Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share", "Population_Change_Pct")
+  expect_true(all(census_cols %in% names(env$combined_map_data)))
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
+  expect_true(all(is.na(he$Median_Household_Income)))
+
+  k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
+  skip_if(nrow(k12) == 0, "no K-12 rows in committed data -- skipping")
+  expect_true(any(!is.na(k12$Median_Household_Income)))
+
+  siblings <- k12[k12$County == k12$County[which(!is.na(k12$Median_Household_Income))[1]] &
+                    !is.na(k12$Median_Household_Income), ]
+  skip_if(nrow(siblings) < 2, "no county with 2+ mapped K-12 districts in committed data -- skipping")
+  expect_equal(length(unique(siblings$Median_Household_Income)), 1)
+  expect_equal(length(unique(siblings$Mining_Employment_Share)), 1)
+})

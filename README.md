@@ -24,6 +24,7 @@ A live, weekly-updated dashboard of K-12 and higher education job openings acros
 | K-12 teacher staffing (for vacancy rate) | NCES Common Core of Data (CCD), via the [Urban Institute Education Data Portal](https://educationdata.urban.org) |
 | Higher ed faculty salary | IPEDS (federal Integrated Postsecondary Education Data System), via the Urban Institute Education Data Portal |
 | Higher ed faculty staffing (for vacancy rate) | IPEDS, same source |
+| County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly (K-12 only so far — joined onto each district's own county) |
 
 WSBA publishes only the current year's salary settlement with no public archive, so multi-year K-12 salary history is captured and grown by this project's own weekly pipeline going forward, one snapshot per new settlement year. IPEDS is queryable by year directly, so higher-ed salary already shows multiple years back.
 
@@ -43,6 +44,7 @@ A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regene
 - `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself.
 - `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — the scraping, classification, and monitoring logic the pipeline sources.
 - `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
+- `census_acs_scraper.R` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
 - `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
 - `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.
 - `.github/workflows/weekly-scrape.yml` — the automation described above.
@@ -75,6 +77,8 @@ To re-run the full scrape/build pipeline (takes a while, hits every live source)
 ```r
 rmarkdown::render("Wy_ED_Jobs.Rmd")
 ```
+
+The Census county-context chunk needs a free `CENSUS_API_KEY` environment variable (get one at https://api.census.gov/data/key_signup.html and set it in `.Renviron` locally, or as a GitHub Actions secret for the weekly workflow) — every other chunk runs fine without it, but that one step will fail loudly and leave `salarymap2.csv`'s county-context columns untouched if it's missing.
 
 ## Testing
 

@@ -550,6 +550,47 @@ if (nrow(teacher_fte) > 0) {
 }
 ```
 
+### County-level context (income, rent, mining/energy employment share, population trend), from the Census Bureau's ACS 5-Year Estimates
+```{r census county context data, message=FALSE, warning=FALSE, echo=TRUE}
+library(dplyr)
+source("scrape_helpers.R")
+source("census_acs_scraper.R")
+
+# CENSUS_API_KEY must be set (a GitHub Actions secret in CI, .Renviron
+# locally) -- see census_acs_scraper.R's header for why this can't run
+# without one. safe_scrape() catches a missing/invalid key the same way it
+# catches any other fetch failure: logs it, leaves salarymap2.csv
+# untouched this run, rather than crashing the whole pipeline.
+county_context <- safe_scrape(
+  "Census ACS county context (WY)",
+  scrape_fn = fetch_census_county_context,
+  expected_cols = c("County", "Median_Household_Income", "Median_Gross_Rent",
+                     "Population", "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct")
+)
+
+if (nrow(county_context) > 0) {
+  # Joins on County, not District -- one County value maps to multiple
+  # sibling districts (e.g. Sheridan County SD1 and SD2 both correctly
+  # get the same Sheridan County figures), same one-to-many relationship
+  # WSBA's own District-level salary data doesn't have but this genuinely
+  # does. No "last updated" timestamp, same reasoning as the WSBA/CCD/
+  # IPEDS chunks above -- ACS_Year is the real freshness signal, and this
+  # is 5-year-smoothed data that doesn't meaningfully change week to week.
+  # select(-any_of(...)) drops last run's copy of these columns first so
+  # a re-run doesn't produce Median_Household_Income.x/.y duplicates --
+  # only reached on a successful fetch, so a failed run leaves the
+  # existing columns (and every other column) fully untouched, same as
+  # every other salary/staffing chunk in this pipeline.
+  salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
+    select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
+                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct"))) %>%
+    left_join(county_context, by = "County")
+  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+} else {
+  message("Census ACS county context fetch failed -- leaving salarymap2.csv untouched this run.")
+}
+```
+
 
 ## Time to scrape Wyoming Higher Education Data
 ### This chunk scrapes LCCC's data
