@@ -98,4 +98,4 @@ testthat::test_dir("tests/testthat")
 
 ## Contact
 
-For questions or support, contact Mark Perkins (mperki17@uwyo.edu).
+Created by Michael Bostick. Originally built by [Mark Perkins](https://github.com/MPerk78/Wyoming-Education-Jobs-Dashboard); this repository has been substantially rewritten and extended since.
