@@ -10336,47 +10336,43 @@
 "Uncategorized","2026-08-07","Northwest College","Adjunct/Part-Time Faculty",1
 "Uncategorized","2026-08-07","Sheridan College","Instructor/Teacher/Faculty",6
 "Uncategorized","2026-08-07","Western Wyoming Community College","Instructor/Teacher/Faculty",1
-"CTE - Business & Computing","2026-08-11","Total","Adjunct/Part-Time Faculty",7
-"CTE - Business & Computing","2026-08-11","Total","Instructor/Teacher/Faculty",3
-"CTE - Health Sciences","2026-08-11","Total","Adjunct/Part-Time Faculty",9
-"CTE - Health Sciences","2026-08-11","Total","Instructor/Teacher/Faculty",6
-"CTE - Trades & Engineering","2026-08-11","Total","Adjunct/Part-Time Faculty",9
-"CTE - Trades & Engineering","2026-08-11","Total","Instructor/Teacher/Faculty",14
-"Criminal Justice","2026-08-11","Total","Adjunct/Part-Time Faculty",1
-"Criminal Justice","2026-08-11","Total","Instructor/Teacher/Faculty",1
-"Culinary/Hospitality","2026-08-11","Total","Instructor/Teacher/Faculty",3
-"Education","2026-08-11","Total","Adjunct/Part-Time Faculty",2
-"Education","2026-08-11","Total","Instructor/Teacher/Faculty",2
-"History","2026-08-11","Total","Adjunct/Part-Time Faculty",3
-"History","2026-08-11","Total","Instructor/Teacher/Faculty",2
-"Human Services","2026-08-11","Total","Instructor/Teacher/Faculty",1
-"Humanities","2026-08-11","Total","Adjunct/Part-Time Faculty",4
-"Humanities","2026-08-11","Total","Instructor/Teacher/Faculty",11
-"Language","2026-08-11","Total","Adjunct/Part-Time Faculty",1
-"Language","2026-08-11","Total","Instructor/Teacher/Faculty",1
-"Library","2026-08-11","Total","Instructor/Teacher/Faculty",1
-"Math","2026-08-11","Total","Adjunct/Part-Time Faculty",4
-"Math","2026-08-11","Total","Instructor/Teacher/Faculty",2
+"CTE - Business & Computing","2026-08-11","Total","Adjunct/Part-Time Faculty",10
+"CTE - Health Sciences","2026-08-11","Total","Adjunct/Part-Time Faculty",11
+"CTE - Health Sciences","2026-08-11","Total","Instructor/Teacher/Faculty",4
+"CTE - Trades & Engineering","2026-08-11","Total","Adjunct/Part-Time Faculty",17
+"CTE - Trades & Engineering","2026-08-11","Total","Instructor/Teacher/Faculty",6
+"Criminal Justice","2026-08-11","Total","Adjunct/Part-Time Faculty",2
+"Culinary/Hospitality","2026-08-11","Total","Adjunct/Part-Time Faculty",2
+"Culinary/Hospitality","2026-08-11","Total","Instructor/Teacher/Faculty",1
+"Education","2026-08-11","Total","Adjunct/Part-Time Faculty",4
+"Education","2026-08-11","Total","Instructor/Teacher/Faculty",1
+"History","2026-08-11","Total","Adjunct/Part-Time Faculty",5
+"Human Services","2026-08-11","Total","Adjunct/Part-Time Faculty",1
+"Humanities","2026-08-11","Total","Adjunct/Part-Time Faculty",6
+"Humanities","2026-08-11","Total","Instructor/Teacher/Faculty",9
+"Language","2026-08-11","Total","Adjunct/Part-Time Faculty",2
+"Library","2026-08-11","Total","Adjunct/Part-Time Faculty",1
+"Math","2026-08-11","Total","Adjunct/Part-Time Faculty",5
+"Math","2026-08-11","Total","Instructor/Teacher/Faculty",1
 "Physical Education","2026-08-11","Total","Adjunct/Part-Time Faculty",2
-"Science","2026-08-11","Total","Adjunct/Part-Time Faculty",13
-"Science","2026-08-11","Total","Instructor/Teacher/Faculty",14
-"Social Science","2026-08-11","Total","Adjunct/Part-Time Faculty",4
-"Social Science","2026-08-11","Total","Instructor/Teacher/Faculty",4
-"The Arts","2026-08-11","Total","Adjunct/Part-Time Faculty",1
-"The Arts","2026-08-11","Total","Instructor/Teacher/Faculty",4
-"Uncategorized","2026-08-11","Total","Adjunct/Part-Time Faculty",20
-"Uncategorized","2026-08-11","Total","Instructor/Teacher/Faculty",12
+"Science","2026-08-11","Total","Adjunct/Part-Time Faculty",19
+"Science","2026-08-11","Total","Instructor/Teacher/Faculty",10
+"Social Science","2026-08-11","Total","Adjunct/Part-Time Faculty",6
+"Social Science","2026-08-11","Total","Instructor/Teacher/Faculty",2
+"The Arts","2026-08-11","Total","Adjunct/Part-Time Faculty",6
+"Uncategorized","2026-08-11","Total","Adjunct/Part-Time Faculty",42
+"Uncategorized","2026-08-11","Total","Instructor/Teacher/Faculty",4
 "CTE - Business & Computing","2026-08-11","Eastern Wyoming Community College","Adjunct/Part-Time Faculty",1
 "CTE - Business & Computing","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",1
 "CTE - Business & Computing","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",4
-"CTE - Business & Computing","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",3
+"CTE - Business & Computing","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",3
 "CTE - Business & Computing","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",1
 "CTE - Health Sciences","2026-08-11","Central Wyoming College","Instructor/Teacher/Faculty",1
 "CTE - Health Sciences","2026-08-11","Eastern Wyoming Community College","Instructor/Teacher/Faculty",1
 "CTE - Health Sciences","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",1
 "CTE - Health Sciences","2026-08-11","Gillette College","Instructor/Teacher/Faculty",1
 "CTE - Health Sciences","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",4
-"CTE - Health Sciences","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",2
+"CTE - Health Sciences","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",2
 "CTE - Health Sciences","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",4
 "CTE - Health Sciences","2026-08-11","Western Wyoming Community College","Instructor/Teacher/Faculty",1
 "CTE - Trades & Engineering","2026-08-11","Eastern Wyoming Community College","Adjunct/Part-Time Faculty",1
@@ -10385,53 +10381,56 @@
 "CTE - Trades & Engineering","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",3
 "CTE - Trades & Engineering","2026-08-11","Laramie County Community College","Instructor/Teacher/Faculty",1
 "CTE - Trades & Engineering","2026-08-11","Northwest College","Instructor/Teacher/Faculty",1
-"CTE - Trades & Engineering","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",8
+"CTE - Trades & Engineering","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",8
 "CTE - Trades & Engineering","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",4
 "CTE - Trades & Engineering","2026-08-11","Western Wyoming Community College","Instructor/Teacher/Faculty",3
 "Criminal Justice","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",1
-"Criminal Justice","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
-"Culinary/Hospitality","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",3
+"Criminal Justice","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",1
+"Culinary/Hospitality","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",2
+"Culinary/Hospitality","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
 "Education","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",2
-"Education","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
+"Education","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",1
+"Education","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",1
 "Education","2026-08-11","Western Wyoming Community College","Instructor/Teacher/Faculty",1
 "History","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",1
 "History","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",1
-"History","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",2
+"History","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",2
 "History","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",1
-"Human Services","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
+"Human Services","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",1
 "Humanities","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",4
-"Humanities","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",2
+"Humanities","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",2
 "Humanities","2026-08-11","University of Wyoming","Instructor/Teacher/Faculty",9
-"Language","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
+"Language","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",1
 "Language","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",1
-"Library","2026-08-11","Laramie County Community College","Instructor/Teacher/Faculty",1
+"Library","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",1
 "Math","2026-08-11","Eastern Wyoming Community College","Adjunct/Part-Time Faculty",1
 "Math","2026-08-11","Eastern Wyoming Community College","Instructor/Teacher/Faculty",1
 "Math","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",3
-"Math","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",1
+"Math","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",1
 "Physical Education","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",1
 "Physical Education","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",1
 "Science","2026-08-11","Casper College","Instructor/Teacher/Faculty",1
 "Science","2026-08-11","Eastern Wyoming Community College","Adjunct/Part-Time Faculty",3
-"Science","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",7
-"Science","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",4
+"Science","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",9
+"Science","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",4
 "Science","2026-08-11","University of Wyoming","Instructor/Teacher/Faculty",9
 "Science","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",3
 "Social Science","2026-08-11","Central Wyoming College","Instructor/Teacher/Faculty",1
 "Social Science","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",1
 "Social Science","2026-08-11","Gillette College","Instructor/Teacher/Faculty",1
 "Social Science","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",3
-"Social Science","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",2
-"The Arts","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",1
-"The Arts","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",4
-"Uncategorized","2026-08-11","Casper College","Instructor/Teacher/Faculty",1
+"Social Science","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",2
+"The Arts","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",2
+"The Arts","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",4
+"Uncategorized","2026-08-11","Casper College","Adjunct/Part-Time Faculty",1
 "Uncategorized","2026-08-11","Central Wyoming College","Adjunct/Part-Time Faculty",2
 "Uncategorized","2026-08-11","Central Wyoming College","Instructor/Teacher/Faculty",1
 "Uncategorized","2026-08-11","Eastern Wyoming Community College","Adjunct/Part-Time Faculty",2
 "Uncategorized","2026-08-11","Gillette College","Adjunct/Part-Time Faculty",2
 "Uncategorized","2026-08-11","Gillette College","Instructor/Teacher/Faculty",1
-"Uncategorized","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",13
-"Uncategorized","2026-08-11","Laramie County Community College","Instructor/Teacher/Faculty",2
+"Uncategorized","2026-08-11","Laramie County Community College","Adjunct/Part-Time Faculty",24
+"Uncategorized","2026-08-11","Laramie County Community College","Instructor/Teacher/Faculty",1
 "Uncategorized","2026-08-11","Northwest College","Adjunct/Part-Time Faculty",1
-"Uncategorized","2026-08-11","Sheridan College","Instructor/Teacher/Faculty",6
+"Uncategorized","2026-08-11","Sheridan College","Adjunct/Part-Time Faculty",7
+"Uncategorized","2026-08-11","Western Wyoming Community College","Adjunct/Part-Time Faculty",3
 "Uncategorized","2026-08-11","Western Wyoming Community College","Instructor/Teacher/Faculty",1

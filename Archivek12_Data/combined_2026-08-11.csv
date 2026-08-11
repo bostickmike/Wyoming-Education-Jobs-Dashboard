@@ -70,6 +70,8 @@
 "DRC Lifeguard",2026-06-01,"Student/","Douglas Recreation Center","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
 "Occupational Therapist",NA,"Student Support Services","Immediately","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
 "Certified Occupational Therapy Assistant (COTA)",NA,"Student Support Services","08/03/2026","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
+"Classified Substitutes",NA,"Substitute","08/19/2026","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
+"Certified Substitute",2026-08-11,"Substitute/","Central Administration","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
 "CCSD#1 Paraprofessionals",2026-07-09,"Support Staff/","Converse County School District #1","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
 "Crossing Guard",2026-06-23,"Transportation/","Transportation","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
 "Substitute Crossing Guard",2026-06-23,"Transportation/","Transportation","https://www.applitrack.com/ccsd1/onlineapp/default.aspx?all=1","Converse County School District 1",2026-08-11
@@ -471,7 +473,6 @@
 "Head Cross Country Coach [C144]",2026-06-17,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
 "Head Girls Soccer Coach [C122]",2026-06-09,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
 "Assistant Cross Country Coach [C142]",2026-06-09,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
-"Paraeducator General [PA07]",2026-06-04,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
 "Resource Teacher [XT21]",2026-06-02,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
 "Assistant Girls Wrestling Coach",2026-06-01,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
 "Biology/Life Science Teacher [TC26]",2026-06-01,NA,"Cheyenne, Wyoming","https://laramie1.schoolspring.com/","Laramie County School District 1",2026-08-11
@@ -631,6 +632,7 @@
 "Substitute Custodian",2025-07-21,NA,"Laramie, Wyoming","https://acsd1.schoolspring.com/","Albany Count School District 1",2026-08-11
 "Bus Aide",2025-06-05,NA,"Laramie, Wyoming","https://acsd1.schoolspring.com/","Albany Count School District 1",2026-08-11
 "Bus Driver",2025-06-05,NA,"Laramie, Wyoming","https://acsd1.schoolspring.com/","Albany Count School District 1",2026-08-11
+"Instructional Assistant - Title I Teacher Assistant",2026-08-11,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "Transportation Parts Technician",2026-08-10,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "Instructional Assistant - SPEA",2026-08-07,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "Instructional Assistant - Behavior Assistant",2026-08-06,NA,"Wright, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
@@ -675,8 +677,6 @@
 "Orientation and Mobility Specialist",2025-12-19,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "Substitute School Nurse",2025-06-11,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "SCHOOL PSYCHOLOGIST INTERN",2025-01-31,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
-"Sample Classified Position",2010-02-16,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
-"Sample Certified Position",2010-02-16,NA,"Gillette, Wyoming","https://campbell.schoolspring.com/","Campbell County Scholl District 1",2026-08-11
 "Part-time Custodian",2026-07-27,NA,"Kaycee K-12 School","https://jobs.redroverk12.com/org/jcsd1","Johnson County School District 1",2026-08-11
 "Assistant Girls Basketball Coach",2026-07-27,NA,"Buffalo High School","https://jobs.redroverk12.com/org/jcsd1","Johnson County School District 1",2026-08-11
 "Food Service Kitchen Lead",2026-06-09,NA,"Food Service","https://jobs.redroverk12.com/org/jcsd1","Johnson County School District 1",2026-08-11
@@ -782,7 +782,6 @@
 "Custodial-Kitchensubs",NA,NA,NA,"https://www.wcsd1.org/apps/pages/Career_Opportunities","Weston County School District 1",2026-08-11
 "Sub Bus Drivers",NA,NA,NA,"https://www.wcsd1.org/apps/pages/Career_Opportunities","Weston County School District 1",2026-08-11
 "Paraeducator",NA,NA,NA,"https://www.cheyenneclassical.org/employment","Cheyenne Classical Academy",2026-08-11
-"IT Support Technician",NA,NA,NA,"https://www.cheyenneclassical.org/employment","Cheyenne Classical Academy",2026-08-11
 "Substitute Teacher Positions",NA,NA,NA,"https://www.cheyenneclassical.org/employment","Cheyenne Classical Academy",2026-08-11
 "Grades K-2 Classroom Teacher",NA,NA,NA,"https://www.wyoclassical.org/employment","Wyoming Classical Academy",2026-08-11
 "Grades 3-6 Classroom Teacher",NA,NA,NA,"https://www.wyoclassical.org/employment","Wyoming Classical Academy",2026-08-11
