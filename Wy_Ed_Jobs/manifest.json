@@ -3834,40 +3834,40 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "332d682610c027729af6d988e6cddb48"
+      "checksum": "4bc946661e310c7cdf510acff673e874"
     },
     "allnow.csv": {
-      "checksum": "6058d6cfcc44acda8119a04019b8edd3"
+      "checksum": "a4d2731a2ad59d2fce7b617b7b5cd654"
     },
     "allsum_he.csv": {
-      "checksum": "df593035dbb627cc42c2abe7b6ae2b5f"
+      "checksum": "5b1e635165801da95384217cede3e7d8"
     },
     "allsum.csv": {
-      "checksum": "95aa3ff3ec6261f86ff449c4e78b93d1"
+      "checksum": "05174a37fb6842208781182d4943e598"
     },
     "app.R": {
       "checksum": "e6b06c4d64c9e8fd2b487155e435b0cc"
     },
     "combinedclean.csv": {
-      "checksum": "d884707a833eb8bfe88dc3fec987543c"
+      "checksum": "994fd50674fde49b2c2d14e78d1ad3b9"
     },
     "facultydata.csv": {
-      "checksum": "64e48a0c310abd0dd0e050f00ade8f01"
+      "checksum": "606b7a513c522623675d82d6402843f1"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "c987f910e9c29ef00b8504263fdacc6e"
+      "checksum": "9253d32366908fc7fb54eecaf872b128"
     },
     "hedata.xlsx": {
-      "checksum": "adbc1d056c03f0a4a14b3a2cb14ffa42"
+      "checksum": "f7d6c96389ddb248a51793c44181d512"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "5343d2a9de15810faa283a29f175fb16"
+      "checksum": "06ba1af28f40b53d094d96885e8aed5d"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "3f4e84d118e7680c42942e642597a2b1"
+      "checksum": "dde471cba6c6c0fefbf8408a6860c7b5"
     },
     "salarymap.csv": {
       "checksum": "65b66bea354fd9ba0fcee79e1cf908fc"
