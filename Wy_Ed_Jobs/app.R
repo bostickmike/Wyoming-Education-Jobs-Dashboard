@@ -935,9 +935,10 @@ ui <- dashboardPage(
       tabItem(
         tabName = "k12_trends",
 
-        radioButtons("k12_detail_level_trends", "Category detail:",
-                     choices = c("Simple" = "agg", "Detailed" = "detail"),
-                     selected = "agg", inline = TRUE),
+        radioButtons("k12_detail_level_trends", "View:",
+                     choices = c("Detailed subjects" = "detail",
+                                 "Broad rollup (includes Core Academic)" = "agg"),
+                     selected = "detail", inline = TRUE),
 
         # Row for category + district
         fluidRow(
@@ -946,8 +947,8 @@ ui <- dashboardPage(
             pickerInput(
               "broad_category",
               "Choose Teacher Category:",
-              choices  = sort(unique(k12sum_agg$Broad_Category)),
-              selected = sort(unique(k12sum_agg$Broad_Category)),
+              choices  = sort(unique(k12sum$Broad_Category)),
+              selected = sort(unique(k12sum$Broad_Category)),
               multiple = TRUE,
               width = "100%",
               options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
@@ -984,9 +985,10 @@ ui <- dashboardPage(
       tabItem(
         tabName = "k12_current",
 
-        radioButtons("k12_detail_level_current", "Category detail:",
-                     choices = c("Simple" = "agg", "Detailed" = "detail"),
-                     selected = "agg", inline = TRUE),
+        radioButtons("k12_detail_level_current", "View:",
+                     choices = c("Detailed subjects" = "detail",
+                                 "Broad rollup (includes Core Academic)" = "agg"),
+                     selected = "detail", inline = TRUE),
 
         selectInput(
           "district_current",
@@ -1023,9 +1025,9 @@ ui <- dashboardPage(
       tabItem(
         tabName = "he_trends",
 
-        radioButtons("he_detail_level_trends", "Category detail:",
-                     choices = c("Simple" = "agg", "Detailed" = "detail"),
-                     selected = "agg", inline = TRUE),
+        radioButtons("he_detail_level_trends", "View:",
+                     choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                     selected = "detail", inline = TRUE),
 
         # Row for Category + Institution
         fluidRow(
@@ -1034,8 +1036,8 @@ ui <- dashboardPage(
             pickerInput(
               "he_category",
               "Choose Category:",
-              choices  = sort(unique(hesum_he_agg$Category)),
-              selected = sort(unique(hesum_he_agg$Category)),
+              choices  = sort(unique(hesum_he$Category)),
+              selected = sort(unique(hesum_he$Category)),
               multiple = TRUE,
               width = "100%",
               options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
@@ -1078,9 +1080,9 @@ ui <- dashboardPage(
         withSpinner(plotlyOutput("he_longitudinal_plot"))),
       
       tabItem(tabName = "he_current",
-              radioButtons("he_detail_level_current", "Category detail:",
-                           choices = c("Simple" = "agg", "Detailed" = "detail"),
-                           selected = "agg", inline = TRUE),
+              radioButtons("he_detail_level_current", "View:",
+                           choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                           selected = "detail", inline = TRUE),
               radioButtons("he_current_appointment", "Appointment:",
                            choices = c(
                              "All faculty postings" = "all",
