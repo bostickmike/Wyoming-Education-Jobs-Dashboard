@@ -756,10 +756,12 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
   )
 }
 
-# Full pipeline: WSBA (statewide, one fetch) + each district's own page
-# (deduplicated against that district's WSBA entries by normalized title)
-# combined into one data frame matching the schema the rest of the K-12
-# pipeline expects (title/date_posted/position/location/url/District).
+# Full pipeline: every WSBA statewide row (one fetch) + each miscellaneous
+# district's own page (deduplicated against that district's WSBA entries by
+# normalized title), combined into one data frame matching the schema the
+# rest of the K-12 pipeline expects (title/date_posted/position/location/
+# url/District). The final K-12 merge removes exact WSBA/direct-platform
+# overlaps, after direct feeds' dates have been standardized.
 # `position` is intentionally NA throughout -- combinedclean's
 # classify_k12_position() recomputes it from `title` for every source
 # regardless, same as every other K-12 loader.
@@ -776,6 +778,8 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
 # platform). Kept as an injected factory rather than a hard chromote:::
 # call so this function -- and everything except those districts within
 # it -- stays testable without a real browser available.
+WSBA_VACANCIES_URL <- "https://www.wsba-wy.org/vacancies"
+
 fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   wsba <- safe_scrape(
     "WSBA statewide vacancies",
@@ -807,7 +811,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     wsba_here <- wsba[wsba$District == district, , drop = FALSE]
 
     combined <- dplyr::bind_rows(
-      if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = NA_character_, stringsAsFactors = FALSE),
+      if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = WSBA_VACANCIES_URL, stringsAsFactors = FALSE),
       if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = url, stringsAsFactors = FALSE)
     )
 
@@ -828,10 +832,27 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
       all_rows[[length(all_rows) + 1]] <- data.frame(
         title = wsba_here$Title, date_posted = wsba_here$Posted_Date,
         position = NA_character_, location = NA_character_,
-        url = NA_character_, District = org,
+        url = WSBA_VACANCIES_URL, District = org,
         stringsAsFactors = FALSE
       )
     }
+  }
+
+  # The direct-platform districts were previously excluded here even though
+  # WSBA had already provided their rows. Keep those statewide listings;
+  # exact overlaps are removed against the direct feeds in Wy_ED_Jobs.Rmd.
+  represented_orgs <- c(misc_district_registry$District, WSBA_ONLY_ORGS)
+  wsba_remaining <- wsba[!wsba$District %in% represented_orgs, , drop = FALSE]
+  if (nrow(wsba_remaining) > 0) {
+    all_rows[[length(all_rows) + 1]] <- data.frame(
+      title = wsba_remaining$Title,
+      date_posted = wsba_remaining$Posted_Date,
+      position = NA_character_,
+      location = wsba_remaining$Location,
+      url = WSBA_VACANCIES_URL,
+      District = wsba_remaining$District,
+      stringsAsFactors = FALSE
+    )
   }
 
   if (!is.null(browser_session)) {
@@ -846,4 +867,40 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
   result <- dplyr::bind_rows(all_rows)
   result[, c("title", "date_posted", "position", "location", "url", "District")]
+}
+
+# WSBA identifies a posting by district, title, and usually a posted date.
+# Remove a WSBA row only when all three fields exactly match a direct-board
+# row. Missing dates deliberately prevent a match: retaining an uncertain
+# duplicate is safer than dropping a real vacancy.
+remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings) {
+  required <- c("title", "date_posted", "District")
+  missing_wsba <- setdiff(required, names(wsba_postings))
+  missing_direct <- setdiff(required, names(direct_postings))
+  if (length(missing_wsba) > 0 || length(missing_direct) > 0) {
+    stop(
+      "Cannot deduplicate WSBA postings; missing columns: ",
+      paste(c(missing_wsba, missing_direct), collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  posting_key <- function(postings) {
+    title <- normalize_title(postings$title)
+    district <- normalize_title(canonicalize_wsba_district(postings$District))
+    posted_date <- trimws(as.character(postings$date_posted))
+    valid <- !is.na(title) & nzchar(title) &
+      !is.na(district) & nzchar(district) &
+      !is.na(postings$date_posted) & nzchar(posted_date)
+    key <- rep(NA_character_, nrow(postings))
+    key[valid] <- paste(district[valid], title[valid], posted_date[valid], sep = "\r")
+    key
+  }
+
+  direct_keys <- posting_key(direct_postings)
+  direct_keys <- direct_keys[!is.na(direct_keys)]
+  if (nrow(wsba_postings) == 0 || length(direct_keys) == 0) return(wsba_postings)
+
+  wsba_keys <- posting_key(wsba_postings)
+  wsba_postings[is.na(wsba_keys) | !wsba_keys %in% direct_keys, , drop = FALSE]
 }

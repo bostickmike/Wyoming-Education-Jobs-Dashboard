@@ -321,8 +321,12 @@ springer <- springer %>%
 other <- other %>%
   mutate(date_posted = standardize_date(date_posted))
 
+direct <- dplyr::bind_rows(frontline, ted, springer)
+is_wsba <- !is.na(other$url) & other$url == WSBA_VACANCIES_URL
+wsba_rows <- remove_wsba_direct_duplicates(other[is_wsba, , drop = FALSE], direct)
+other_rows <- other[!is_wsba, , drop = FALSE]
 
-combined<- rbind(frontline, ted, springer, other)%>%
+combined <- dplyr::bind_rows(direct, other_rows, wsba_rows) %>%
   mutate(Archive_Date = Sys.Date())
 
 # fix_title_encoding() (k12_he_classification.R) is applied here, once, at
@@ -1131,6 +1135,5 @@ if (nrow(county_context_he) > 0) {
   message("Census ACS county context fetch failed -- leaving salarymap.csv untouched this run.")
 }
 ```
-
 
 

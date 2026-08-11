@@ -56,11 +56,11 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
   # NULL session, standing in for what a real browser fetch would return.
   mock_globals(list(
     fetch_wsba_vacancies = function(url) data.frame(
-      Title = c("K-6 Elementary Teacher", "K-12 Band Teacher", "Middle School Math Teacher"),
+      Title = c("K-6 Elementary Teacher", "K-12 Band Teacher", "Middle School Math Teacher", "Science Teacher"),
       District = c("Niobrara County School District 1", "Niobrara County School District 1",
-                   "Snowy Range Academy"),
-      Location = c("Lusk", "Lusk", "Laramie"),
-      Posted_Date = c("2026-05-18", "2026-05-11", "2026-05-20"),
+                   "Snowy Range Academy", "Laramie County School District 1"),
+      Location = c("Lusk", "Lusk", "Laramie", "Cheyenne"),
+      Posted_Date = c("2026-05-18", "2026-05-11", "2026-05-20", "2026-05-22"),
       stringsAsFactors = FALSE
     ),
     fetch_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
@@ -93,6 +93,13 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
   expect_equal(nrow(snowy_range), 1)
   expect_equal(snowy_range$title, "Middle School Math Teacher")
 
+  # WSBA rows for direct-platform districts must also be forwarded; the
+  # final K-12 merge reconciles true overlaps with those direct feeds.
+  laramie_1 <- result[result$District == "Laramie County School District 1", ]
+  expect_equal(nrow(laramie_1), 1)
+  expect_equal(laramie_1$title, "Science Teacher")
+  expect_equal(laramie_1$url, WSBA_VACANCIES_URL)
+
   expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District"))
   expect_true(all(is.na(result$position)))
 })
@@ -113,4 +120,29 @@ test_that("fetch_all_misc_district_postings returns the right empty schema when 
   result <- fetch_all_misc_district_postings()
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District"))
+})
+
+test_that("remove_wsba_direct_duplicates removes only exact district/title/date overlaps", {
+  wsba <- data.frame(
+    title = c("Science Teacher", "Science Teacher", "Science Teacher", "Math Teacher"),
+    date_posted = as.Date(c("2026-05-22", "2026-05-23", "2026-05-22", NA)),
+    District = c(
+      "Laramie County School District No. 1",
+      "Laramie County School District 1",
+      "Natrona School District 1",
+      "Laramie County School District 1"
+    ),
+    stringsAsFactors = FALSE
+  )
+  direct <- data.frame(
+    title = "SCIENCE teacher",
+    date_posted = as.Date("2026-05-22"),
+    District = "Laramie County School District 1",
+    stringsAsFactors = FALSE
+  )
+
+  result <- remove_wsba_direct_duplicates(wsba, direct)
+
+  expect_equal(nrow(result), 3)
+  expect_equal(as.character(result$date_posted), c("2026-05-23", "2026-05-22", NA))
 })

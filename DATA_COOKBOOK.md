@@ -20,6 +20,8 @@ One row per open K-12 posting, all position types (not just teachers). Powers th
 | `url` | text | The district's job-board URL (one per district, not a per-posting deep link). |
 | `District` | text | Canonical district name (`canonicalize_k12_district()` applied). |
 
+**Sources combined into this file**: AppliTrack, TedK12, SchoolSpring, RedRoverK12, direct district pages for the miscellaneous-district registry, and the complete WSBA statewide vacancies feed. WSBA rows are removed only when their normalized district, title, and posted date exactly match a direct-platform row; this preserves WSBA listings that direct boards do not expose.
+
 ### `k12jobanalysis.csv` — full history, Teacher postings only
 
 Row-level history of every Teacher-position posting ever scraped, one row per posting per week it appeared. Powers "New This Week," the teacher-vacancy-rate numerator, and every teacher trend chart. **Accumulated** — grows by one week's rows per run.
