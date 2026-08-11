@@ -37,7 +37,16 @@ suppressMessages({
 
 # Oracle's API caps at 25 results per page regardless of the requested
 # `limit`, so this pages via `offset` until it has everything
-# `TotalJobsCount` says exists.
+# `TotalJobsCount` says exists. Oracle applies both pagination parameters
+# only when they are finder arguments; top-level query arguments are ignored.
+uw_finder <- function(site_number, limit, offset) {
+  paste0(
+    "findReqs;siteNumber=", site_number,
+    ",limit=", as.integer(limit),
+    ",offset=", as.integer(offset)
+  )
+}
+
 fetch_uw_postings <- function(
     api_base = "https://eeik.fa.us2.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions",
     ui_base = "https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1",
@@ -46,26 +55,50 @@ fetch_uw_postings <- function(
   all_pages <- list()
   offset <- 0
   total <- NA_integer_
+  seen_page_signatures <- character(0)
+  seen_ids <- character(0)
 
   repeat {
     resp <- request(api_base) %>%
       req_url_query(
         onlyData = "true",
         expand = "requisitionList",
-        limit = page_size,
-        offset = offset,
-        finder = paste0("findReqs;siteNumber=", site_number)
+        finder = uw_finder(site_number, page_size, offset)
       ) %>%
       req_perform()
 
     parsed <- resp_body_json(resp, simplifyVector = TRUE)
     item <- parsed$items[1, ]
-    total <- item$TotalJobsCount
+    total <- as.integer(item$TotalJobsCount)
 
     reqs <- item$requisitionList[[1]]
     if (is.null(reqs) || nrow(reqs) == 0) break
 
+    ids <- as.character(reqs$Id)
+    if (anyNA(ids) || any(!nzchar(ids))) {
+      stop("UW Oracle pagination returned a requisition without an Id at offset ", offset)
+    }
+
+    page_signature <- paste(ids, collapse = "\r")
+    if (page_signature %in% seen_page_signatures) {
+      stop(
+        "UW Oracle pagination repeated a page at offset ", offset,
+        "; refusing to emit duplicate postings."
+      )
+    }
+
+    repeated_ids <- intersect(ids, seen_ids)
+    if (length(repeated_ids) > 0) {
+      stop(
+        "UW Oracle pagination repeated requisition Id(s) at offset ", offset, ": ",
+        paste(repeated_ids, collapse = ", "),
+        "; refusing to emit duplicate postings."
+      )
+    }
+
     all_pages[[length(all_pages) + 1]] <- reqs
+    seen_page_signatures <- c(seen_page_signatures, page_signature)
+    seen_ids <- c(seen_ids, ids)
     offset <- offset + nrow(reqs)
     if (offset >= total) break
   }
@@ -235,7 +268,8 @@ fetch_schoolspring_postings <- function(domain_name, page_size = 50) {
 
   if (length(all_pages) == 0) {
     return(data.frame(Title = character(0), Location = character(0),
-                       Posted_Date = character(0), Link = character(0),
+                       Posted_Date = character(0), Posting_ID = character(0),
+                       Link = character(0),
                        stringsAsFactors = FALSE))
   }
   dplyr::bind_rows(all_pages)
@@ -247,7 +281,8 @@ parse_schoolspring_json <- function(json_text, domain_name) {
 
   if (is.null(jobs) || length(jobs) == 0 || nrow(jobs) == 0) {
     return(data.frame(Title = character(0), Location = character(0),
-                       Posted_Date = character(0), Link = character(0),
+                       Posted_Date = character(0), Posting_ID = character(0),
+                       Link = character(0),
                        stringsAsFactors = FALSE))
   }
 
@@ -257,7 +292,8 @@ parse_schoolspring_json <- function(json_text, domain_name) {
                       ignore.case = TRUE), , drop = FALSE]
   if (nrow(jobs) == 0) {
     return(data.frame(Title = character(0), Location = character(0),
-                      Posted_Date = character(0), Link = character(0),
+                      Posted_Date = character(0), Posting_ID = character(0),
+                      Link = character(0),
                       stringsAsFactors = FALSE))
   }
 
@@ -265,6 +301,7 @@ parse_schoolspring_json <- function(json_text, domain_name) {
     Title = jobs$title,
     Location = jobs$location,
     Posted_Date = substr(jobs$displayDate, 1, 10),
+    Posting_ID = paste0("schoolspring:", tolower(domain_name), ":", jobs$jobId),
     Link = paste0("https://", domain_name, "/jobs/", jobs$jobId),
     stringsAsFactors = FALSE
   )
@@ -311,7 +348,8 @@ parse_redrover_json <- function(json_text, org_slug) {
 
   if (is.null(results) || length(results) == 0 || nrow(results) == 0) {
     return(data.frame(Title = character(0), Location = character(0),
-                       Posted_Date = character(0), Link = character(0),
+                       Posted_Date = character(0), Posting_ID = character(0),
+                       Link = character(0),
                        stringsAsFactors = FALSE))
   }
 
@@ -319,7 +357,32 @@ parse_redrover_json <- function(json_text, org_slug) {
     Title = results$name,
     Location = results$location$name,
     Posted_Date = substr(results$activePublicOnDateUtc, 1, 10),
+    Posting_ID = paste0("redrover:", tolower(org_slug), ":", results$id),
     Link = paste0("https://jobs.redroverk12.com/org/", org_slug, "/opening/", results$id),
+    stringsAsFactors = FALSE
+  )
+}
+
+# Converts platforms that expose a source posting ID into the K-12 pipeline's
+# lowercase schema without discarding their deep links or identities.
+normalize_id_backed_k12_postings <- function(postings) {
+  required <- c("Title", "Location", "Posted_Date", "Posting_ID", "Link", "District")
+  missing <- setdiff(required, names(postings))
+  if (length(missing) > 0) {
+    stop(
+      "normalize_id_backed_k12_postings(): missing required column(s): ",
+      paste(missing, collapse = ", ")
+    )
+  }
+
+  data.frame(
+    title = as.character(postings$Title),
+    date_posted = as.character(postings$Posted_Date),
+    position = NA_character_,
+    location = as.character(postings$Location),
+    url = as.character(postings$Link),
+    posting_id = as.character(postings$Posting_ID),
+    District = as.character(postings$District),
     stringsAsFactors = FALSE
   )
 }

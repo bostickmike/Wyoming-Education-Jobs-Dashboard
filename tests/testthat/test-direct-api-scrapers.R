@@ -18,6 +18,90 @@ test_that("parse_uw_requisitions maps Oracle fields to the standard schema", {
   ))
 })
 
+test_that("fetch_uw_postings paginates through finder arguments and preserves each requisition", {
+  page1 <- '{"items":[{"TotalJobsCount":3,"requisitionList":[
+    {"Id":"101","Title":"First Job","PostedDate":"2026-08-01","PrimaryLocation":"Laramie"},
+    {"Id":"102","Title":"Second Job","PostedDate":"2026-08-02","PrimaryLocation":"Laramie"}
+  ]}]}'
+  page2 <- '{"items":[{"TotalJobsCount":3,"requisitionList":[
+    {"Id":"103","Title":"Third Job","PostedDate":"2026-08-03","PrimaryLocation":"Laramie"}
+  ]}]}'
+  response_bodies <- list(page1, page2)
+  request_urls <- character(0)
+  request_number <- 0L
+
+  mock <- function(req) {
+    request_urls <<- c(request_urls, req$url)
+    request_number <<- request_number + 1L
+    httr2::response(
+      200,
+      headers = list("Content-Type" = "application/json"),
+      body = charToRaw(response_bodies[[request_number]])
+    )
+  }
+
+  result <- httr2::with_mocked_responses(
+    mock,
+    fetch_uw_postings(
+      api_base = "https://example.test/requisitions",
+      ui_base = "https://example.test/jobs",
+      page_size = 2
+    )
+  )
+
+  expect_equal(nrow(result), 3)
+  expect_equal(result$Link, c(
+    "https://example.test/jobs/job/101",
+    "https://example.test/jobs/job/102",
+    "https://example.test/jobs/job/103"
+  ))
+  expect_equal(length(request_urls), 2)
+  finder_values <- utils::URLdecode(sub("^.*[?&]finder=([^&]+).*$", "\\1", request_urls))
+  expect_equal(finder_values, c(
+    "findReqs;siteNumber=CX_1,limit=2,offset=0",
+    "findReqs;siteNumber=CX_1,limit=2,offset=2"
+  ))
+  expect_false(any(grepl("[?&](limit|offset)=", request_urls)))
+})
+
+test_that("fetch_uw_postings rejects repeated Oracle pages and overlapping IDs", {
+  first_page <- '{"items":[{"TotalJobsCount":4,"requisitionList":[
+    {"Id":"101","Title":"First Job","PostedDate":"2026-08-01","PrimaryLocation":"Laramie"},
+    {"Id":"102","Title":"Second Job","PostedDate":"2026-08-02","PrimaryLocation":"Laramie"}
+  ]}]}'
+  overlapping_page <- '{"items":[{"TotalJobsCount":4,"requisitionList":[
+    {"Id":"102","Title":"Second Job","PostedDate":"2026-08-02","PrimaryLocation":"Laramie"},
+    {"Id":"103","Title":"Third Job","PostedDate":"2026-08-03","PrimaryLocation":"Laramie"}
+  ]}]}'
+
+  response_sequence_mock <- function(bodies) {
+    request_number <- 0L
+    function(req) {
+      request_number <<- request_number + 1L
+      httr2::response(
+        200,
+        headers = list("Content-Type" = "application/json"),
+        body = charToRaw(bodies[[request_number]])
+      )
+    }
+  }
+
+  expect_error(
+    httr2::with_mocked_responses(
+      response_sequence_mock(list(first_page, first_page)),
+      fetch_uw_postings(api_base = "https://example.test/requisitions", page_size = 2)
+    ),
+    "repeated a page"
+  )
+  expect_error(
+    httr2::with_mocked_responses(
+      response_sequence_mock(list(first_page, overlapping_page)),
+      fetch_uw_postings(api_base = "https://example.test/requisitions", page_size = 2)
+    ),
+    "repeated requisition Id"
+  )
+})
+
 test_that("parse_peopleadmin_atom extracts title, date, and link from a fixture feed", {
   fixture <- '<?xml version="1.0" encoding="UTF-8"?>
 <feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom">
@@ -136,17 +220,51 @@ test_that("parse_schoolspring_json extracts fields and builds a per-job link", {
   expect_equal(nrow(result), 2)
   expect_equal(result$Title, c("High Needs SPED Paraprofessional", "Substitute Custodian"))
   expect_equal(result$Posted_Date, c("2026-07-22", "2026-06-05"))
+  expect_equal(result$Posting_ID, c(
+    "schoolspring:crook1.schoolspring.com:5846934",
+    "schoolspring:crook1.schoolspring.com:5324570"
+  ))
   expect_equal(result$Link, c(
     "https://crook1.schoolspring.com/jobs/5846934",
     "https://crook1.schoolspring.com/jobs/5324570"
   ))
 })
 
+test_that("SchoolSpring source IDs and deep links survive K-12 aggregation", {
+  postings <- data.frame(
+    Title = c("Elementary Teacher", "Elementary Teacher"),
+    Location = c("Sundance, Wyoming", "Sundance, Wyoming"),
+    Posted_Date = c("2026-07-22", "2026-07-22"),
+    Posting_ID = c(
+      "schoolspring:crook1.schoolspring.com:5846934",
+      "schoolspring:crook1.schoolspring.com:5324570"
+    ),
+    Link = c(
+      "https://crook1.schoolspring.com/jobs/5846934",
+      "https://crook1.schoolspring.com/jobs/5324570"
+    ),
+    District = "Crook County School District 1",
+    stringsAsFactors = FALSE
+  )
+
+  normalized <- normalize_id_backed_k12_postings(postings)
+  expect_equal(normalized$url, postings$Link)
+  expect_equal(normalized$posting_id, postings$Posting_ID)
+
+  counted <- normalized %>%
+    dplyr::mutate(
+      Archive_Date = as.Date("2026-08-11"),
+      Broad_Category = "Elementary"
+    )
+  summary <- summarize_k12_posting_counts(counted)
+  expect_equal(summary$sum, 2)
+})
+
 test_that("parse_schoolspring_json returns zero rows (not an error) for an empty jobsList", {
   fixture <- '{"success":true,"message":"","validationErrors":[],"value":{"page":1,"size":25,"jobsList":[]}}'
   result <- parse_schoolspring_json(fixture, "crook1.schoolspring.com")
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Posting_ID", "Link"))
 })
 
 test_that("parse_redrover_json extracts fields and builds a per-job link from the GraphQL response shape", {
@@ -161,6 +279,7 @@ test_that("parse_redrover_json extracts fields and builds a per-job link from th
   expect_equal(result$Title, c("Part-time Custodian", "Assistant Girls Basketball Coach"))
   expect_equal(result$Location, c("Kaycee K-12 School", "Buffalo High School"))
   expect_equal(result$Posted_Date, c("2026-07-27", "2026-07-27"))
+  expect_equal(result$Posting_ID, c("redrover:jcsd1:190114", "redrover:jcsd1:191643"))
   expect_equal(result$Link, c(
     "https://jobs.redroverk12.com/org/jcsd1/opening/190114",
     "https://jobs.redroverk12.com/org/jcsd1/opening/191643"
@@ -171,7 +290,7 @@ test_that("parse_redrover_json returns zero rows (not an error) for an empty res
   fixture <- '{"data":{"jobSeekerSiteUnauthenticated":{"jobPostingSearch":{"results":[]}}}}'
   result <- parse_redrover_json(fixture, "jcsd1")
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Posting_ID", "Link"))
 })
 
 test_that("parse_applitrack_output un-escapes document.write literals and preserves the original position/position2 splitting logic", {

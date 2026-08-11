@@ -115,3 +115,21 @@ check_total_matches_parts <- function(total_rows, part_rows, group_cols, value_c
   }
   invisible(TRUE)
 }
+
+# Counts K-12 teacher postings by their durable source identity, rather than
+# title/location text. Two vacancies can share that display text while having
+# distinct source posting IDs (notably on SchoolSpring).
+summarize_k12_posting_counts <- function(k12jobs) {
+  required <- c("Broad_Category", "Archive_Date", "District", "posting_id")
+  missing <- setdiff(required, names(k12jobs))
+  if (length(missing) > 0) {
+    stop(
+      "summarize_k12_posting_counts(): missing required column(s): ",
+      paste(missing, collapse = ", ")
+    )
+  }
+
+  k12jobs %>%
+    dplyr::group_by(Broad_Category, Archive_Date, District) %>%
+    dplyr::summarize(sum = dplyr::n_distinct(posting_id), .groups = "drop")
+}

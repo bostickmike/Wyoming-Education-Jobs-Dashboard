@@ -217,6 +217,45 @@ canonicalize_k12_district <- function(district) {
   )
 }
 
+# Returns a snapshot-stable K-12 posting identity. Platforms that expose a
+# durable source ID supply it directly; older sources fall back to a
+# normalized fingerprint of the information they do expose. Archive_Date is
+# deliberately excluded so one posting keeps the same identity across weeks.
+build_k12_posting_id <- function(source_id = NULL, title, location,
+                                 date_posted, url, district) {
+  values <- list(source_id, title, location, date_posted, url, district)
+  lengths <- lengths(values)
+  n <- max(c(lengths, 1L))
+
+  recycle <- function(x) {
+    if (length(x) == 0) return(rep(NA_character_, n))
+    if (length(x) == 1) return(rep(as.character(x), n))
+    if (length(x) != n) {
+      stop("build_k12_posting_id(): inputs must have length 1 or a shared length")
+    }
+    as.character(x)
+  }
+
+  normalize <- function(x) {
+    x <- trimws(tolower(fix_title_encoding(recycle(x))))
+    x[is.na(x) | !nzchar(x)] <- "<missing>"
+    x
+  }
+
+  source_id <- normalize(source_id)
+  fallback <- paste(
+    "fallback",
+    normalize(district),
+    normalize(url),
+    normalize(title),
+    normalize(location),
+    normalize(date_posted),
+    sep = "\r"
+  )
+
+  ifelse(source_id == "<missing>", fallback, source_id)
+}
+
 # ---------------------------------------------------------------------------
 # Higher Ed
 # ---------------------------------------------------------------------------

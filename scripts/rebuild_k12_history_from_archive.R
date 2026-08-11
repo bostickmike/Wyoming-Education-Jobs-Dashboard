@@ -29,7 +29,11 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
   combined_k12_data <- csv_files %>%
     lapply(function(file) read.csv(file, colClasses = c("Archive_Date" = "character"))) %>%
     bind_rows() %>%
-    select(-any_of("X"), -any_of("date_posted"))
+    select(-any_of("X"))
+
+  if (!"posting_id" %in% names(combined_k12_data)) {
+    combined_k12_data$posting_id <- NA_character_
+  }
 
   combined_k12_data <- combined_k12_data %>%
     mutate(Archive_Date = case_when(
@@ -39,22 +43,32 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
     ))
 
   combinedclean <- combined_k12_data %>%
-    mutate(position = classify_k12_position(title),
-           District = canonicalize_k12_district(District)) %>%
-    dplyr::select(title, Archive_Date, position, location, url, District)
+    mutate(
+      District = canonicalize_k12_district(District),
+      position = classify_k12_position(title),
+      posting_id = build_k12_posting_id(
+        source_id = posting_id,
+        title = title,
+        location = location,
+        date_posted = date_posted,
+        url = url,
+        district = District
+      )
+    ) %>%
+    dplyr::select(title, Archive_Date, position, location, url, posting_id, District)
 
   k12jobs <- combinedclean %>%
     filter(position == "Teacher") %>%
     mutate(Category = classify_k12_subject(title),
            Broad_Category = classify_k12_broad_category(Category)) %>%
-    select(title, Archive_Date, position, location, url, District, Category, Broad_Category)
+    select(title, Archive_Date, position, location, url, posting_id, District, Category, Broad_Category)
 
   k12_district_weekly_totals <- combinedclean %>%
     count(District, Archive_Date, name = "n")
 
   k12sumdistrict <- k12jobs %>%
     group_by(Broad_Category, Archive_Date, District) %>%
-    summarize(sum = n_distinct(paste(title, location)), .groups = "drop")
+    summarize(sum = n_distinct(posting_id), .groups = "drop")
 
   k12sum <- k12sumdistrict %>%
     group_by(Broad_Category, Archive_Date) %>%

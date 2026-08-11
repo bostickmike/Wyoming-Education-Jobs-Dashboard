@@ -165,7 +165,7 @@ for (i in 1:nrow(springerjoblinks)) {
     safe_scrape(
       district,
       scrape_fn = function() fetch_redrover_postings(org_id, org_slug),
-      expected_cols = c("Title", "Location", "Posted_Date", "Link")
+      expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
     )
   } else {
     domain_name <- sub("^https?://", "", url)
@@ -173,7 +173,7 @@ for (i in 1:nrow(springerjoblinks)) {
     safe_scrape(
       district,
       scrape_fn = function() fetch_schoolspring_postings(domain_name),
-      expected_cols = c("Title", "Location", "Posted_Date", "Link")
+      expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
     )
   }
 
@@ -188,25 +188,17 @@ all_springer_data <- if (length(all_springer_data) > 0) {
   bind_rows(all_springer_data)
 } else {
   data.frame(Title = character(0), Location = character(0), Posted_Date = character(0),
-             Link = character(0), District = character(0), url_source = character(0))
+             Posting_ID = character(0), Link = character(0), District = character(0),
+             url_source = character(0))
 }
 
 # Match the schema the rest of the K-12 pipeline expects (title/date_posted/
-# position/location/url/District). `url` is the district's own job-board
-# URL (matching the Applitrack/Frontline loader's convention of one URL per
-# district, not a per-posting deep link), not the per-job Link this scrape
-# also captured; `position` is intentionally NA -- combinedclean's
-# classify_k12_position() recomputes it from `title` for every source, so
-# the scraped value is discarded downstream regardless.
+# position/location/url/posting_id/District). Keep SchoolSpring and
+# RedRover's per-posting link and source ID: district-wide URLs collapse
+# distinct same-title/location vacancies into one downstream aggregate and
+# send applicants to an unhelpful generic board.
 all_springer_data <- all_springer_data %>%
-  transmute(
-    title = Title,
-    date_posted = Posted_Date,
-    position = NA_character_,
-    location = Location,
-    url = url_source,
-    District = District
-  )
+  normalize_id_backed_k12_postings()
 
 write.csv(all_springer_data, "all_springer_job_listings.csv", row.names = FALSE)
 
@@ -339,7 +331,17 @@ combined <- dplyr::bind_rows(direct, other_rows, wsba_rows) %>%
 # since the archived CSV below and combinedclean's `title` column both come
 # from this same `combined` object.
 combined <- combined %>%
-  mutate(title = fix_title_encoding(title))
+  mutate(
+    title = fix_title_encoding(title),
+    posting_id = build_k12_posting_id(
+      source_id = posting_id,
+      title = title,
+      location = location,
+      date_posted = date_posted,
+      url = url,
+      district = canonicalize_k12_district(District)
+    )
+  )
 
 file_name <- paste0("combined_", Sys.Date(), ".csv")
 
@@ -354,7 +356,7 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 combinedclean <- combined %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
-  dplyr::select(title, Archive_Date, date_posted, position, location, url, District)
+  dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
 
 write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'), row.names = FALSE)
 
@@ -379,7 +381,7 @@ this_week_k12jobs <- combinedclean %>%
   filter(position == "Teacher") %>%
   mutate(Category = classify_k12_subject(title),
          Broad_Category = classify_k12_broad_category(Category)) %>%
-  dplyr::select(title, Archive_Date, position, location, url, District, Category, Broad_Category)
+  dplyr::select(title, Archive_Date, position, location, url, posting_id, District, Category, Broad_Category)
 
 k12jobs <- append_weekly_rows(file.path("Wy_Ed_Jobs", "k12jobanalysis.csv"), this_week_k12jobs)
 write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'), row.names = FALSE)
@@ -396,10 +398,8 @@ write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_week
 
 
 #Database for all dates by category
-# Dedup key is title+location, not title alone: two different schools in the
-# same district legitimately post the same generic title (e.g. "Elementary
-# Teacher") for two different, real openings; n_distinct(title) alone would
-# silently collapse those into a single counted posting.
+# Dedup key is posting_id, not title+location: two real vacancies can have
+# identical display text but distinct source IDs (as SchoolSpring does).
 #
 # The Total row is computed as the SUM of the per-district counts below, not
 # as its own independent n_distinct() over every district's rows combined.
@@ -415,12 +415,7 @@ write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_week
 # k12jobs -- the group_by already includes Archive_Date, so each week's
 # counts are independent of every other week's, and only this week's
 # slice needs to be computed fresh.
-this_week_k12sumdistrict <- this_week_k12jobs %>%
-  group_by(Broad_Category, Archive_Date, District) %>%
-  summarize(
-    sum = n_distinct(paste(title, location)),
-    .groups = "drop"
-  )
+this_week_k12sumdistrict <- summarize_k12_posting_counts(this_week_k12jobs)
 
 this_week_k12sum <- this_week_k12sumdistrict %>%
   group_by(Broad_Category, Archive_Date) %>%
@@ -1135,5 +1130,3 @@ if (nrow(county_context_he) > 0) {
   message("Census ACS county context fetch failed -- leaving salarymap.csv untouched this run.")
 }
 ```
-
-

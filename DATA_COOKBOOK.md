@@ -17,7 +17,8 @@ One row per open K-12 posting, all position types (not just teachers). Powers th
 | `date_posted` | text | Original posted-date text, format varies by source platform. |
 | `position` | text | Coarse bucket from `classify_k12_position()` (Teacher, Support Services, Administration, etc. — see `k12_he_classification.R` for the full list). |
 | `location` | text | School/site name or district office, as scraped — format varies a lot by source platform. |
-| `url` | text | The district's job-board URL (one per district, not a per-posting deep link). |
+| `url` | text | Direct posting URL where the source exposes one (including SchoolSpring and RedRover); otherwise the district job-board URL. |
+| `posting_id` | text | Durable source posting ID when available. Sources without one use a stable fallback fingerprint of their URL, district, title, location, and posted date; `Archive_Date` is intentionally excluded so the same posting retains its identity across weeks. |
 | `District` | text | Canonical district name (`canonicalize_k12_district()` applied). |
 
 **Sources combined into this file**: AppliTrack, TedK12, SchoolSpring, RedRoverK12, direct district pages for the miscellaneous-district registry, and the complete WSBA statewide vacancies feed. WSBA rows are removed only when their normalized district, title, and posted date exactly match a direct-platform row; this preserves WSBA listings that direct boards do not expose.
@@ -33,6 +34,7 @@ Row-level history of every Teacher-position posting ever scraped, one row per po
 | `position` | text | Always `"Teacher"` in this file (pre-filtered). |
 | `location` | text | |
 | `url` | text | |
+| `posting_id` | text | Durable posting identity, used for category counts so distinct same-title/location openings are not collapsed. |
 | `District` | text | Canonical district name. |
 | `Category` | text | Fine-grained subject from `classify_k12_subject()` (e.g. "Elementary Education", "Special Education - General"). |
 | `Broad_Category` | text | Coarser grouping from `classify_k12_broad_category()`; this is what the app's category color palettes and pickers use. |
@@ -46,7 +48,7 @@ One row per (`Broad_Category`, `Archive_Date`, `District`) combination, **plus**
 | `Broad_Category` | text | |
 | `Archive_Date` | date | |
 | `District` | text | A real district name, or `"Total"`. |
-| `sum` | integer | Distinct (`title`, `location`) postings that week — deduplicated on the pair, not `title` alone, since two schools can legitimately post the same generic title. |
+| `sum` | integer | Distinct `posting_id` values that week. This preserves separate openings with identical title/location text when the source exposes distinct IDs. |
 
 ### `allnow.csv` — current-week category counts
 
