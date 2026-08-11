@@ -44,18 +44,40 @@ validate_and_pad_schema <- function(df, required_cols, source_name) {
 
 # The repository pipeline classifies these same title patterns in
 # k12_he_classification.R. Keep the deployed app self-contained while the
-# KPI distinguishes faculty hiring from adjunct/part-time pool postings.
-summarize_he_faculty_postings <- function(titles) {
+# dashboard distinguishes appointment type without inferring FTE where a
+# source does not explicitly provide it.
+classify_he_appointment <- function(titles) {
   titles <- as.character(titles)
-  list(
-    full_time = sum(
-      !grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE) &
-        grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator",
-              titles, ignore.case = TRUE),
-      na.rm = TRUE
-    ),
-    adjunct_part_time = sum(grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE), na.rm = TRUE)
+  dplyr::case_when(
+    grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE) ~ "Adjunct/part-time faculty",
+    grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator",
+          titles, ignore.case = TRUE) ~ "Faculty/instructor (non-adjunct)",
+    TRUE ~ "Other / not faculty"
   )
+}
+
+summarize_he_faculty_postings <- function(titles) {
+  appointment <- classify_he_appointment(titles)
+  list(
+    faculty_instructor = sum(appointment == "Faculty/instructor (non-adjunct)", na.rm = TRUE),
+    adjunct_part_time = sum(appointment == "Adjunct/part-time faculty", na.rm = TRUE)
+  )
+}
+
+# Sources that keep evergreen pools active may retain an original posting
+# date for years. Make that distinction visible without discarding a still-
+# open opportunity or inventing a newer date the source does not provide.
+format_posted_or_listed_date <- function(dates, stale_after_days = 180) {
+  values <- as.character(dates)
+  parsed <- as.Date(lubridate::parse_date_time(
+    values,
+    orders = c("ymd", "mdy", "dmy", "b d Y h:M p", "B d Y h:M p", "Y-m-d H:M:S"),
+    tz = "UTC",
+    quiet = TRUE
+  ))
+  stale <- !is.na(parsed) & parsed < Sys.Date() - stale_after_days
+  values[stale] <- paste("Listed since", values[stale])
+  values
 }
 
 #--------------------------------------------------
@@ -65,10 +87,11 @@ combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv") %>%
   select(District, title, position, location, date_posted, url) %>%
   mutate(District = str_squish(as.character(District))) %>%
+  mutate(date_posted = format_posted_or_listed_date(date_posted)) %>%
   arrange(District, title) %>%
   mutate(url = paste0('<a href="', url, '" target="_blank">', url, '</a>')) %>%
   rename(Title = title, Position = position, Location = location,
-         `Date Posted` = date_posted, Link = url)
+         `Posted / listed` = date_posted, Link = url)
 
 mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("District", "County", "Latitude", "Longitude", "Job_Link",
@@ -341,7 +364,11 @@ ccdata <- read_xlsx("hedata.xlsx") %>%
   validate_and_pad_schema(c("Institution", "Title", "Location", "Posted_Date", "Link"), "hedata.xlsx") %>%
   select(Institution, Title, Location, Posted_Date, Link) %>%
   arrange(Institution, Title) %>%
-  rename(`Date Posted` = Posted_Date)
+  mutate(
+    Appointment = classify_he_appointment(Title),
+    Posted_Date = format_posted_or_listed_date(Posted_Date)
+  ) %>%
+  rename(`Posted / listed` = Posted_Date)
 ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Link, '</a>')
 he_faculty_counts <- summarize_he_faculty_postings(ccdata$Title)
 
@@ -494,12 +521,10 @@ HE_CATEGORY_COLORS_DETAIL <- setNames(c(BASE8, EXT_HUES), c(
   "Library", "Language", "Criminal Justice", "Legal", "Human Services"
 ))
 
-# Full-time-vs-adjunct split for the "Current Faculty Trends" stacked bar
-# only -- Category is already on that chart's x-axis, so color there
-# encodes Job_Type instead (coloring by Category too would be redundant
-# with position). Top two validated categorical slots for max contrast.
+# Appointment colors retained for any future split view. The current
+# faculty-trends table now filters its underlying Job_Type directly.
 HE_JOB_TYPE_COLORS <- c(
-  "Full-Time Faculty" = "#2a78d6",
+  "Faculty/instructor (non-adjunct)" = "#2a78d6",
   "Adjunct/Part-Time"  = "#eb6834"
 )
 
@@ -529,7 +554,12 @@ k12_new_this_week <- {
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
-  filter(Job_Type == "Instructor/Teacher/Faculty")
+  filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
+  mutate(Appointment = dplyr::recode(
+    Job_Type,
+    "Instructor/Teacher/Faculty" = "Faculty/instructor (non-adjunct)",
+    "Adjunct/Part-Time Faculty" = "Adjunct/part-time faculty"
+  ))
 
 he_new_this_week <- {
   dates <- sort(unique(he_history$Archive_Date))
@@ -972,6 +1002,16 @@ ui <- dashboardPage(
       tabItem(
         tabName = "he_table",
         uiOutput("he_filter_status"),
+        radioButtons(
+          "he_table_appointment", "Appointment:",
+          choices = c(
+            "All roles" = "all",
+            "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
+            "Adjunct/part-time faculty" = "Adjunct/part-time faculty",
+            "Other / not faculty" = "Other / not faculty"
+          ),
+          selected = "all", inline = TRUE
+        ),
         DTOutput("he_jobs")
       ),
       tabItem(
@@ -1030,8 +1070,8 @@ ui <- dashboardPage(
         
         radioButtons("he_chart_type", NULL, choices = c(
           "All Jobs" = "all",
-          "Full Time" = "Instructor/Teacher/Faculty",
-          "Part Time" = "Adjunct/Part-Time Faculty"
+          "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
+          "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
         ), selected = "all", inline = TRUE),
 
         # Plot output
@@ -1041,6 +1081,13 @@ ui <- dashboardPage(
               radioButtons("he_detail_level_current", "Category detail:",
                            choices = c("Simple" = "agg", "Detailed" = "detail"),
                            selected = "agg", inline = TRUE),
+              radioButtons("he_current_appointment", "Appointment:",
+                           choices = c(
+                             "All faculty postings" = "all",
+                             "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
+                             "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
+                           ),
+                           selected = "all", inline = TRUE),
               selectInput("inst_current", "Select Institution:",
                           choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
               div(style = "overflow-x: auto;", withSpinner(tableOutput("he_current_trends_table")))),
@@ -1048,6 +1095,15 @@ ui <- dashboardPage(
       tabItem(
         tabName = "he_new",
         h4("New faculty postings since the previous weekly snapshot"),
+        radioButtons(
+          "he_new_appointment", "Appointment:",
+          choices = c(
+            "All faculty postings" = "all",
+            "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
+            "Adjunct/part-time faculty" = "Adjunct/part-time faculty"
+          ),
+          selected = "all", inline = TRUE
+        ),
         DTOutput("he_new_table")
       )
     )
@@ -1115,8 +1171,8 @@ server <- function(input, output, session) {
                tags$small(
                  style = "display: block; font-size: 11px; opacity: 0.85;",
                  sprintf(
-                   "%s full-time faculty | %s adjunct/part-time faculty",
-                   format(he_faculty_counts$full_time, big.mark = ","),
+                   "%s faculty/instructor (non-adjunct) | %s adjunct/part-time faculty",
+                   format(he_faculty_counts$faculty_instructor, big.mark = ","),
                    format(he_faculty_counts$adjunct_part_time, big.mark = ",")
                  )
                ),
@@ -1227,8 +1283,12 @@ server <- function(input, output, session) {
     )
   })
   output$he_new_table <- renderDT({
+    df <- he_new_this_week
+    if (!identical(input$he_new_appointment, "all")) {
+      df <- df %>% filter(Appointment == input$he_new_appointment)
+    }
     datatable(
-      he_new_this_week %>% select(Title, Institution, Location, Category, Link),
+      df %>% select(Title, Institution, Location, Appointment, Category, Link),
       options = list(scrollX = TRUE)
     )
   })
@@ -1608,6 +1668,9 @@ server <- function(input, output, session) {
   output$he_jobs <- renderDT({
     df <- ccdata
     if (!is.null(selected_institution())) df <- df %>% filter(Institution == selected_institution())
+    if (!identical(input$he_table_appointment, "all")) {
+      df <- df %>% filter(Appointment == input$he_table_appointment)
+    }
     datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
@@ -1625,6 +1688,14 @@ server <- function(input, output, session) {
   # map popups' data as a real exportable table, not one marker at a time.
   output$he_summary_table <- renderDT({
     he_rows <- combined_map_data %>% filter(Type == "Higher Ed Institution")
+    appointment_counts <- ccdata %>%
+      count(Institution, Appointment, name = "Openings") %>%
+      tidyr::complete(
+        Institution,
+        Appointment = c("Faculty/instructor (non-adjunct)", "Adjunct/part-time faculty"),
+        fill = list(Openings = 0L)
+      ) %>%
+      tidyr::pivot_wider(names_from = Appointment, values_from = Openings, values_fill = 0)
     year <- unique(na.omit(he_rows$Salary_Year))
     year_label <- if (length(year) > 0) year[1] else "current"
     year_int <- suppressWarnings(as.integer(year_label))
@@ -1632,11 +1703,14 @@ server <- function(input, output, session) {
     y2_label <- if (!is.na(year_int)) as.character(year_int - 2) else "2 years ago"
 
     df <- he_rows %>%
+      left_join(appointment_counts, by = c("Name" = "Institution")) %>%
       arrange(desc(CurrentCount)) %>%
       transmute(
         Institution = Name,
         County,
         `Current Openings` = CurrentCount,
+        `Faculty/instructor (non-adjunct)` = coalesce(`Faculty/instructor (non-adjunct)`, 0L),
+        `Adjunct/part-time faculty` = coalesce(`Adjunct/part-time faculty`, 0L),
         `New This Week` = WeeklyNew,
         `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
         AvgFacultySalary = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
@@ -1848,13 +1922,16 @@ server <- function(input, output, session) {
 
   # Sums across Job_Type (FT + PT) per category -- this table shows "how
   # has this category moved," not a FT/PT breakdown (which lived in the
-  # now-removed stacked bar chart; Jobs Table / New This Week still show
-  # individual postings with their own Job_Type if that split matters).
+  # now-removed stacked bar chart; the Appointment control below applies
+  # the selected Job_Type before the category comparisons are calculated).
   output$he_current_trends_table <- renderTable({
-    req(input$he_detail_level_current)
+    req(input$he_detail_level_current, input$he_current_appointment)
     hist_src <- if (identical(input$he_detail_level_current, "detail")) hesum_he else hesum_he_agg
     history <- hist_src %>%
-      filter(Institution == input$inst_current) %>%
+      filter(
+        Institution == input$inst_current,
+        identical(input$he_current_appointment, "all") | Job_Type == input$he_current_appointment
+      ) %>%
       transmute(Category, Archive_Date, n = sum)
 
     result <- build_current_trends_table(history, accent = "#4a3aa7")

@@ -127,7 +127,8 @@ test_that("fetch_neogov_postings follows pagination instead of only fetching pag
 test_that("parse_schoolspring_json extracts fields and builds a per-job link", {
   fixture <- '{"success":true,"message":"","validationErrors":[],"value":{"page":1,"size":25,"jobsList":[
     {"jobId":5846934,"employer":"Sundance Secondary","title":"High Needs SPED Paraprofessional","location":"Sundance, Wyoming","displayDate":"2026-07-22T06:00:00"},
-    {"jobId":5324570,"employer":"Sundance Secondary","title":"Substitute Custodian","location":"Sundance, Wyoming","displayDate":"2026-06-05T06:00:00"}
+    {"jobId":5324570,"employer":"Sundance Secondary","title":"Substitute Custodian","location":"Sundance, Wyoming","displayDate":"2026-06-05T06:00:00"},
+    {"jobId":1,"employer":"SchoolSpring","title":"Sample Certified Position","location":"Example, Wyoming","displayDate":"2010-02-16T06:00:00"}
   ]}}'
 
   result <- parse_schoolspring_json(fixture, "crook1.schoolspring.com")

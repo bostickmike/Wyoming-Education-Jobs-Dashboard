@@ -251,6 +251,16 @@ parse_schoolspring_json <- function(json_text, domain_name) {
                        stringsAsFactors = FALSE))
   }
 
+  # SchoolSpring occasionally exposes its own example vacancies as active
+  # records. These are placeholder text, not jobs candidates can apply for.
+  jobs <- jobs[!grepl("^Sample (Classified|Certified) Position$", jobs$title,
+                      ignore.case = TRUE), , drop = FALSE]
+  if (nrow(jobs) == 0) {
+    return(data.frame(Title = character(0), Location = character(0),
+                      Posted_Date = character(0), Link = character(0),
+                      stringsAsFactors = FALSE))
+  }
+
   data.frame(
     Title = jobs$title,
     Location = jobs$location,

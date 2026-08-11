@@ -120,7 +120,11 @@ test_that("HE and K-12 reactives don't error across every institution/district",
       expect_no_error(output$he_longitudinal_plot)
     }
     for (inst in sort(unique(env$henowsum_he$Institution))) {
-      session$setInputs(inst_current = inst, he_detail_level_current = "detail")
+      session$setInputs(
+        inst_current = inst,
+        he_detail_level_current = "detail",
+        he_current_appointment = "all"
+      )
       expect_no_error(output$he_current_trends_table)
     }
 
@@ -136,6 +140,23 @@ test_that("HE and K-12 reactives don't error across every institution/district",
       expect_no_error(output$k12_current_trends_table)
     }
   })
+})
+
+test_that("higher-ed appointment classifier separates adjunct, faculty, and other roles", {
+  env <- load_app()
+
+  expect_identical(
+    env$classify_he_appointment(c(
+      "Adjunct Mathematics Instructor",
+      "Biology Professor",
+      "Admissions Specialist"
+    )),
+    c(
+      "Adjunct/part-time faculty",
+      "Faculty/instructor (non-adjunct)",
+      "Other / not faculty"
+    )
+  )
 })
 
 test_that("make_sparkline_svg draws a rising trend with a green endpoint and a falling trend with a red one", {
