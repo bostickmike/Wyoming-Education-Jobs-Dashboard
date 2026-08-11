@@ -228,7 +228,7 @@ canonicalize_k12_district <- function(district) {
 classify_he_job_type <- function(title) {
   dplyr::case_when(
     # Adjunct / part-time pool positions
-    grepl("Adjunct", title, ignore.case = TRUE) ~ "Adjunct/Part-Time Faculty",
+    grepl("Adjunct|Part[- ]?Time", title, ignore.case = TRUE) ~ "Adjunct/Part-Time Faculty",
 
     # Instructor/Teacher/Faculty
     grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator", title, ignore.case = TRUE) ~ "Instructor/Teacher/Faculty",

@@ -4,6 +4,7 @@ test_that("classify_he_job_type separates Adjunct from full-time faculty", {
   # tenure-track/full-time postings.
   expect_equal(classify_he_job_type("Adjunct Instructor, Biology"), "Adjunct/Part-Time Faculty")
   expect_equal(classify_he_job_type("Adjunct- Spanish- Jackson"), "Adjunct/Part-Time Faculty")
+  expect_equal(classify_he_job_type("Part-Time Mathematics Instructor"), "Adjunct/Part-Time Faculty")
   expect_equal(classify_he_job_type("Assistant Professor of Biology"), "Instructor/Teacher/Faculty")
   expect_equal(classify_he_job_type("Professor of History"), "Instructor/Teacher/Faculty")
 })

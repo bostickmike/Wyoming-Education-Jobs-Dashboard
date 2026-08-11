@@ -42,6 +42,22 @@ validate_and_pad_schema <- function(df, required_cols, source_name) {
   df
 }
 
+# The repository pipeline classifies these same title patterns in
+# k12_he_classification.R. Keep the deployed app self-contained while the
+# KPI distinguishes faculty hiring from adjunct/part-time pool postings.
+summarize_he_faculty_postings <- function(titles) {
+  titles <- as.character(titles)
+  list(
+    full_time = sum(
+      !grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE) &
+        grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator",
+              titles, ignore.case = TRUE),
+      na.rm = TRUE
+    ),
+    adjunct_part_time = sum(grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE), na.rm = TRUE)
+  )
+}
+
 #--------------------------------------------------
 # Load K-12 data
 #--------------------------------------------------
@@ -327,6 +343,7 @@ ccdata <- read_xlsx("hedata.xlsx") %>%
   arrange(Institution, Title) %>%
   rename(`Date Posted` = Posted_Date)
 ccdata$Link <- paste0('<a href="', ccdata$Link, '" target="_blank">', ccdata$Link, '</a>')
+he_faculty_counts <- summarize_he_faculty_postings(ccdata$Title)
 
 mapdata2_he <- read.csv("salarymap.csv") %>%
   validate_and_pad_schema(c("Name", "Longitude", "Latitude", "Link", "Faculty_Avg_Salary",
@@ -1093,7 +1110,18 @@ server <- function(input, output, session) {
   })
   output$kpi_he_total <- renderValueBox({
     valueBox(format(nrow(ccdata), big.mark = ","),
-             tagList("Open Higher Ed Postings", wow_delta_ui(compute_wow_delta(he_institution_weekly_totals))),
+             tagList(
+               "Open Higher Ed Postings",
+               tags$small(
+                 style = "display: block; font-size: 11px; opacity: 0.85;",
+                 sprintf(
+                   "%s full-time faculty | %s adjunct/part-time faculty",
+                   format(he_faculty_counts$full_time, big.mark = ","),
+                   format(he_faculty_counts$adjunct_part_time, big.mark = ",")
+                 )
+               ),
+               wow_delta_ui(compute_wow_delta(he_institution_weekly_totals))
+             ),
              icon = tags$i(HTML(make_sparkline_svg_light(statewide_weekly_series(he_institution_weekly_totals)))),
              color = "purple")
   })
