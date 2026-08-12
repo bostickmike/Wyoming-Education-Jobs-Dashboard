@@ -72,17 +72,40 @@ repair_mojibake <- function(x) {
   list(repaired = out, changed = changed)
 }
 
+# Repairs a genuinely-invalid UTF-8 byte as CP1252, the narrow slice of
+# fix_title_encoding()'s behavior this script needs -- NOT its full
+# behavior, which also strips CRs and trims whitespace. Applying that
+# broader normalization retroactively to historical archives is a real,
+# separate cleanup, but bundling it into this mojibake-only repair would
+# silently touch rows that were never mojibake-corrupted at all (confirmed
+# empirically on Montana's copy of this same script: using the full
+# fix_title_encoding()/normalize_posting_text() here inflated the repair
+# count from 151 genuine mojibake instances to 776 by sweeping in every
+# CR/whitespace difference in the archive). Kept out of scope here too,
+# even though Wyoming's own archive didn't happen to have enough
+# CR/whitespace drift to change this script's actual output count.
+repair_invalid_utf8_bytes <- function(x) {
+  x <- as.character(x)
+  missing <- is.na(x)
+  valid_utf8 <- iconv(x, from = "UTF-8", to = "UTF-8", sub = NA_character_)
+  needs_repair <- !missing & is.na(valid_utf8)
+  out <- x
+  out[needs_repair] <- iconv(x[needs_repair], from = "WINDOWS-1252", to = "UTF-8", sub = "byte")
+  out[missing] <- NA_character_
+  out
+}
+
 # Repairs one text column of a data frame in place: first pass repairs any
-# genuinely-invalid UTF-8 byte the same way fix_title_encoding() already
-# does for every live scrape (handles rows written before that fix existed
-# at all), second pass reverses already-valid-but-wrong mojibake
-# double-encoding that fix_title_encoding() can't detect on its own.
+# genuinely-invalid UTF-8 byte (handles rows written before any encoding
+# fix existed in the pipeline at all), second pass reverses
+# already-valid-but-wrong mojibake double-encoding that an invalid-byte
+# check alone can't detect.
 repair_title_column <- function(df, column, source_name = "<data>") {
   if (!column %in% names(df)) {
     stop("repair_title_column(): ", source_name, " is missing column: ", column)
   }
   original <- df[[column]]
-  step1 <- fix_title_encoding(original)
+  step1 <- repair_invalid_utf8_bytes(original)
   mojibake_result <- repair_mojibake(step1)
   repaired <- mojibake_result$repaired
 
