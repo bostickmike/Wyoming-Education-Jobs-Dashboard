@@ -674,14 +674,20 @@ he_sample_titles <- ccdata %>%
   summarize(SampleTitles = paste(head(Title, 3), collapse = "; "), .groups = "drop")
 he_weekly_new <- he_new_this_week %>% count(Institution, name = "WeeklyNew")
 
-# he_history is already scoped to Job_Type == "Instructor/Teacher/Faculty"
-# (full-time only, excluding the standing adjunct pool) -- matches
-# Faculty_Count's own scope, since IPEDS's salaries-instructional-staff
-# survey only covers full-time instructional staff. Mixing in
-# Adjunct/Part-Time postings here would overstate the rate the same way
-# using CurrentCount (all K-12 job categories) would on the K-12 side.
+# Scoped to full-time faculty only, matching Faculty_Count's own scope --
+# IPEDS's salaries-instructional-staff survey (the source of Faculty_Count)
+# only covers full-time instructional staff, so mixing Adjunct/Part-Time
+# postings into this numerator would overstate the rate the same way using
+# CurrentCount (all K-12 job categories) would on the K-12 side.
+#
+# Regression: he_history itself was later widened to include BOTH Job_Types
+# (for the FT/PT appointment toggles added to the trend/current/new-this-
+# week tabs), but this consumer wasn't updated at the same time -- it
+# silently started counting adjunct postings into a full-time-only
+# denominator. This filter makes the scope explicit again instead of
+# assuming the shared he_history object's scope.
 he_faculty_current_counts <- he_history %>%
-  filter(Archive_Date == max(Archive_Date)) %>%
+  filter(Archive_Date == max(Archive_Date), Job_Type == "Instructor/Teacher/Faculty") %>%
   count(Institution, name = "FacultyCurrentCount")
 
 map_he <- mapdata2_he %>%
@@ -1495,7 +1501,21 @@ server <- function(input, output, session) {
                     ifelse(!is.na(Faculty_Avg_Salary_Professor),
                            paste0(" (Professor rank: ", scales::dollar(Faculty_Avg_Salary_Professor), ")"),
                            ""),
-                    " &middot; ", Salary_Year, "</div>"),
+                    " &middot; ", Salary_Year, "</div>",
+                    # IPEDS's "all combined" figure blends every reported
+                    # contract length -- full-time 9-12 month faculty
+                    # alongside lower-paid part-time/adjunct instructional
+                    # staff -- into one average. No reliable full-time-only
+                    # breakout is available from this source (IPEDS's
+                    # contract-length codes aren't consistently documented
+                    # enough to split this safely), so this is a disclosure
+                    # rather than a fix. Ported from Montana's copy of this
+                    # same fix, motivated by a real Montana example
+                    # (Blackfeet Community College's $25,621 reflecting a
+                    # $54,317 full-time cohort blended with lower-paid
+                    # part-time staff) but the underlying IPEDS blending
+                    # issue applies equally to Wyoming's own HE salary data.
+                    "<div style='font-size:0.8em;color:#666;'>Blends full-time and part-time/adjunct instructional staff pay into one average.</div>"),
              ""),
       ifelse(!is.na(Salary_Note),
              paste0("<div style='font-size:0.85em;color:#666;'>", Salary_Note, "</div>"),
@@ -1781,7 +1801,10 @@ server <- function(input, output, session) {
     tagList(
       helpText(
         "Salary data:", source[1], paste0("(", year[1], " data)"), "—",
-        tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org")
+        tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org"),
+        ". Blends full-time and part-time/adjunct instructional staff pay into one average",
+        "— a small institution leaning heavily on adjuncts can report a much lower blended",
+        "figure than its own full-time faculty actually earn."
       ),
       if (length(acs_year) > 0) {
         helpText(

@@ -448,3 +448,50 @@ test_that("Child_Poverty_Rate is district-level (unlike the county-level Census 
   skip_if(nrow(fremont) < 2, "fewer than 2 mapped Fremont County districts with a rate in committed data -- skipping")
   expect_true(length(unique(fremont$Child_Poverty_Rate)) > 1)
 })
+
+test_that("HE Vacancy_Numerator counts only full-time faculty postings, not adjunct/part-time ones", {
+  # Regression: he_faculty_current_counts used to count every current HE
+  # posting (both Job_Types) into the vacancy-rate numerator, but
+  # Faculty_Count (the denominator) is IPEDS's full-time-only figure --
+  # mixing in adjunct/part-time postings overstated the rate. Confirmed
+  # live impact before the fix: Laramie County Community College's
+  # numerator dropped from 50 (all types) to 3 (full-time only), Sheridan
+  # College's from 41 to 1.
+  env <- load_app()
+  facultydata <- read.csv(here::here("Wy_Ed_Jobs", "facultydata.csv"), fileEncoding = "UTF-8")
+  facultydata <- facultydata[facultydata$Job_Type %in%
+    c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty"), ]
+  latest <- max(as.Date(facultydata$Archive_Date))
+  latest_rows <- facultydata[as.Date(facultydata$Archive_Date) == latest, ]
+
+  institutions <- unique(latest_rows$Institution)
+  ft_only_count <- function(inst) sum(latest_rows$Institution == inst &
+                                         latest_rows$Job_Type == "Instructor/Teacher/Faculty")
+  all_type_count <- function(inst) sum(latest_rows$Institution == inst)
+
+  # Real, committed data: at least one institution must have more adjunct
+  # postings than full-time ones for this test to actually exercise the
+  # fix, not just trivially pass because the two counts always agreed.
+  differing <- Filter(function(inst) ft_only_count(inst) != all_type_count(inst), institutions)
+  skip_if(length(differing) == 0,
+          "no institution in committed data currently has both full-time and adjunct postings -- skipping")
+
+  he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
+  # Sheridan/Gillette share a joint vacancy rate (Vacancy_Rate_Shared) --
+  # their numerator is a joint sum, not each institution's own count, so
+  # they're checked separately rather than against their individual counts.
+  shared_names <- he$Name[he$Vacancy_Rate_Shared %in% TRUE]
+  standalone_differing <- setdiff(differing, shared_names)
+  for (inst in standalone_differing) {
+    row <- he[he$Name == inst, ]
+    skip_if(nrow(row) == 0, paste(inst, "not present in committed map data -- skipping"))
+    expect_equal(row$Vacancy_Numerator, ft_only_count(inst), info = paste("institution:", inst))
+  }
+
+  shared_differing <- intersect(differing, shared_names)
+  if (length(shared_differing) > 0) {
+    expected_joint <- sum(vapply(shared_names, ft_only_count, numeric(1)))
+    shared_rows <- he[he$Name %in% shared_names, ]
+    expect_true(all(shared_rows$Vacancy_Numerator == expected_joint))
+  }
+})
