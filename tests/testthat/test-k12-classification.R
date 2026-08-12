@@ -74,6 +74,29 @@ test_that("canonicalize_k12_district fixes known typos and passes through everyt
   expect_equal(canonicalize_k12_district("Sheridan County School District 1"), "Sheridan County School District 1")
 })
 
+test_that("classify_k12_subject recognizes the literal 'Technical Education' phrase, not just 'Tech Ed'", {
+  expect_equal(classify_k12_subject("Technical Education Teacher"), "Technical Education")
+})
+
+test_that("classify_k12_subject matches the plural 'Family and Consumer Sciences'", {
+  expect_equal(classify_k12_subject("Family and Consumer Sciences Teacher"), "Family and Consumer Science")
+})
+
+test_that("classify_k12_subject recognizes 'Head Start' and hyphenated 'Pre-School' as Early Childhood", {
+  expect_equal(
+    classify_k12_subject(c("Head Start Teacher", "Pre-School Teacher")),
+    c("Early Childhood Education", "Early Childhood Education")
+  )
+})
+
+test_that("classify_k12_subject treats 'Guest Teacher' as substitute teaching", {
+  expect_equal(classify_k12_subject("Guest Teacher"), "Substitute Teaching")
+})
+
+test_that("classify_k12_subject recognizes 'Vo/Ag' as Agriculture Education", {
+  expect_equal(classify_k12_subject("Vo/Ag Teacher"), "Agriculture Education")
+})
+
 test_that("fix_title_encoding repairs a Windows-1252 byte without warning, and classification still works", {
   # Reconstruct the exact byte sequence that produced the original
   # 'unable to translate ... to a wide string' warning: a raw 0x96
@@ -91,4 +114,13 @@ test_that("fix_title_encoding repairs a Windows-1252 byte without warning, and c
   expect_no_warning(result <- classify_k12_position(bad_title))
   expect_equal(result, "Food Services")
   expect_no_warning(classify_k12_subject(bad_title))
+})
+
+test_that("fix_title_encoding does not corrupt an already-valid UTF-8 title", {
+  # Regression: treating every title as Windows-1252 unconditionally used
+  # to double-decode real UTF-8 characters into mojibake -- a genuine curly
+  # apostrophe (U+2019) turned into "Teacherâ€™s Aide". Confirmed this was
+  # live in committed data (combinedclean.csv) before the fix.
+  title <- "Teacher’s Aide"
+  expect_equal(fix_title_encoding(title), title)
 })

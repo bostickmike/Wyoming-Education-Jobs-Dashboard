@@ -9,6 +9,16 @@ test_that("classify_he_job_type separates Adjunct from full-time faculty", {
   expect_equal(classify_he_job_type("Professor of History"), "Instructor/Teacher/Faculty")
 })
 
+test_that("a bare 'Part-Time' with no faculty-role word doesn't get counted as adjunct faculty", {
+  # Regression: the Adjunct/Part-Time rule used to match on "Part-Time"
+  # alone, so real non-faculty postings with that phrase in the title (a
+  # part-time custodian, a part-time bookstore clerk) were miscounted into
+  # the faculty pool.
+  expect_equal(classify_he_job_type("Custodian 1-Part-Time"), "Support Services")
+  expect_equal(classify_he_job_type("Part-Time Bookstore Sales Clerk"), "Support Services")
+  expect_equal(classify_he_job_type("Part Time Faculty"), "Adjunct/Part-Time Faculty")
+})
+
 test_that("classify_he_job_type covers the remaining coarse buckets", {
   expect_equal(classify_he_job_type("Student Worker - Library"), "Student Positions")
   expect_equal(classify_he_job_type("Registered Nurse"), "Healthcare")

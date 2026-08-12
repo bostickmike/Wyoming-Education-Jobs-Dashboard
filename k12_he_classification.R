@@ -15,10 +15,33 @@ suppressMessages(library(dplyr))
 # grepl() can't validate those as UTF-8, warns "unable to translate ... to a
 # wide string", and returns NA -- which case_when() treats as "no match", so
 # the row silently falls through to "Other"/"Uncategorized" instead of being
-# classified. Re-encoding first fixes the bad bytes; it's a no-op on titles
-# that are already clean ASCII/UTF-8.
+# classified. Re-encoding first fixes the bad bytes.
+#
+# Unconditionally treating every title as Windows-1252 (this function's
+# original behavior) is itself a bug: it corrupts titles that are already
+# valid UTF-8 -- a genuine curly apostrophe ("Teacher's Aide") gets
+# double-decoded into mojibake ("Teacherâ€™s Aide"). Only strings that
+# actually fail a UTF-8 round-trip are repaired as CP1252; everything else
+# passes through unchanged. Stray CRs (some sources embed raw \r) are also
+# stripped here so they don't survive into archived/displayed titles.
 fix_title_encoding <- function(title) {
-  iconv(title, from = "WINDOWS-1252", to = "UTF-8", sub = "byte")
+  title <- as.character(title)
+  missing <- is.na(title)
+  valid_utf8 <- iconv(title, from = "UTF-8", to = "UTF-8", sub = NA_character_)
+  needs_cp1252_repair <- !missing & is.na(valid_utf8)
+
+  out <- title
+  out[needs_cp1252_repair] <- iconv(
+    title[needs_cp1252_repair],
+    from = "WINDOWS-1252",
+    to = "UTF-8",
+    sub = "byte"
+  )
+  out <- enc2utf8(out)
+  out <- gsub("[\r\n]+", " ", out)
+  out <- trimws(out)
+  out[missing] <- NA_character_
+  out
 }
 
 # ---------------------------------------------------------------------------
@@ -96,16 +119,19 @@ classify_k12_position <- function(title) {
 # each backed by real observed titles, not speculative -- see the audit
 # notes in the project's memory/commit history for the specific samples.
 k12_category_keywords <- list(
-  "Technical Education" = "\\b(Welding|Weld|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Industrial Arts|Shop|Tech Ed)\\b",
-  "Agriculture Education" = "\\b(Agriculture|Ag Teacher|FFA)\\b",
+  "Technical Education" = "\\b(Welding|Weld|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Industrial Arts|Shop|Tech Ed|Technical Education)\\b",
+  "Agriculture Education" = "\\b(Agriculture|Ag Teacher|FFA|Vo[-/]?Ag)\\b",
   "Computer Science Education" = "\\b(Computer Science|Information Technology|\\bIT\\b|Technology Education(?! Teacher Assistant))\\b",
-  "Early Childhood Education" = "\\b(Early Childhood|Pre[- ]?K(?!indergarten)|Preschool|Birth to age|Ages 3-5)\\b",
+  # Pre[- ]?school covers "Preschool"/"Pre-school"/"Pre school" in one
+  # pattern; Head Start is a real, common federal early-childhood program
+  # name that doesn't otherwise contain any of the other keywords here.
+  "Early Childhood Education" = "\\b(Early Childhood|Pre[- ]?K(?!indergarten)|Pre[- ]?school|Birth to age|Ages 3-5|Head Start)\\b",
   "Elementary Education" = "\\b(Elementary|Kindergarten|1st|2nd|3rd|4th|5th|First|Second|Third|Fourth|Fifth|Grade [1-6])\\b",
   # "Literacy/Reading Interventionist" specifically (not bare "Interventionist"
   # or "Academic Interventionist" -- those don't name a subject and are
   # genuinely ambiguous, left as Uncategorized rather than guessed).
   "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator)|(Literacy|Reading) Interventionist)\\b",
-  "Family and Consumer Science" = "\\b(Family and Consumer Science|FCS|Home Economics)\\b",
+  "Family and Consumer Science" = "\\b(Family and Consumer Sciences?|FCS|Home Economics)\\b",
   "Language Education" = "\\b(ESL|ELL|English as a Second Language|Bilingual|Spanish|French|Arapaho|Dual Language|World Language|Foreign Language)\\b",
   "Mathematics Education" = "\\b(Mathematics|\\bMath\\b)\\b",
   "Music Education" = "\\b(Music|Orchestra|Band)\\b",
@@ -123,7 +149,10 @@ k12_category_keywords <- list(
   "Special Education - General" = "\\b(Special[- ]Education|Special Ed\\.?\\b|SPED|Exceptional Children|Deaf|Visually Impaired)\\b",
   "Physical Education" = "(?i)\\b(Physical Education|P\\.?E\\.?|PE\\s*/\\s*Health|Health\\s*/\\s*PE|Health and Physical Education|Phys\\.?\\s*Ed\\.?)\\b",
   "Business and Economics" = "\\b(Business|Economics|Econ)\\b",
-  "Substitute Teaching" = "\\b(Substitute)\\b",
+  # "Guest Teacher" is a common euphemism for substitute teacher used by
+  # some districts/staffing agencies (e.g. Kelly Education), not a distinct
+  # role.
+  "Substitute Teaching" = "\\b(Substitute|Guest Teacher)\\b",
   "Virtual Education" = "\\b(Virtual|Online|Remote)\\b",
   "Art Teacher" = "\\b(Art Teacher|\\bArt\\b)\\b",
   "STEM Teacher" = "\\b(STEM)\\b",
@@ -266,8 +295,14 @@ build_k12_posting_id <- function(source_id = NULL, title, location,
 # faculty hiring in the faculty trend charts.
 classify_he_job_type <- function(title) {
   dplyr::case_when(
-    # Adjunct / part-time pool positions
-    grepl("Adjunct|Part[- ]?Time", title, ignore.case = TRUE) ~ "Adjunct/Part-Time Faculty",
+    # Adjunct / part-time pool positions. A bare "Part-Time" is not enough on
+    # its own -- plenty of real non-faculty postings also contain that
+    # phrase ("Children's Center Part-Time Aide", "Part-Time Bookstore Sales
+    # Clerk"), so it only counts here alongside an actual faculty-role word.
+    grepl("Adjunct", title, ignore.case = TRUE) |
+      (grepl("Part[- ]?Time", title, ignore.case = TRUE) &
+         grepl("Faculty|Instructor|Professor|Lecturer|Teacher", title, ignore.case = TRUE)) ~
+      "Adjunct/Part-Time Faculty",
 
     # Instructor/Teacher/Faculty
     grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator", title, ignore.case = TRUE) ~ "Instructor/Teacher/Faculty",
