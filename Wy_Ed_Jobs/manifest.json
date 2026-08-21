@@ -343,7 +343,7 @@
       "description": {
         "Package": "bit64",
         "Title": "A S3 Class for Vectors of 64bit Integers",
-        "Version": "4.8.2",
+        "Version": "4.8.4",
         "Authors@R": "c(\n    person(\"Michael\", \"Chirico\", email=\"michaelchirico4@gmail.com\", role=c(\"aut\", \"cre\")),\n    person(\"Jens\", \"Oehlschlägel\", role=\"aut\"),\n    person(\"Leonardo\", \"Silvestri\", role=\"ctb\"),\n    person(\"Ofek\", \"Shilon\", role=\"ctb\"),\n    person(\"Christian\", \"Ullerich\", role=\"ctb\")\n  )",
         "Depends": "R (>= 3.5.0)",
         "Description": "\n  Package 'bit64' provides serializable S3 atomic 64bit (signed) integers.\n  These are useful for handling database keys and exact counting in +-2^63.\n  WARNING: do not use them as replacement for 32bit integers, integer64 are not\n  supported for subscripting by R-core and they have different semantics when\n  combined with double, e.g. integer64 + double => integer64.\n  Class integer64 can be used in vectors, matrices, arrays and data.frames.\n  Methods are available for coercion from and to logicals, integers, doubles,\n  characters and factors as well as many elementwise and summary functions.\n  Many fast algorithmic operations such as 'match' and 'order' support inter-\n  active data exploration and manipulation and optionally leverage caching.",
@@ -357,14 +357,14 @@
         "Config/testthat/edition": "3",
         "Config/Needs/development": "patrick, testthat",
         "Config/Needs/website": "tidyverse/tidytemplate",
-        "RoxygenNote": "7.3.3",
+        "Config/roxygen2/version": "8.0.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-05-19 05:37:05 UTC; chiricom",
+        "Packaged": "2026-08-19 16:52:49 UTC; chiricom",
         "Author": "Michael Chirico [aut, cre],\n  Jens Oehlschlägel [aut],\n  Leonardo Silvestri [ctb],\n  Ofek Shilon [ctb],\n  Christian Ullerich [ctb]",
         "Maintainer": "Michael Chirico <michaelchirico4@gmail.com>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-05-19 09:40:02 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:21:50 UTC; unix"
+        "Date/Publication": "2026-08-20 05:23:42 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-21 04:14:33 UTC; unix"
       }
     },
     "blob": {
@@ -3834,40 +3834,40 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "0cf751fe36d583057396b608e27c3e16"
+      "checksum": "127bbd55db6bc822f266dff43ccbea0c"
     },
     "allnow.csv": {
-      "checksum": "e1b81772ef0ab8df74c10e4f33b5ee27"
+      "checksum": "a7e7c88050f20acbee41ded6a2d7a09e"
     },
     "allsum_he.csv": {
-      "checksum": "644a7f896904a2472c40b86dee38441b"
+      "checksum": "bd4f911b7f3c59998a33b99c1d33ba80"
     },
     "allsum.csv": {
-      "checksum": "1fd7deffc5c1984a8ff723a60755beec"
+      "checksum": "86638a660bdaae1fabbcf10c8687ea0c"
     },
     "app.R": {
       "checksum": "6c59e1acb8b9b3e107b216a8a22b14b8"
     },
     "combinedclean.csv": {
-      "checksum": "9463eacb73b0e3dfc55d9393ddb8490e"
+      "checksum": "4fd260a0cd2a76b35d5df969d3ab10cd"
     },
     "facultydata.csv": {
-      "checksum": "f310948fbfcefacaa8666d1a8ebcd2b2"
+      "checksum": "db2d55de9ea5cf13556fc005be80ceb2"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "56ac2ac34e8530ca31339bbbe26296b3"
+      "checksum": "66ed1dd8aae897827d151d8ac4676f58"
     },
     "hedata.xlsx": {
-      "checksum": "ac9dac9e6ca5ade2a3c1a9c09073ad8c"
+      "checksum": "b0529811b4e59416b42d3c14e1512d89"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "b3c9878fdd92facf5f316f2de4fd481a"
+      "checksum": "4dcc3d00eb3c334679c26d74b4de0ce2"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "9d739c3b9f1eed713e8788f49f803821"
+      "checksum": "c04177b345b44081f766670107c170c0"
     },
     "salarymap.csv": {
       "checksum": "65b66bea354fd9ba0fcee79e1cf908fc"
