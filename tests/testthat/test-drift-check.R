@@ -257,27 +257,27 @@ test_that("score_page_text_for_job_signal returns inconclusive for NA or empty i
   expect_equal(score_page_text_for_job_signal("   "), "inconclusive")
 })
 
-test_that("build_source_url_lookup combines all registries and later sources win on collision", {
-  frontline <- withr::local_tempfile(fileext = ".csv")
-  write.csv(data.frame(`School District` = "Test District", JobSite = "https://frontline.example",
-                        check.names = FALSE), frontline, row.names = FALSE)
+test_that("build_source_url_lookup reads the unified k12 registry and later sources win on collision", {
+  k12_registry <- withr::local_tempfile(fileext = ".csv")
+  write.csv(data.frame(
+    District = c("Test District", "Other District"),
+    Platform = c("Applitrack", "SchoolSpring"),
+    Job_Link = c("https://frontline.example", "https://registry.example"),
+    Org_ID = c(NA, NA),
+    stringsAsFactors = FALSE
+  ), k12_registry, row.names = FALSE)
 
-  tedk12 <- withr::local_tempfile(fileext = ".csv")
-  write.csv(data.frame(District = "Other District", `Job Link` = "https://ted.example",
-                        check.names = FALSE), tedk12, row.names = FALSE)
+  misc_registry <- data.frame(District = c("Misc District", "Other District"),
+                              url = c("https://misc.example", "https://misc-other.example"),
+                              stringsAsFactors = FALSE)
 
-  springer <- withr::local_tempfile(fileext = ".csv")
-  write.csv(data.frame(District = "Other District", `Job Link` = "https://springer.example",
-                        check.names = FALSE), springer, row.names = FALSE)
-
-  misc_registry <- data.frame(District = "Misc District", url = "https://misc.example", stringsAsFactors = FALSE)
-
-  lookup <- build_source_url_lookup(frontline, tedk12, springer, misc_registry)
+  lookup <- build_source_url_lookup(k12_registry, misc_registry)
 
   expect_equal(unname(lookup["Test District"]), "https://frontline.example")
-  # "Other District" appears in both tedk12 and springer -- springer (added
-  # later in the combination order) should win, matching duplicated(fromLast=TRUE).
-  expect_equal(unname(lookup["Other District"]), "https://springer.example")
+  # "Other District" appears in both the k12 registry and misc_registry --
+  # misc_registry (added later in the combination order) should win,
+  # matching duplicated(fromLast = TRUE).
+  expect_equal(unname(lookup["Other District"]), "https://misc-other.example")
   expect_equal(unname(lookup["Misc District"]), "https://misc.example")
   expect_true("University of Wyoming" %in% names(lookup))
 })

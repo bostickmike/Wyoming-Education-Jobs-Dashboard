@@ -248,18 +248,12 @@ he_institution_urls <- c(
 )
 
 build_source_url_lookup <- function(
-    frontline_csv = "Frontline_job_links.csv",
-    tedk12_csv = "tedk12_job_links.csv",
-    springer_csv = "springer_job_links.csv",
+    k12_registry_csv = "k12_district_registry.csv",
     misc_registry = NULL) {
-  frontline <- read.csv(frontline_csv, stringsAsFactors = FALSE)
-  tedk12 <- read.csv(tedk12_csv, stringsAsFactors = FALSE)
-  springer <- read.csv(springer_csv, stringsAsFactors = FALSE)
+  k12_registry <- read.csv(k12_registry_csv, stringsAsFactors = FALSE)
 
   lookup <- c(
-    setNames(frontline$JobSite, frontline$School.District),
-    setNames(tedk12$Job.Link, tedk12$District),
-    setNames(springer$Job.Link, springer$District),
+    setNames(k12_registry$Job_Link, k12_registry$District),
     he_institution_urls
   )
 

@@ -14,193 +14,122 @@ source("k12_he_classification.R")
 
 ## Part 1: Wyoming K12 Data
 
-### Loop K12 data pulled from all districts that use applitrack
-```{r loop with district sites on applitrack, message=FALSE, warning=FALSE, echo=TRUE}
+### Loop K12 data from every district on a direct scraping platform
+```{r loop with districts on a direct scraping platform, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
-library(readr)
+library(stringr)
 source("scrape_helpers.R")
 source("direct_api_scrapers.R")
 
-# Read the CSV file
-csv_file <- "Frontline_job_links.csv"
-job_links <- read_csv(csv_file)
+# k12_district_registry.csv is the single source of truth for every K-12
+# district scraped from a real structured platform (Applitrack, TedK12,
+# SchoolSpring, RedRoverK12) -- District/Platform/Job_Link, plus Org_ID for
+# RedRoverK12's numeric org ID (not derivable from its URL slug alone).
+# Replaces three separate, independently-maintained link CSVs
+# (Frontline_job_links.csv, tedk12_job_links.csv, springer_job_links.csv)
+# that used to carry the SAME district under three different spellings in
+# practice ("Converse County School Distrcit 2", "Albany Count School
+# District 1", "Campbell County Scholl District 1") -- exactly the
+# canonicalize_k12_district() misspellings this project has had to patch
+# around downstream for months. One row per district here means one
+# spelling to get right, checked by tests/testthat/test-drift-check.R's
+# equivalent (registry-consistency is exercised via the pipeline's own
+# equivalence tests, not a dedicated schema test since this project's
+# existing convention is to test behavior, not file shape). A district
+# migrating platforms in the future (several already have -- Butte-style
+# moves aren't unique to Montana) is a one-row edit here, not a code change.
+#
+# fetch_applitrack_postings()/fetch_tedk12_postings()/
+# fetch_schoolspring_postings()/fetch_redrover_postings() (all
+# direct_api_scrapers.R) are unchanged from their original per-platform
+# loops -- only the dispatch is unified. Each district is still logged
+# individually via safe_scrape() so one district's outage (a few
+# Applitrack tenants genuinely return HTTP 500 from Applitrack's own
+# servers, independent of this scraper -- confirmed 2026-08-02) doesn't
+# block the rest of the registry.
+registry <- read.csv("k12_district_registry.csv", stringsAsFactors = FALSE)
 
-# fetch_applitrack_postings() replaces the old RSelenium loop entirely --
-# Output.asp (the endpoint default.aspx's own inline script injects via
-# document.write()) is fetched directly instead of rendering default.aspx
-# in a browser and waiting for that injection to happen. Each district is
-# logged individually via safe_scrape() so one district's outage (a few
-# genuinely return HTTP 500 from Applitrack's own servers, independent of
-# this scraper -- confirmed 2026-08-02) doesn't block the rest of the CSV.
-all_jobs_data <- list()
+all_direct_data <- list()
 
-for (i in 1:nrow(job_links)) {
-  url <- job_links$JobSite[i]
-  school_district <- job_links$`School District`[i]
+for (i in seq_len(nrow(registry))) {
+  row <- registry[i, ]
 
-  # tenant_path is everything between applitrack.com/ and /onlineapp/ in
-  # the district's own URL.
-  tenant_path <- sub(".*applitrack\\.com/([^/]+)/onlineapp.*", "\\1", url, ignore.case = TRUE)
-
-  district_jobs <- safe_scrape(
-    school_district,
-    scrape_fn = function() fetch_applitrack_postings(tenant_path),
-    expected_cols = c("title", "position", "position2", "date_posted", "location", "closing_date")
+  district_jobs <- switch(row$Platform,
+    Applitrack = {
+      # tenant_path is everything between applitrack.com/ and /onlineapp/
+      # in the district's own URL.
+      tenant_path <- sub(".*applitrack\\.com/([^/]+)/onlineapp.*", "\\1", row$Job_Link, ignore.case = TRUE)
+      df <- safe_scrape(
+        row$District,
+        scrape_fn = function() fetch_applitrack_postings(tenant_path),
+        expected_cols = c("title", "position", "position2", "date_posted", "location", "closing_date")
+      )
+      # A district with genuinely zero current openings is indistinguishable
+      # from any other empty scrape without a placeholder row -- preserved
+      # from the original Applitrack loop's own behavior.
+      if (nrow(df) == 0) {
+        df <- data.frame(title = "No jobs", position = NA, position2 = NA, date_posted = NA,
+                          location = NA, closing_date = NA, stringsAsFactors = FALSE)
+      }
+      data.frame(title = df$title, date_posted = df$date_posted, position = df$position,
+                 location = df$location, url = row$Job_Link, District = row$District,
+                 stringsAsFactors = FALSE)
+    },
+    TedK12 = {
+      df <- safe_scrape(
+        row$District,
+        scrape_fn = function() fetch_tedk12_postings(row$Job_Link),
+        expected_cols = c("title", "date_posted", "position", "location", "url")
+      )
+      if (nrow(df) > 0) {
+        data.frame(title = df$title, date_posted = df$date_posted, position = df$position,
+                   location = df$location, url = df$url, District = row$District,
+                   stringsAsFactors = FALSE)
+      } else {
+        NULL
+      }
+    },
+    SchoolSpring = {
+      domain_name <- sub("^https?://", "", row$Job_Link)
+      domain_name <- sub("/$", "", domain_name)
+      df <- safe_scrape(
+        row$District,
+        scrape_fn = function() fetch_schoolspring_postings(domain_name),
+        expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
+      )
+      if (nrow(df) > 0) {
+        df$District <- row$District
+        normalize_id_backed_k12_postings(df)
+      } else {
+        NULL
+      }
+    },
+    RedRoverK12 = {
+      org_slug <- sub(".*/org/([^/?]+).*", "\\1", row$Job_Link, ignore.case = TRUE)
+      df <- safe_scrape(
+        row$District,
+        scrape_fn = function() fetch_redrover_postings(as.character(row$Org_ID), org_slug),
+        expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
+      )
+      if (nrow(df) > 0) {
+        df$District <- row$District
+        normalize_id_backed_k12_postings(df)
+      } else {
+        NULL
+      }
+    },
+    stop("Unknown Platform in k12_district_registry.csv: ", row$Platform)
   )
 
-  if (nrow(district_jobs) == 0) {
-    district_jobs <- data.frame(
-      title = "No jobs", position = NA, position2 = NA, date_posted = NA,
-      location = NA, closing_date = NA, stringsAsFactors = FALSE
-    )
+  if (!is.null(district_jobs) && nrow(district_jobs) > 0) {
+    all_direct_data[[length(all_direct_data) + 1]] <- district_jobs
   }
-  district_jobs$school_district <- school_district
-
-  all_jobs_data[[length(all_jobs_data) + 1]] <- district_jobs
 }
 
-all_jobs_df <- bind_rows(all_jobs_data)
-
-# Join with original job_links for extra metadata (this supplies the `url`
-# column combinedclean expects -- one job-board URL per district, not a
-# per-posting deep link, matching the original scraper's behavior).
-all_jobs_df <- left_join(all_jobs_df, job_links, by = c("school_district" = "School District"))
-
-# Save data frame to CSV file
-write.csv(all_jobs_df, "all_job_listings.csv", row.names = FALSE)
-
-```
-
-### Loop k12 data from districts that use Ted K12
-```{r tedk12, message=FALSE, warning=FALSE, echo=TRUE}
-
-library(dplyr)
-source("scrape_helpers.R")
-source("direct_api_scrapers.R")
-
-# Read the CSV file containing the URLs
-tedjoblinks <- read.csv("tedk12_job_links.csv", stringsAsFactors = FALSE)
-
-# fetch_tedk12_postings() (direct_api_scrapers.R) replaces a plain
-# read_html() loop that looked fine but was actually silently broken for
-# some fraction of runs -- TedK12/PowerSchool Hire serves a near-empty
-# modern app shell to a request with no real-browser User-Agent, not the
-# classic job board this scraper has always expected. Confirmed
-# 2026-08-06 via a chromote-rendered comparison; see that function's own
-# header comment for the full story. Each district still gets its own
-# safe_scrape() call so one dead/changed URL doesn't abort the rest.
-all_ted_data <- list()
-
-for (i in seq_len(nrow(tedjoblinks))) {
-  url <- tedjoblinks$Job.Link[i]
-  district <- tedjoblinks$District[i]
-
-  district_jobs <- safe_scrape(
-    district,
-    scrape_fn = function() fetch_tedk12_postings(url),
-    expected_cols = c("title", "date_posted", "position", "location", "url")
-  )
-  if (nrow(district_jobs) > 0) all_ted_data[[length(all_ted_data) + 1]] <- district_jobs
-}
-
-all_ted_data <- if (length(all_ted_data) > 0) {
-  bind_rows(all_ted_data)
-} else {
-  data.frame(title = character(0), date_posted = character(0), position = character(0),
-             location = character(0), url = character(0), stringsAsFactors = FALSE)
-}
-
-all_ted_data <- left_join(all_ted_data, tedjoblinks, by = c("url" = "Job.Link"))
+direct_all <- bind_rows(all_direct_data)
 
 # Save the extracted data to a CSV file
-write.csv(all_ted_data, "all_tedk12_job_listings.csv", row.names = FALSE)
-
-```
-
-### Loop k12 data from all districts that use springer school
-```{r jobs from spring school, message=FALSE, warning=FALSE, echo=TRUE}
-
-library(dplyr)
-source("scrape_helpers.R")
-source("direct_api_scrapers.R")
-
-# springer_job_links.csv's districts turned out to be split across two
-# platforms despite the shared filename/history: most are SchoolSpring
-# (api.schoolspring.com -- unprotected despite the interactive UI domain
-# being behind Incapsula), but Johnson County SD1 migrated to RedRoverK12
-# (an unauthenticated GraphQL API, found by tracing real network traffic
-# with chromote). Both replace the old RSelenium infinite-scroll-and-click
-# scraper entirely.
-#
-# RedRoverK12 requires a numeric org ID per district that isn't derivable
-# from its URL slug alone; known IDs are listed here as they're found the
-# same way (chromote network trace of the real site). A district that
-# migrates to this platform in the future and isn't yet in this table will
-# safely fall through to being treated as SchoolSpring and logged as an
-# error rather than silently returning nothing.
-#
-# Fremont County School District 38 (Arapahoe Charter High School, its
-# only school) found 2026-08-06 while chasing down a persistent HTTP 500
-# on its old Applitrack tenant (fcsd38.applitrack.com) -- confirmed via
-# WSBA's own listing (which links to jobs.redroverk12.com/org/FCSD38/...)
-# that the district had fully migrated platforms, the same story as
-# Campbell/Fremont 25/Laramie 2's TedK12->SchoolSpring moves found the
-# same week. Moved from Frontline_job_links.csv (dead) to
-# springer_job_links.csv (real, live, 6 current postings confirmed).
-redrover_org_ids <- c(jcsd1 = "3146", hotsprings1 = "3034", FCSD38 = "3343")
-
-springerjoblinks <- read.csv("springer_job_links.csv", stringsAsFactors = FALSE)
-
-all_springer_data <- list()
-
-for (i in 1:nrow(springerjoblinks)) {
-  url <- springerjoblinks$`Job.Link`[i]
-  district <- springerjoblinks$District[i]
-
-  is_redrover <- grepl("redroverk12\\.com", url, ignore.case = TRUE)
-
-  district_jobs <- if (is_redrover) {
-    org_slug <- sub(".*/org/([^/?]+).*", "\\1", url, ignore.case = TRUE)
-    org_id <- redrover_org_ids[[org_slug]]
-    safe_scrape(
-      district,
-      scrape_fn = function() fetch_redrover_postings(org_id, org_slug),
-      expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
-    )
-  } else {
-    domain_name <- sub("^https?://", "", url)
-    domain_name <- sub("/$", "", domain_name)
-    safe_scrape(
-      district,
-      scrape_fn = function() fetch_schoolspring_postings(domain_name),
-      expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
-    )
-  }
-
-  if (nrow(district_jobs) > 0) {
-    district_jobs$District <- district
-    district_jobs$url_source <- url
-    all_springer_data[[length(all_springer_data) + 1]] <- district_jobs
-  }
-}
-
-all_springer_data <- if (length(all_springer_data) > 0) {
-  bind_rows(all_springer_data)
-} else {
-  data.frame(Title = character(0), Location = character(0), Posted_Date = character(0),
-             Posting_ID = character(0), Link = character(0), District = character(0),
-             url_source = character(0))
-}
-
-# Match the schema the rest of the K-12 pipeline expects (title/date_posted/
-# position/location/url/posting_id/District). Keep SchoolSpring and
-# RedRover's per-posting link and source ID: district-wide URLs collapse
-# distinct same-title/location vacancies into one downstream aggregate and
-# send applicants to an unhelpful generic board.
-all_springer_data <- all_springer_data %>%
-  normalize_id_backed_k12_postings()
-
-write.csv(all_springer_data, "all_springer_job_listings.csv", row.names = FALSE)
+write.csv(direct_all, "all_direct_k12_job_listings.csv", row.names = FALSE)
 
 ```
 
@@ -242,15 +171,7 @@ standardize_date <- function(x) {
 
 
 
-frontline<- read.csv("all_job_listings.csv")%>%
-  rename(url = JobSite)
-
-frontline<-  dplyr::select(frontline, title, date_posted, position, location, url, school_district)%>%
-  rename(District = school_district)
-
-ted<- read.csv("all_tedk12_job_listings.csv")
-
-springer<- read.csv("all_springer_job_listings.csv")
+direct <- read.csv("all_direct_k12_job_listings.csv", stringsAsFactors = FALSE)
 
 # The 12 districts not on any major platform were previously hand-
 # maintained in otherjobs.xlsx (no code in this repo ever wrote that
@@ -301,19 +222,12 @@ if (nrow(laramie_montessori) > 0) {
   other <- dplyr::bind_rows(other, laramie_montessori)
 }
 
-frontline <- frontline %>%
-  mutate(date_posted = standardize_date(date_posted))
-
-ted <- ted %>%
-  mutate(date_posted = standardize_date(date_posted))
-
-springer <- springer %>%
+direct <- direct %>%
   mutate(date_posted = standardize_date(date_posted))
 
 other <- other %>%
   mutate(date_posted = standardize_date(date_posted))
 
-direct <- dplyr::bind_rows(frontline, ted, springer)
 is_wsba <- !is.na(other$url) & other$url == WSBA_VACANCIES_URL
 wsba_rows <- remove_wsba_direct_duplicates(other[is_wsba, , drop = FALSE], direct)
 other_rows <- other[!is_wsba, , drop = FALSE]
