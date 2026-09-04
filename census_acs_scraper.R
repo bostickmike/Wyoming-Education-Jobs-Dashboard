@@ -76,7 +76,7 @@ fetch_acs_wy_counties <- function(endpoint_template, get_vars, year, api_key) {
       `in` = paste0("state:", WY_STATE_FIPS),
       key = api_key
     ) %>%
-    req_perform()
+    perform_with_retry()
   parse_acs_json(resp_body_string(resp))
 }
 

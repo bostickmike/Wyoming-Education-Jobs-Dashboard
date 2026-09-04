@@ -65,7 +65,7 @@ fetch_uw_postings <- function(
         expand = "requisitionList",
         finder = uw_finder(site_number, page_size, offset)
       ) %>%
-      req_perform()
+      perform_with_retry()
 
     parsed <- resp_body_json(resp, simplifyVector = TRUE)
     item <- parsed$items[1, ]
@@ -127,7 +127,7 @@ parse_uw_requisitions <- function(reqs_df, ui_base) {
 # ---------------------------------------------------------------------------
 
 fetch_peopleadmin_atom <- function(feed_url, location_fallback) {
-  resp <- request(feed_url) %>% req_perform()
+  resp <- request(feed_url) %>% perform_with_retry()
   parse_peopleadmin_atom(resp_body_string(resp), location_fallback)
 }
 
@@ -185,7 +185,7 @@ fetch_neogov_postings <- function(base_domain, agency_slug) {
     resp <- request(paste0(base_domain, "/careers/home/index")) %>%
       req_url_query(agency = agency_slug, sort = "PositionTitle", isDescendingSort = "false", page = page) %>%
       req_headers(`X-Requested-With` = "XMLHttpRequest") %>%
-      req_perform()
+      perform_with_retry()
 
     page_result <- parse_neogov_html(resp_body_string(resp), base_domain)
     if (nrow(page_result) == 0) break
@@ -256,7 +256,7 @@ fetch_schoolspring_postings <- function(domain_name, page_size = 50) {
         gradelevel = "", jobtype = "", organization = "",
         page = page, size = page_size, sortDateAscending = "false"
       ) %>%
-      req_perform()
+      perform_with_retry()
 
     page_df <- parse_schoolspring_json(resp_body_string(resp), domain_name)
     if (nrow(page_df) == 0) break
@@ -338,7 +338,7 @@ fetch_redrover_postings <- function(org_id, org_slug) {
       variables = list(search = list(orgId = org_id, searchTerm = "", locationIds = list(), jobPostingCategoryIds = list())),
       query = query
     )) %>%
-    req_perform()
+    perform_with_retry()
   parse_redrover_json(resp_body_string(resp), org_slug)
 }
 
@@ -404,7 +404,7 @@ normalize_id_backed_k12_postings <- function(postings) {
 fetch_applitrack_postings <- function(tenant_path) {
   resp <- request(paste0("https://www.applitrack.com/", tenant_path, "/onlineapp/jobpostings/Output.asp")) %>%
     req_url_query(all = "1") %>%
-    req_perform()
+    perform_with_retry()
   # Applitrack serves Windows-1252 bytes with no charset in Content-Type, so
   # httr2 guesses UTF-8. Any posting containing a curly quote/en-dash/etc.
   # then fails to decode -- resp_body_string() returns NA rather than
@@ -490,7 +490,7 @@ parse_applitrack_output <- function(js_text) {
 # https://recruiting.paylocity.com/recruiting/jobs/All/<company_guid>/<company_slug>
 fetch_paylocity_jobs <- function(company_guid, company_slug) {
   url <- paste0("https://recruiting.paylocity.com/recruiting/jobs/All/", company_guid, "/", company_slug)
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_paylocity_jobs(resp_body_string(resp))
 }
 
@@ -571,7 +571,7 @@ parse_paylocity_jobs <- function(html_text) {
 fetch_tedk12_postings <- function(url) {
   resp <- request(url) %>%
     req_user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36") %>%
-    req_perform()
+    perform_with_retry()
   parse_tedk12_postings(resp_body_string(resp), url)
 }
 

@@ -52,7 +52,7 @@ suppressMessages({
 # plain HTTP fetch + rvest::html_text2() reproduces byte-identical content
 # to a chromote-rendered version), so no browser is needed here either.
 fetch_wsba_vacancies <- function(url = "https://www.wsba-wy.org/vacancies") {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_wsba_vacancies(resp_body_string(resp))
 }
 
@@ -179,7 +179,7 @@ empty_misc_result <- function() {
 # blocks: "Open Positions", an application-forms block, and a salary-
 # schedule block; only the first is real postings).
 fetch_edlio_postings <- function(url) {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_edlio_postings(resp_body_string(resp))
 }
 
@@ -257,7 +257,7 @@ parse_edlio_postings <- function(html_text) {
 # since the surrounding page has other unrelated "title" fields that a
 # naive whole-page regex would also match.
 fetch_schoolblocks_postings <- function(url, widget_title = "Current Job Announcements") {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_schoolblocks_postings(resp_body_string(resp), widget_title)
 }
 
@@ -306,7 +306,7 @@ parse_schoolblocks_postings <- function(html_text, widget_title = "Current Job A
 # visible posting content: the page has no readable title text outside
 # these image alt attributes).
 fetch_smartsites_postings <- function(url) {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_smartsites_postings(resp_body_string(resp))
 }
 
@@ -376,7 +376,7 @@ parse_smartsites_postings <- function(html_text) {
 # Positions" section heading in document order -- robust to new
 # categories, still excludes the non-category intro content.
 fetch_wordpress_postings <- function(url) {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_wordpress_postings(resp_body_string(resp))
 }
 
@@ -420,7 +420,7 @@ parse_wordpress_postings <- function(html_text) {
 # numbered prefix -- to avoid false-matching arbitrary bold text elsewhere
 # on the page.
 fetch_googlesites_postings <- function(url) {
-  resp <- request(url) %>% req_perform()
+  resp <- request(url) %>% perform_with_retry()
   parse_googlesites_postings(resp_body_string(resp))
 }
 
@@ -459,7 +459,7 @@ parse_googlesites_postings <- function(html_text) {
 fetch_educational_networks_postings <- function(url) {
   resp <- request(url) %>%
     req_user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36") %>%
-    req_perform()
+    perform_with_retry()
   parse_educational_networks_postings(resp_body_string(resp))
 }
 

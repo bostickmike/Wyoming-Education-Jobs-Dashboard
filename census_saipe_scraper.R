@@ -80,7 +80,7 @@ fetch_census_saipe_child_poverty <- function(year = NULL, api_key = census_api_k
       time = year,
       key = api_key
     ) %>%
-    req_perform()
+    perform_with_retry()
   parse_census_saipe_child_poverty(resp_body_string(resp), year)
 }
 
@@ -109,7 +109,7 @@ latest_saipe_year <- function(start_year = as.integer(format(Sys.Date(), "%Y")),
       resp <- request(SAIPE_SCHDIST_ENDPOINT) %>%
         req_url_query(get = "SD_NAME", `for` = "school district (unified)",
                       `in` = paste0("state:", WY_STATE_FIPS), time = year, key = api_key) %>%
-        req_perform()
+        perform_with_retry()
       parse_saipe_json(resp_body_string(resp))
     }, error = function(e) data.frame())
     if (nrow(result) > 0) return(year)

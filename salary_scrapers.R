@@ -43,7 +43,7 @@ WSBA_ADMIN_SALARY_PDF_ID <- "15g-sK33JwzbQsBh6E-7Rr8NWu3VEExWJ"
 
 fetch_google_drive_pdf <- function(file_id, dest = tempfile(fileext = ".pdf")) {
   request(paste0("https://drive.google.com/uc?export=download&id=", file_id)) %>%
-    req_perform(path = dest)
+    perform_with_retry(path = dest)
   dest
 }
 
