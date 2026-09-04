@@ -34,6 +34,21 @@ test_that("flag_drift flags a real drop and leaves a stable source alone", {
   expect_equal(flagged$name, "BigDistrict")
 })
 
+test_that("flag_drift exempts sources whose historical average is below the noise floor", {
+  baseline <- data.frame(
+    name = c("TinySource", "RealSource"),
+    n_weeks = c(6, 6),
+    mean_count = c(2, 12)
+  )
+  current <- data.frame(name = c("TinySource", "RealSource"), count = c(0, 0))
+
+  flagged <- flag_drift(current, baseline)
+
+  # TinySource averaged 2/week -- dropping to 0 is churn, not a parser
+  # failure. RealSource averaged 12 and is still flagged.
+  expect_equal(flagged$name, "RealSource")
+})
+
 test_that("flag_drift requires a minimum number of historical weeks before flagging", {
   baseline <- data.frame(name = "BrandNewDistrict", n_weeks = 1, mean_count = 10)
   current <- data.frame(name = "BrandNewDistrict", count = 0)

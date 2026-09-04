@@ -9,6 +9,7 @@
 
 source("drift_check.R")
 source("misc_district_scrapers.R") # for misc_district_registry
+source("k12_he_classification.R") # for canonicalize_k12_district
 library(chromote)
 
 flagged <- read.csv("/tmp/drift_flagged.csv", stringsAsFactors = FALSE)
@@ -19,6 +20,15 @@ if (nrow(flagged) == 0) {
 }
 
 url_lookup <- build_source_url_lookup(misc_registry = misc_district_registry)
+# check_drift.R canonicalizes district names before flagging, so a flagged
+# K-12 name is the corrected spelling ("Converse County School District 2")
+# while these lookup keys come straight from the link CSVs, which still
+# carry the scraper's raw spelling ("Converse County School Distrcit 2").
+# Canonicalize the keys to match, or every corrected-name district would
+# fall through to "No URL on file". (canonicalize_k12_district() passes HE
+# institution names through untouched.)
+names(url_lookup) <- canonicalize_k12_district(names(url_lookup))
+url_lookup <- url_lookup[!duplicated(names(url_lookup), fromLast = TRUE)]
 
 b <- ChromoteSession$new()
 results <- data.frame(name = character(0), type = character(0), mean_count = numeric(0),

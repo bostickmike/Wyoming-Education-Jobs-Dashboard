@@ -63,12 +63,20 @@ build_historical_counts <- function(archive_snapshots, name_col) {
 # min_weeks: a source needs at least this many valid historical weeks before
 #   it's eligible to be flagged at all -- with 0 or 1 data points there's no
 #   real baseline yet, just noise.
+# min_mean_count: a source whose historical average is below this is exempt.
+#   A district that averages 1-2 postings and now has 0 is ordinary
+#   week-to-week churn, not the silent-parser-failure signature this check
+#   exists to catch (that one hides *dozens* of real postings) -- flagging
+#   it every week just trains the reader to ignore the alert. The threshold
+#   is deliberately low so a source that genuinely sustained even 3/week and
+#   broke to 0 is still caught.
 # drop_threshold: flag if current count <= mean_count * drop_threshold.
-flag_drift <- function(current_counts, baseline, min_weeks = 2, drop_threshold = 0.2) {
+flag_drift <- function(current_counts, baseline, min_weeks = 2, min_mean_count = 3,
+                       drop_threshold = 0.2) {
   merged <- merge(baseline, current_counts, by = "name", all.x = TRUE)
   merged$count[is.na(merged$count)] <- 0
 
-  eligible <- merged[merged$n_weeks >= min_weeks & merged$mean_count > 0, ]
+  eligible <- merged[merged$n_weeks >= min_weeks & merged$mean_count >= min_mean_count, ]
   flagged <- eligible[eligible$count <= eligible$mean_count * drop_threshold, ]
   flagged[order(-flagged$mean_count), c("name", "mean_count", "n_weeks", "count")]
 }

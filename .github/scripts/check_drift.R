@@ -4,10 +4,21 @@
 # /tmp/drift_flagged.csv, empty (header-only) if nothing looks off.
 
 source("drift_check.R")
+source("k12_he_classification.R")
 
+# The raw archive snapshots (Archivek12_Data/combined_*.csv) keep whatever
+# district spelling each scraper emitted -- e.g. Applitrack's "Converse
+# County School Distrcit 2" -- while Wy_Ed_Jobs/combinedclean.csv (this
+# week's current data, below) has already had canonicalize_k12_district()
+# applied. Comparing the two directly makes every misspelled-then-corrected
+# district look like a source that went from N postings/week to zero: its
+# raw-name history has a real baseline, but its current count under that
+# same raw name is 0 because every current row now carries the corrected
+# name. Canonicalizing the archive names on read here is the same
+# on-read normalization rebuild_k12_history_from_archive.R already does.
 read_k12_archive <- function(path) {
   df <- read.csv(path, stringsAsFactors = FALSE)
-  df$District
+  canonicalize_k12_district(df$District)
 }
 
 read_he_archive <- function(path) {
@@ -36,7 +47,11 @@ he_snapshots <- load_snapshots("Archived_HE_Data", "^hedata_.*\\.xlsx$", date_re
 k12_baseline <- build_historical_counts(k12_snapshots, "name")
 he_baseline <- build_historical_counts(he_snapshots, "name")
 
-current_k12 <- as.data.frame(table(read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE)$District))
+# combinedclean.csv is already canonicalized; canonicalize again anyway so
+# the two sides of the comparison can never fall out of sync if that ever
+# changes (canonicalize_k12_district() is idempotent).
+current_k12 <- as.data.frame(table(canonicalize_k12_district(
+  read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE)$District)))
 names(current_k12) <- c("name", "count")
 current_he <- as.data.frame(table(readxl::read_xlsx("Wy_Ed_Jobs/hedata.xlsx")$Institution))
 names(current_he) <- c("name", "count")
