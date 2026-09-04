@@ -50,14 +50,43 @@ test_that("parse_edlio_postings extracts scrollingTabs br-separated titles acros
   html <- read_fixture("edlio_uinta4_tabs.html")
   result <- parse_edlio_postings(html)
 
-  expect_equal(nrow(result), 6)
+  expect_equal(nrow(result), 13)
   expect_true("K-12 Special Education Teacher" %in% result$Title)  # Certified, first line
   expect_true("SPED Consultant Case Manager (part-time)" %in% result$Title)  # Certified, last line
   expect_true("School Bus Route Driver" %in% result$Title)  # Classified, first line
-  # Coaching tab is genuinely empty on the real page -- confirms this
-  # isn't silently swallowing a real Coaching posting, not just "0 tabs
-  # matched at all".
-  expect_false(any(grepl("Coaching", result$Title)))
+  expect_true("Bus Assistant" %in% result$Title)  # Classified, last line
+})
+
+test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongside a sibling tab's <br>-based ones", {
+  # Regression: found 2026-09-04 re-checking Uinta 4's Partial-tier
+  # coverage live -- the Coaching tab on this same fixture has ZERO <br>
+  # tags at all (postings are <li> items inside <ul> lists, with
+  # "High School"/"Middle School" category sub-headers as separate <p>
+  # tags outside any <li>), so the <br>-only extraction above previously
+  # treated the whole tab -- headers, postings, trailing prose -- as one
+  # un-splittable blob that failed the length filter and silently
+  # vanished: 8 real coaching postings, missing with no error and no
+  # visible signal (fetch_edlio_postings() still returned a non-empty,
+  # plausible-looking result from the other two tabs). The Classified
+  # tab's OWN "Classified Job Application"/"Bus Driver Job Application"
+  # links are ALSO <li> items in a separate <ul> further down that same
+  # tab -- confirms real <br> postings and an unrelated <li> list can
+  # coexist in one tab, and that the shared "application" filter (not an
+  # either/or choice of which shape to look for) is what correctly keeps
+  # the real Classified <br> titles while dropping those two links.
+  html <- read_fixture("edlio_uinta4_tabs.html")
+  result <- parse_edlio_postings(html)
+
+  expect_true(all(c(
+    "HS Varsity Wrestling", "HS Assistant Boys Basketball (Freshman)",
+    "Assistant Football", "Assistant Volleyball (pending participation numbers)",
+    "Assistant 8th Girls Basketball", "Head 7th Girls Basketball",
+    "Head and Assistant 7th Boys Basketball", "Head and Assistant Girls Wrestling"
+  ) %in% result$Title))
+  expect_false(any(grepl("Application", result$Title, ignore.case = TRUE)))
+  # Category sub-headers are <p> tags outside any <li> -- must not leak in
+  # as if they were postings themselves.
+  expect_false(any(result$Title %in% c("High School", "Middle School")))
 })
 
 test_that("parse_edlio_postings returns zero rows (not an error) for a page with no matching content", {

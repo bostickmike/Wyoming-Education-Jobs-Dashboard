@@ -222,15 +222,38 @@ parse_edlio_postings <- function(html_text) {
     m <- regmatches(tab, regexec('"title":"([^"]*)","content":"(.*?)","active"', tab, perl = TRUE))[[1]]
     content <- gsub("\\\\n", " ", m[3])
     content <- gsub("&nbsp;", " ", content)
-    lines <- strsplit(content, "<br>")[[1]]
+
+    # Two independent tab-content shapes seen on real pages -- BOTH can
+    # appear in the SAME tab, not just one or the other: plain text
+    # separated by literal <br> tags (Uinta 4's Certified/Classified tabs
+    # use this for the real postings themselves), and postings as <li>
+    # items inside one or more <ul> lists, with category sub-headers
+    # ("High School"/"Middle School") as separate <p> tags OUTSIDE any
+    # <li> (Uinta 4's own Coaching tab -- has zero <br> tags at all, so
+    # the <br>-only extraction previously treated the ENTIRE tab, headers
+    # and all, as one un-splittable blob that failed the length filter
+    # below and silently vanished -- 8 real coaching postings, not caught
+    # by any test because the existing fixtures only covered the <br>
+    # shape). The Classified tab's OWN trailing "Classified Job
+    # Application"/"Bus Driver Job Application" links are also <li> items
+    # (a real, separate <ul> further down the same tab, after the <br>
+    # postings) -- an either/or choice keyed on "does this tab contain any
+    # <li> at all" would silently drop that tab's real <br> postings the
+    # moment it also has an unrelated <li> list; extracting candidates
+    # from BOTH shapes unconditionally and relying on the shared filter
+    # below to drop non-postings (the application links contain the word
+    # "application") is what actually handles a tab having either, both,
+    # or neither shape correctly.
+    br_lines <- gsub("<[^>]+>", "", strsplit(content, "<br>")[[1]])
+    li_items <- regmatches(content, gregexpr("<li>.*?</li>", content, perl = TRUE))[[1]]
+    li_lines <- gsub("<[^>]+>", "", li_items)
     # The first line in particular carries a leading <p><font ...> prefix
     # (confirmed on Uinta 4's real page: "K-12 Special Education Teacher"
     # arrives as "...<font size=\"5\">K-12 Special Education Teacher"),
-    # since that markup precedes the first <br> rather than following one.
-    # Strip any remaining tags per-line, only after splitting on <br> --
-    # stripping tags first would destroy the <br> delimiters themselves.
-    lines <- gsub("<[^>]+>", "", lines)
-    lines <- str_trim(lines)
+    # since that markup precedes the first <br> rather than following one
+    # -- stripping tags first (above) rather than before splitting on
+    # <br> would have destroyed the <br> delimiters themselves.
+    lines <- str_trim(c(br_lines, li_lines))
     lines <- lines[nzchar(lines) & nchar(lines) < 80 & !grepl("must|submit|application|\\.$", lines, ignore.case = TRUE)]
     tab_titles <- c(tab_titles, lines)
   }
