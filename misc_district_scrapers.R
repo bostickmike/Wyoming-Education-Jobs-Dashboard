@@ -62,8 +62,20 @@ fetch_wsba_vacancies <- function(url = "https://www.wsba-wy.org/vacancies") {
 # an unmapped WSBA district name is left as-is rather than dropped, so a
 # genuinely new/renamed district still surfaces (just without
 # canonicalization) instead of silently vanishing.
+#
+# Big Horn and Natrona are this project's one canonical-naming exception:
+# every other district keeps "County", but these two drop it (see
+# canonicalize_ccd_district_name() in ccd_staff_scraper.R, the SAIPE
+# district-name fix in census_saipe_scraper.R, and
+# canonicalize_wsba_district_name() in salary_scrapers.R, which already
+# apply the same fix for their own sources). Without this, a WSBA vacancy
+# for either district lands under "<...> County School District <N>" -- a
+# phantom duplicate combinedclean's own canonicalize_k12_district() never
+# catches (it only fixes misspellings, not this naming exception) -- and
+# that phantom row would carry no salary/vacancy-rate join at all.
 canonicalize_wsba_district <- function(district) {
-  str_replace(district, " School District No\\. (\\d+)$", " School District \\1")
+  district <- str_replace(district, " School District No\\. (\\d+)$", " School District \\1")
+  str_replace(district, "^(Big Horn|Natrona) County School District", "\\1 School District")
 }
 
 parse_wsba_vacancies <- function(html_text) {

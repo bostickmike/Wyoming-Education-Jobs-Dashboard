@@ -7,6 +7,20 @@ test_that("canonicalize_wsba_district leaves non-matching org names unchanged ra
   expect_equal(canonicalize_wsba_district("Snowy Range Academy"), "Snowy Range Academy")
 })
 
+test_that("canonicalize_wsba_district drops 'County' for the Big Horn/Natrona naming exception", {
+  # Every other district keeps "County" (see the test above), but these two
+  # don't -- matching canonicalize_ccd_district_name() (ccd_staff_scraper.R),
+  # canonicalize_wsba_district_name() (salary_scrapers.R), and the SAIPE
+  # district-name fix (census_saipe_scraper.R). A WSBA vacancy for either
+  # district previously landed under "<...> County School District <N>",
+  # silently splitting it from the real district everywhere else in the
+  # pipeline canonicalizes it without "County".
+  expect_equal(canonicalize_wsba_district("Natrona County School District No. 1"), "Natrona School District 1")
+  expect_equal(canonicalize_wsba_district("Big Horn County School District No. 2"), "Big Horn School District 2")
+  # Unaffected districts still keep "County".
+  expect_equal(canonicalize_wsba_district("Carbon County School District No. 1"), "Carbon County School District 1")
+})
+
 test_that("parse_wsba_vacancies extracts real entries from the committed WSBA fixture", {
   # Real fixture: full HTML captured from https://www.wsba-wy.org/vacancies.
   # Confirmed this is server-rendered directly (Google Sites splits text
