@@ -70,9 +70,22 @@ flagged <- if (nrow(flagged_k12) == 0 && nrow(flagged_he) == 0) {
   rbind(flagged_k12, flagged_he)
 }
 
+# scrape_log.csv is this same run's own record of what actually errored vs.
+# came back genuinely empty (see attach_scrape_log_errors()'s comment in
+# drift_check.R) -- read it if the pipeline step before this one produced
+# one. Its absence (a fresh checkout with nothing scraped yet) just means no
+# source gets a scrape_error attached, same as before this existed.
+scrape_log <- if (file.exists("scrape_log.csv")) {
+  read.csv("scrape_log.csv", stringsAsFactors = FALSE)
+} else {
+  data.frame(timestamp = character(0), source = character(0), status = character(0),
+             n_rows = integer(0), error_message = character(0))
+}
+flagged <- attach_scrape_log_errors(flagged, scrape_log)
+
 cat(sprintf(
-  "Drift check: %d K-12 baseline sources, %d HE baseline sources, %d flagged.\n",
-  nrow(k12_baseline), nrow(he_baseline), nrow(flagged)
+  "Drift check: %d K-12 baseline sources, %d HE baseline sources, %d flagged (%d confirmed by scrape_log as errored).\n",
+  nrow(k12_baseline), nrow(he_baseline), nrow(flagged), sum(!is.na(flagged$scrape_error))
 ))
 if (nrow(flagged) > 0) print(flagged)
 
