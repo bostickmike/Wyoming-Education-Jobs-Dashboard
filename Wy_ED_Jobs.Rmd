@@ -64,16 +64,26 @@ for (i in seq_len(nrow(registry))) {
         scrape_fn = function() fetch_applitrack_postings(tenant_path),
         expected_cols = c("title", "position", "position2", "date_posted", "location", "closing_date")
       )
-      # A district with genuinely zero current openings is indistinguishable
-      # from any other empty scrape without a placeholder row -- preserved
-      # from the original Applitrack loop's own behavior.
-      if (nrow(df) == 0) {
-        df <- data.frame(title = "No jobs", position = NA, position2 = NA, date_posted = NA,
-                          location = NA, closing_date = NA, stringsAsFactors = FALSE)
+      # A genuinely empty result is dropped, not padded with a placeholder
+      # row -- matching every other platform in this same loop (TedK12/
+      # SchoolSpring/RedRoverK12 below). The original Applitrack loop
+      # inserted a literal title = "No jobs" row here instead, which
+      # combinedclean.csv then carried straight into production as a fake
+      # posting -- classified "Other", counted in that district's weekly
+      # total, with no code anywhere filtering the literal string back out
+      # (confirmed: 3 such rows in the 2026-08-28 committed
+      # combinedclean.csv, for Fremont County SD24, Lincoln County SD1, and
+      # Sublette County SD9). safe_scrape() already logs an empty week to
+      # scrape_log.csv/drift_check.R same as it does for every other
+      # platform, so this placeholder was never actually needed to make an
+      # empty week visible.
+      if (nrow(df) > 0) {
+        data.frame(title = df$title, date_posted = df$date_posted, position = df$position,
+                   location = df$location, url = row$Job_Link, District = row$District,
+                   stringsAsFactors = FALSE)
+      } else {
+        NULL
       }
-      data.frame(title = df$title, date_posted = df$date_posted, position = df$position,
-                 location = df$location, url = row$Job_Link, District = row$District,
-                 stringsAsFactors = FALSE)
     },
     TedK12 = {
       df <- safe_scrape(
