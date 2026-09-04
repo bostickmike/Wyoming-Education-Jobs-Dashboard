@@ -164,16 +164,28 @@ test_that("parse_wordpress_postings returns zero rows (not an error) when there'
 # Google Sites (Uinta County SD6)
 # ---------------------------------------------------------------------------
 
-test_that("parse_googlesites_postings extracts the numbered-bold-title pattern from a real page", {
-  html <- read_fixture("googlesites_uinta6.html")
-  result <- parse_googlesites_postings(html)
+test_that("parse_googlesites_postings extracts both numbered-title patterns from a real rendered page", {
+  # Plain rendered text (document.body.innerText), not raw HTML -- the page
+  # itself only ever contains real posting text once JS-rendered (confirmed
+  # live 2026-09-04: a plain fetch of this same page has none of the
+  # posting text below at all), so parse_googlesites_postings() takes
+  # already-rendered text the same way parse_apptegy_postings()/
+  # parse_prairieview_postings() do, not HTML it parses itself.
+  rendered <- read_fixture("googlesites_uinta6_rendered.txt")
+  result <- parse_googlesites_postings(rendered)
 
-  expect_equal(nrow(result), 1)
-  expect_equal(result$Title, "Musical Director")
+  expect_equal(nrow(result), 5)
+  expect_setequal(result$Title, c(
+    "High School Boys Assistant Swim Coach",  # title-before-district pattern
+    "HS Musical Assistant Director",          # title-after-district pattern
+    "maintenance position",
+    "substitute school bus drivers",
+    "substitute school bus aides"
+  ))
 })
 
 test_that("parse_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
-  result <- parse_googlesites_postings("<html><body><p>Contact us for openings.</p></body></html>")
+  result <- parse_googlesites_postings("Contact us for openings.")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
@@ -218,6 +230,32 @@ test_that("parse_apptegy_postings extracts the dollar-rate posting format (Platt
   expect_equal(nrow(result), 2)
   expect_true("Substitute Certified Teachers" %in% result$Title)
   expect_true("Substitute Paraeducator" %in% result$Title)
+})
+
+test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (Weston 7's real rendered page)", {
+  # Regression: a fourth real Apptegy posting format, found 2026-09-04 while
+  # A/B-verifying this district's page was live-checked as "0 rows" and
+  # turned out to have 6 real postings the first 3 patterns above all miss:
+  # a lead-in sentence ending in a colon ("...is currently accepting
+  # applications for the following ... positions ... school year:")
+  # followed by a flat list of bare title lines, with the lead-in itself
+  # wrapped across multiple blank-line-separated paragraphs by innerText.
+  # The fixture has two independent instances of this shape on the same
+  # page (5 substitute titles, then later a single "Paraprofessional -
+  # Technology Aide" posting) plus a third, unrelated "Subs Needed" prose
+  # block that restates the same standing substitute categories in
+  # sentence form -- deliberately NOT extracted a second time from there,
+  # since it would just duplicate the first block's titles under messier
+  # phrasing, not surface anything new.
+  text <- read_fixture("apptegy_weston7_rendered.txt")
+  result <- parse_apptegy_postings(text)
+
+  expect_equal(nrow(result), 6)
+  expect_setequal(result$Title, c(
+    "Substitute Teacher", "Substitute Paraprofessional", "Substitute Custodian",
+    "Substitute Bus Driver (CDL preferred but willing to train)", "Substitute Lunchroom Cook",
+    "Paraprofessional - Technology Aide"
+  ))
 })
 
 test_that("parse_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {

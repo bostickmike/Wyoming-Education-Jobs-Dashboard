@@ -50,10 +50,11 @@ test_that("fetch_misc_district_postings errors clearly on an unknown platform", 
 })
 
 test_that("fetch_all_misc_district_postings combines WSBA and district-own postings, deduplicated, with no chromote available", {
-  # No chromote_session_factory passed -> apptegy_session stays NULL ->
-  # fetch_apptegy_postings(NULL, url) is called for the 4 Apptegy
-  # districts and (mocked here) returns a fixed result regardless of the
-  # NULL session, standing in for what a real browser fetch would return.
+  # No chromote_session_factory passed -> browser_session stays NULL ->
+  # fetch_apptegy_postings(NULL, url)/fetch_googlesites_postings(NULL, url)
+  # are called for the 4 Apptegy districts and Uinta County SD6 and
+  # (mocked here) return a fixed result regardless of the NULL session,
+  # standing in for what a real browser fetch would return.
   mock_globals(list(
     fetch_wsba_vacancies = function(url) data.frame(
       Title = c("K-6 Elementary Teacher", "K-12 Band Teacher", "Middle School Math Teacher", "Science Teacher"),
@@ -67,7 +68,7 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
     fetch_smartsites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_googlesites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_apptegy_postings = function(session, url) data.frame(
@@ -111,7 +112,7 @@ test_that("fetch_all_misc_district_postings returns the right empty schema when 
     fetch_smartsites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_googlesites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_apptegy_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0))

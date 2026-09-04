@@ -409,28 +409,70 @@ parse_wordpress_postings <- function(html_text) {
 }
 
 # ---------------------------------------------------------------------------
-# Google Sites (Uinta County SD6)
+# Google Sites (Uinta County SD6) -- the third platform family that
+# genuinely needs a browser
 # ---------------------------------------------------------------------------
 
-# Same underlying rendering as the WSBA page (server-rendered, text split
-# across many small <span> tags), but a completely different content
-# pattern: each posting is a numbered, bolded title directly followed by
-# prose ("1-Musical Director Uinta County School District #6 is looking
-# for..."). No structured date. Matches conservatively -- requires the
-# numbered prefix -- to avoid false-matching arbitrary bold text elsewhere
-# on the page.
-fetch_googlesites_postings <- function(url) {
-  resp <- request(url) %>% perform_with_retry()
-  parse_googlesites_postings(resp_body_string(resp))
+# Previously assumed server-rendered, "same underlying rendering as the WSBA
+# page" -- wrong, confirmed directly 2026-09-04: a plain httr2 fetch of the
+# real live page contains none of its actual posting text at all (checked
+# for "accepting applications", not present), while a chromote render of the
+# identical URL shows it in full. This had been silently returning 0 rows
+# for real, live postings the whole time it was plain-HTTP -- not a
+# genuinely quiet district. Two independent title patterns confirmed on the
+# real rendered page, both numbered ("N-"), but in opposite title/district
+# order:
+#
+# 1. "N-  TITLE District Name County School District #N is
+#    looking/seeking/accepting..." -- title comes BEFORE the district name
+#    (e.g. "1-   High School Boys Assistant Swim Coach Uinta County School
+#    District #6 is taking applications..."). Whitespace after the "N-" is
+#    NOT reliably zero, unlike this pattern's original single confirmed
+#    example ("1-Musical Director...") -- the real page uses anywhere from
+#    0 to 3 spaces, so this must tolerate `\s*`, not assume none.
+# 2. "N- District Name County School District #N is accepting/taking
+#    applications for [a/an] TITLE." -- the inverse order, title comes
+#    AFTER the district name and a fixed "applications for" phrase, ending
+#    at the next period (e.g. "1- Uinta County School District #6 is
+#    accepting applications for a HS Musical Assistant Director."). Not
+#    caught by pattern 1's lookahead at all, since here the district name
+#    comes immediately after the number, not the title -- confirmed this
+#    silently dropped 4 of the page's 5 real postings (only the swim coach
+#    posting used pattern 1's order).
+fetch_googlesites_postings <- function(chromote_session, url) {
+  chromote_session$Page$navigate(url)
+  chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
+  Sys.sleep(5)
+  text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
+  parse_googlesites_postings(text)
 }
 
-parse_googlesites_postings <- function(html_text) {
-  soup <- rvest::read_html(html_text)
-  text <- rvest::html_text2(soup)
+parse_googlesites_postings <- function(rendered_text) {
+  # document.body.innerText preserves non-breaking spaces (U+00A0) from the
+  # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
+  # match -- same gotcha parse_apptegy_postings() already documents and
+  # handles, confirmed here too: the swim-coach posting's "1-" is followed
+  # by two U+00A0 characters, not regular spaces, silently failing every
+  # `\s*`/`\s+` in both patterns below without erroring.
+  rendered_text <- gsub("\u00a0", " ", rendered_text)
 
-  matches <- regmatches(text, gregexpr("\\d+-([A-Z][A-Za-z/ ]{2,60}?)(?=\\s+[A-Z][a-z]+ County School District|\\s+is (?:looking|seeking|accepting))", text, perl = TRUE))[[1]]
-  titles <- str_trim(sub("^\\d+-", "", matches))
-  titles <- unique(titles[nzchar(titles)])
+  title_before_district <- regmatches(rendered_text, gregexpr(
+    "\\d+-\\s*([A-Z][A-Za-z/ ]{2,60}?)(?=\\s+[A-Z][a-z]+ County School District|\\s+is (?:looking|seeking|accepting))",
+    rendered_text, perl = TRUE
+  ))[[1]]
+  titles_1 <- str_trim(sub("^\\d+-\\s*", "", title_before_district))
+
+  title_after_district <- regmatches(rendered_text, gregexpr(
+    "\\d+-\\s*[A-Z][a-z]+ County School District #?\\d+ is (?:accepting|taking) applications for (?:a |an )?([A-Za-z][A-Za-z0-9/ '-]{2,60}?)\\.",
+    rendered_text, perl = TRUE
+  ))[[1]]
+  titles_2 <- str_trim(sub(
+    "^\\d+-\\s*[A-Z][a-z]+ County School District #?\\d+ is (?:accepting|taking) applications for (?:a |an )?([A-Za-z][A-Za-z0-9/ '-]+)\\.$",
+    "\\1", title_after_district
+  ))
+
+  titles <- unique(c(titles_1, titles_2))
+  titles <- titles[nzchar(titles)]
 
   if (length(titles) == 0) return(empty_misc_result())
 
@@ -581,7 +623,44 @@ parse_apptegy_postings <- function(rendered_text) {
   rate_lines <- grep("^[A-Z][A-Za-z /]+\\$\\d", lines, value = TRUE, perl = TRUE)
   rate_titles <- str_trim(sub("^([A-Z][A-Za-z /]+?)\\s*\\$\\d.*$", "\\1", rate_lines))
 
-  titles <- unique(c(colon_titles, dash_titles, rate_titles))
+  # 4. A lead-in sentence ending in a colon ("...is currently accepting
+  #    applications for the following [N] position[s] for the ... school
+  #    year:") followed by a flat list of bare title lines, one per real
+  #    posting -- confirmed on Weston 7's real page (5 substitute titles
+  #    with no per-title punctuation marker at all -- not caught by any of
+  #    the 3 patterns above -- plus a second, single-posting instance of
+  #    the same lead-in shape further down the same page). Works on the
+  #    full text rather than per-line, since innerText wraps the lead-in
+  #    sentence itself across multiple lines/blank-line paragraph breaks
+  #    (confirmed: "...for the 26/27" and "school year:" land on two
+  #    separate paragraphs). Scoped tightly to avoid the false-positive
+  #    risk the header comment above already flagged for a bare
+  #    short-line pattern: requires the specific "accepting applications
+  #    for the following" phrase (not just any colon), and stops
+  #    consuming candidate titles at the first paragraph that's either
+  #    long (a real prose sentence, e.g. the district's own follow-up
+  #    boilerplate about how to apply) or itself contains an embedded
+  #    line break, rather than a fixed count -- so it degrades to
+  #    "however many short lines follow" instead of overreaching into
+  #    nav/footer text the way an unscoped version would.
+  leadin_starts <- gregexpr("accepting applications for the following", rendered_text, ignore.case = TRUE)[[1]]
+  leadin_titles <- character(0)
+  if (leadin_starts[1] != -1) {
+    for (start in leadin_starts) {
+      remainder <- substring(rendered_text, start)
+      colon_pos <- regexpr(":", remainder, fixed = TRUE)
+      if (colon_pos == -1) next
+      after_colon <- substring(remainder, colon_pos + 1)
+      paragraphs <- str_trim(strsplit(after_colon, "\n\\s*\n")[[1]])
+      for (para in paragraphs) {
+        if (!nzchar(para)) next
+        if (nchar(para) > 70 || grepl("\n", para, fixed = TRUE)) break
+        leadin_titles <- c(leadin_titles, para)
+      }
+    }
+  }
+
+  titles <- unique(c(colon_titles, dash_titles, rate_titles, leadin_titles))
   titles <- titles[nzchar(titles)]
 
   if (length(titles) == 0) return(empty_misc_result())
@@ -750,17 +829,18 @@ misc_district_coverage_tiers <- function() {
 }
 
 # Fetches one district's own-page postings via the right platform-specific
-# function. Apptegy and Prairie View both require a live chromote session
-# (passed in by the caller so all districts needing one share a single
-# browser instance instead of paying startup cost per district); every
-# other platform is plain HTTP and ignores the session argument entirely.
+# function. Apptegy, Prairie View, and Google Sites all require a live
+# chromote session (passed in by the caller so all districts needing one
+# share a single browser instance instead of paying startup cost per
+# district); every other platform is plain HTTP and ignores the session
+# argument entirely.
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
   switch(platform,
     wordpress = fetch_wordpress_postings(url),
     smartsites = fetch_smartsites_postings(url),
     schoolblocks = fetch_schoolblocks_postings(url),
     edlio = fetch_edlio_postings(url),
-    googlesites = fetch_googlesites_postings(url),
+    googlesites = fetch_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
     apptegy = fetch_apptegy_postings(chromote_session, url),
     prairieview = fetch_prairieview_postings(chromote_session, url),
@@ -786,10 +866,10 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
 # chromote_session_factory: a zero-arg function returning a fresh
 # chromote session (e.g. \() chromote::ChromoteSession$new()), only
 # invoked (once) if the registry actually contains a district on a
-# platform that needs a browser (currently Apptegy or Prairie View's
-# platform). Kept as an injected factory rather than a hard chromote:::
-# call so this function -- and everything except those districts within
-# it -- stays testable without a real browser available.
+# platform that needs a browser (currently Apptegy, Prairie View, or
+# Google Sites's platform). Kept as an injected factory rather than a hard
+# chromote::: call so this function -- and everything except those
+# districts within it -- stays testable without a real browser available.
 WSBA_VACANCIES_URL <- "https://www.wsba-wy.org/vacancies"
 
 fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
@@ -799,7 +879,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     expected_cols = c("Title", "District", "Location", "Posted_Date")
   )
 
-  needs_browser <- any(misc_district_registry$platform %in% c("apptegy", "prairieview"))
+  needs_browser <- any(misc_district_registry$platform %in% c("apptegy", "prairieview", "googlesites"))
   browser_session <- if (needs_browser && !is.null(chromote_session_factory)) {
     chromote_session_factory()
   } else {
