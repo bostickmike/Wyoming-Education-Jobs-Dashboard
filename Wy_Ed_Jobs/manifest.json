@@ -343,7 +343,7 @@
       "description": {
         "Package": "bit64",
         "Title": "A S3 Class for Vectors of 64bit Integers",
-        "Version": "4.8.4",
+        "Version": "4.8.6",
         "Authors@R": "c(\n    person(\"Michael\", \"Chirico\", email=\"michaelchirico4@gmail.com\", role=c(\"aut\", \"cre\")),\n    person(\"Jens\", \"Oehlschlägel\", role=\"aut\"),\n    person(\"Leonardo\", \"Silvestri\", role=\"ctb\"),\n    person(\"Ofek\", \"Shilon\", role=\"ctb\"),\n    person(\"Christian\", \"Ullerich\", role=\"ctb\")\n  )",
         "Depends": "R (>= 3.5.0)",
         "Description": "\n  Package 'bit64' provides serializable S3 atomic 64bit (signed) integers.\n  These are useful for handling database keys and exact counting in +-2^63.\n  WARNING: do not use them as replacement for 32bit integers, integer64 are not\n  supported for subscripting by R-core and they have different semantics when\n  combined with double, e.g. integer64 + double => integer64.\n  Class integer64 can be used in vectors, matrices, arrays and data.frames.\n  Methods are available for coercion from and to logicals, integers, doubles,\n  characters and factors as well as many elementwise and summary functions.\n  Many fast algorithmic operations such as 'match' and 'order' support inter-\n  active data exploration and manipulation and optionally leverage caching.",
@@ -359,12 +359,12 @@
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/roxygen2/version": "8.0.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-08-19 16:52:49 UTC; chiricom",
+        "Packaged": "2026-09-01 05:45:08 UTC; chiricom",
         "Author": "Michael Chirico [aut, cre],\n  Jens Oehlschlägel [aut],\n  Leonardo Silvestri [ctb],\n  Ofek Shilon [ctb],\n  Christian Ullerich [ctb]",
         "Maintainer": "Michael Chirico <michaelchirico4@gmail.com>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-08-20 05:23:42 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-21 04:14:33 UTC; unix"
+        "Date/Publication": "2026-09-01 09:30:09 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-02 04:00:12 UTC; unix"
       }
     },
     "blob": {
@@ -1562,7 +1562,7 @@
       "description": {
         "Package": "httr",
         "Title": "Tools for Working with URLs and HTTP",
-        "Version": "1.4.8",
+        "Version": "1.4.9",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Useful tools for working with HTTP organised by HTTP verbs\n    (GET(), POST(), etc). Configuration functions make it easy to control\n    additional request components (authenticate(), add_headers() and so\n    on).",
         "License": "MIT + file LICENSE",
@@ -1573,15 +1573,15 @@
         "Suggests": "covr, httpuv, jpeg, knitr, png, readr, rmarkdown, testthat\n(>= 0.8.0), xml2",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/roxygen2/version": "8.1.0",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-02-13 13:25:45 UTC; hadleywickham",
+        "Packaged": "2026-08-31 22:59:51 UTC; hadleywickham",
         "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Hadley Wickham <hadley@posit.co>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-02-13 16:20:15 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:22:15 UTC; unix"
+        "Date/Publication": "2026-09-01 13:20:02 UTC",
+        "Built": "R 4.6.0; ; 2026-09-02 03:59:46 UTC; unix"
       }
     },
     "ids": {
@@ -2708,28 +2708,27 @@
         "Type": "Package",
         "Package": "rmarkdown",
         "Title": "Dynamic Documents for R",
-        "Version": "2.31",
+        "Version": "2.32",
         "Authors@R": "c(\n    person(\"JJ\", \"Allaire\", , \"jj@posit.co\", role = \"aut\"),\n    person(\"Yihui\", \"Xie\", , \"xie@yihui.name\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-0645-5666\")),\n    person(\"Christophe\", \"Dervieux\", , \"cderv@posit.co\", role = \"aut\", comment = c(ORCID = \"0000-0003-4474-2498\")),\n    person(\"Jonathan\", \"McPherson\", , \"jonathan@posit.co\", role = \"aut\"),\n    person(\"Javier\", \"Luraschi\", role = \"aut\"),\n    person(\"Kevin\", \"Ushey\", , \"kevin@posit.co\", role = \"aut\"),\n    person(\"Aron\", \"Atkins\", , \"aron@posit.co\", role = \"aut\"),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"),\n    person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"aut\"),\n    person(\"Winston\", \"Chang\", , \"winston@posit.co\", role = \"aut\"),\n    person(\"Richard\", \"Iannone\", , \"rich@posit.co\", role = \"aut\", comment = c(ORCID = \"0000-0003-3925-190X\")),\n    person(\"Andrew\", \"Dunning\", role = \"ctb\", comment = c(ORCID = \"0000-0003-0464-5036\")),\n    person(\"Atsushi\", \"Yasumoto\", role = c(\"ctb\", \"cph\"), comment = c(ORCID = \"0000-0002-8335-495X\", cph = \"Number sections Lua filter\")),\n    person(\"Barret\", \"Schloerke\", role = \"ctb\"),\n    person(\"Carson\", \"Sievert\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4958-2844\")), \n    person(\"Devon\", \"Ryan\", , \"dpryan79@gmail.com\", role = \"ctb\", comment = c(ORCID = \"0000-0002-8549-0971\")),\n    person(\"Frederik\", \"Aust\", , \"frederik.aust@uni-koeln.de\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4900-788X\")),\n    person(\"Jeff\", \"Allen\", , \"jeff@posit.co\", role = \"ctb\"), \n    person(\"JooYoung\", \"Seo\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4064-6012\")),\n    person(\"Malcolm\", \"Barrett\", role = \"ctb\"),\n    person(\"Rob\", \"Hyndman\", , \"Rob.Hyndman@monash.edu\", role = \"ctb\"),\n    person(\"Romain\", \"Lesur\", role = \"ctb\"),\n    person(\"Roy\", \"Storey\", role = \"ctb\"),\n    person(\"Ruben\", \"Arslan\", , \"ruben.arslan@uni-goettingen.de\", role = \"ctb\"),\n    person(\"Sergio\", \"Oller\", role = \"ctb\"),\n    person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(, \"jQuery UI contributors\", role = c(\"ctb\", \"cph\"), comment = \"jQuery UI library; authors listed in inst/rmd/h/jqueryui/AUTHORS.txt\"),\n    person(\"Mark\", \"Otto\", role = \"ctb\", comment = \"Bootstrap library\"),\n    person(\"Jacob\", \"Thornton\", role = \"ctb\", comment = \"Bootstrap library\"),\n    person(, \"Bootstrap contributors\", role = \"ctb\", comment = \"Bootstrap library\"),\n    person(, \"Twitter, Inc\", role = \"cph\", comment = \"Bootstrap library\"),\n    person(\"Alexander\", \"Farkas\", role = c(\"ctb\", \"cph\"), comment = \"html5shiv library\"),\n    person(\"Scott\", \"Jehl\", role = c(\"ctb\", \"cph\"), comment = \"Respond.js library\"),\n    person(\"Ivan\", \"Sagalaev\", role = c(\"ctb\", \"cph\"), comment = \"highlight.js library\"),\n    person(\"Greg\", \"Franko\", role = c(\"ctb\", \"cph\"), comment = \"tocify library\"),\n    person(\"John\", \"MacFarlane\", role = c(\"ctb\", \"cph\"), comment = \"Pandoc templates\"),\n    person(, \"Google, Inc.\", role = c(\"ctb\", \"cph\"), comment = \"ioslides library\"),\n    person(\"Dave\", \"Raggett\", role = \"ctb\", comment = \"slidy library\"),\n    person(, \"W3C\", role = \"cph\", comment = \"slidy library\"),\n    person(\"Dave\", \"Gandy\", role = c(\"ctb\", \"cph\"), comment = \"Font-Awesome\"),\n    person(\"Ben\", \"Sperry\", role = \"ctb\", comment = \"Ionicons\"),\n    person(, \"Drifty\", role = \"cph\", comment = \"Ionicons\"),\n    person(\"Aidan\", \"Lister\", role = c(\"ctb\", \"cph\"), comment = \"jQuery StickyTabs\"),\n    person(\"Benct Philip\", \"Jonsson\", role = c(\"ctb\", \"cph\"), comment = \"pagebreak Lua filter\"),\n    person(\"Albert\", \"Krewinkel\", role = c(\"ctb\", \"cph\"), comment = \"pagebreak Lua filter\")\n  )",
         "Description": "Convert R Markdown documents into a variety of formats.",
-        "License": "GPL-3",
+        "License": "MIT + file LICENSE",
         "URL": "https://github.com/rstudio/rmarkdown,\nhttps://pkgs.rstudio.com/rmarkdown/",
         "BugReports": "https://github.com/rstudio/rmarkdown/issues",
         "Depends": "R (>= 3.0)",
-        "Imports": "bslib (>= 0.2.5.1), evaluate (>= 0.13), fontawesome (>=\n0.5.0), htmltools (>= 0.5.1), jquerylib, jsonlite, knitr (>=\n1.43), methods, tinytex (>= 0.31), tools, utils, xfun (>=\n0.36), yaml (>= 2.1.19)",
+        "Imports": "bslib (>= 0.2.5.1), evaluate (>= 0.13), fontawesome (>=\n0.5.0), htmltools (>= 0.5.1), jquerylib, jsonlite, knitr (>=\n1.50), methods, tinytex (>= 0.31), tools, utils, xfun (>=\n0.36), yaml (>= 2.1.19)",
         "Suggests": "digest, dygraphs, fs, rsconnect, downlit (>= 0.4.0), katex\n(>= 1.4.0), sass (>= 0.4.0), shiny (>= 1.6.0), testthat (>=\n3.0.3), tibble, vctrs, cleanrmd, withr (>= 2.4.2), xml2",
         "VignetteBuilder": "knitr",
-        "Config/Needs/website": "rstudio/quillt, pkgdown",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
-        "SystemRequirements": "pandoc (>= 1.14) - http://pandoc.org",
+        "SystemRequirements": "pandoc (>= 2.8) - http://pandoc.org",
+        "Config/roxygen2/version": "8.1.0",
         "NeedsCompilation": "no",
-        "Packaged": "2026-03-25 18:23:38 UTC; yihui",
+        "Packaged": "2026-08-28 14:24:20 UTC; yihui",
         "Author": "JJ Allaire [aut],\n  Yihui Xie [aut, cre] (ORCID: <https://orcid.org/0000-0003-0645-5666>),\n  Christophe Dervieux [aut] (ORCID:\n    <https://orcid.org/0000-0003-4474-2498>),\n  Jonathan McPherson [aut],\n  Javier Luraschi [aut],\n  Kevin Ushey [aut],\n  Aron Atkins [aut],\n  Hadley Wickham [aut],\n  Joe Cheng [aut],\n  Winston Chang [aut],\n  Richard Iannone [aut] (ORCID: <https://orcid.org/0000-0003-3925-190X>),\n  Andrew Dunning [ctb] (ORCID: <https://orcid.org/0000-0003-0464-5036>),\n  Atsushi Yasumoto [ctb, cph] (ORCID:\n    <https://orcid.org/0000-0002-8335-495X>, cph: Number sections Lua\n    filter),\n  Barret Schloerke [ctb],\n  Carson Sievert [ctb] (ORCID: <https://orcid.org/0000-0002-4958-2844>),\n  Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>),\n  Frederik Aust [ctb] (ORCID: <https://orcid.org/0000-0003-4900-788X>),\n  Jeff Allen [ctb],\n  JooYoung Seo [ctb] (ORCID: <https://orcid.org/0000-0002-4064-6012>),\n  Malcolm Barrett [ctb],\n  Rob Hyndman [ctb],\n  Romain Lesur [ctb],\n  Roy Storey [ctb],\n  Ruben Arslan [ctb],\n  Sergio Oller [ctb],\n  Posit Software, PBC [cph, fnd],\n  jQuery UI contributors [ctb, cph] (jQuery UI library; authors listed in\n    inst/rmd/h/jqueryui/AUTHORS.txt),\n  Mark Otto [ctb] (Bootstrap library),\n  Jacob Thornton [ctb] (Bootstrap library),\n  Bootstrap contributors [ctb] (Bootstrap library),\n  Twitter, Inc [cph] (Bootstrap library),\n  Alexander Farkas [ctb, cph] (html5shiv library),\n  Scott Jehl [ctb, cph] (Respond.js library),\n  Ivan Sagalaev [ctb, cph] (highlight.js library),\n  Greg Franko [ctb, cph] (tocify library),\n  John MacFarlane [ctb, cph] (Pandoc templates),\n  Google, Inc. [ctb, cph] (ioslides library),\n  Dave Raggett [ctb] (slidy library),\n  W3C [cph] (slidy library),\n  Dave Gandy [ctb, cph] (Font-Awesome),\n  Ben Sperry [ctb] (Ionicons),\n  Drifty [cph] (Ionicons),\n  Aidan Lister [ctb, cph] (jQuery StickyTabs),\n  Benct Philip Jonsson [ctb, cph] (pagebreak Lua filter),\n  Albert Krewinkel [ctb, cph] (pagebreak Lua filter)",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-03-26 16:30:02 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:24:30 UTC; unix"
+        "Date/Publication": "2026-09-01 13:10:02 UTC",
+        "Built": "R 4.6.0; ; 2026-09-02 04:00:02 UTC; unix"
       }
     },
     "rstudioapi": {
@@ -2794,7 +2793,7 @@
       "description": {
         "Package": "s2",
         "Title": "Spherical Geometry Operators Using the S2 Geometry Library",
-        "Version": "1.1.11",
+        "Version": "1.1.12",
         "Authors@R": "c(\n     person(given = \"Dewey\",\n           family = \"Dunnington\",\n           role = c(\"aut\"),\n           email = \"dewey@fishandwhistle.net\",\n           comment = c(ORCID = \"0000-0002-9415-4582\")),\n     person(given = \"Edzer\",\n             family = \"Pebesma\",\n             role = c(\"aut\", \"cre\"),\n             email = \"edzer.pebesma@uni-muenster.de\",\n             comment = c(ORCID = \"0000-0001-8049-7069\")),\n    person(\"Ege\", \"Rubak\", email=\"rubak@math.aau.dk\", role = c(\"aut\")),\n    person(\"Jeroen\", \"Ooms\", , \"jeroen.ooms@stat.ucla.edu\", role = \"ctb\", comment = \"configure script\"),\n    person(family = \"Google, Inc.\", role = \"cph\", comment = \"Original s2geometry.io source code\")\n  )",
         "Description": "Provides R bindings for Google's s2 library for geometric calculations on\n    the sphere. High-performance constructors and exporters provide high compatibility\n    with existing spatial packages, transformers construct new geometries from existing\n    geometries, predicates provide a means to select geometries based on spatial\n    relationships, and accessors extract information about geometries.",
         "License": "Apache License (== 2.0)",
@@ -2810,12 +2809,12 @@
         "Config/testthat/edition": "3",
         "Config/roxygen2/version": "8.0.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-06-01 09:16:23 UTC; edzer",
+        "Packaged": "2026-09-03 07:29:53 UTC; edzer",
         "Author": "Dewey Dunnington [aut] (ORCID: <https://orcid.org/0000-0002-9415-4582>),\n  Edzer Pebesma [aut, cre] (ORCID:\n    <https://orcid.org/0000-0001-8049-7069>),\n  Ege Rubak [aut],\n  Jeroen Ooms [ctb] (configure script),\n  Google, Inc. [cph] (Original s2geometry.io source code)",
         "Maintainer": "Edzer Pebesma <edzer.pebesma@uni-muenster.de>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-06-01 10:30:02 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:23:18 UTC; unix"
+        "Date/Publication": "2026-09-03 09:30:02 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-04 04:24:34 UTC; unix"
       }
     },
     "sass": {
@@ -3834,40 +3833,40 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "81f6b399f8f6749870ae012940c4c0a5"
+      "checksum": "340aa453b8e5d26ee0f1dd9dd761fc2a"
     },
     "allnow.csv": {
-      "checksum": "8095e69dac0f0f0b141304ccdac32b1e"
+      "checksum": "405505e3e0068ed336496f9041820015"
     },
     "allsum_he.csv": {
-      "checksum": "bd56b523e0d307648a2826cbd898b50e"
+      "checksum": "9561b674234d619721dae35778830c4a"
     },
     "allsum.csv": {
-      "checksum": "6fa22f7c2aaa7edecb74cacf8166dbdc"
+      "checksum": "d85a1c9128a99ee071d0faec9656dfa8"
     },
     "app.R": {
       "checksum": "6c59e1acb8b9b3e107b216a8a22b14b8"
     },
     "combinedclean.csv": {
-      "checksum": "59f240aa81fd0614fe26bfbe0314a632"
+      "checksum": "f7c1035a9b68b418e308a50768e9273a"
     },
     "facultydata.csv": {
-      "checksum": "5acc314fda9758d29b2ae6cbac4c820e"
+      "checksum": "303b983e4f925d837d0e202596ce9885"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "11124f9d25190a5ef355070606ec7d50"
+      "checksum": "bafadca54f4a23981ff407143df358e4"
     },
     "hedata.xlsx": {
-      "checksum": "a20140c9210d7d6d43aec992fd25d0d0"
+      "checksum": "25b8d348c2e6afeb7152cef01f5c9272"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "3a545ebd200ef8b134d3fa61ebc5556b"
+      "checksum": "f9883bc590a8276d1877bcc7e2da22c7"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "ba5f6b72e5e607513ca5476002c11af8"
+      "checksum": "41e8b67320352eb7a59f76f9e4acbce5"
     },
     "salarymap.csv": {
       "checksum": "65b66bea354fd9ba0fcee79e1cf908fc"
