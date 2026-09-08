@@ -133,6 +133,10 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
   # file, not from re-reading everything.
   raw_latest <- read.csv(latest$file, colClasses = c("Archive_Date" = "character"))
   raw_latest <- raw_latest[, setdiff(names(raw_latest), "X"), drop = FALSE]
+  # mirror Wy_ED_Jobs.Rmd / rebuild_k12_history_from_archive(): drop
+  # byte-identical RAW rows (before classify_k12_position() overwrites the
+  # raw `position` column) so a job listed once per building counts once
+  raw_latest <- distinct(raw_latest)
   raw_latest$Archive_Date <- as.character(as.Date(raw_latest$Archive_Date))
   if (!"posting_id" %in% names(raw_latest)) raw_latest$posting_id <- NA_character_
 

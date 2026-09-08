@@ -23,6 +23,8 @@ One row per open K-12 posting, all position types (not just teachers). Powers th
 
 **Sources combined into this file**: AppliTrack, TedK12, SchoolSpring, RedRoverK12, direct district pages for the miscellaneous-district registry, and the complete WSBA statewide vacancies feed. WSBA rows are removed only when their normalized district, title, and posted date exactly match a direct-platform row; this preserves WSBA listings that direct boards do not expose.
 
+**Byte-identical rows are dropped** (`combined %>% distinct()`, before `classify_k12_position()` overwrites the raw `position` column) — some direct-platform pages list one opening once per building it applies to, and the modern scraper emits an identical row for each. Rows distinguished by any field, including a per-building `position` value in older SchoolSpring snapshots, are kept. This is why the per-district row count here equals that week's `k12_district_weekly_totals.csv` `n` exactly.
+
 ### `k12jobanalysis.csv` — full history, Teacher postings only
 
 Row-level history of every Teacher-position posting ever scraped, one row per posting per week it appeared. Powers "New This Week," the teacher-vacancy-rate numerator, and every teacher trend chart. **Accumulated** — grows by one week's rows per run.
@@ -68,7 +70,7 @@ One row per (`District`, `Archive_Date`), counting **every** position type, not 
 |---|---|---|
 | `District` | text | |
 | `Archive_Date` | date | |
-| `n` | integer | All postings that district had that week, any position type. |
+| `n` | integer | All postings that district had that week, any position type. A raw row count of that week's de-duplicated `combinedclean` rows (byte-identical duplicates already dropped — see `combinedclean.csv` above), so it equals that week's distinct `combinedclean` rows for the district exactly. `scripts/repair_combinedclean_row_duplicates.R` retro-fixed the pre-fix inflation; its header notes a residual pre-2026 SchoolSpring under-count still open for a later pass. |
 
 ### `salarymap2.csv` — one row per district, static reference + refreshed figures
 

@@ -26,36 +26,53 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
     stop("rebuild_k12_history_from_archive(): no archive files found in ", archive_dir)
   }
 
-  combined_k12_data <- csv_files %>%
-    lapply(function(file) read.csv(file, colClasses = c("Archive_Date" = "character"))) %>%
-    bind_rows() %>%
-    select(-any_of("X"))
-
-  if (!"posting_id" %in% names(combined_k12_data)) {
-    combined_k12_data$posting_id <- NA_character_
-  }
-
-  combined_k12_data <- combined_k12_data %>%
-    mutate(Archive_Date = case_when(
-      grepl("/", Archive_Date) ~ as.Date(Archive_Date, format = "%m/%d/%Y"),
-      grepl("-", Archive_Date) ~ as.Date(Archive_Date, format = "%Y-%m-%d"),
-      TRUE ~ as.Date(NA)
-    ))
-
-  combinedclean <- combined_k12_data %>%
-    mutate(
-      District = canonicalize_k12_district(District),
-      position = classify_k12_position(title),
-      posting_id = build_k12_posting_id(
-        source_id = posting_id,
-        title = title,
-        location = location,
-        date_posted = date_posted,
-        url = url,
-        district = District
-      )
-    ) %>%
-    dplyr::select(title, Archive_Date, position, location, url, posting_id, District)
+  # Build each weekly snapshot's rows independently and dedupe byte-identical
+  # RAW rows within that snapshot -- exactly what Wy_ED_Jobs.Rmd does to one
+  # run's `combined` before classify_k12_position() overwrites the raw
+  # `position` column. A modern direct-platform page that lists the same
+  # opening once per building it applies to (e.g. Sweetwater County SD1's
+  # Applitrack "?all=1" listing) arrives as N identical rows; build_k12_
+  # posting_id() collapses them to one posting_id, but k12_district_weekly_
+  # totals below is a raw count() of rows, so the duplicates inflated a
+  # handful of districts' weekly totals. This has to run on the raw row:
+  # older SchoolSpring snapshots put the building name in `position`, which
+  # legitimately distinguishes ~26 "one coach per elementary school"
+  # postings that share a title -- dedupe after classify_k12_position()
+  # buckets that away and they collapse wrongly. Deliberately per-file:
+  # byte-identical rows across two DIFFERENT snapshots carrying the same
+  # Archive_Date (a few of the earliest archive files overlap that way) are
+  # a separate, still-open issue, left alone here so this path stays
+  # equivalent to the incremental one (test-history-accumulator.R), which
+  # only ever sees a single run's rows at a time.
+  combinedclean <- csv_files %>%
+    lapply(function(file) {
+      df <- read.csv(file, colClasses = c("Archive_Date" = "character")) %>%
+        select(-any_of("X")) %>%
+        distinct()
+      if (!"posting_id" %in% names(df)) {
+        df$posting_id <- NA_character_
+      }
+      df %>%
+        mutate(
+          Archive_Date = case_when(
+            grepl("/", Archive_Date) ~ as.Date(Archive_Date, format = "%m/%d/%Y"),
+            grepl("-", Archive_Date) ~ as.Date(Archive_Date, format = "%Y-%m-%d"),
+            TRUE ~ as.Date(NA)
+          ),
+          District = canonicalize_k12_district(District),
+          position = classify_k12_position(title),
+          posting_id = build_k12_posting_id(
+            source_id = posting_id,
+            title = title,
+            location = location,
+            date_posted = date_posted,
+            url = url,
+            district = District
+          )
+        ) %>%
+        dplyr::select(title, Archive_Date, position, location, url, posting_id, District)
+    }) %>%
+    bind_rows()
 
   k12jobs <- combinedclean %>%
     filter(position == "Teacher") %>%

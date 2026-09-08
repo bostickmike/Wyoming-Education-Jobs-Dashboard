@@ -37,7 +37,7 @@ jobs:
             "rmarkdown", "dplyr", "purrr", "readr", "readxl", "rvest",
             "stringr", "tidyverse", "writexl", "xml2", "jsonlite",
             "httr2", "lubridate", "chromote", "rsconnect", "testthat",
-            "withr", "here", "pdftools",
+            "withr", "here", "pdftools", "shinytest2",
             # app.R dependencies -- these never run in this workflow, but
             # rsconnect::writeManifest() can only capture a package if it
             # is actually installed in the environment generating the
@@ -52,6 +52,11 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       - name: Run test suite (abort before touching real data if red)
+        env:
+          # so test-app-boot-smoke.R's skip_on_cran() doesn't skip the
+          # shinytest2 browser boot -- Chrome is installed above
+          NOT_CRAN: "true"
+          CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
           Rscript -e 'here::here(); testthat::test_dir("tests/testthat", stop_on_failure = TRUE)'
 
@@ -73,6 +78,13 @@ jobs:
 
       - name: Verify every shipped dataset still has the columns app.R expects
         run: Rscript .github/scripts/verify_schema.R
+
+      # Tier-2 data-quality sweep, re-run against THIS week's freshly written
+      # CSVs (the test suite above ran pre-pipeline, against last week's
+      # committed data). Blocking: a range/sign/referential-integrity/enum
+      # regression in this week's output must not ship to the live dashboard.
+      - name: Data-quality invariant sweep on the new data
+        run: Rscript -e 'testthat::test_file("tests/testthat/test-weekly-data-quality.R", stop_on_failure = TRUE)'
 
       # These three steps are diagnostic/alerting only (see drift_check.R's
       # header comment) -- a bug in any of them must never block the actual

@@ -277,7 +277,24 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 # this week's raw jobs-table classification and the accumulated-history
 # append below can't silently drift apart.
 
+# Drop byte-identical duplicate rows BEFORE classify_k12_position() below
+# overwrites the raw `position` column. Some direct-platform pages (e.g.
+# Sweetwater County SD1's Applitrack "?all=1" listing) render the same
+# opening once per building it applies to and the modern scraper emits N
+# identical rows for it -- build_k12_posting_id() already collapses those to
+# one posting_id, but k12_district_weekly_totals below is a raw count() of
+# rows, so the duplicates inflated a handful of districts' weekly totals
+# (Sweetwater SD1: 96 rows for 80 real openings). This must happen on the
+# raw row: older SchoolSpring snapshots carry the building name in `position`
+# (distinguishing 26 genuinely separate "one coach per school" postings that
+# share a title), and once classify_k12_position() replaces that with a
+# bucket they would collapse wrongly. The distinct key is the full row,
+# date_posted included -- two rows differing only by a re-dated date_posted
+# may be a real re-posting, which the WSBA dedup step deliberately keeps too.
+# rebuild_k12_history_from_archive() dedupes at the identical point so the
+# from-archive rebuild stays equivalent (test-history-accumulator.R).
 combinedclean <- combined %>%
+  dplyr::distinct() %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
   dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
