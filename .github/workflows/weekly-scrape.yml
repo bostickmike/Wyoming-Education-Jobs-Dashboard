@@ -46,8 +46,8 @@ jobs:
             # Cloud redeploy silently (manifest missing shiny entirely).
             "shiny", "shinydashboard", "shinyWidgets", "DT", "data.table",
             "leaflet", "plotly", "scales", "shinycssloaders",
-            # sf isn't used directly by app.R, but leaflet >= 2.2.x Imports
-            # it as a hard dependency, so writeManifest() can't snapshot
+            # sf is not used directly by app.R, but leaflet >= 2.2.x Imports
+            # it as a hard dependency, so writeManifest() cannot snapshot
             # without it installed either (broke 2026-09-11).
             "sf"
           ))'
