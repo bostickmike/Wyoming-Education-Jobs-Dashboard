@@ -28,7 +28,8 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev libpoppler-cpp-dev
+          sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev libpoppler-cpp-dev \
+            libudunits2-dev libgdal-dev libgeos-dev libproj-dev
 
       - name: Install R packages
         run: |
@@ -44,7 +45,11 @@ jobs:
             # manifest. Omitting these once already broke every Connect
             # Cloud redeploy silently (manifest missing shiny entirely).
             "shiny", "shinydashboard", "shinyWidgets", "DT", "data.table",
-            "leaflet", "plotly", "scales", "shinycssloaders"
+            "leaflet", "plotly", "scales", "shinycssloaders",
+            # sf isn't used directly by app.R, but leaflet >= 2.2.x Imports
+            # it as a hard dependency, so writeManifest() can't snapshot
+            # without it installed either (broke 2026-09-11).
+            "sf"
           ))'
 
       - name: Install Chrome (for the 4 Apptegy misc-district scrapers)
