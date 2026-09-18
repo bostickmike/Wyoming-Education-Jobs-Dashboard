@@ -2560,7 +2560,7 @@
       "description": {
         "Package": "readxl",
         "Title": "Read Excel Files",
-        "Version": "1.5.0",
+        "Version": "1.5.0.1",
         "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = \"Copyright holder of all R code and all C/C++ code without explicit copyright attribution\"),\n    person(\"Marcin\", \"Kalicinski\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included RapidXML code\"),\n    person(\"Komarov Valery\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Christophe Leitienne\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Bob Colbert\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"David Hoerl\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Evan Miller\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\")\n  )",
         "Description": "Import excel files into R. Supports '.xls' via the embedded\n    'libxls' C library <https://github.com/libxls/libxls> and '.xlsx' via\n    the embedded 'RapidXML' C++ library\n    <https://rapidxml.sourceforge.net/>.  Works on Windows, Mac and Linux\n    without external dependencies.",
         "License": "MIT + file LICENSE",
@@ -2578,12 +2578,12 @@
         "Encoding": "UTF-8",
         "Note": "libxls v1.6.3 c199d13",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-05-16 14:11:44 UTC; jenny",
+        "Packaged": "2026-09-16 07:49:42 UTC; ripley",
         "Author": "Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Jennifer Bryan [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-6983-2759>),\n  Posit, PBC [cph, fnd] (Copyright holder of all R code and all C/C++\n    code without explicit copyright attribution),\n  Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),\n  Komarov Valery [ctb, cph] (Author of included libxls code),\n  Christophe Leitienne [ctb, cph] (Author of included libxls code),\n  Bob Colbert [ctb, cph] (Author of included libxls code),\n  David Hoerl [ctb, cph] (Author of included libxls code),\n  Evan Miller [ctb, cph] (Author of included libxls code)",
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-05-16 21:50:23 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:23:12 UTC; unix"
+        "Date/Publication": "2026-09-16 07:53:07 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-17 04:24:49 UTC; unix"
       }
     },
     "rematch": {
@@ -2883,28 +2883,30 @@
         "Package": "selectr",
         "Type": "Package",
         "Title": "Translate CSS Selectors to XPath Expressions",
-        "Version": "0.6-0",
+        "Version": "0.7-0",
         "Authors@R": "c(person(\"Simon\", \"Potter\",\n                    role = c(\"aut\", \"trl\", \"cre\"),\n                    email = \"simon@sjp.co.nz\"),\n             person(\"Simon\", \"Sapin\", role = \"aut\"),\n             person(\"Ian\", \"Bicking\", role = \"aut\"))",
         "License": "BSD_3_clause + file LICENCE",
         "Encoding": "UTF-8",
-        "Depends": "R (>= 3.3)",
+        "Depends": "R (>= 3.6)",
         "Imports": "R6",
-        "Suggests": "testthat, XML, xml2",
+        "Suggests": "testthat (>= 3.0.0), XML, xml2",
+        "Config/testthat/edition": "3",
         "URL": "https://sjp.co.nz/projects/selectr/",
         "BugReports": "https://github.com/sjp/selectr/issues",
-        "Description": "Translates a CSS selector into an equivalent XPath\n  expression. This allows us to use CSS selectors when working with\n  the XML package as it can only evaluate XPath expressions. Also\n  provided are convenience functions useful for using CSS selectors on\n  XML nodes. This package is a port of the Python package 'cssselect'\n  (<https://cssselect.readthedocs.io/>).",
+        "Language": "en-GB",
+        "Description": "Translates a CSS selector into an equivalent XPath\n  expression. This allows us to use CSS selectors when working with\n  the 'XML' and 'xml2' packages, which can only evaluate XPath\n  expressions. Also provided are convenience functions for querying\n  XML and HTML documents with CSS selectors. This package was\n  originally a port of the Python package 'cssselect'\n  (<https://cssselect.readthedocs.io/>).",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-22 23:18:36 UTC; vscode",
+        "Packaged": "2026-09-17 00:45:57 UTC; vscode",
         "Author": "Simon Potter [aut, trl, cre],\n  Simon Sapin [aut],\n  Ian Bicking [aut]",
         "Maintainer": "Simon Potter <simon@sjp.co.nz>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-06-23 05:10:21 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:21:42 UTC; unix"
+        "Date/Publication": "2026-09-17 07:50:02 UTC",
+        "Built": "R 4.6.0; ; 2026-09-18 04:05:03 UTC; unix"
       }
     },
     "sf": {
-      "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com",
+      "Source": "RSPM",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
       "description": {
         "Package": "sf",
         "Version": "1.1-3",
@@ -2930,9 +2932,9 @@
         "Packaged": "2026-09-10 20:14:11 UTC; edzer",
         "Author": "Edzer Pebesma [aut, cre] (ORCID:\n    <https://orcid.org/0000-0001-8049-7069>),\n  Roger Bivand [ctb] (ORCID: <https://orcid.org/0000-0003-2392-6140>),\n  Etienne Racine [ctb],\n  Michael Sumner [ctb],\n  Ian Cook [ctb],\n  Tim Keitt [ctb],\n  Robin Lovelace [ctb],\n  Hadley Wickham [ctb],\n  Jeroen Ooms [ctb] (ORCID: <https://orcid.org/0000-0002-4035-0289>),\n  Kirill Müller [ctb],\n  Thomas Lin Pedersen [ctb],\n  Dan Baston [ctb],\n  Dewey Dunnington [ctb] (ORCID: <https://orcid.org/0000-0002-9415-4582>),\n  Alexandre Courtiol [ctb] (ORCID:\n    <https://orcid.org/0000-0003-0637-2959>)",
         "Maintainer": "Edzer Pebesma <edzer.pebesma@uni-muenster.de>",
-        "Repository": "CRAN",
+        "Repository": "RSPM",
         "Date/Publication": "2026-09-11 06:40:02 UTC",
-        "Built": "R 4.6.1; x86_64-pc-linux-gnu; 2026-09-11 20:05:43 UTC; unix"
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-12 04:21:49 UTC; unix"
       }
     },
     "shiny": {
@@ -3438,7 +3440,7 @@
         "Package": "tinytex",
         "Type": "Package",
         "Title": "Helper Functions to Install and Maintain TeX Live, and Compile\nLaTeX Documents",
-        "Version": "0.60",
+        "Version": "0.61",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\")),\n  person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4474-2498\")),\n  person(\"Devon\", \"Ryan\", role = \"ctb\", email = \"dpryan79@gmail.com\", comment = c(ORCID = \"0000-0002-8549-0971\")),\n  person(\"Ethan\", \"Heinzen\", role = \"ctb\"),\n  person(\"Fernando\", \"Cagua\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Helper functions to install and maintain the 'LaTeX' distribution\n  named 'TinyTeX' (<https://yihui.org/tinytex/>), a lightweight, cross-platform,\n  portable, and easy-to-maintain version of 'TeX Live'. This package also\n  contains helper functions to compile 'LaTeX' documents, and install missing\n  'LaTeX' packages automatically.",
         "Imports": "xfun (>= 0.48)",
@@ -3449,12 +3451,12 @@
         "Encoding": "UTF-8",
         "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-15 22:44:20 UTC; yihui",
+        "Packaged": "2026-09-17 18:47:44 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>),\n  Posit Software, PBC [cph, fnd],\n  Christophe Dervieux [ctb] (ORCID:\n    <https://orcid.org/0000-0003-4474-2498>),\n  Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>),\n  Ethan Heinzen [ctb],\n  Fernando Cagua [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-06-16 05:10:02 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:21:52 UTC; unix"
+        "Date/Publication": "2026-09-17 20:40:02 UTC",
+        "Built": "R 4.6.0; ; 2026-09-18 04:03:45 UTC; unix"
       }
     },
     "tzdb": {
@@ -3725,7 +3727,7 @@
         "Package": "xfun",
         "Type": "Package",
         "Title": "Supporting Functions for Packages Maintained by 'Yihui Xie'",
-        "Version": "0.60",
+        "Version": "0.61",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\", URL = \"https://yihui.org\")),\n  person(\"Wush\", \"Wu\", role = \"ctb\"),\n  person(\"Daijiang\", \"Li\", role = \"ctb\"),\n  person(\"Xianying\", \"Tan\", role = \"ctb\"),\n  person(\"Salim\", \"Brüggemann\", role = \"ctb\", email = \"salim-b@pm.me\", comment = c(ORCID = \"0000-0002-5329-5987\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.",
         "Depends": "R (>= 3.2.0)",
@@ -3736,14 +3738,14 @@
         "BugReports": "https://github.com/yihui/xfun/issues",
         "Encoding": "UTF-8",
         "VignetteBuilder": "litedown",
-        "Config/roxygen2/version": "8.0.0",
+        "Config/roxygen2/version": "8.1.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-07-09 05:04:56 UTC; yihui",
+        "Packaged": "2026-09-16 17:36:20 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org),\n  Wush Wu [ctb],\n  Daijiang Li [ctb],\n  Xianying Tan [ctb],\n  Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>),\n  Christophe Dervieux [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-07-09 10:50:02 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:21:40 UTC; unix"
+        "Date/Publication": "2026-09-16 18:30:02 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-17 04:24:25 UTC; unix"
       }
     },
     "xml2": {
@@ -3834,40 +3836,40 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "e66973aba9bec82132a8a19c85a1d3e0"
+      "checksum": "a70715d7cad511fc3de2ef9b605dc3bc"
     },
     "allnow.csv": {
-      "checksum": "9d96336300e9a2e0c74d0fca342023d4"
+      "checksum": "661a48ce6386dea47c5ec37b13fffbaa"
     },
     "allsum_he.csv": {
-      "checksum": "8d2f0c0aa4dd2a64c1684a10e011b421"
+      "checksum": "564af2db39b1ce47e272d42554d3b8a6"
     },
     "allsum.csv": {
-      "checksum": "3cc243b98e329d006f4dfdc16a145e77"
+      "checksum": "aaca6fc03bfbabd6dbdfeccbd24d8a60"
     },
     "app.R": {
       "checksum": "6c59e1acb8b9b3e107b216a8a22b14b8"
     },
     "combinedclean.csv": {
-      "checksum": "8c070c792fa18b2f7a4da780f699665e"
+      "checksum": "98debde63b0b1b1ee92612dedf4cffe3"
     },
     "facultydata.csv": {
-      "checksum": "c4c8e14fd50c404f352cbc4167a86370"
+      "checksum": "ca2808ea21d5c69b65304e0f79d2bece"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "8308d6982dec2fb0c5659d69857e34fc"
+      "checksum": "9eb92546df838adf91ddd8da489a2000"
     },
     "hedata.xlsx": {
-      "checksum": "4e7a014385c24f78a350a01851cce6cd"
+      "checksum": "a9232f602154b9ef4fb8ca4247a472cd"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "5b28ce6a40d9ddd0f10b63e4ce46d45a"
+      "checksum": "79d246df5fe21d73ca32324a4b5170f3"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "98e5fb3b38f3c91f3c297c5a176a4ae0"
+      "checksum": "62ab70259ec604d9f0841136d57056cc"
     },
     "salarymap.csv": {
       "checksum": "65b66bea354fd9ba0fcee79e1cf908fc"
