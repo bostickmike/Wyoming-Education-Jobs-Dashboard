@@ -154,6 +154,18 @@ test_that("parse_smartsites_postings extracts image-alt titles when that's the o
   expect_false(any(grepl("application", result$Title, ignore.case = TRUE)))
 })
 
+test_that("parse_smartsites_postings drops decorative \"logo\" gallery images", {
+  # Regression: Platte 1's gallery started carrying alt="logo"/"Logo" images
+  # (2026-08-03), each scraped as a fake "Other" posting; the logo/Logo pair
+  # also shared one posting_id and failed the 2026-09-25 weekly run.
+  html <- paste0(
+    '<ul><li class="picseries_image"><a href="/a" /><figure><img alt="Bus Driver"></figure></li>',
+    '<li class="picseries_image"><a href="/b" /><figure><img alt="logo"></figure></li>',
+    '<li class="picseries_image"><a href="/c" /><figure><img alt=" Logo "></figure></li></ul>'
+  )
+  expect_equal(parse_smartsites_postings(html)$Title, "Bus Driver")
+})
+
 test_that("parse_smartsites_postings returns zero rows (not an error) for a page with neither widget type", {
   result <- parse_smartsites_postings("<html><body>nothing</body></html>")
   expect_equal(nrow(result), 0)

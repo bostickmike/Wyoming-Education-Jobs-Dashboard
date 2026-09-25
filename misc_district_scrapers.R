@@ -368,7 +368,12 @@ parse_smartsites_postings <- function(html_text) {
   # blank application forms, not open postings).
   img_nodes <- rvest::html_elements(soup, "li.picseries_image img[alt]")
   img_titles <- str_trim(rvest::html_attr(img_nodes, "alt"))
-  img_titles <- img_titles[nzchar(img_titles) & !grepl("application", img_titles, ignore.case = TRUE)]
+  # The same gallery also carries decorative images whose alt text is just
+  # "logo"/"Logo" (Platte County SD1, 2026-08-03 onward) -- dropped the
+  # same way, or each one lands in combinedclean as a fake "Other" posting.
+  img_titles <- img_titles[nzchar(img_titles) &
+                             !grepl("application", img_titles, ignore.case = TRUE) &
+                             !grepl("^logo$", img_titles, ignore.case = TRUE)]
 
   titles <- c(doc_titles, img_titles)
   dates <- c(doc_dates, rep(NA_character_, length(img_titles)))
