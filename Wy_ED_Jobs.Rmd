@@ -295,6 +295,7 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 # from-archive rebuild stays equivalent (test-history-accumulator.R).
 combinedclean <- combined %>%
   dplyr::distinct() %>%
+  collapse_duplicate_posting_ids("combinedclean") %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
   dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)

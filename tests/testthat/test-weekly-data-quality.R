@@ -158,7 +158,10 @@ test_that("combinedclean.csv has no byte-identical duplicate rows and posting_id
   # vacancy-rate numerator both over-counted.
   cc <- read_wy("combinedclean.csv")
   expect_equal(sum(duplicated(cc)), 0, info = "byte-identical duplicate rows in combinedclean.csv")
-  expect_equal(anyDuplicated(cc$posting_id), 0, info = "duplicate posting_id in combinedclean.csv")
+  dup_ids <- unique(cc$posting_id[duplicated(cc$posting_id)])
+  expect_equal(length(dup_ids), 0, info = paste0(
+    "duplicate posting_id in combinedclean.csv: ",
+    paste(utils::head(dup_ids, 5), collapse = " | ")))
 })
 
 test_that("the newest week's k12jobanalysis.csv / facultydata.csv have no byte-identical duplicate rows", {

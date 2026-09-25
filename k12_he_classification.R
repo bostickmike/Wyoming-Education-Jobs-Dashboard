@@ -285,6 +285,27 @@ build_k12_posting_id <- function(source_id = NULL, title, location,
   ifelse(source_id == "<missing>", fallback, source_id)
 }
 
+# Keeps the first row per posting_id. Runs right after the byte-identical
+# distinct(), to catch rows that build_k12_posting_id() already treats as
+# one posting but distinct() doesn't: the same source ID emitted twice with
+# differing text, or fallback-keyed rows differing only in case, surrounding
+# whitespace, a mis-encoded byte, or NA vs "" (all normalized away in the
+# ID). Left in, those inflate k12_district_weekly_totals (a raw count()) and
+# fail test-weekly-data-quality.R's posting_id-uniqueness gate, which
+# blocked the 2026-09-25 weekly run. The dropped rows are written to stderr
+# so the CI log shows which source produced them.
+collapse_duplicate_posting_ids <- function(df, label = "K-12 postings") {
+  dup <- duplicated(df$posting_id)
+  if (any(dup)) {
+    ids <- unique(df$posting_id[dup])
+    cat(sprintf("%s: collapsing %d row(s) that share a posting_id with an earlier row:\n",
+                label, sum(dup)), file = stderr())
+    cat(utils::capture.output(print(df[df$posting_id %in% ids, , drop = FALSE])),
+        sep = "\n", file = stderr())
+  }
+  df[!dup, , drop = FALSE]
+}
+
 # ---------------------------------------------------------------------------
 # Higher Ed
 # ---------------------------------------------------------------------------

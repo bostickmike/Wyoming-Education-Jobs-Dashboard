@@ -49,10 +49,11 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
       df <- read.csv(file, colClasses = c("Archive_Date" = "character")) %>%
         select(-any_of("X")) %>%
         distinct()
-      if (!"posting_id" %in% names(df)) {
+      has_source_ids <- "posting_id" %in% names(df)
+      if (!has_source_ids) {
         df$posting_id <- NA_character_
       }
-      df %>%
+      df <- df %>%
         mutate(
           Archive_Date = case_when(
             grepl("/", Archive_Date) ~ as.Date(Archive_Date, format = "%m/%d/%Y"),
@@ -71,6 +72,14 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
           )
         ) %>%
         dplyr::select(title, Archive_Date, position, location, url, posting_id, District)
+      # Mirrors Wy_ED_Jobs.Rmd's collapse_duplicate_posting_ids() -- only for
+      # snapshots the modern pipeline wrote (they carry posting_id), since
+      # that step never ran on the older ones, whose building-in-`position`
+      # rows would otherwise collapse wrongly (see above).
+      if (has_source_ids) {
+        df <- collapse_duplicate_posting_ids(df, basename(file))
+      }
+      df
     }) %>%
     bind_rows()
 

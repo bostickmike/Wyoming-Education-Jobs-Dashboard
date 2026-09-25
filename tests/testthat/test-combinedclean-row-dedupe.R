@@ -51,3 +51,26 @@ test_that("drop_surplus_rows is a no-op when committed already matches the targe
   expect_equal(res$rows_removed, 0)
   expect_equal(nrow(res$data), 2)
 })
+
+test_that("collapse_duplicate_posting_ids keeps the first row per posting_id", {
+  # 2026-09-25: rows distinct() kept (they differ only in case/whitespace or
+  # NA vs "", which build_k12_posting_id() normalizes away) shared one
+  # posting_id and failed the weekly data-quality gate.
+  df <- data.frame(
+    title = c("Custodian", "custodian ", "Aide", "Aide"),
+    location = c("Main", "Main", NA, ""),
+    date_posted = "2026-09-20",
+    url = "https://example.org/jobs",
+    District = "Park County School District 16",
+    stringsAsFactors = FALSE
+  )
+  df$posting_id <- build_k12_posting_id(NULL, df$title, df$location,
+                                        df$date_posted, df$url, df$District)
+  expect_equal(nrow(dplyr::distinct(df)), 4)
+  res <- collapse_duplicate_posting_ids(df, "test")
+  expect_equal(res$title, c("Custodian", "Aide"))
+  expect_equal(anyDuplicated(res$posting_id), 0)
+
+  # no-op (and silent) when every posting_id is already unique
+  expect_identical(collapse_duplicate_posting_ids(res), res)
+})
