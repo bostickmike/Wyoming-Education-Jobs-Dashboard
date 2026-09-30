@@ -246,6 +246,11 @@ parse_neogov_html <- function(html_text, base_domain) {
 # stripped of scheme/trailing slash). The interactive crook1.schoolspring.com
 # site itself is Incapsula-protected, but api.schoolspring.com -- the same
 # host its own React app calls -- is not.
+# Registry Job_Link -> the domain_name fetch_schoolspring_postings() takes.
+# Shared by Wy_ED_Jobs.Rmd and drift_check.R's resolve_scraper_call(), so
+# the live check calls the scraper exactly the way the pipeline does.
+schoolspring_domain <- function(job_link) sub("/$", "", sub("^https?://", "", job_link))
+
 fetch_schoolspring_postings <- function(domain_name, page_size = 50) {
   all_pages <- list()
   page <- 1
@@ -317,6 +322,10 @@ parse_schoolspring_json <- function(json_text, domain_name) {
 # Johnson County SD1's is "3146" for org slug "jcsd1"). Not derivable from
 # the org slug alone; a new district on this platform would need its own
 # ID looked up the same way.
+# Registry Job_Link -> the org_slug fetch_redrover_postings() takes (shared
+# with drift_check.R, like schoolspring_domain()).
+redrover_org_slug <- function(job_link) sub(".*/org/([^/?]+).*", "\\1", job_link, ignore.case = TRUE)
+
 fetch_redrover_postings <- function(org_id, org_slug) {
   query <- 'query GetJobPostings($search: JobPostingSearchInput!) {
   jobSeekerSiteUnauthenticated {
@@ -401,6 +410,10 @@ normalize_id_backed_k12_postings <- function(postings) {
 # default.aspx's own inline script injects via document.write()) instead of
 # rendering default.aspx in a browser and waiting for that injection to
 # happen.
+# Registry Job_Link -> tenant_path: everything between applitrack.com/ and
+# /onlineapp/ (shared with drift_check.R, like schoolspring_domain()).
+applitrack_tenant_path <- function(job_link) sub(".*applitrack\\.com/([^/]+)/onlineapp.*", "\\1", job_link, ignore.case = TRUE)
+
 fetch_applitrack_postings <- function(tenant_path) {
   resp <- request(paste0("https://www.applitrack.com/", tenant_path, "/onlineapp/jobpostings/Output.asp")) %>%
     req_url_query(all = "1") %>%

@@ -339,3 +339,355 @@ combine_verdict_with_llm <- function(verdict, llm_titles) {
 
   list(verdict = verdict, note = NA_character_)
 }
+
+# --------------------------------------------------------------------------
+# Tier 3: per-source auto-fix issues (Copilot coding agent hand-off)
+# --------------------------------------------------------------------------
+#
+# Ported from the Montana dashboard. The rolling "Scraper drift check"
+# issue stays the human-facing summary. On top of it, each "likely_broken"
+# source -- the live page demonstrably has postings the scraper missed --
+# gets its own issue that .github/scripts/file_autofix_issues.R assigns to
+# the Copilot coding agent. confirmed_broken (HTTP 429/5xx) and
+# genuinely-empty verdicts are deliberately NOT eligible: those are
+# site-side, and a code change "fixing" them is exactly the wrong move.
+#
+# The issue body carries an HTML-comment marker naming the source, so
+# .github/scripts/live_check_autofix.R can find which scraper a PR claims
+# to fix (via the PR's linked issue) and re-run just that scraper live.
+
+AUTOFIX_LABEL <- "scraper-autofix"
+AUTOFIX_ELIGIBLE_VERDICTS <- "likely_broken"
+AUTOFIX_MARKER_RE <- "<!--\\s*autofix-source:\\s*(.+?)\\s*-->"
+
+autofix_issue_title <- function(name) paste0("Scraper auto-fix: ", name)
+
+parse_autofix_marker <- function(body) {
+  if (length(body) == 0 || is.na(body)) return(NA_character_)
+  m <- regmatches(body, regexec(AUTOFIX_MARKER_RE, body, perl = TRUE))[[1]]
+  if (length(m) < 2) NA_character_ else m[2]
+}
+
+# Unlike Montana (two registries of the same shape), a Wyoming source name
+# can come from four places, each called differently in Wy_ED_Jobs.Rmd:
+#   - k12_district_registry.csv: one fetch_* per Platform, with arguments
+#     derived from Job_Link/Org_ID by the same shared helpers the Rmd uses
+#     (applitrack_tenant_path() etc. in direct_api_scrapers.R).
+#   - misc_district_registry (misc_district_scrapers.R): platform -> the
+#     fetch_* that fetch_misc_district_postings() dispatches to.
+#   - Higher ed and the one charter school: hardcoded calls in the Rmd,
+#     mirrored in EXTRA_SCRAPER_CALLS. test-drift-check.R asserts each one
+#     still appears verbatim in Wy_ED_Jobs.Rmd, so the two can't drift.
+# WSBA-only orgs (WSBA_ONLY_ORGS) have no scraper of their own and resolve
+# to NULL, as does anything else not listed.
+
+MISC_PLATFORM_FETCH_FNS <- c(
+  wordpress = "fetch_wordpress_postings",
+  smartsites = "fetch_smartsites_postings",
+  schoolblocks = "fetch_schoolblocks_postings",
+  edlio = "fetch_edlio_postings",
+  googlesites = "fetch_googlesites_postings",
+  educational_networks = "fetch_educational_networks_postings",
+  apptegy = "fetch_apptegy_postings",
+  prairieview = "fetch_prairieview_postings"
+)
+# The misc platforms whose fetch_* takes a chromote session first.
+MISC_CHROMOTE_PLATFORMS <- c("googlesites", "apptegy", "prairieview")
+
+EXTRA_SCRAPER_CALLS <- list(
+  "Laramie County Community College"  = list(fn = "fetch_neogov_postings", args = list("https://www.governmentjobs.com", "lcccwy")),
+  "Casper College"                    = list(fn = "fetch_neogov_postings", args = list("https://www.schooljobs.com", "caspercollege")),
+  "Western Wyoming Community College" = list(fn = "fetch_peopleadmin_atom", args = list("https://wwcwy.peopleadmin.com/postings/all_jobs", "Western Wyoming Campus")),
+  "Central Wyoming College"           = list(fn = "fetch_neogov_postings", args = list("https://www.schooljobs.com", "cwc")),
+  "Eastern Wyoming Community College" = list(fn = "fetch_peopleadmin_atom", args = list("https://ewc.peopleadmin.com/postings/all_jobs", "Eastern Wyoming Campus")),
+  "Gillette College"                  = list(fn = "fetch_neogov_postings", args = list("https://www.schooljobs.com", "gillettecollege")),
+  "Sheridan College"                  = list(fn = "fetch_peopleadmin_atom", args = list("https://jobs.sheridan.edu/postings/all_jobs", "Sheridan College Campus")),
+  "Northwest College"                 = list(fn = "fetch_peopleadmin_atom", args = list("https://northwestcollege.simplehire.com/postings/all_jobs", "Northwest College Campus")),
+  "University of Wyoming"             = list(fn = "fetch_uw_postings", args = list()),
+  "Laramie Montessori Charter School" = list(fn = "fetch_paylocity_jobs", args = list("70f7d03b-6c9f-4106-8e70-9d781a8bbcba", "Laramie-Montessori-School-Inc"))
+)
+
+# name: a drift-check source name (canonical district / institution name).
+# Returns list(fn, args, session, platform, where), or NULL when the source
+# has no single-source live check. Pure lookup -- run it with
+# run_scraper_call().
+resolve_scraper_call <- function(name, k12_registry, misc_registry) {
+  if (name %in% k12_registry$District) {
+    row <- k12_registry[k12_registry$District == name, ][1, ]
+    spec <- switch(row$Platform,
+      Applitrack   = list(fn = "fetch_applitrack_postings", args = list(applitrack_tenant_path(row$Job_Link))),
+      TedK12       = list(fn = "fetch_tedk12_postings", args = list(row$Job_Link)),
+      SchoolSpring = list(fn = "fetch_schoolspring_postings", args = list(schoolspring_domain(row$Job_Link))),
+      RedRoverK12  = list(fn = "fetch_redrover_postings", args = list(as.character(row$Org_ID), redrover_org_slug(row$Job_Link))),
+      NULL
+    )
+    if (is.null(spec)) return(NULL)
+    return(c(spec, list(session = FALSE, platform = row$Platform, where = "k12_district_registry.csv")))
+  }
+  if (name %in% misc_registry$District) {
+    row <- misc_registry[misc_registry$District == name, ][1, ]
+    fn <- unname(MISC_PLATFORM_FETCH_FNS[row$platform])
+    if (is.na(fn)) return(NULL)
+    return(list(fn = fn, args = list(row$url), session = row$platform %in% MISC_CHROMOTE_PLATFORMS,
+                platform = row$platform, where = "misc_district_registry (misc_district_scrapers.R)"))
+  }
+  spec <- EXTRA_SCRAPER_CALLS[[name]]
+  if (is.null(spec)) return(NULL)
+  c(spec, list(session = FALSE, platform = sub("^fetch_(.*?)_(postings|atom|jobs)$", "\\1", spec$fn),
+               where = "a hardcoded call in Wy_ED_Jobs.Rmd"))
+}
+
+# Human-readable pointer to the code a resolved call runs.
+describe_scraper_call <- function(call) sprintf("`%s()`", call$fn)
+
+# Executes a resolve_scraper_call() result against the live source.
+# session_factory is only called for chromote-backed scrapers.
+run_scraper_call <- function(call, session_factory = NULL) {
+  fn <- get(call$fn, mode = "function")
+  if (!call$session) return(do.call(fn, call$args))
+  session <- session_factory()
+  on.exit(tryCatch(session$close(), error = function(e) NULL), add = TRUE)
+  do.call(fn, c(list(session), call$args))
+}
+
+# ---- Evidence for the agent ------------------------------------------------
+# The drift check renders each flagged page in CI, outside the agent's
+# firewall. The agent's own render can't be trusted: on Montana's first
+# auto-fix (its issue #7) the firewall blocked Apptegy's CDNs, the page came
+# up empty, and the agent rewrote the fetch instead of fixing a renamed stop
+# line. So the issue carries the text CI captured, the source's existing
+# fixtures, and -- when one exists for this exact source -- a diff between
+# its text fixture and that capture.
+#
+# Wyoming names fixtures <platform>_<district>... (misc_districts/
+# apptegy_niobrara_rendered.txt), and several districts share one parser.
+# So fixtures are matched by platform prefix, then by the district's place
+# name; a diff is only offered against a fixture for this same district,
+# never another district's page on the same platform.
+
+AUTOFIX_PAGE_TEXT_MAX_CHARS <- 20000
+AUTOFIX_DIFF_MAX_LINES <- 200
+SCRAPER_FILES <- c("direct_api_scrapers.R", "misc_district_scrapers.R")
+
+# Whether fetch_fn's parser consumes document.body.innerText -- the form the
+# drift check captured, so the capture can be the new fixture verbatim.
+scraper_reads_inner_text <- function(fetch_fn, scraper_lines) {
+  if (is.na(fetch_fn)) return(FALSE)
+  start <- grep(sprintf("^%s <- function", fetch_fn), scraper_lines)
+  if (length(start) == 0) return(FALSE)
+  later <- grep("^[A-Za-z_.][A-Za-z0-9_.]* <- ", scraper_lines)
+  end <- c(later[later > start[1]], length(scraper_lines) + 1)[1] - 1
+  any(grepl("document.body.innerText", scraper_lines[start[1]:end], fixed = TRUE))
+}
+
+# "Niobrara County School District 1" -> c(place = "niobrara", number = "1").
+district_fixture_tokens <- function(name) {
+  words <- tolower(unlist(strsplit(gsub("[^A-Za-z0-9 ]", " ", name), "\\s+")))
+  words <- words[nzchar(words)]
+  number <- utils::tail(words[grepl("^[0-9]+$", words)], 1)
+  c(place = words[1], number = if (length(number)) number else "")
+}
+
+# fixture_files: paths relative to tests/testthat/fixtures. Returns
+# list(platform = every fixture for this platform, own = the ones for this
+# source, best match first).
+source_fixtures <- function(call, source_name, fixture_files) {
+  if (is.null(call)) return(list(platform = character(0), own = character(0)))
+  prefix <- paste0("^", tolower(call$platform), "_")  # registry says "Applitrack", fixtures "applitrack_"
+  platform <- fixture_files[grepl(prefix, tolower(basename(fixture_files)))]
+  tok <- district_fixture_tokens(source_name)
+  base <- tolower(basename(platform))
+  exact <- nzchar(tok[["number"]]) & grepl(paste0(tok[["place"]], tok[["number"]]), base, fixed = TRUE)
+  loose <- grepl(tok[["place"]], base, fixed = TRUE)
+  # Platte 2's fixture is apptegy_platte2_*; Niobrara 1's is apptegy_niobrara_*.
+  # A place-only match can't be another numbered district of the same place.
+  loose <- loose & !grepl(paste0(tok[["place"]], "[0-9]"), base)
+  own <- c(platform[exact], platform[loose & !exact])
+  dates <- ifelse(grepl("[0-9]{4}-[0-9]{2}-[0-9]{2}", own), sub(".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*", "\\1", own), "")
+  list(platform = platform, own = own[order(dates, decreasing = TRUE, method = "radix")])
+}
+
+# Unified diff of two texts after trimming lines and dropping blanks
+# (innerText and html_text2() disagree on blank lines, which is noise).
+# Uses the system `diff`; returns character(0) when identical or absent.
+text_diff <- function(old_text, new_text, old_label = "old", new_label = "new") {
+  norm <- function(x) { x <- trimws(unlist(strsplit(x, "\n", fixed = TRUE))); x[nzchar(x)] }
+  if (!nzchar(Sys.which("diff"))) return(character(0))
+  f_old <- tempfile(); f_new <- tempfile()
+  on.exit(unlink(c(f_old, f_new)))
+  writeLines(norm(old_text), f_old, useBytes = TRUE)
+  writeLines(norm(new_text), f_new, useBytes = TRUE)
+  out <- suppressWarnings(system2("diff", c("-u", "--label", shQuote(old_label), "--label", shQuote(new_label),
+                                            shQuote(f_old), shQuote(f_new)), stdout = TRUE, stderr = FALSE))
+  as.character(out)
+}
+
+# Everything build_autofix_issue_body() shows the agent beyond the drift
+# numbers. repo_root is a parameter only so tests can point it elsewhere.
+gather_autofix_evidence <- function(call, source_name, page_text, repo_root = ".") {
+  scraper_lines <- unlist(lapply(file.path(repo_root, SCRAPER_FILES), readLines, warn = FALSE))
+  fixture_dir <- file.path(repo_root, "tests", "testthat", "fixtures")
+  fixture_files <- list.files(fixture_dir, recursive = TRUE)
+
+  fetch_fn <- if (is.null(call)) NA_character_ else call$fn
+  fx <- source_fixtures(call, source_name, fixture_files)
+  inner_text <- scraper_reads_inner_text(fetch_fn, scraper_lines)
+  has_text <- length(page_text) == 1 && !is.na(page_text) && nzchar(trimws(page_text))
+
+  diff_against <- if (inner_text && has_text) utils::head(fx$own[grepl("[.]txt$", fx$own)], 1) else character(0)
+  diff <- if (length(diff_against) == 1) {
+    old <- paste(readLines(file.path(fixture_dir, diff_against), warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+    text_diff(old, page_text, diff_against, "page text captured in CI")
+  } else character(0)
+
+  list(fetch_fn = fetch_fn, fixtures = fx$own, platform_fixtures = fx$platform, inner_text = inner_text,
+       page_text = if (has_text) page_text else NA_character_,
+       diff_against = if (length(diff_against) == 1) diff_against else NA_character_,
+       diff = diff)
+}
+
+# The "What CI saw" section of the issue body, from gather_autofix_evidence().
+autofix_evidence_markdown <- function(evidence, captured_on) {
+  if (is.null(evidence)) return(character(0))
+  code_list <- function(x) paste0("`", x, "`", collapse = ", ")
+  out <- c("### What CI saw", "")
+  if (length(evidence$fixtures) > 0) {
+    out <- c(out, sprintf("Existing fixtures for this source in `tests/testthat/fixtures/`, newest first: %s",
+                          code_list(evidence$fixtures)), "")
+  }
+  others <- setdiff(evidence$platform_fixtures, evidence$fixtures)
+  if (length(others) > 0) {
+    out <- c(out, sprintf("Other districts' fixtures for the same `%s()` parser (their tests must keep passing): %s",
+                          evidence$fetch_fn, code_list(others)), "")
+  }
+  if (length(evidence$diff) > 0) {
+    d <- evidence$diff
+    cut <- length(d) > AUTOFIX_DIFF_MAX_LINES
+    out <- c(out,
+             sprintf("<details><summary>Diff: this source's text fixture (<code>%s</code>) &rarr; page text captured in CI</summary>", evidence$diff_against),
+             "", "````diff", utils::head(d, AUTOFIX_DIFF_MAX_LINES),
+             if (cut) sprintf("... diff truncated (%d more lines)", length(d) - AUTOFIX_DIFF_MAX_LINES),
+             "````", "", "</details>", "")
+  }
+  if (!is.na(evidence$page_text)) {
+    txt <- evidence$page_text
+    cut <- nchar(txt) > AUTOFIX_PAGE_TEXT_MAX_CHARS
+    if (cut) txt <- substr(txt, 1, AUTOFIX_PAGE_TEXT_MAX_CHARS)
+    out <- c(out,
+             sprintf("<details><summary>Full page text captured in CI (<code>document.body.innerText</code>, %s)</summary>", captured_on),
+             "", "````text", txt, if (cut) "... page text truncated", "````", "", "</details>", "")
+  }
+  if (length(out) == 2) character(0) else out
+}
+
+# row: one likely_broken row of corroborate_drift.R's results (name, type,
+# mean_count, count, url, llm_titles). call: resolve_scraper_call()'s
+# result for it, or NULL. evidence: gather_autofix_evidence()'s result, or
+# NULL. Returns the markdown body of the per-source auto-fix issue --
+# written as the task prompt the Copilot coding agent will work from.
+build_autofix_issue_body <- function(row, call = NULL, run_url = NULL,
+                                     evidence = NULL, captured_on = as.character(Sys.Date())) {
+  titles <- if (is.na(row$llm_titles) || !nzchar(row$llm_titles)) character(0)
+            else strsplit(row$llm_titles, " | ", fixed = TRUE)[[1]]
+  # The CI capture is the new fixture verbatim only when the parser reads
+  # innerText; otherwise it's context and the agent captures raw HTML.
+  use_capture <- !is.null(evidence) && isTRUE(evidence$inner_text) && !is.na(evidence$page_text)
+  repro <- sprintf("`Rscript scripts/repro_scraper.R \"%s\"`", row$name)
+
+  c(
+    sprintf("<!-- autofix-source: %s -->", row$name),
+    "",
+    sprintf("The weekly drift check found that **%s** (%s) averaged %.1f postings/week but the scraper returned **%d** this run, while the live page still lists real postings. The page markup most likely changed and the parser no longer matches it.",
+            row$name, row$type, row$mean_count, as.integer(row$count)),
+    "",
+    sprintf("- **Live page:** %s", if (is.na(row$url)) "(none on file)" else row$url),
+    if (!is.null(call)) sprintf("- **Platform:** `%s` (from %s)", call$platform, call$where),
+    if (!is.null(call)) sprintf("- **Scraper entry point:** %s (and the `parse_*` function it calls, if any)", describe_scraper_call(call)),
+    if (!is.null(call)) sprintf("- **Reproduce:** %s runs this scraper against its fixture tests and the live site", repro),
+    if (!is.null(run_url)) sprintf("- **Drift-check run:** %s", run_url),
+    "",
+    if (length(titles) > 0) c(
+      "An LLM read these postings off the live page (a hint, not ground truth -- verify against the page itself):",
+      "",
+      paste0("- ", titles),
+      "",
+      "The list covers the whole page, so it can include things this source's parser deliberately leaves out (e.g. contact info or a standing substitute-recruiting list). Restore what the parser used to find; see the comment above its `parse_*` function.",
+      ""
+    ),
+    if (isTRUE(call$session)) c(
+      "The drift check rendered this page in CI with chromote (`document.body.innerText`), so it renders normally outside your sandbox. If your render shows no postings, check the firewall's blocked hosts before changing how the scraper fetches the page -- see `.github/copilot-instructions.md`.",
+      ""
+    ),
+    autofix_evidence_markdown(evidence, captured_on),
+    "### Task",
+    "",
+    if (use_capture) {
+      sprintf("1. Save the **Full page text captured in CI** above, verbatim, as a **new, dated fixture** next to this source's existing ones (e.g. `tests/testthat/fixtures/misc_districts/%s_<district>_rendered_%s.txt`). It is real captured data -- the exact text this scraper parses -- so prefer it over your own render. Keep the existing fixtures; the old layout must keep parsing.", call$platform, captured_on)
+    } else {
+      "1. Fetch the live page and save it as a **new, dated real fixture** in `tests/testthat/fixtures/` (keep the existing fixture -- the old layout must keep parsing)."
+    },
+    if (length(evidence$diff) > 0) {
+      "2. Start from the diff above: it shows what changed since this source's fixture. Fix the parser so it extracts the real postings from the new fixture. Keep the change minimal and in the existing style."
+    } else {
+      "2. Fix the parser so it extracts the real postings from the new fixture. Keep the change minimal and in the existing style."
+    },
+    "3. Add a regression test against the new fixture asserting the exact titles found.",
+    "4. Run `testthat::test_dir(\"tests/testthat\")` and make sure everything passes.",
+    "",
+    "Do **not** edit `k12_district_registry.csv`, `misc_district_registry`, the accumulated data under `Wy_Ed_Jobs/`, or archives. If the source has moved to a different platform or URL, or the page genuinely has no postings, don't force a parser change -- say so in the PR description and stop.",
+    "",
+    sprintf("The PR must reference this issue (`Fixes #<n>`) so the live check can find the source. Label: `%s`.", AUTOFIX_LABEL)
+  )
+}
+
+# The LLM-read titles build_autofix_issue_body() listed -- the live check's
+# (hint-quality) expectation for what the fixed scraper should now return.
+parse_autofix_expected_titles <- function(body) {
+  lines <- strsplit(body, "\n", fixed = TRUE)[[1]]
+  start <- grep("^An LLM read these postings", lines)
+  # First heading after the list -- "### What CI saw" (whose diff and page
+  # text can hold "- " lines) or "### Task".
+  end <- grep("^### ", lines)
+  end <- end[end > start[1]]
+  if (length(start) == 0 || length(end) == 0) return(character(0))
+  block <- lines[(start[1] + 1):(end[1] - 1)]
+  sub("^- ", "", block[startsWith(block, "- ")])
+}
+
+# Titles from a scraper's result. Wyoming's scrapers don't agree on case:
+# Applitrack/TedK12 return `title`, everything else `Title`.
+scraper_titles <- function(result) {
+  col <- intersect(c("Title", "title"), names(result))
+  if (length(col) == 0) character(0) else as.character(result[[col[1]]])
+}
+
+# result: the scraper's data.frame, or a condition object if it errored.
+# Returns list(pass, markdown). Fails only on the unambiguous cases -- an
+# error or zero rows (the exact symptom the issue was filed for). Fewer
+# rows than the LLM read, or titles it didn't match, are reported for the
+# human reviewer but don't fail: the LLM list is a hint, not ground truth.
+summarize_live_check <- function(source_name, result, expected_titles = character(0)) {
+  header <- sprintf("### Live scraper check: %s", source_name)
+  if (inherits(result, "condition")) {
+    return(list(pass = FALSE, markdown = c(header, "", sprintf(":x: The scraper **errored** against the live site: `%s`", conditionMessage(result)))))
+  }
+  titles <- scraper_titles(result)
+  if (length(titles) == 0) {
+    return(list(pass = FALSE, markdown = c(header, "", ":x: The scraper still returns **0 postings** from the live site.")))
+  }
+
+  norm <- function(x) tolower(trimws(x))
+  matched <- vapply(expected_titles, function(t) any(grepl(norm(t), norm(titles), fixed = TRUE) |
+                                                     vapply(norm(titles), grepl, logical(1), x = norm(t), fixed = TRUE)),
+                    logical(1))
+  out <- c(header, "",
+           sprintf(":white_check_mark: The scraper returned **%d posting(s)** from the live site:", length(titles)),
+           "", paste0("- ", utils::head(titles, 25)),
+           if (length(titles) > 25) sprintf("- ... and %d more", length(titles) - 25), "")
+  if (length(expected_titles) > 0) {
+    out <- c(out, sprintf("Matched %d of %d title(s) the drift check's LLM read off the page.", sum(matched), length(expected_titles)))
+    if (any(!matched)) out <- c(out, "", "Not matched (check by hand -- the LLM list is a hint, not ground truth):", "",
+                                paste0("- ", expected_titles[!matched]))
+  }
+  list(pass = TRUE, markdown = out)
+}

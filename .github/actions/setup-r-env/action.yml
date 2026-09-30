@@ -1,0 +1,44 @@
+name: Set up R + Chrome for this project
+description: >
+  R, system libraries, the pipeline's R packages, and headless Chrome --
+  enough to run the full testthat suite (including the shinytest2 boot
+  smoke) and any single scraper live. Shared by pr-tests.yml and
+  copilot-setup-steps.yml. weekly-scrape.yml keeps its own inline copy on
+  purpose (its package list also feeds rsconnect::writeManifest()), so if
+  you add a package there, add it here too.
+outputs:
+  chrome-path:
+    description: Path to the installed Chrome binary (for CHROMOTE_CHROME)
+    value: ${{ steps.setup-chrome.outputs.chrome-path }}
+runs:
+  using: composite
+  steps:
+    - uses: r-lib/actions/setup-pandoc@v2
+
+    - uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: 'release'
+        use-public-rspm: true
+
+    - name: Install system dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcurl4-openssl-dev libxml2-dev libssl-dev libpoppler-cpp-dev \
+          libudunits2-dev libgdal-dev libgeos-dev libproj-dev
+
+    - name: Install R packages
+      shell: bash
+      run: |
+        Rscript -e 'install.packages(c(
+          "rmarkdown", "dplyr", "purrr", "readr", "readxl", "rvest",
+          "stringr", "tidyverse", "writexl", "xml2", "jsonlite",
+          "httr2", "lubridate", "chromote", "rsconnect", "testthat",
+          "withr", "here", "pdftools", "shinytest2",
+          "shiny", "shinydashboard", "shinyWidgets", "DT", "data.table",
+          "leaflet", "plotly", "scales", "shinycssloaders", "sf"
+        ))'
+
+    - name: Install Chrome
+      id: setup-chrome
+      uses: browser-actions/setup-chrome@v1

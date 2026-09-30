@@ -56,9 +56,7 @@ for (i in seq_len(nrow(registry))) {
 
   district_jobs <- switch(row$Platform,
     Applitrack = {
-      # tenant_path is everything between applitrack.com/ and /onlineapp/
-      # in the district's own URL.
-      tenant_path <- sub(".*applitrack\\.com/([^/]+)/onlineapp.*", "\\1", row$Job_Link, ignore.case = TRUE)
+      tenant_path <- applitrack_tenant_path(row$Job_Link)
       df <- safe_scrape(
         row$District,
         scrape_fn = function() fetch_applitrack_postings(tenant_path),
@@ -100,8 +98,7 @@ for (i in seq_len(nrow(registry))) {
       }
     },
     SchoolSpring = {
-      domain_name <- sub("^https?://", "", row$Job_Link)
-      domain_name <- sub("/$", "", domain_name)
+      domain_name <- schoolspring_domain(row$Job_Link)
       df <- safe_scrape(
         row$District,
         scrape_fn = function() fetch_schoolspring_postings(domain_name),
@@ -115,7 +112,7 @@ for (i in seq_len(nrow(registry))) {
       }
     },
     RedRoverK12 = {
-      org_slug <- sub(".*/org/([^/?]+).*", "\\1", row$Job_Link, ignore.case = TRUE)
+      org_slug <- redrover_org_slug(row$Job_Link)
       df <- safe_scrape(
         row$District,
         scrape_fn = function() fetch_redrover_postings(as.character(row$Org_ID), org_slug),
