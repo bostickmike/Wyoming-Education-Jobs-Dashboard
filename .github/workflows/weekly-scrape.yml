@@ -109,6 +109,9 @@ jobs:
         continue-on-error: true
         env:
           CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}
+          # Optional: lets the step read the missed job titles off each
+          # flagged page (llm_titles_from_page_text). Unset -> skipped.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           if [ -f /tmp/drift_flagged.csv ] && [ "$(tail -n +2 /tmp/drift_flagged.csv | wc -l)" -gt 0 ]; then
             Rscript .github/scripts/corroborate_drift.R

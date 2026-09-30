@@ -301,3 +301,41 @@ score_page_text_for_job_signal <- function(page_text) {
     "inconclusive"
   }
 }
+
+# --------------------------------------------------------------------------
+# Tier 2b: fold an LLM read of the page into the text-signal verdict
+# --------------------------------------------------------------------------
+
+# verdict: from score_page_text_for_job_signal() ("likely_broken" /
+#   "looks_genuinely_empty" / "inconclusive"), or "confirmed_broken" /
+#   "no_url_available" set upstream in corroborate_drift.R.
+# llm_titles: from llm_titles_from_page_text() -- character(0) when the LLM
+#   step was skipped (no key) or found nothing.
+#
+# Returns list(verdict, note):
+#   - LLM found real postings and we weren't already at confirmed_broken ->
+#     promote to "likely_broken" and say what it found (the scraper returned
+#     ~0 but these are demonstrably on the page).
+#   - LLM found nothing AND the text signal was only "inconclusive" ->
+#     downgrade to "looks_genuinely_empty" (conservative: both weak signals
+#     now agree there's nothing there).
+#   - otherwise: unchanged.
+combine_verdict_with_llm <- function(verdict, llm_titles) {
+  n <- length(llm_titles)
+
+  if (n > 0 && !identical(verdict, "confirmed_broken")) {
+    shown <- paste(utils::head(llm_titles, 8L), collapse = "; ")
+    return(list(
+      verdict = "likely_broken",
+      note = paste0("an LLM read ", n, " posting(s) off the live page: ",
+                    shown, if (n > 8L) ", ..." else "")
+    ))
+  }
+
+  if (n == 0 && identical(verdict, "inconclusive")) {
+    return(list(verdict = "looks_genuinely_empty",
+                note = "an LLM read no postings off the live page either"))
+  }
+
+  list(verdict = verdict, note = NA_character_)
+}

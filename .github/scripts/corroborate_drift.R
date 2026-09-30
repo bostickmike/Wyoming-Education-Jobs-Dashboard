@@ -13,10 +13,20 @@
 # erroring." Writes /tmp/drift_report.md -- only created if there's
 # something worth a human looking at; a report full of nothing but
 # looks_genuinely_empty isn't worth alerting on.
+#
+# When GEMINI_API_KEY is set, it also runs the already-rendered page text
+# through the LLM extractor (llm_titles_from_page_text) and folds the result
+# into the verdict via combine_verdict_with_llm(): an "inconclusive" text
+# score plus real LLM-read titles becomes "likely_broken" with the exact
+# postings the scraper is missing listed in the issue. Ported from the
+# Montana dashboard, where it replaced a by-hand diagnosis. No key -> this
+# step is a no-op and the behaviour is unchanged.
 
 source("drift_check.R")
 source("misc_district_scrapers.R") # for misc_district_registry
 source("k12_he_classification.R") # for canonicalize_k12_district
+source("scrape_helpers.R")
+source("llm_extract_scraper.R")      # for llm_titles_from_page_text
 library(chromote)
 
 flagged <- read.csv("/tmp/drift_flagged.csv", stringsAsFactors = FALSE)
@@ -42,12 +52,15 @@ url_lookup <- url_lookup[!duplicated(names(url_lookup), fromLast = TRUE)]
 b <- ChromoteSession$new()
 results <- data.frame(name = character(0), type = character(0), mean_count = numeric(0),
                        count = numeric(0), url = character(0), verdict = character(0),
-                       error_message = character(0), stringsAsFactors = FALSE)
+                       error_message = character(0), llm_note = character(0),
+                       llm_titles = character(0), stringsAsFactors = FALSE)
 
 for (i in seq_len(nrow(flagged))) {
   row <- flagged[i, ]
   url <- unname(url_lookup[row$name])
   if (is.na(url)) url <- NULL
+  llm_note <- NA_character_
+  llm_titles <- character(0)
 
   if (!is.na(row$scrape_error)) {
     verdict <- "confirmed_broken"
@@ -61,13 +74,23 @@ for (i in seq_len(nrow(flagged))) {
       b$Runtime$evaluate("document.body.innerText")$result$value
     }, error = function(e) NA_character_)
     verdict <- score_page_text_for_job_signal(text)
+
+    # The page is already rendered -- ask an LLM what postings it sees, and
+    # fold that into the verdict (no key -> no-op).
+    llm_titles <- tryCatch(llm_titles_from_page_text(text, url = url),
+                           error = function(e) character(0))
+    combined <- combine_verdict_with_llm(verdict, llm_titles)
+    verdict <- combined$verdict
+    llm_note <- combined$note
   }
 
-  cat(sprintf("%-40s baseline=%.1f current=%d -> %s\n", row$name, row$mean_count, row$count, verdict))
+  cat(sprintf("%-40s baseline=%.1f current=%d -> %s%s\n", row$name, row$mean_count,
+              row$count, verdict, if (is.na(llm_note)) "" else paste0("  [", llm_note, "]")))
   results <- rbind(results, data.frame(
     name = row$name, type = row$type, mean_count = row$mean_count,
     count = row$count, url = if (is.null(url)) NA_character_ else url,
-    verdict = verdict, error_message = row$scrape_error, stringsAsFactors = FALSE
+    verdict = verdict, error_message = row$scrape_error, llm_note = llm_note,
+    llm_titles = paste(llm_titles, collapse = " | "), stringsAsFactors = FALSE
   ))
 }
 
@@ -103,6 +126,7 @@ for (verdict_group in c("confirmed_broken", "likely_broken", "inconclusive", "no
     url_part <- if (is.na(r$url)) "" else sprintf(" -- %s", r$url)
     error_part <- if (verdict_group == "confirmed_broken") sprintf(" (%s)", r$error_message) else ""
     lines <- c(lines, sprintf("- **%s** (%s): averaged %.1f/week, now %d%s%s", r$name, r$type, r$mean_count, r$count, url_part, error_part))
+    if (!is.na(r$llm_note)) lines <- c(lines, sprintf("  - %s", r$llm_note))
   }
   lines <- c(lines, "")
 }

@@ -281,3 +281,47 @@ test_that("build_source_url_lookup reads the unified k12 registry and later sour
   expect_equal(unname(lookup["Misc District"]), "https://misc.example")
   expect_true("University of Wyoming" %in% names(lookup))
 })
+
+# --- LLM corroboration (Tier 2b) ----------------------------------------
+
+test_that("combine_verdict_with_llm promotes inconclusive to likely_broken when the LLM read real titles", {
+  out <- combine_verdict_with_llm("inconclusive", c("Bus Driver", "3rd Grade Teacher"))
+  expect_equal(out$verdict, "likely_broken")
+  expect_match(out$note, "2 posting\\(s\\)")
+  expect_match(out$note, "Bus Driver; 3rd Grade Teacher")
+})
+
+test_that("combine_verdict_with_llm truncates a long LLM title list in the note", {
+  out <- combine_verdict_with_llm("inconclusive", paste("Role", 1:12))
+  expect_equal(out$verdict, "likely_broken")
+  expect_match(out$note, "Role 8, \\.\\.\\.$")
+})
+
+test_that("combine_verdict_with_llm downgrades inconclusive to genuinely_empty only when the LLM also found nothing", {
+  out <- combine_verdict_with_llm("inconclusive", character(0))
+  expect_equal(out$verdict, "looks_genuinely_empty")
+  expect_match(out$note, "no postings")
+})
+
+test_that("combine_verdict_with_llm does not touch looks_genuinely_empty or a confirmed_broken verdict", {
+  expect_equal(combine_verdict_with_llm("looks_genuinely_empty", character(0))$verdict, "looks_genuinely_empty")
+  expect_true(is.na(combine_verdict_with_llm("looks_genuinely_empty", character(0))$note))
+  # confirmed_broken stays put even if the LLM happens to read something
+  expect_equal(combine_verdict_with_llm("confirmed_broken", c("Bus Driver"))$verdict, "confirmed_broken")
+})
+
+test_that("combine_verdict_with_llm keeps an already-likely_broken verdict and still lists what the LLM found", {
+  out <- combine_verdict_with_llm("likely_broken", c("Custodian"))
+  expect_equal(out$verdict, "likely_broken")
+  expect_match(out$note, "Custodian")
+})
+
+test_that("llm_titles_from_page_text returns character(0) with no key or a blank page (never throws)", {
+  withr::with_envvar(c(GEMINI_API_KEY = "", LLM_EXTRACT_KEY_ENV = ""), {
+    expect_identical(llm_titles_from_page_text("Food Service Worker\nBus Driver"), character(0))
+  })
+  withr::with_envvar(c(GEMINI_API_KEY = "fake-key"), {
+    expect_identical(llm_titles_from_page_text(NA_character_), character(0))
+    expect_identical(llm_titles_from_page_text("   "), character(0))
+  })
+})
