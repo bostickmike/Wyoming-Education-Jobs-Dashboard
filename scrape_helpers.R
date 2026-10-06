@@ -32,9 +32,22 @@
 # streamed-to-disk download in salary_scrapers.R), so it drops into any
 # existing `request(...) %>% ... %>% req_perform()` pipe as a straight
 # substitution for the last step.
-perform_with_retry <- function(req, max_tries = 3, path = NULL) {
-  req <- httr2::req_retry(req, max_tries = max_tries, backoff = function(i) 2^i)
+#
+# is_transient overrides which responses count as retryable (NULL keeps
+# httr2's 429/503 default) -- see is_transient_gateway_error() below.
+perform_with_retry <- function(req, max_tries = 3, path = NULL, is_transient = NULL) {
+  req <- httr2::req_retry(req, max_tries = max_tries, backoff = function(i) 2^i,
+                          is_transient = is_transient)
   httr2::req_perform(req, path = path)
+}
+
+# httr2's default retries only 429/503, so a 502/504 or a Cloudflare
+# 520-524 (origin unreachable/timed out) fails on the very first try. Ported
+# from Montana, where Roberts Public School lost 2026-09-22 and 09-29 to a
+# single 520/502 while its page was up. No Wyoming scraper uses it yet --
+# pass it for a source whose scrape_log errors are gateway 5xx.
+is_transient_gateway_error <- function(resp) {
+  httr2::resp_status(resp) %in% c(429, 502, 503, 504, 520:524)
 }
 
 # Build a zero-row data frame with the given column names, so a failed or
