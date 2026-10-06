@@ -154,6 +154,20 @@ test_that("parse_smartsites_postings extracts image-alt titles when that's the o
   expect_false(any(grepl("application", result$Title, ignore.case = TRUE)))
 })
 
+test_that("parse_smartsites_postings keeps each document's date with its own title when an item has no link", {
+  # Regression (found by the reviewer regression run, 2026-10-06): labels
+  # were read with html_elements() across all items, so an item without a
+  # link shifted every later date onto the wrong title.
+  html <- paste0(
+    '<ul><li class="ss-document-item" data-searchText="Bus Driver"><a class="ss-document-link" aria-label="Bus Driver added 2026-09-01"></a></li>',
+    '<li class="ss-document-item" data-searchText="Classified Application"></li>',
+    '<li class="ss-document-item" data-searchText="Para"><a class="ss-document-link" aria-label="Para added 2026-09-20"></a></li></ul>'
+  )
+  result <- parse_smartsites_postings(html)
+  expect_equal(result$Title, c("Bus Driver", "Para"))
+  expect_equal(result$Posted_Date, c("2026-09-01", "2026-09-20"))
+})
+
 test_that("parse_smartsites_postings drops decorative \"logo\" gallery images", {
   # Regression: Platte 1's gallery started carrying alt="logo"/"Logo" images
   # (2026-08-03), each scraped as a fake "Other" posting; the logo/Logo pair

@@ -340,7 +340,10 @@ parse_smartsites_postings <- function(html_text) {
   # libxml2/rvest lowercases HTML attribute names on parse, so the source's
   # camelCase "data-searchText" must be queried as "data-searchtext".
   doc_titles_raw <- rvest::html_attr(doc_nodes, "data-searchtext")
-  doc_labels_raw <- rvest::html_attr(rvest::html_elements(doc_nodes, "a.ss-document-link"), "aria-label")
+  # html_element() (singular): one result per item, NA when an item has no
+  # link, so labels stay aligned with titles. The plural form flattened all
+  # links and shifted every later date onto the wrong title.
+  doc_labels_raw <- rvest::html_attr(rvest::html_element(doc_nodes, "a.ss-document-link"), "aria-label")
   # Same document-search widget lists blank application forms alongside
   # real postings with no distinguishing markup (confirmed on Park County
   # SD16's real page: "classified application"/"certified application"
