@@ -2551,7 +2551,7 @@
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "RSPM",
         "Date/Publication": "2026-02-19 18:10:02 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:24:23 UTC; unix"
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-10-02 08:08:54 UTC; unix"
       }
     },
     "readxl": {
@@ -3835,40 +3835,40 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "d96d02419f3e1c5a9c2c7d7ab7630c1e"
+      "checksum": "471392d96e8055829df07ce5fe4e3842"
     },
     "allnow.csv": {
-      "checksum": "3f42b9c30df16fdfd061a881e0ea45a3"
+      "checksum": "a610d8a122dafdf78694da224a1a783f"
     },
     "allsum_he.csv": {
-      "checksum": "1133b60db394132bd2863cdce7c1c4b4"
+      "checksum": "020fb3e3a7d3003371f494fd65d851b8"
     },
     "allsum.csv": {
-      "checksum": "cff29017d1a6962085fae23c9c16045c"
+      "checksum": "c61bf504579dcb259931d81b3320d3d9"
     },
     "app.R": {
       "checksum": "6c59e1acb8b9b3e107b216a8a22b14b8"
     },
     "combinedclean.csv": {
-      "checksum": "73580baa9483b3aa4e34bb55ce457721"
+      "checksum": "ab3597bf3886196ae7b2d057e77681c6"
     },
     "facultydata.csv": {
-      "checksum": "9bbcbb12c61afa8f2cfc2bfcdcaaea9f"
+      "checksum": "dd3f411c09708ea737c1ce12338bef79"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "cbf2495d7d61aba2fd32a9a8a4c01642"
+      "checksum": "6e6595514a6e8bc0baffed350706094d"
     },
     "hedata.xlsx": {
-      "checksum": "8b7c4c6fb832f76f7c25a4f2549047fa"
+      "checksum": "ea0d580ddbce3bf40c8f4c8e981e80ed"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "4f62db1e17ebda0e4a332af98cd70815"
+      "checksum": "b737d46f4da98b398f29ae3b9ee49f03"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "4a4b8c95efe9874b8874fcb3deb00ca7"
+      "checksum": "b891cf0c13e61e10c151bb6250c029ae"
     },
     "salarymap.csv": {
       "checksum": "f7083b59f28e1f19dea9d751849d8be7"
