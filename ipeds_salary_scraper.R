@@ -48,16 +48,22 @@ IPEDS_UNITID_MAP <- tibble::tribble(
 )
 
 # Follows the API's `next` pagination link until exhausted, returning every
-# result row as one data frame.
+# result row as one data frame. Urban Institute API endpoints (salaries,
+# enrollment, directory) can include records with JSON nulls (e.g. 2023 salary
+# data contains null admissions fields), which breaks a per-record
+# as.data.frame(). simplifyVector = TRUE hands conversion off to jsonlite,
+# turning nulls into NAs across rows consistently.
 fetch_ipeds_paginated <- function(url) {
-  rows <- list()
+  pages <- list()
   while (!is.null(url)) {
-    resp <- request(url) %>% perform_with_retry() %>% resp_body_json()
-    rows <- c(rows, resp$results)
+    resp <- request(url) %>% perform_with_retry() %>% resp_body_json(simplifyVector = TRUE)
+    if (length(resp$results) > 0) {
+      pages[[length(pages) + 1]] <- as.data.frame(resp$results)
+    }
     url <- resp[["next"]]
   }
-  if (length(rows) == 0) return(data.frame())
-  bind_rows(lapply(rows, function(r) as.data.frame(r, stringsAsFactors = FALSE)))
+  if (length(pages) == 0) return(data.frame())
+  bind_rows(pages)
 }
 
 fetch_ipeds_wy_salaries_for_year <- function(year) {
@@ -71,7 +77,7 @@ fetch_ipeds_wy_salaries_for_year <- function(year) {
 find_latest_ipeds_salary_year <- function(start_year = as.integer(format(Sys.Date(), "%Y")),
                                            years_back = 5) {
   for (year in seq(start_year, start_year - years_back)) {
-    df <- fetch_ipeds_wy_salaries_for_year(year)
+    df <- tryCatch(fetch_ipeds_wy_salaries_for_year(year), error = function(e) data.frame())
     if (nrow(df) > 0) return(list(year = year, data = df))
   }
   list(year = NA_integer_, data = data.frame())
@@ -153,7 +159,7 @@ fetch_ipeds_he_salary_trend <- function(n_years = 3) {
 
   years <- seq(latest$year, latest$year - n_years + 1)
   rows <- lapply(years, function(y) {
-    df <- if (y == latest$year) latest$data else fetch_ipeds_wy_salaries_for_year(y)
+    df <- if (y == latest$year) latest$data else tryCatch(fetch_ipeds_wy_salaries_for_year(y), error = function(e) data.frame())
     parse_ipeds_salary_trend_year(df, y)
   })
   bind_rows(rows)

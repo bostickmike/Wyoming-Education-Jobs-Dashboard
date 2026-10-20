@@ -75,3 +75,19 @@ test_that("parse_ipeds_salary_trend_year returns an empty, correctly-shaped fram
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Name", "Year", "Faculty_Avg_Salary"))
 })
+
+test_that("fetch_ipeds_paginated handles JSON null fields across paginated pages without error", {
+  page1 <- "{\"count\": 2, \"next\": \"https://api.example.com/page2\", \"results\": [{\"unitid\": 240727, \"year\": 2023, \"average_salary\": 98000, \"number_applied\": null}]}"
+  page2 <- "{\"count\": 2, \"next\": null, \"results\": [{\"unitid\": 240693, \"year\": 2023, \"average_salary\": 65000, \"number_applied\": 100}]}"
+
+  httr2::local_mocked_responses(list(
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(page1)),
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(page2))
+  ))
+
+  result <- fetch_ipeds_paginated("https://api.example.com/page1")
+  expect_equal(nrow(result), 2)
+  expect_equal(result$unitid, c(240727, 240693))
+  expect_true(is.na(result$number_applied[1]))
+  expect_equal(result$number_applied[2], 100)
+})
