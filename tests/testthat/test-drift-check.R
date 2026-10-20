@@ -503,8 +503,8 @@ test_that("source_fixtures picks this district's fixture, not another's on the s
   expect_equal(nio$own, "misc_districts/apptegy_niobrara_rendered.txt")
   expect_true("misc_districts/apptegy_platte2_rendered.txt" %in% nio$platform)
 
-  p2 <- source_fixtures(resolve_wy("Platte County School District 2"), "Platte County School District 2", files)
-  expect_equal(p2$own, "misc_districts/apptegy_platte2_rendered.txt")
+  w7 <- source_fixtures(resolve_wy("Weston County School District 7"), "Weston County School District 7", files)
+  expect_equal(w7$own, "misc_districts/apptegy_weston7_rendered.txt")
   # Platte 1 is smartsites -- its fixture must not show up as Platte 2's.
   p1 <- source_fixtures(resolve_wy("Platte County School District 1"), "Platte County School District 1", files)
   expect_equal(p1$own, "misc_districts/smartsites_platte1.html")

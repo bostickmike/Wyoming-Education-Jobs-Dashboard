@@ -13,19 +13,19 @@ mock_globals <- function(bindings) {
   }, envir = parent.frame())
 }
 
-test_that("misc_district_registry has exactly the 15 confirmed districts/schools, each with a known platform", {
-  # 12 real districts + 3 charter schools (Cheyenne Classical Academy and
+test_that("misc_district_registry has exactly the 13 confirmed districts/schools, each with a known platform", {
+  # 10 real districts + 3 charter schools (Cheyenne Classical Academy and
   # Wyoming Classical Academy on the Educational Networks CMS, Prairie
   # View Community School on its own bespoke platform -- all found
   # 2026-08-06) -- see the registry's own comment for why standalone
   # schools belong here too, not just LEAs.
-  expect_equal(nrow(misc_district_registry), 15)
+  expect_equal(nrow(misc_district_registry), 13)
   expect_true(all(misc_district_registry$platform %in%
     c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "googlesites", "educational_networks", "prairieview")))
-  expect_equal(length(unique(misc_district_registry$District)), 15)
+  expect_equal(length(unique(misc_district_registry$District)), 13)
 })
 
-test_that("misc_district_coverage_tiers labels the 12 registry districts and WSBA-only orgs distinctly", {
+test_that("misc_district_coverage_tiers labels the 10 registry districts and WSBA-only orgs distinctly", {
   tiers <- misc_district_coverage_tiers()
   expect_equal(nrow(tiers), nrow(misc_district_registry) + length(WSBA_ONLY_ORGS))
   expect_true(all(misc_district_registry$District %in% tiers$District[tiers$Data_Coverage == "Partial (WSBA + own page)"]))

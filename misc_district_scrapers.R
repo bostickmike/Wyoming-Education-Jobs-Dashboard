@@ -762,11 +762,9 @@ parse_prairieview_postings <- function(headings_json) {
 # Sublette 1's "Current Job Announcements".
 misc_district_registry <- data.frame(
   District = c(
-    "Lincoln County School District 2",
     "Niobrara County School District 1",
     "Park County School District 16",
     "Platte County School District 1",
-    "Platte County School District 2",
     "Sheridan County School District 3",
     "Sublette County School District 1",
     "Uinta County School District 4",
@@ -779,11 +777,9 @@ misc_district_registry <- data.frame(
     "Prairie View Community School"
   ),
   platform = c(
-    "wordpress",
     "apptegy",
     "smartsites",
     "smartsites",
-    "apptegy",
     "apptegy",
     "schoolblocks",
     "edlio",
@@ -796,11 +792,9 @@ misc_district_registry <- data.frame(
     "prairieview"
   ),
   url = c(
-    "https://lcsd2.org/employment-opportunities/",
     "https://www.growingluskleaders.org/page/human-resources",
     "https://pcsd16.com/271372_2",
     "https://www.platte1.org/89574_1",
-    "https://www.guernseysunrise.org/page/employment",
     "https://www.sheridan3.com/page/hr-and-career-opportunities",
     "https://www.sub1.org/en-US/employment-and-human-resources-f26202d3",
     "https://www.uinta4.com/departments/business_office/job_opportunities/current_openings",
@@ -838,7 +832,7 @@ WSBA_ONLY_ORGS <- c("Snowy Range Academy")
 # leaving that fact sitting only in this file's comments where an end user
 # viewing the dashboard has no way to see it.
 #
-# "Partial (WSBA + own page)": misc_district_registry's 12 districts --
+# "Partial (WSBA + own page)": misc_district_registry's 10 districts --
 # WSBA (confirmed ~25-40% of real postings on its own) plus a heuristic
 # own-page scrape, deduplicated. Still meaningfully less complete than a
 # real structured job-board platform.
