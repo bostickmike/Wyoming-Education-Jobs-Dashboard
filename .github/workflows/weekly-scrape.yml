@@ -71,6 +71,12 @@ jobs:
           cp Wy_Ed_Jobs/combinedclean.csv /tmp/baseline_combinedclean.csv
           cp Wy_Ed_Jobs/hedata.xlsx /tmp/baseline_hedata.xlsx
 
+      - name: Pre-flight API canary check
+        continue-on-error: true
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+        run: Rscript .github/scripts/canary_api_check.R
+
       - name: Run the scrape pipeline
         env:
           CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}

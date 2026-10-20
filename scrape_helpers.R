@@ -50,6 +50,41 @@ is_transient_gateway_error <- function(resp) {
   httr2::resp_status(resp) %in% c(429, 502, 503, 504, 520:524)
 }
 
+# Follows a JSON API's pagination link (defaulting to resp[["next"]]) until
+# exhausted, collecting records into a single consolidated data frame. Uses
+# httr2::resp_body_json(simplifyVector = TRUE) so that JSON null values across
+# mixed or optional fields (e.g. Urban Institute IPEDS/CCD directory/salary
+# endpoints) are converted into NA consistently without failing per-record
+# as.data.frame() calls.
+fetch_json_paginated <- function(url,
+                                 results_field = "results",
+                                 next_field = "next",
+                                 max_pages = NULL,
+                                 req_modifier = identity) {
+  pages <- list()
+  page_count <- 0L
+
+  while (!is.null(url) && nzchar(url)) {
+    if (!is.null(max_pages) && page_count >= max_pages) break
+
+    req <- req_modifier(httr2::request(url))
+    resp <- req %>% perform_with_retry() %>% httr2::resp_body_json(simplifyVector = TRUE)
+    res <- resp[[results_field]]
+
+    if (is.data.frame(res) && nrow(res) > 0) {
+      pages[[length(pages) + 1]] <- res
+    } else if (is.list(res) && length(res) > 0) {
+      pages[[length(pages) + 1]] <- as.data.frame(res)
+    }
+
+    page_count <- page_count + 1L
+    url <- resp[[next_field]]
+  }
+
+  if (length(pages) == 0) return(data.frame())
+  dplyr::bind_rows(pages)
+}
+
 # Build a zero-row data frame with the given column names, so a failed or
 # empty scrape can still be bind_rows()'d/rbind()'d with everything else
 # without special-casing a NULL result at every call site.

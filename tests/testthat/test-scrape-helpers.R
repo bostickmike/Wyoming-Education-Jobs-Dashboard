@@ -92,3 +92,38 @@ test_that("is_transient_gateway_error retries rate limits and gateway/Cloudflare
     expect_false(status_is_transient(code), info = code)
   }
 })
+
+test_that("fetch_json_paginated handles JSON nulls and heterogeneous fields across pages", {
+  page1 <- '{"count": 3, "next": "https://api.example.com/p2", "results": [{"id": 1, "val": null}, {"id": 2, "val": "abc"}]}'
+  page2 <- '{"count": 3, "next": null, "results": [{"id": 3, "val": "def", "extra": 42}]}'
+
+  httr2::local_mocked_responses(list(
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(page1)),
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(page2))
+  ))
+
+  res <- fetch_json_paginated("https://api.example.com/p1")
+  expect_equal(nrow(res), 3)
+  expect_equal(res$id, c(1, 2, 3))
+  expect_true(is.na(res$val[1]))
+  expect_equal(res$val[2], "abc")
+  expect_true(is.na(res$extra[1]))
+  expect_equal(res$extra[3], 42)
+})
+
+test_that("fetch_json_paginated handles empty results and respects max_pages", {
+  empty_page <- '{"count": 0, "next": null, "results": []}'
+  httr2::local_mocked_responses(list(
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(empty_page))
+  ))
+  res_empty <- fetch_json_paginated("https://api.example.com/empty")
+  expect_equal(nrow(res_empty), 0)
+  expect_true(is.data.frame(res_empty))
+
+  page1 <- '{"count": 10, "next": "https://api.example.com/p2", "results": [{"id": 1}]}'
+  httr2::local_mocked_responses(list(
+    httr2::response(200, headers = list("Content-Type" = "application/json"), body = charToRaw(page1))
+  ))
+  res_limited <- fetch_json_paginated("https://api.example.com/p1", max_pages = 1)
+  expect_equal(nrow(res_limited), 1)
+})

@@ -54,16 +54,7 @@ IPEDS_UNITID_MAP <- tibble::tribble(
 # as.data.frame(). simplifyVector = TRUE hands conversion off to jsonlite,
 # turning nulls into NAs across rows consistently.
 fetch_ipeds_paginated <- function(url) {
-  pages <- list()
-  while (!is.null(url)) {
-    resp <- request(url) %>% perform_with_retry() %>% resp_body_json(simplifyVector = TRUE)
-    if (length(resp$results) > 0) {
-      pages[[length(pages) + 1]] <- as.data.frame(resp$results)
-    }
-    url <- resp[["next"]]
-  }
-  if (length(pages) == 0) return(data.frame())
-  bind_rows(pages)
+  fetch_json_paginated(url)
 }
 
 fetch_ipeds_wy_salaries_for_year <- function(year) {
@@ -191,14 +182,7 @@ IPEDS_COLLEGE_DIRECTORY_ENDPOINT <- "https://educationdata.urban.org/api/v1/coll
 # fetch_ipeds_paginated() rather than changing it, since that function is
 # already tested working for the salary endpoint and doesn't need this.
 fetch_ipeds_directory_paginated <- function(url) {
-  pages <- list()
-  while (!is.null(url)) {
-    resp <- request(url) %>% perform_with_retry() %>% resp_body_json(simplifyVector = TRUE)
-    pages[[length(pages) + 1]] <- resp$results
-    url <- resp[["next"]]
-  }
-  if (length(pages) == 0) return(data.frame())
-  bind_rows(pages)
+  fetch_json_paginated(url)
 }
 
 fetch_ipeds_wy_college_directory_for_year <- function(year) {
