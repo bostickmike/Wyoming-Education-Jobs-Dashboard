@@ -149,3 +149,59 @@ test_that("remove_wsba_direct_duplicates removes only exact district/title/date 
   expect_equal(nrow(result), 3)
   expect_equal(as.character(result$date_posted), c("2026-05-23", "2026-05-22", NA))
 })
+
+test_that("generate_wsba_discrepancy_report categorizes ghosts, unmatched jobs, and non-district rows", {
+  wsba <- data.frame(
+    title = c(
+      "Science Teacher",                  # Duplicate of direct (should NOT appear in report)
+      "Warehouse Specialist",             # Unmatched, recent (<60d) for Laramie 1
+      "Elementary Teacher",               # Unmatched, stale (>60d) for Laramie 1 (ghost job)
+      "Undated Role",                     # Unmatched, no date for Laramie 1
+      "Speech Pathologist"                # Unmatched, but STRIDE has no direct scraper (ignore)
+    ),
+    date_posted = c(
+      as.character(Sys.Date() - 5),
+      as.character(Sys.Date() - 10),
+      as.character(Sys.Date() - 120),
+      NA,
+      as.character(Sys.Date() - 5)
+    ),
+    location = c("Cheyenne", "Cheyenne", "Cheyenne", "Cheyenne", "Cheyenne"),
+    url = c("https://wsba-wy.org/1", "https://wsba-wy.org/2", "https://wsba-wy.org/3", "https://wsba-wy.org/4", "https://wsba-wy.org/5"),
+    District = c(
+      "Laramie County School District 1",
+      "Laramie County School District No. 1",
+      "Laramie County School District 1",
+      "Laramie County School District 1",
+      "STRIDE Learning Center"
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  direct <- data.frame(
+    title = "SCIENCE teacher",
+    date_posted = as.character(Sys.Date() - 5),
+    District = "Laramie County School District 1",
+    stringsAsFactors = FALSE
+  )
+
+  report <- generate_wsba_discrepancy_report(wsba, direct)
+
+  expect_equal(nrow(report), 3)
+  expect_equal(report$Title, c("Warehouse Specialist", "Elementary Teacher", "Undated Role"))
+  expect_equal(unique(report$District), "Laramie County School District 1")
+  expect_equal(unique(report$Source), "WSBA")
+  expect_true(grepl("investigate ATS drift", report$Discrepancy_Type[1]))
+  expect_true(grepl("Potential ghost posting on WSBA", report$Discrepancy_Type[2]))
+  expect_equal(report$Discrepancy_Type[3], "Unmatched on direct scraper (no date)")
+  expect_equal(report$Detected_Date[1], as.character(Sys.Date()))
+
+  # Verify report_path writes out the file during deduplication
+  tmp <- tempfile(fileext = ".csv")
+  deduped <- remove_wsba_direct_duplicates(wsba, direct, report_path = tmp)
+  expect_true(file.exists(tmp))
+  read_back <- read.csv(tmp, stringsAsFactors = FALSE)
+  expect_equal(nrow(read_back), 3)
+  expect_equal(nrow(deduped), 4) # 1 duplicate dropped, 4 survived (including STRIDE)
+  unlink(tmp)
+})

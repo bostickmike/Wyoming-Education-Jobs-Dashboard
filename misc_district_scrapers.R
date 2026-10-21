@@ -1042,7 +1042,96 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 # Remove a WSBA row only when all three fields exactly match a direct-board
 # row. Missing dates deliberately prevent a match: retaining an uncertain
 # duplicate is safer than dropping a real vacancy.
-remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings) {
+wsba_posting_key <- function(postings) {
+  title <- normalize_title(postings$title)
+  district <- normalize_title(canonicalize_wsba_district(postings$District))
+  posted_date <- trimws(as.character(postings$date_posted))
+  valid <- !is.na(title) & nzchar(title) &
+    !is.na(district) & nzchar(district) &
+    !is.na(postings$date_posted) & nzchar(posted_date)
+  key <- rep(NA_character_, nrow(postings))
+  key[valid] <- paste(district[valid], title[valid], posted_date[valid], sep = "\r")
+  key
+}
+
+generate_wsba_discrepancy_report <- function(wsba_postings, direct_postings) {
+  empty <- data.frame(
+    District = character(0),
+    Source = character(0),
+    Title = character(0),
+    Date_Posted = character(0),
+    Location = character(0),
+    URL = character(0),
+    Discrepancy_Type = character(0),
+    Detected_Date = character(0),
+    stringsAsFactors = FALSE
+  )
+  if (nrow(wsba_postings) == 0) return(empty)
+
+  required <- c("title", "date_posted", "District")
+  missing_wsba <- setdiff(required, names(wsba_postings))
+  missing_direct <- setdiff(required, names(direct_postings))
+  if (length(missing_wsba) > 0 || length(missing_direct) > 0) {
+    stop(
+      "Cannot generate discrepancy report; missing columns: ",
+      paste(c(missing_wsba, missing_direct), collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  direct_keys <- wsba_posting_key(direct_postings)
+  direct_keys <- direct_keys[!is.na(direct_keys)]
+
+  wsba_keys <- wsba_posting_key(wsba_postings)
+  is_dup <- !is.na(wsba_keys) & wsba_keys %in% direct_keys
+  survived_wsba <- wsba_postings[!is_dup, , drop = FALSE]
+  if (nrow(survived_wsba) == 0) return(empty)
+
+  # Check which survived rows belong to districts that have an active direct scraper
+  direct_districts <- unique(canonicalize_wsba_district(direct_postings$District))
+  survived_canon <- canonicalize_wsba_district(survived_wsba$District)
+  is_discrepancy <- survived_canon %in% direct_districts
+  discrepancies <- survived_wsba[is_discrepancy, , drop = FALSE]
+  if (nrow(discrepancies) == 0) return(empty)
+
+  parse_discrepancy_date <- function(dp) {
+    if (inherits(dp, "Date")) return(dp)
+    if (is.na(dp) || !nzchar(trimws(as.character(dp)))) return(as.Date(NA))
+    d <- tryCatch(as.Date(as.character(dp)), error = function(e) NA)
+    if (!is.na(d)) return(d)
+    tryCatch(as.Date(as.character(dp), format = "%m/%d/%Y"), error = function(e) NA)
+  }
+
+  # Categorize discrepancy
+  reasons <- vapply(seq_len(nrow(discrepancies)), function(i) {
+    dp <- discrepancies$date_posted[i]
+    parsed_date <- parse_discrepancy_date(dp)
+    if (is.na(parsed_date)) {
+      return("Unmatched on direct scraper (no date)")
+    }
+    if (parsed_date < (Sys.Date() - 60)) {
+      return(paste0("Potential ghost posting on WSBA (stale date: ", dp, ")"))
+    }
+    "Unmatched on direct scraper (investigate ATS drift or unlisted posting)"
+  }, character(1))
+
+  loc <- if ("location" %in% names(discrepancies)) discrepancies$location else rep(NA_character_, nrow(discrepancies))
+  u <- if ("url" %in% names(discrepancies)) discrepancies$url else rep(NA_character_, nrow(discrepancies))
+
+  data.frame(
+    District = canonicalize_wsba_district(discrepancies$District),
+    Source = "WSBA",
+    Title = as.character(discrepancies$title),
+    Date_Posted = as.character(discrepancies$date_posted),
+    Location = as.character(loc),
+    URL = as.character(u),
+    Discrepancy_Type = reasons,
+    Detected_Date = as.character(Sys.Date()),
+    stringsAsFactors = FALSE
+  )
+}
+
+remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings, report_path = NULL) {
   required <- c("title", "date_posted", "District")
   missing_wsba <- setdiff(required, names(wsba_postings))
   missing_direct <- setdiff(required, names(direct_postings))
@@ -1054,22 +1143,15 @@ remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings) {
     )
   }
 
-  posting_key <- function(postings) {
-    title <- normalize_title(postings$title)
-    district <- normalize_title(canonicalize_wsba_district(postings$District))
-    posted_date <- trimws(as.character(postings$date_posted))
-    valid <- !is.na(title) & nzchar(title) &
-      !is.na(district) & nzchar(district) &
-      !is.na(postings$date_posted) & nzchar(posted_date)
-    key <- rep(NA_character_, nrow(postings))
-    key[valid] <- paste(district[valid], title[valid], posted_date[valid], sep = "\r")
-    key
+  if (!is.null(report_path)) {
+    rep <- generate_wsba_discrepancy_report(wsba_postings, direct_postings)
+    write.csv(rep, report_path, row.names = FALSE)
   }
 
-  direct_keys <- posting_key(direct_postings)
+  direct_keys <- wsba_posting_key(direct_postings)
   direct_keys <- direct_keys[!is.na(direct_keys)]
   if (nrow(wsba_postings) == 0 || length(direct_keys) == 0) return(wsba_postings)
 
-  wsba_keys <- posting_key(wsba_postings)
+  wsba_keys <- wsba_posting_key(wsba_postings)
   wsba_postings[is.na(wsba_keys) | !wsba_keys %in% direct_keys, , drop = FALSE]
 }
