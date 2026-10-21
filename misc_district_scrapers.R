@@ -74,39 +74,63 @@ fetch_wsba_vacancies <- function(url = "https://www.wsba-wy.org/vacancies") {
 # catches (it only fixes misspellings, not this naming exception) -- and
 # that phantom row would carry no salary/vacancy-rate join at all.
 canonicalize_wsba_district <- function(district) {
-  district <- str_replace(district, " School District No\\. (\\d+)$", " School District \\1")
+  district <- str_replace(district, " School District (?:No\\.|#) ?(\\d+)$", " School District \\1")
   str_replace(district, "^(Big Horn|Natrona) County School District", "\\1 School District")
 }
 
 parse_wsba_vacancies <- function(html_text) {
   soup <- rvest::read_html(html_text)
-  text <- rvest::html_text2(soup)
-  lines <- strsplit(text, "\n")[[1]]
-
-  # Entry lines look like "TITLE - DISTRICT NAME - LOCATION, Wyoming".
-  # DISTRICT NAME is either a "<...> School District No. <N>" or a
-  # standalone org name (e.g. "Snowy Range Academy"); LOCATION is
-  # everything after the last " - " before ", Wyoming".
-  entry_pattern <- "^(.+?) - (.+? School District(?: No\\. \\d+)?|[^-]+?) - ([^,]+), Wyoming$"
-  entry_idx <- grep(entry_pattern, lines, perl = TRUE)
-
-  if (length(entry_idx) == 0) {
-    return(data.frame(Title = character(0), District = character(0),
-                       Location = character(0), Posted_Date = character(0),
-                       stringsAsFactors = FALSE))
-  }
-
+  delim <- "(?:\\s+-\\s*|\\s*-\\s+)"
+  entry_pattern <- paste0("^(.+?)", delim, "(.+? School District(?: (?:No\\.|#) \\d+)?|[^-]+?)", delim, "([^,]+),\\s*Wyoming$")
   date_pattern <- "^Posted (\\d{1,2}/\\d{1,2}/\\d{4})$"
 
-  rows <- lapply(entry_idx, function(i) {
-    m <- regmatches(lines[i], regexec(entry_pattern, lines[i], perl = TRUE))[[1]]
-    title <- m[2]
-    district <- canonicalize_wsba_district(m[3])
-    location <- m[4]
+  ps <- rvest::html_elements(soup, "p")
+  p_texts <- rvest::html_text(ps, trim = TRUE)
+  entry_idx <- which(grepl(entry_pattern, p_texts, perl = TRUE))
 
-    # The posted date is the next non-blank line, when present -- a small
-    # minority of real WSBA entries have no date line at all (confirmed
-    # against the live site, not a parsing gap).
+  if (length(entry_idx) > 0) {
+    rows <- lapply(entry_idx, function(i) {
+      m <- regmatches(p_texts[i], regexec(entry_pattern, p_texts[i], perl = TRUE))[[1]]
+      title <- trimws(m[2])
+      district <- canonicalize_wsba_district(trimws(m[3]))
+      location <- trimws(m[4])
+
+      a_elem <- rvest::html_element(ps[i], "a")
+      href <- if (!is.na(a_elem)) rvest::html_attr(a_elem, "href") else NA_character_
+      url <- if (!is.na(href) && nzchar(trimws(href))) trimws(href) else WSBA_VACANCIES_URL
+
+      j <- i + 1
+      while (j <= length(p_texts) && !nzchar(p_texts[j])) j <- j + 1
+      posted_date <- if (j <= length(p_texts) && grepl(date_pattern, p_texts[j])) {
+        d <- sub(date_pattern, "\\1", p_texts[j])
+        as.character(as.Date(d, format = "%m/%d/%Y"))
+      } else {
+        NA_character_
+      }
+
+      data.frame(Title = title, District = district, Location = location,
+                 Posted_Date = posted_date, Url = url, stringsAsFactors = FALSE)
+    })
+    return(do.call(rbind, rows))
+  }
+
+  # Fallback to plain lines if no <p> tags matched
+  text <- rvest::html_text2(soup)
+  lines <- strsplit(text, "\n")[[1]]
+  line_idx <- grep(entry_pattern, lines, perl = TRUE)
+
+  if (length(line_idx) == 0) {
+    return(data.frame(Title = character(0), District = character(0),
+                       Location = character(0), Posted_Date = character(0),
+                       Url = character(0), stringsAsFactors = FALSE))
+  }
+
+  rows <- lapply(line_idx, function(i) {
+    m <- regmatches(lines[i], regexec(entry_pattern, lines[i], perl = TRUE))[[1]]
+    title <- trimws(m[2])
+    district <- canonicalize_wsba_district(trimws(m[3]))
+    location <- trimws(m[4])
+
     j <- i + 1
     while (j <= length(lines) && !nzchar(trimws(lines[j]))) j <- j + 1
     posted_date <- if (j <= length(lines) && grepl(date_pattern, lines[j])) {
@@ -117,7 +141,7 @@ parse_wsba_vacancies <- function(html_text) {
     }
 
     data.frame(Title = title, District = district, Location = location,
-               Posted_Date = posted_date, stringsAsFactors = FALSE)
+               Posted_Date = posted_date, Url = WSBA_VACANCIES_URL, stringsAsFactors = FALSE)
   })
 
   do.call(rbind, rows)
@@ -824,7 +848,13 @@ misc_district_registry <- data.frame(
 # so Snowy Range's postings were silently dropped entirely -- confirmed
 # absent from every committed combinedclean.csv to date. This constant and
 # the loop below are the actual fix.
-WSBA_ONLY_ORGS <- c("Snowy Range Academy")
+WSBA_ONLY_ORGS <- c(
+  "Snowy Range Academy",
+  "Northeast Wyoming BOCES",
+  "STRIDE Learning Center",
+  "Sweetwater County Child Developmental Center",
+  "Wyoming Boys School"
+)
 
 # District-level data-completeness classification -- used by app.R to show
 # a real, visible badge on any district whose current-openings count is
@@ -901,7 +931,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   wsba <- safe_scrape(
     "WSBA statewide vacancies",
     scrape_fn = fetch_wsba_vacancies,
-    expected_cols = c("Title", "District", "Location", "Posted_Date")
+    expected_cols = c("Title", "District", "Location", "Posted_Date", "Url")
   )
 
   needs_browser <- any(misc_district_registry$platform %in% c("apptegy", "prairieview", "googlesites"))
@@ -927,9 +957,21 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
     wsba_here <- wsba[wsba$District == district, , drop = FALSE]
 
+    wsba_urls <- if ("Url" %in% names(wsba_here) && nrow(wsba_here) > 0) {
+      ifelse(!is.na(wsba_here$Url) & nzchar(wsba_here$Url), wsba_here$Url, WSBA_VACANCIES_URL)
+    } else {
+      rep(WSBA_VACANCIES_URL, nrow(wsba_here))
+    }
+
+    own_urls <- if ("Link" %in% names(own_postings) && nrow(own_postings) > 0) {
+      ifelse(!is.na(own_postings$Link) & nzchar(own_postings$Link), own_postings$Link, url)
+    } else {
+      rep(url, nrow(own_postings))
+    }
+
     combined <- dplyr::bind_rows(
-      if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = WSBA_VACANCIES_URL, stringsAsFactors = FALSE),
-      if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = url, stringsAsFactors = FALSE)
+      if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = wsba_urls, stringsAsFactors = FALSE),
+      if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = own_urls, stringsAsFactors = FALSE)
     )
 
     if (nrow(combined) > 0) {
@@ -946,10 +988,15 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   for (org in WSBA_ONLY_ORGS) {
     wsba_here <- wsba[wsba$District == org, , drop = FALSE]
     if (nrow(wsba_here) > 0) {
+      org_urls <- if ("Url" %in% names(wsba_here)) {
+        ifelse(!is.na(wsba_here$Url) & nzchar(wsba_here$Url), wsba_here$Url, WSBA_VACANCIES_URL)
+      } else {
+        rep(WSBA_VACANCIES_URL, nrow(wsba_here))
+      }
       all_rows[[length(all_rows) + 1]] <- data.frame(
         title = wsba_here$Title, date_posted = wsba_here$Posted_Date,
-        position = NA_character_, location = NA_character_,
-        url = WSBA_VACANCIES_URL, District = org,
+        position = NA_character_, location = wsba_here$Location,
+        url = org_urls, District = org,
         stringsAsFactors = FALSE
       )
     }
@@ -961,12 +1008,17 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   represented_orgs <- c(misc_district_registry$District, WSBA_ONLY_ORGS)
   wsba_remaining <- wsba[!wsba$District %in% represented_orgs, , drop = FALSE]
   if (nrow(wsba_remaining) > 0) {
+    rem_urls <- if ("Url" %in% names(wsba_remaining)) {
+      ifelse(!is.na(wsba_remaining$Url) & nzchar(wsba_remaining$Url), wsba_remaining$Url, WSBA_VACANCIES_URL)
+    } else {
+      rep(WSBA_VACANCIES_URL, nrow(wsba_remaining))
+    }
     all_rows[[length(all_rows) + 1]] <- data.frame(
       title = wsba_remaining$Title,
       date_posted = wsba_remaining$Posted_Date,
       position = NA_character_,
       location = wsba_remaining$Location,
-      url = WSBA_VACANCIES_URL,
+      url = rem_urls,
       District = wsba_remaining$District,
       stringsAsFactors = FALSE
     )

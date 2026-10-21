@@ -62,6 +62,7 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
                    "Snowy Range Academy", "Laramie County School District 1"),
       Location = c("Lusk", "Lusk", "Laramie", "Cheyenne"),
       Posted_Date = c("2026-05-18", "2026-05-11", "2026-05-20", "2026-05-22"),
+      Url = c("https://example.com/1", "https://example.com/2", "https://example.com/3", "https://example.com/4"),
       stringsAsFactors = FALSE
     ),
     fetch_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
@@ -93,13 +94,14 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
   snowy_range <- result[result$District == "Snowy Range Academy", ]
   expect_equal(nrow(snowy_range), 1)
   expect_equal(snowy_range$title, "Middle School Math Teacher")
+  expect_equal(snowy_range$url, "https://example.com/3")
 
   # WSBA rows for direct-platform districts must also be forwarded; the
   # final K-12 merge reconciles true overlaps with those direct feeds.
   laramie_1 <- result[result$District == "Laramie County School District 1", ]
   expect_equal(nrow(laramie_1), 1)
   expect_equal(laramie_1$title, "Science Teacher")
-  expect_equal(laramie_1$url, WSBA_VACANCIES_URL)
+  expect_equal(laramie_1$url, "https://example.com/4")
 
   expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District"))
   expect_true(all(is.na(result$position)))
@@ -107,7 +109,7 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
 
 test_that("fetch_all_misc_district_postings returns the right empty schema when every source is empty", {
   mock_globals(list(
-    fetch_wsba_vacancies = function(url) data.frame(Title = character(0), District = character(0), Location = character(0), Posted_Date = character(0)),
+    fetch_wsba_vacancies = function(url) data.frame(Title = character(0), District = character(0), Location = character(0), Posted_Date = character(0), Url = character(0)),
     fetch_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_smartsites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
