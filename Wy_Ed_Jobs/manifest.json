@@ -881,7 +881,7 @@
         "Maintainer": "Hadley Wickham <hadley@posit.co>",
         "Repository": "RSPM",
         "Date/Publication": "2026-06-17 21:50:07 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:23:54 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-10-18 19:49:53 UTC; unix"
       }
     },
     "digest": {
@@ -1192,7 +1192,7 @@
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "RSPM",
         "Date/Publication": "2026-01-29 06:10:33 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:22:42 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-10-18 19:50:19 UTC; unix"
       }
     },
     "generics": {
@@ -2560,30 +2560,30 @@
       "description": {
         "Package": "readxl",
         "Title": "Read Excel Files",
-        "Version": "1.5.0.1",
-        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = \"Copyright holder of all R code and all C/C++ code without explicit copyright attribution\"),\n    person(\"Marcin\", \"Kalicinski\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included RapidXML code\"),\n    person(\"Komarov Valery\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Christophe Leitienne\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Bob Colbert\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"David Hoerl\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Evan Miller\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\")\n  )",
-        "Description": "Import excel files into R. Supports '.xls' via the embedded\n    'libxls' C library <https://github.com/libxls/libxls> and '.xlsx' via\n    the embedded 'RapidXML' C++ library\n    <https://rapidxml.sourceforge.net/>.  Works on Windows, Mac and Linux\n    without external dependencies.",
+        "Version": "1.6.0",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = \"Copyright holder of all R code and all C/C++ code without explicit copyright attribution\"),\n    person(\"Marcin\", \"Kalicinski\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included RapidXML code\"),\n    person(\"Komarov Valery\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Christophe Leitienne\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Bob Colbert\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"David Hoerl\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Evan Miller\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"kokke\", role = \"ctb\",\n           comment = \"Author of included tiny-AES-c code\")\n  )",
+        "Description": "Import excel files into R. Supports '.xls' via the embedded\n    'libxls' C library <https://github.com/libxls/libxls> and '.xlsx' via\n    the embedded 'RapidXML' C++ library\n    <https://rapidxml.sourceforge.net/>.  Works on Windows, Mac and Linux\n    without external dependencies. Reading of password-encrypted '.xlsx'\n    files is supported via the embedded 'tiny-AES-c' C library\n    <https://github.com/kokke/tiny-AES-c>.",
         "License": "MIT + file LICENSE",
         "URL": "https://readxl.tidyverse.org, https://github.com/tidyverse/readxl",
         "BugReports": "https://github.com/tidyverse/readxl/issues",
-        "Depends": "R (>= 4.1)",
-        "Imports": "cellranger, tibble (>= 2.0.1), utils",
-        "Suggests": "covr, knitr, rmarkdown, testthat (>= 3.1.6), withr",
+        "Depends": "R (>= 4.2)",
+        "Imports": "cellranger, cli, rlang, tibble (>= 2.0.1), utils",
+        "Suggests": "askpass, covr, knitr, rmarkdown, testthat (>= 3.1.6), withr",
         "LinkingTo": "cpp11 (>= 0.5.5), progress",
         "VignetteBuilder": "knitr",
         "Config/build/compilation-database": "true",
         "Config/Needs/website": "tidyverse/tidytemplate, tidyverse",
-        "Config/roxygen2/version": "8.0.0",
+        "Config/roxygen2/version": "8.1.0",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
-        "Note": "libxls v1.6.3 c199d13",
+        "Note": "libxls v1.6.4 34c7cc6; tiny-AES-c 2385675",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-09-16 07:49:42 UTC; ripley",
-        "Author": "Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Jennifer Bryan [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-6983-2759>),\n  Posit, PBC [cph, fnd] (Copyright holder of all R code and all C/C++\n    code without explicit copyright attribution),\n  Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),\n  Komarov Valery [ctb, cph] (Author of included libxls code),\n  Christophe Leitienne [ctb, cph] (Author of included libxls code),\n  Bob Colbert [ctb, cph] (Author of included libxls code),\n  David Hoerl [ctb, cph] (Author of included libxls code),\n  Evan Miller [ctb, cph] (Author of included libxls code)",
+        "Packaged": "2026-10-16 22:54:36 UTC; jenny",
+        "Author": "Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Jennifer Bryan [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-6983-2759>),\n  Posit, PBC [cph, fnd] (Copyright holder of all R code and all C/C++\n    code without explicit copyright attribution),\n  Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),\n  Komarov Valery [ctb, cph] (Author of included libxls code),\n  Christophe Leitienne [ctb, cph] (Author of included libxls code),\n  Bob Colbert [ctb, cph] (Author of included libxls code),\n  David Hoerl [ctb, cph] (Author of included libxls code),\n  Evan Miller [ctb, cph] (Author of included libxls code),\n  kokke [ctb] (Author of included tiny-AES-c code)",
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-09-16 07:53:07 UTC",
-        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-09-17 04:24:49 UTC; unix"
+        "Date/Publication": "2026-10-17 07:20:02 UTC",
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-10-18 10:40:40 UTC; unix"
       }
     },
     "rematch": {
@@ -2784,7 +2784,7 @@
         "Maintainer": "Hadley Wickham <hadley@posit.co>",
         "Repository": "RSPM",
         "Date/Publication": "2025-08-29 14:00:02 UTC",
-        "Built": "R 4.6.0; ; 2026-08-12 20:23:04 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-10-18 19:50:01 UTC; unix"
       }
     },
     "s2": {
@@ -3720,8 +3720,8 @@
       }
     },
     "xfun": {
-      "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com",
+      "Source": "RSPM",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
       "description": {
         "Package": "xfun",
         "Type": "Package",
@@ -3742,9 +3742,9 @@
         "Packaged": "2026-10-16 01:24:19 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org),\n  Wush Wu [ctb],\n  Daijiang Li [ctb],\n  Xianying Tan [ctb],\n  Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>),\n  Christophe Dervieux [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
-        "Repository": "CRAN",
+        "Repository": "RSPM",
         "Date/Publication": "2026-10-16 03:30:02 UTC",
-        "Built": "R 4.6.1; x86_64-pc-linux-gnu; 2026-10-16 17:09:56 UTC; unix"
+        "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-10-17 04:51:47 UTC; unix"
       }
     },
     "xml2": {
@@ -3835,46 +3835,46 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "18c7cebe6e03bbd7b90e8126ac08de23"
+      "checksum": "bb67192677b73f4cf022e5c989e96af4"
     },
     "allnow.csv": {
-      "checksum": "2a771da4f5999acc62153eda41734ab6"
+      "checksum": "7d7051b6f9b84308c98ea120d0422808"
     },
     "allsum_he.csv": {
-      "checksum": "a4c8dfd90f044a6d54e68b928dae36fe"
+      "checksum": "04a4e7541d3f8ffbf32043f48c779f75"
     },
     "allsum.csv": {
-      "checksum": "bc02ccbc6944ccec28eab87c9e273716"
+      "checksum": "a96af9ffe2ece5000889d9ceefae4819"
     },
     "app.R": {
       "checksum": "6c59e1acb8b9b3e107b216a8a22b14b8"
     },
     "combinedclean.csv": {
-      "checksum": "f24bce82b7f5ea4ccb17f16189181063"
+      "checksum": "7207c1cdffe62efa3a0c5d07a19de433"
     },
     "facultydata.csv": {
-      "checksum": "308c035046ba28442fbf82b87da42e37"
+      "checksum": "f3a2bc98c64c0995a8b864a64c4a8612"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "6603aebca2ebf461886aeb929eec06fd"
+      "checksum": "0a515f5c2997a804b0f5dc60a34c9561"
     },
     "hedata.xlsx": {
-      "checksum": "12c51b4c4b4beea94332621bb9405504"
+      "checksum": "99bc29780e5cf2055ff887beb0dfadcb"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "86a9dde9a13241d53faa41a1a328471e"
+      "checksum": "18575007821f202aa916d8a4c39cedf2"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "09435b74484ab8c82461000339d7dbfd"
+      "checksum": "776a5065b2f286a43944fbcb9a6b9bf9"
     },
     "salarymap.csv": {
       "checksum": "f7083b59f28e1f19dea9d751849d8be7"
     },
     "salarymap2.csv": {
-      "checksum": "0d8e63bcbd42fb846de55d0f296a6487"
+      "checksum": "80e20f0a91018842786cd7ddfb2b9b66"
     }
   },
   "users": null
