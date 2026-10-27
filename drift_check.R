@@ -362,6 +362,24 @@ AUTOFIX_MARKER_RE <- "<!--\\s*autofix-source:\\s*(.+?)\\s*-->"
 
 autofix_issue_title <- function(name) paste0("Scraper auto-fix: ", name)
 
+# Who works a new auto-fix issue, from the AUTOFIX_ENGINE repo variable:
+# "claude" (default) dispatches .github/workflows/claude-autofix.yml,
+# "copilot" assigns the issue to the Copilot coding agent via COPILOT_TOKEN,
+# "none" just files it. Both agents on one issue would race to open
+# competing PRs, so it's one or the other. A typo fails the step loudly
+# rather than quietly filing issues nobody works.
+AUTOFIX_ENGINES <- c("claude", "copilot", "none")
+AUTOFIX_CLAUDE_WORKFLOW <- "claude-autofix.yml"
+
+autofix_engine <- function(value) {
+  v <- tolower(trimws(if (length(value) == 0 || is.na(value)) "" else value))
+  if (!nzchar(v)) return("claude")
+  if (!v %in% AUTOFIX_ENGINES) {
+    stop("AUTOFIX_ENGINE must be one of ", paste(AUTOFIX_ENGINES, collapse = ", "), ", not '", value, "'")
+  }
+  v
+}
+
 parse_autofix_marker <- function(body) {
   if (length(body) == 0 || is.na(body)) return(NA_character_)
   m <- regmatches(body, regexec(AUTOFIX_MARKER_RE, body, perl = TRUE))[[1]]

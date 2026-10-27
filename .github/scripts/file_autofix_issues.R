@@ -1,6 +1,8 @@
 # Tier 3 of the drift-alert system (ported from the Montana dashboard):
-# one issue per "likely_broken" source, assigned to the Copilot coding agent
-# so it can open a fix PR. See the "Tier 3" block in drift_check.R for which
+# one issue per "likely_broken" source, handed to an agent that can open a
+# fix PR -- Claude (dispatches claude-autofix.yml, the default) or the Copilot
+# coding agent, picked by the AUTOFIX_ENGINE repo variable (autofix_engine()
+# in drift_check.R). See the "Tier 3" block in drift_check.R for which
 # verdicts are eligible and why.
 #
 # Reads /tmp/drift_results.csv (written by corroborate_drift.R, including
@@ -33,6 +35,8 @@ MAX_NEW_ISSUES_PER_RUN <- 3
 repo <- Sys.getenv("GITHUB_REPOSITORY")
 run_url <- if (nzchar(repo)) sprintf("%s/%s/actions/runs/%s", Sys.getenv("GITHUB_SERVER_URL"), repo, Sys.getenv("GITHUB_RUN_ID")) else NULL
 copilot_token <- Sys.getenv("COPILOT_TOKEN")
+engine <- autofix_engine(Sys.getenv("AUTOFIX_ENGINE"))
+cat("Auto-fix engine:", engine, "\n")
 today <- as.character(Sys.Date())
 
 gh <- function(args, token = NULL) {
@@ -99,6 +103,21 @@ for (i in seq_len(nrow(eligible))) {
   number <- sub(".*/issues/([0-9]+).*", "\\1", tail(made$out, 1))
   cat("Created #", number, " for ", row$name, "\n", sep = "")
 
+  if (engine == "none") next
+  if (engine == "claude") {
+    # The Actions token can dispatch a workflow (unlike issue events it
+    # creates, which never trigger one) -- needs `actions: write`.
+    sent <- gh(c("workflow", "run", AUTOFIX_CLAUDE_WORKFLOW, "-f", paste0("issue_number=", number)))
+    if (sent$ok) {
+      cat("  Dispatched", AUTOFIX_CLAUDE_WORKFLOW, "\n")
+    } else {
+      cat("  Dispatch failed:", sent$out, "\n")
+      gh_comment(number, paste0("Couldn't start the Claude auto-fix workflow automatically (`", paste(sent$out, collapse = " "),
+                                "`). Run **", AUTOFIX_CLAUDE_WORKFLOW, "** from the Actions tab with this issue number, ",
+                                "or check that the weekly workflow has `actions: write`."))
+    }
+    next
+  }
   if (!nzchar(copilot_token)) {
     cat("  COPILOT_TOKEN unset -- left unassigned\n")
     next

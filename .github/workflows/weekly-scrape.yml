@@ -10,6 +10,8 @@ on:
 permissions:
   contents: write
   issues: write
+  # file_autofix_issues.R dispatches claude-autofix.yml per new issue.
+  actions: write
 
 jobs:
   scrape:
@@ -192,18 +194,21 @@ jobs:
           fi
 
       # Tier 3: one issue per likely_broken source (live page has postings the
-      # parser missed), assigned to the Copilot coding agent to open a fix PR
-      # -- pr-tests.yml then runs the suite plus a live re-check of that one
+      # parser missed), handed to an agent to open a fix PR -- Claude via
+      # claude-autofix.yml by default, or Copilot (AUTOFIX_ENGINE) --
+      # pr-tests.yml then runs the suite plus a live re-check of that one
       # scraper. Also closes those issues once their source recovers. Runs
       # even when nothing was flagged, since that's the recovery signal.
       # Non-blocking like the rest of the monitoring.
-      - name: File per-source auto-fix issues for the Copilot coding agent
+      - name: File per-source auto-fix issues for the auto-fix agent
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           # User token (Copilot-licensed) -- the Actions token can't start a
           # coding-agent session. Unset -> issues are filed but unassigned.
           COPILOT_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          # claude (default) | copilot | none -- see autofix_engine() in drift_check.R.
+          AUTOFIX_ENGINE: ${{ vars.AUTOFIX_ENGINE }}
         run: Rscript .github/scripts/file_autofix_issues.R
 
       - name: Regenerate the Connect Cloud manifest

@@ -193,7 +193,10 @@ fetch_ipeds_wy_college_directory_for_year <- function(year) {
 find_latest_ipeds_directory_year <- function(start_year = as.integer(format(Sys.Date(), "%Y")),
                                               years_back = 5) {
   for (year in seq(start_year, start_year - years_back)) {
-    df <- fetch_ipeds_wy_college_directory_for_year(year)
+    df <- tryCatch(
+      fetch_ipeds_wy_college_directory_for_year(year),
+      error = function(e) data.frame()
+    )
     if (nrow(df) > 0) return(list(year = year, data = df))
   }
   list(year = NA_integer_, data = data.frame())

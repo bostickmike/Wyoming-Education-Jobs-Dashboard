@@ -14,3 +14,8 @@ scrape_log.csv
 # selenium-server-*.jar). Kept locally for reference/backfill only --
 # never committed.
 OneDrive_1_8-4-2026/
+
+# Scratch dir for the Claude auto-fix workflow (issue text, PR body, report)
+.autofix/
+all_direct_k12_job_listings.csv
+.claude/worktrees/

@@ -813,53 +813,74 @@ ui <- dashboardPage(
       id = "sidebar_tabs",
       menuItem("Home", tabName = "intro", icon = icon("house")),
       menuItem("Map", tabName = "map_tab", icon = icon("map-location-dot")),
-      menuItem("K-12 Careers", tabName = "k12_root", icon = icon("school"),
-               menuSubItem("Jobs Table", tabName = "k12_table"),
-               menuSubItem("District Summary", tabName = "k12_summary"),
-               menuSubItem("Longitudinal Teacher Trends", tabName = "k12_trends"),
-               menuSubItem("Current Teacher Trends", tabName = "k12_current"),
-               menuSubItem("New This Week", tabName = "k12_new")
-      ),
-      menuItem("Higher Ed Careers", tabName = "he_root", icon = icon("university"),
-               menuSubItem("Jobs Table", tabName = "he_table"),
-               menuSubItem("Institution Summary", tabName = "he_summary"),
-               menuSubItem("Longitudinal Faculty Trends", tabName = "he_trends"),
-               menuSubItem("Current Faculty Trends", tabName = "he_current"),
-               menuSubItem("New This Week", tabName = "he_new")
-      )
+      tags$li(class = "header", "K-12 CAREERS"),
+      menuItem("Jobs Table", tabName = "k12_table", icon = icon("table")),
+      menuItem("District Summary", tabName = "k12_summary", icon = icon("school")),
+      menuItem("Longitudinal Trends", tabName = "k12_trends", icon = icon("chart-line")),
+      menuItem("Current Trends", tabName = "k12_current", icon = icon("chart-column")),
+      menuItem("New This Week", tabName = "k12_new", icon = icon("calendar-plus")),
+      tags$li(class = "header", "HIGHER EDUCATION"),
+      menuItem("Jobs Table", tabName = "he_table", icon = icon("table")),
+      menuItem("Institution Summary", tabName = "he_summary", icon = icon("building-columns")),
+      menuItem("Longitudinal Trends", tabName = "he_trends", icon = icon("chart-line")),
+      menuItem("Current Trends", tabName = "he_current", icon = icon("chart-column")),
+      menuItem("New This Week", tabName = "he_new", icon = icon("calendar-plus")),
+      tags$li(class = "header", "COMMUNITY & FEEDBACK"),
+      menuItem("Report Data Mistake", icon = icon("flag"),
+               href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
+               newtab = TRUE)
     )
   ),
   dashboardBody(
     tags$head(
       tags$style(HTML("
-    /* AdminLTE's header logo box clips long titles by default (was
-       already truncating the shorter old title too) -- shrinking the
-       font is safer than widening the box, which is fixed-width and
-       tightly coupled to the sidebar-toggle button's position. */
+    /* AdminLTE header logo styling */
     .main-header .logo {
       font-size: 19px;
+      font-weight: 600;
     }
     .leaflet-tooltip {
-      max-width: 800px !important;  /* make tooltip wide */
-      min-width: 400px !important;  /* optional: ensures minimum width */
-      white-space: normal !important;  /* text can wrap if needed */
+      max-width: min(800px, 92vw) !important;
+      min-width: min(320px, 85vw) !important;
+      white-space: normal !important;
       background-color: rgba(255,255,255,0.95);
       padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid gray;
       font-size: 14px;
       display: inline-block;
+      box-sizing: border-box;
+    }
+    /* Flat modern section headers */
+    .sidebar-menu .header {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.08em;
+      color: #8aa4af !important;
+      background: transparent !important;
+      text-transform: uppercase;
+      padding: 14px 15px 4px 15px !important;
+    }
+    /* Rounded pill navigation styling */
+    .sidebar-menu > li > a {
+      border-left: none !important;
+      border-radius: 6px;
+      margin: 1px 8px;
+      padding: 8px 12px;
+      transition: background-color 0.15s ease-in-out;
+    }
+    .sidebar-menu > li.active > a {
+      background-color: #2b3b4c !important;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+    @media (max-width: 767px) {
+      .leaflet-container {
+        height: 480px !important;
+      }
     }
   ")),
       tags$script(HTML("
-    // On mobile, AdminLTE's sidebar opens as a full-width overlay (body
-    // gets a 'sidebar-open' class) and, unlike the desktop mini-sidebar
-    // behavior, never closes itself after a link is clicked -- it stays
-    // open over the content until manually toggled. Only real navigation
-    // links carry data-toggle='tab' (a treeview parent like 'K-12 Careers'
-    // that just expands/collapses its submenu doesn't), so this closes the
-    // sidebar specifically when the user has actually navigated somewhere,
-    // not when they're just opening a category.
     $(document).on('click', '.sidebar-menu a[data-toggle=\"tab\"]', function() {
       if ($(window).width() < 768) {
         $('body').removeClass('sidebar-open');
@@ -902,7 +923,10 @@ ui <- dashboardPage(
             "K-12 vacancy rate is current teacher postings ÷ CCD teacher FTE; Higher Ed vacancy rate is current instructor/faculty postings ÷ IPEDS full-time instructional staff. ",
             "The two use different staffing sources and reporting years — compare rates within a type (district vs. district, institution vs. institution), not across K-12 and Higher Ed."),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
-            paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
+            paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick · "),
+            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
+                   target = "_blank", style = "color: #2a78d6; text-decoration: underline;",
+                   icon("flag"), "Report a data mistake or missing district"))
       ),
 
       tabItem(
@@ -922,7 +946,12 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "k12_table",
-        uiOutput("k12_filter_status"),
+        div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
+            uiOutput("k12_filter_status"),
+            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
+                   target = "_blank", class = "btn btn-default btn-xs",
+                   icon("flag"), " Report Mistake / Closed Job")
+        ),
         DTOutput("k12_jobs")
       ),
       tabItem(
@@ -1009,7 +1038,12 @@ ui <- dashboardPage(
       # ------------------ Higher Ed ------------------
       tabItem(
         tabName = "he_table",
-        uiOutput("he_filter_status"),
+        div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
+            uiOutput("he_filter_status"),
+            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
+                   target = "_blank", class = "btn btn-default btn-xs",
+                   icon("flag"), " Report Mistake / Closed Job")
+        ),
         radioButtons(
           "he_table_appointment", "Appointment:",
           choices = c(

@@ -87,7 +87,7 @@ run_canaries <- function(fips = "56") {
   checks[[2]] <- check_endpoint("Urban Institute CCD Directory", ccd_url, validate_urban_ccd)
 
   # 3. WSBA Statewide Feed
-  wsba_url <- "https://www.wsba-wy.org/jobs.aspx"
+  wsba_url <- "https://www.wsba-wy.org/vacancies"
   checks[[3]] <- check_endpoint("WSBA Statewide Feed", wsba_url, validate_wsba)
 
   # 4. Census Bureau (if key present)

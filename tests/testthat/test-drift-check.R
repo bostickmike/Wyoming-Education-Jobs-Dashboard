@@ -435,6 +435,14 @@ test_that("build_autofix_issue_body tolerates no LLM titles and no scraper call"
   expect_no_match(body, "repro_scraper")
 })
 
+test_that("autofix_engine defaults to claude and rejects typos", {
+  expect_equal(autofix_engine(""), "claude")
+  expect_equal(autofix_engine(NA_character_), "claude")
+  expect_equal(autofix_engine(" Copilot "), "copilot")
+  expect_equal(autofix_engine("none"), "none")
+  expect_error(autofix_engine("claud"), "AUTOFIX_ENGINE must be one of")
+})
+
 test_that("parse_autofix_marker returns NA for bodies without a marker", {
   expect_true(is.na(parse_autofix_marker("just a normal issue")))
   expect_true(is.na(parse_autofix_marker(NA_character_)))
