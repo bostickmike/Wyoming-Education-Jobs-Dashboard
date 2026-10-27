@@ -92,6 +92,9 @@ test_that("salarymap2.csv (K-12): salary / staffing / context columns are in a p
 
   expect_true(in_band(d$Teacher_Base_Salary, 20000, 150000), info = "Teacher_Base_Salary")
   expect_true(in_band(d$Teacher_Base_Salary_Prior_Year, 20000, 150000), info = "Teacher_Base_Salary_Prior_Year")
+  if ("Teacher_Avg_Salary" %in% names(d)) {
+    expect_true(in_band(d$Teacher_Avg_Salary, 30000, 150000), info = "Teacher_Avg_Salary")
+  }
   expect_true(in_band(d$Superintendent_Salary, 50000, 400000), info = "Superintendent_Salary")
   expect_true(in_band(d$Superintendent_Contract_Days, 180, 366), info = "Superintendent_Contract_Days")
 

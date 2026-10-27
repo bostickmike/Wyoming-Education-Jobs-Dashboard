@@ -84,6 +84,8 @@ Not an archive — one current row per of Wyoming's 48 school districts. `Distri
 | `Link` | text | hand-maintained | District's general website (not currently surfaced in the app). |
 | `Job_Link` | text | hand-maintained | District's job-board URL, shown in the map popup as "Careers page." |
 | `Teacher_Base_Salary` / `Teacher_Base_Salary_Prior_Year` | numeric | WSBA (weekly refresh) | Current + prior year base salary from the same PDF scrape. |
+| `Teacher_Avg_Salary` / `Teacher_Avg_Base_Salary` | numeric | Wyoming Dept of Education (WDE602) | Average total compensation / average base salary for instructional teachers from the WDE602 School District Staff Member Collection report (`dist_k12_staff_fte_and_avg_salary_by_assign_cat`). |
+| `WDE_Salary_Year` / `WDE_Salary_Source` | text | Wyoming Dept of Education | e.g. `"2025-26"` and `"WDE602 Staff Member Collection (edu.wyoming.gov)"`. |
 | `Salary_Year` | text | WSBA | e.g. `"2025-2026"` — the real freshness signal (there's no separate "last updated" timestamp, since the dollar figures only change once a year regardless of scrape cadence). |
 | `Superintendent_Salary` / `Superintendent_Contract_Days` | numeric | WSBA | |
 | `Salary_Source` | text | WSBA | Literal string `"WSBA (wsba-wy.org)"`, for the summary table's footnote link. |

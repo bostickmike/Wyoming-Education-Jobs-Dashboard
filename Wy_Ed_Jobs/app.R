@@ -99,24 +99,30 @@ mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8") %>%
                              "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source",
                              "Teachers_Total_FTE", "Data_Coverage", "Enrollment",
                              "Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share",
-                             "Population_Change_Pct", "ACS_Year", "Child_Poverty_Rate", "SAIPE_Year"),
+                             "Population_Change_Pct", "ACS_Year", "Child_Poverty_Rate", "SAIPE_Year",
+                             "Teacher_Avg_Salary"),
                            "salarymap2.csv") %>%
   rename(Name = District)
 
 # District salary lookup for the Jobs Table
 k12_salary_lookup <- mapdata2_k12 %>%
-  select(Name, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year) %>%
+  select(Name, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Teacher_Avg_Salary) %>%
   mutate(
     `District Starting Base` = ifelse(
       is.na(Teacher_Base_Salary),
       "—",
       scales::dollar(Teacher_Base_Salary, accuracy = 1)
+    ),
+    `District Avg Salary` = ifelse(
+      is.na(Teacher_Avg_Salary),
+      "—",
+      scales::dollar(Teacher_Avg_Salary, accuracy = 1)
     )
   )
 
 combineddata <- combineddata %>%
   left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
-  select(District, Title, Position, Location, `District Starting Base`, `Posted / listed`, Link)
+  select(District, Title, Position, Location, `District Starting Base`, `District Avg Salary`, `Posted / listed`, Link)
 
 # Weekly ALL-category posting totals per district/institution (not scoped
 # to Teacher/Faculty like k12_history/he_history below) -- powers the
@@ -690,6 +696,7 @@ map_k12 <- mapdata2_k12 %>%
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link = Job_Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
+         Teacher_Avg_Salary, Teacher_Avg_Base_Salary, WDE_Salary_Year, WDE_Salary_Source,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
@@ -754,6 +761,8 @@ map_he <- mapdata2_he %>%
                            Vacancy_Numerator / Faculty_Count, NA_real_),
     Vacancy_Denominator = Faculty_Count,
     Teacher_Base_Salary = NA_real_, Teacher_Base_Salary_Prior_Year = NA_real_,
+    Teacher_Avg_Salary = NA_real_, Teacher_Avg_Base_Salary = NA_real_,
+    WDE_Salary_Year = NA_character_, WDE_Salary_Source = NA_character_,
     Superintendent_Salary = NA_real_, Superintendent_Contract_Days = NA_real_,
     # Every HE institution is scraped from a genuine structured job-board
     # platform (NEOGOV/PeopleAdmin/Oracle) -- there's no "misc" tier on the
@@ -792,6 +801,7 @@ map_he <- mapdata2_he %>%
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
          Link, Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
+         Teacher_Avg_Salary, Teacher_Avg_Base_Salary, WDE_Salary_Year, WDE_Salary_Source,
          Superintendent_Salary, Superintendent_Contract_Days,
          Faculty_Avg_Salary, Faculty_Avg_Salary_Professor, Faculty_Count,
          Faculty_Avg_Salary_Y1Ago, Faculty_Avg_Salary_Y2Ago, Salary_Note,
@@ -977,7 +987,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "k12_table",
         div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
-            tags$span(class = "help-block", style = "margin: 0;", "District Starting Base reflects the district's published starting base salary (BA Step 1) from the Wyoming School Boards Association."),
+            tags$span(class = "help-block", style = "margin: 0;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). District Avg Salary reflects average teacher total compensation from the Wyoming Department of Education (Source: WDE602)."),
             tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
                    target = "_blank", class = "btn btn-default btn-xs",
                    icon("flag"), " Report Mistake / Closed Job")
@@ -1392,6 +1402,8 @@ server <- function(input, output, session) {
     year <- unique(na.omit(k12_rows$Salary_Year))
     current_label <- if (length(year) > 0) year[1] else "current year"
     prior_label <- if (length(year) > 0) prior_school_year_label(year[1]) else "prior year"
+    wde_years <- unique(na.omit(k12_rows$WDE_Salary_Year))
+    wde_label <- if (length(wde_years) > 0) wde_years[1] else "2025-26"
 
     df <- k12_rows %>%
       arrange(desc(CurrentCount)) %>%
@@ -1412,6 +1424,7 @@ server <- function(input, output, session) {
         `Students per Teacher` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
         TeacherBaseSalary = ifelse(is.na(Teacher_Base_Salary), NA_character_, scales::dollar(Teacher_Base_Salary)),
         TeacherBaseSalaryPrior = ifelse(is.na(Teacher_Base_Salary_Prior_Year), NA_character_, scales::dollar(Teacher_Base_Salary_Prior_Year)),
+        TeacherAvgSalary = ifelse(is.na(Teacher_Avg_Salary), NA_character_, scales::dollar(Teacher_Avg_Salary)),
         `Superintendent Salary` = ifelse(is.na(Superintendent_Salary), NA_character_, scales::dollar(Superintendent_Salary)),
         # County-level context (Census ACS 5-Year) -- constant across
         # sibling districts in the same county, same as any other county-
@@ -1441,6 +1454,7 @@ server <- function(input, output, session) {
     # in every row.
     names(df)[names(df) == "TeacherBaseSalary"] <- paste0("Teacher Base Salary (", current_label, ")")
     names(df)[names(df) == "TeacherBaseSalaryPrior"] <- paste0("Teacher Base Salary (", prior_label, ")")
+    names(df)[names(df) == "TeacherAvgSalary"] <- paste0("Teacher Avg Salary (", wde_label, " WDE)")
 
     datatable(df, filter = "top", extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 48))
@@ -1453,14 +1467,23 @@ server <- function(input, output, session) {
   output$k12_summary_footnote <- renderUI({
     year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "K-12 District"]))
     source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "K-12 District"]))
+    wde_year <- unique(na.omit(combined_map_data$WDE_Salary_Year[combined_map_data$Type == "K-12 District"]))
+    wde_source <- unique(na.omit(combined_map_data$WDE_Salary_Source[combined_map_data$Type == "K-12 District"]))
     acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "K-12 District"]))
     saipe_year <- unique(na.omit(combined_map_data$SAIPE_Year[combined_map_data$Type == "K-12 District"]))
     req(length(year) > 0, length(source) > 0)
     tagList(
       helpText(
-        "Salary data:", source[1], paste0("(", year[1], " school year)"), "—",
+        "Base salary data:", source[1], paste0("(", year[1], " school year)"), "—",
         tags$a(href = WSBA_SALARY_SOURCE_URL, target = "_blank", "wsba-wy.org")
       ),
+      if (length(wde_source) > 0) {
+        helpText(
+          "Average teacher salary data:", wde_source[1],
+          if (length(wde_year) > 0) paste0("(", wde_year[1], " school year)") else "", "—",
+          tags$a(href = "https://edu.wyoming.gov/data/staff-member-collection/", target = "_blank", "edu.wyoming.gov")
+        )
+      },
       if (length(acs_year) > 0) {
         helpText(
           "County context (income, rent, mining/energy employment share, population trend): US Census Bureau, American Community Survey 5-Year Estimates",
@@ -1558,6 +1581,11 @@ server <- function(input, output, session) {
                            paste0(" (", scales::dollar(Teacher_Base_Salary_Prior_Year), " prior year)"),
                            ""),
                     " &middot; ", Salary_Year, "</div>"),
+             ""),
+      ifelse(!is.na(Teacher_Avg_Salary),
+             paste0("<div>Average teacher salary: ", scales::dollar(Teacher_Avg_Salary),
+                    ifelse(!is.na(WDE_Salary_Year), paste0(" &middot; ", WDE_Salary_Year), ""),
+                    " (WDE)</div>"),
              ""),
       ifelse(!is.na(Superintendent_Salary),
              paste0("<div>Superintendent salary: ", scales::dollar(Superintendent_Salary), "</div>"),

@@ -417,14 +417,15 @@ superintendent_salary <- safe_scrape(
   expected_cols = c("District", "Superintendent_Salary", "Superintendent_Contract_Days")
 )
 
-# Static geo/link fields (County, Latitude, Longitude, Link, Job_Link)
-# stay hand-maintained -- only the salary figures get refreshed from WSBA
-# each run. District is already canonical in the file on disk.
-salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
-  select(District, County, Latitude, Longitude, Link, Job_Link)
+# Only the WSBA salary figures get refreshed from WSBA each run.
+# Other columns (geo/links, CCD staffing, Census, WDE salaries) are preserved.
+# District is already canonical in the file on disk.
+salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
 
 if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
   salarymap2 <- salarymap2 %>%
+    select(-any_of(c("Teacher_Base_Salary", "Teacher_Base_Salary_Prior_Year", "Salary_Year",
+                     "Superintendent_Salary", "Superintendent_Contract_Days", "Salary_Source"))) %>%
     left_join(teacher_salary, by = "District") %>%
     left_join(superintendent_salary, by = "District") %>%
     rename(Teacher_Base_Salary = Base_Salary_Current_Year,
@@ -434,11 +435,7 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
     # stamped fresh on every weekly pipeline run would just mislead people
     # into thinking the dollar figures themselves refresh that often.
     # Salary_Year is the real freshness signal.
-    mutate(Salary_Source = "WSBA (wsba-wy.org)") %>%
-    select(District, County, Latitude, Longitude, Link, Job_Link,
-           Teacher_Base_Salary, Teacher_Base_Salary_Prior_Year, Salary_Year,
-           Superintendent_Salary, Superintendent_Contract_Days,
-           Salary_Source)
+    mutate(Salary_Source = "WSBA (wsba-wy.org)")
 
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 
