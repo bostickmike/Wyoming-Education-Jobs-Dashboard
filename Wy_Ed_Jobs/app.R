@@ -215,6 +215,12 @@ data_dictionary <- if (file.exists("data_dictionary.csv")) {
              Data_Type = character(0), Primary_Authority = character(0), Definition = character(0))
 }
 
+job_duration_spells <- if (file.exists("job_duration_spells.csv")) {
+  read.csv("job_duration_spells.csv", fileEncoding = "UTF-8", stringsAsFactors = FALSE)
+} else {
+  data.frame()
+}
+
 # Tiny inline trend chart (no axes/legend, just the shape of a trend) for
 # the Top Hiring tables -- lets "31 openings" read differently depending
 # on whether that's a district climbing steadily or one that just posted a
@@ -938,6 +944,7 @@ ui <- dashboardPage(
       menuItem("Longitudinal Trends", tabName = "k12_trends", icon = icon("chart-line")),
       menuItem("Current Trends", tabName = "k12_current", icon = icon("chart-column")),
       menuItem("New This Week", tabName = "k12_new", icon = icon("calendar-plus")),
+      menuItem("Vacancy Spells", tabName = "k12_spells", icon = icon("stopwatch")),
       tags$li(class = "header", "HIGHER EDUCATION"),
       menuItem("Jobs Table", tabName = "he_table", icon = icon("table")),
       menuItem("Institution Summary", tabName = "he_summary", icon = icon("building-columns")),
@@ -1236,6 +1243,74 @@ ui <- dashboardPage(
         tabName = "k12_new",
         h4("New teacher postings since the previous weekly snapshot"),
         DTOutput("k12_new_table")
+      ),
+      tabItem(
+        tabName = "k12_spells",
+        h3(style = "margin-top: 0; font-weight: 600;", "K-12 Vacancy Spells & Time-to-Fill"),
+        p(class = "help-block",
+          "Longitudinal tracking of vacancy duration across weekly snapshots. Measures time-to-fill and persistence as a proxy for labor market tightness and hiring friction."),
+        fluidRow(
+          valueBoxOutput("k12_spell_median_box", width = 3),
+          valueBoxOutput("k12_spell_active_box", width = 3),
+          valueBoxOutput("k12_spell_persistent_box", width = 3),
+          valueBoxOutput("k12_spell_hardest_box", width = 3)
+        ),
+        box(
+          width = 12, status = "primary", solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 3,
+              selectInput("k12_spell_status", "Vacancy Status:",
+                          choices = c("All Postings" = "all",
+                                      "Still Active (Open)" = "Still Active",
+                                      "Filled / Closed" = "Closed / Filled"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("k12_spell_position", "Position Group:",
+                          choices = c("All Roles" = "all",
+                                      "Teacher" = "Teacher",
+                                      "Administration" = "Administration",
+                                      "Support Staff / Classified" = "Support"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("k12_spell_discipline", "Discipline / Shortage Area:",
+                          choices = c("All Disciplines" = "all",
+                                      "STEM (Math & Science)" = "stem",
+                                      "Special Education" = "sped",
+                                      "Elementary Education" = "elementary",
+                                      "Secondary Education" = "secondary",
+                                      "Administration" = "admin",
+                                      "Support / Classified" = "support"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("k12_spell_district", "Filter District:",
+                          choices = c("All Districts" = "all"),
+                          selected = "all")
+            )
+          )
+        ),
+        fluidRow(
+          box(
+            width = 7, title = "Median Days Open by Subject Category", status = "info",
+            withSpinner(plotlyOutput("k12_spell_duration_plot", height = "360px"))
+          ),
+          box(
+            width = 5, title = "Vacancy Duration Distribution", status = "info",
+            withSpinner(plotlyOutput("k12_spell_distrib_plot", height = "360px"))
+          )
+        ),
+        box(
+          width = 12, title = "Vacancy Spells Explorer", status = "primary",
+          p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+          DTOutput("k12_spell_table")
+        )
       ),
 
       # ------------------ K-12 ------------------
@@ -2350,6 +2425,194 @@ server <- function(input, output, session) {
     req(!is.null(result))
     result
   }, sanitize.text.function = function(x) x)
+
+  # ------------------ K-12 Vacancy Spells Server Logic ------------------
+  observe({
+    if (nrow(job_duration_spells) > 0) {
+      dists <- sort(unique(job_duration_spells$District))
+      updateSelectInput(session, "k12_spell_district",
+                        choices = c("All Districts" = "all", setNames(dists, dists)),
+                        selected = "all")
+    }
+  })
+
+  filtered_spells <- reactive({
+    req(nrow(job_duration_spells) > 0)
+    df <- job_duration_spells
+
+    if (!is.null(input$k12_spell_status) && !identical(input$k12_spell_status, "all")) {
+      df <- df %>% filter(Status == input$k12_spell_status)
+    }
+
+    if (!is.null(input$k12_spell_position) && !identical(input$k12_spell_position, "all")) {
+      if (identical(input$k12_spell_position, "Support")) {
+        df <- df %>% filter(Position != "Teacher" & Position != "Administration")
+      } else {
+        df <- df %>% filter(Position == input$k12_spell_position)
+      }
+    }
+
+    if (!is.null(input$k12_spell_discipline) && !identical(input$k12_spell_discipline, "all")) {
+      disc <- input$k12_spell_discipline
+      if (disc == "stem" && "is_stem" %in% names(df)) df <- df %>% filter(is_stem == 1)
+      else if (disc == "sped" && "is_sped" %in% names(df)) df <- df %>% filter(is_sped == 1)
+      else if (disc == "elementary" && "is_elementary" %in% names(df)) df <- df %>% filter(is_elementary == 1)
+      else if (disc == "secondary" && "is_secondary" %in% names(df)) df <- df %>% filter(is_secondary == 1)
+      else if (disc == "admin" && "is_admin" %in% names(df)) df <- df %>% filter(is_admin == 1)
+      else if (disc == "support" && "is_support_staff" %in% names(df)) df <- df %>% filter(is_support_staff == 1)
+    }
+
+    if (!is.null(input$k12_spell_district) && !identical(input$k12_spell_district, "all")) {
+      df <- df %>% filter(District == input$k12_spell_district)
+    }
+
+    df
+  })
+
+  output$k12_spell_median_box <- renderValueBox({
+    df <- filtered_spells()
+    med <- if (nrow(df) > 0) round(median(df$Estimated_Days_Open, na.rm = TRUE)) else 0
+    valueBox(
+      paste0(med, " Days"),
+      "Median Vacancy Duration",
+      icon = icon("stopwatch"),
+      color = "blue"
+    )
+  })
+
+  output$k12_spell_active_box <- renderValueBox({
+    df <- filtered_spells()
+    active_n <- if (nrow(df) > 0) sum(df$Status == "Still Active", na.rm = TRUE) else 0
+    valueBox(
+      scales::comma(active_n),
+      "Currently Open Spells",
+      icon = icon("door-open"),
+      color = "green"
+    )
+  })
+
+  output$k12_spell_persistent_box <- renderValueBox({
+    df <- filtered_spells()
+    persist_n <- if (nrow(df) > 0) sum(df$Status == "Still Active" & df$Estimated_Days_Open >= 60, na.rm = TRUE) else 0
+    valueBox(
+      scales::comma(persist_n),
+      "Persistent Spells (≥60 Days)",
+      icon = icon("triangle-exclamation"),
+      color = "red"
+    )
+  })
+
+  output$k12_spell_hardest_box <- renderValueBox({
+    df <- filtered_spells()
+    hardest <- "N/A"
+    if (nrow(df) >= 3 && "Broad_Category" %in% names(df)) {
+      cat_dur <- df %>%
+        group_by(Broad_Category) %>%
+        summarize(med = median(Estimated_Days_Open, na.rm = TRUE), n = n(), .groups = "drop") %>%
+        filter(n >= 2) %>%
+        arrange(desc(med))
+      if (nrow(cat_dur) > 0) hardest <- cat_dur$Broad_Category[1]
+    }
+    valueBox(
+      hardest,
+      "Longest Duration Category",
+      icon = icon("graduation-cap"),
+      color = "purple"
+    )
+  })
+
+  output$k12_spell_duration_plot <- renderPlotly({
+    df <- filtered_spells()
+    req(nrow(df) > 0)
+
+    cat_summary <- df %>%
+      group_by(Broad_Category) %>%
+      summarize(
+        Median_Days = round(median(Estimated_Days_Open, na.rm = TRUE)),
+        Postings = n(),
+        .groups = "drop"
+      ) %>%
+      filter(!is.na(Broad_Category) & Broad_Category != "" & Postings >= 2) %>%
+      arrange(desc(Median_Days)) %>%
+      head(12)
+
+    req(nrow(cat_summary) > 0)
+
+    p <- ggplot(cat_summary, aes(
+      x = reorder(Broad_Category, Median_Days),
+      y = Median_Days,
+      text = paste0("<b>", Broad_Category, "</b><br>Median Open: ", Median_Days, " days<br>Total Spells: ", Postings)
+    )) +
+      geom_col(fill = "#2a78d6", width = 0.65) +
+      coord_flip() +
+      labs(x = NULL, y = "Median Days Open") +
+      theme_minimal() +
+      theme(
+        axis.text.y = element_text(size = 9),
+        panel.grid.major.y = element_blank()
+      )
+
+    ggplotly(p, tooltip = "text") %>% config(displayModeBar = FALSE)
+  })
+
+  output$k12_spell_distrib_plot <- renderPlotly({
+    df <- filtered_spells()
+    req(nrow(df) > 0)
+
+    df <- df %>%
+      mutate(Duration_Bin = case_when(
+        Estimated_Days_Open <= 14 ~ "1–14 Days",
+        Estimated_Days_Open <= 30 ~ "15–30 Days",
+        Estimated_Days_Open <= 60 ~ "31–60 Days",
+        Estimated_Days_Open <= 90 ~ "61–90 Days",
+        TRUE ~ "90+ Days"
+      )) %>%
+      mutate(Duration_Bin = factor(Duration_Bin, levels = c("1–14 Days", "15–30 Days", "31–60 Days", "61–90 Days", "90+ Days")))
+
+    bin_counts <- df %>%
+      count(Duration_Bin, name = "Count") %>%
+      filter(!is.na(Duration_Bin))
+
+    p <- ggplot(bin_counts, aes(
+      x = Duration_Bin, y = Count,
+      text = paste0("<b>", Duration_Bin, "</b><br>Spells: ", Count)
+    )) +
+      geom_col(fill = "#e67e22", width = 0.6) +
+      labs(x = NULL, y = "Number of Vacancies") +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(angle = 25, hjust = 1, size = 8),
+        panel.grid.major.x = element_blank()
+      )
+
+    ggplotly(p, tooltip = "text") %>% config(displayModeBar = FALSE)
+  })
+
+  output$k12_spell_table <- renderDT({
+    df <- filtered_spells()
+    req(nrow(df) > 0)
+
+    cols_to_show <- c("District", "Title", "Position", "Broad_Category",
+                      "First_Seen_Date", "Last_Seen_Date", "Estimated_Days_Open", "Status")
+    existing_cols <- intersect(cols_to_show, names(df))
+
+    df_display <- df %>%
+      select(all_of(existing_cols)) %>%
+      arrange(desc(Estimated_Days_Open))
+
+    datatable(
+      df_display,
+      options = list(
+        pageLength = 15,
+        lengthMenu = c(10, 15, 25, 50, 100),
+        dom = "Bfrtip",
+        buttons = c("copy", "csv", "excel")
+      ),
+      extensions = "Buttons",
+      rownames = FALSE,
+      escape = FALSE
+    )
+  })
 }
 
 shinyApp(ui, server)

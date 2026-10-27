@@ -33,7 +33,7 @@ skip_if_not(file.exists(file.path(app_dir, "combinedclean.csv")),
 # menuItem containers, not destinations)
 LEAF_TABS <- c(
   "intro", "map_tab", "data_tab",
-  "k12_table", "k12_summary", "k12_trends", "k12_current", "k12_new",
+  "k12_table", "k12_summary", "k12_trends", "k12_current", "k12_new", "k12_spells",
   "he_table", "he_summary", "he_trends", "he_current", "he_new"
 )
 
