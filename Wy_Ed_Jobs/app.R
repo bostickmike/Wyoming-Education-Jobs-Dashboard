@@ -925,7 +925,6 @@ ui <- dashboardPage(
       id = "sidebar_tabs",
       menuItem("Home", tabName = "intro", icon = icon("house")),
       menuItem("Map", tabName = "map_tab", icon = icon("map-location-dot")),
-      menuItem("Data Sources & Downloads", tabName = "data_tab", icon = icon("database")),
       tags$li(class = "header", "K-12 CAREERS"),
       menuItem("Jobs Table", tabName = "k12_table", icon = icon("table")),
       menuItem("District Summary", tabName = "k12_summary", icon = icon("school")),
@@ -939,6 +938,7 @@ ui <- dashboardPage(
       menuItem("Current Trends", tabName = "he_current", icon = icon("chart-column")),
       menuItem("New This Week", tabName = "he_new", icon = icon("calendar-plus")),
       tags$li(class = "header", "COMMUNITY & FEEDBACK"),
+      menuItem("Data Sources & Downloads", tabName = "data_tab", icon = icon("database")),
       menuItem("Report Data Mistake", icon = icon("flag"),
                href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
                newtab = TRUE)
@@ -1036,10 +1036,7 @@ ui <- dashboardPage(
             "K-12 vacancy rate is current teacher postings ÷ CCD teacher FTE; Higher Ed vacancy rate is current instructor/faculty postings ÷ IPEDS full-time instructional staff. ",
             "The two use different staffing sources and reporting years — compare rates within a type (district vs. district, institution vs. institution), not across K-12 and Higher Ed."),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
-            paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick · "),
-            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
-                   target = "_blank", style = "color: #2a78d6; text-decoration: underline;",
-                   icon("flag"), "Report a data mistake or missing district"))
+            paste0("Refreshed on: ", last_refreshed_date, " · Programmed by Mark Perkins and Mike Bostick"))
       ),
 
       tabItem(
@@ -1184,7 +1181,7 @@ ui <- dashboardPage(
             p("This project is open-source and maintained to promote labor market transparency in public education. If you use these datasets in academic research, policy analysis, or journalism, please cite:"),
             tags$blockquote(
               style = "font-size: 13px; background: #f9f9f9; padding: 10px 15px; border-left: 4px solid #2a78d6;",
-              "Bostick, M. (2026). Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context. ",
+              "Perkins, M., & Bostick, M. (2026). Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context. ",
               tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard", target = "_blank", "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard")
             ),
             p(style = "margin-bottom: 0; font-size: 12px; color: #777;",
@@ -1196,12 +1193,7 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "k12_table",
-        div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
-            tags$span(class = "help-block", style = "margin: 0;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). Role Avg Salary reflects average total compensation from the Wyoming Department of Education (Source: WDE602) for that specific job category (e.g. Teacher, Admin, Aide, Bus Driver, Custodial) in that district."),
-            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
-                   target = "_blank", class = "btn btn-default btn-xs",
-                   icon("flag"), " Report Mistake / Closed Job")
-        ),
+        p(class = "help-block", style = "margin-bottom: 8px;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). Role Avg Salary reflects average total compensation from the Wyoming Department of Education (Source: WDE602) for that specific job category (e.g. Teacher, Admin, Aide, Bus Driver, Custodial) in that district."),
         uiOutput("k12_filter_status"),
         DTOutput("k12_jobs")
       ),
@@ -1289,12 +1281,7 @@ ui <- dashboardPage(
       # ------------------ Higher Ed ------------------
       tabItem(
         tabName = "he_table",
-        div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
-            tags$span(class = "help-block", style = "margin: 0;", "Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
-            tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
-                   target = "_blank", class = "btn btn-default btn-xs",
-                   icon("flag"), " Report Mistake / Closed Job")
-        ),
+        p(class = "help-block", style = "margin-bottom: 8px;", "Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
         uiOutput("he_filter_status"),
         radioButtons(
           "he_table_appointment", "Appointment:",
