@@ -112,17 +112,89 @@ k12_salary_lookup <- mapdata2_k12 %>%
       is.na(Teacher_Base_Salary),
       "—",
       scales::dollar(Teacher_Base_Salary, accuracy = 1)
-    ),
-    `District Avg Salary` = ifelse(
-      is.na(Teacher_Avg_Salary),
-      "—",
-      scales::dollar(Teacher_Avg_Salary, accuracy = 1)
     )
   )
 
-combineddata <- combineddata %>%
-  left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
-  select(District, Title, Position, Location, `District Starting Base`, `District Avg Salary`, `Posted / listed`, Link)
+# Role-specific WDE salary lookup for K-12 Jobs Table
+# Maps job position/title to its specific assignment-category benchmark in WDE602
+wde_staff_file <- "wde602_district_staff_salaries.csv"
+if (file.exists(wde_staff_file)) {
+  wde_staff <- read.csv(wde_staff_file, fileEncoding = "UTF-8", stringsAsFactors = FALSE)
+  canonicalize_wde_dist <- function(name) {
+    name <- trimws(name)
+    m <- regmatches(name, regexec("^(.+?)\\s*#(\\d+)$", name))
+    vapply(m, function(parts) {
+      if (length(parts) != 3) return(parts[1])
+      county <- parts[2]
+      num <- parts[3]
+      if (county %in% c("Big Horn", "Natrona")) {
+        paste0(county, " School District ", num)
+      } else {
+        paste0(county, " County School District ", num)
+      }
+    }, character(1))
+  }
+  wde_staff$canon_district <- canonicalize_wde_dist(wde_staff$District_Name)
+  wde_staff$Salary_Num <- suppressWarnings(as.numeric(wde_staff$Average_Total_Salary))
+
+  map_pos_to_wde_group <- function(pos, title) {
+    pos_l <- tolower(pos)
+    title_l <- tolower(title)
+    case_when(
+      pos_l %in% c("teacher", "part-time teacher") ~ "SUBTOTAL Instructional Staff Teachers",
+      pos_l == "administration" ~ "School Building Administrators",
+      pos_l == "paraprofessional" ~ "Instructional Aides",
+      pos_l == "transportation" ~ "School Bus Drivers",
+      pos_l == "custodial/maintenance" ~ "Operation and Maintenance",
+      pos_l == "food services" ~ "Food Service Staff",
+      pos_l == "staff" ~ "School Secretary/Clerical Support",
+      pos_l == "support services" & grepl("counselor", title_l) ~ "TOTAL Counselors",
+      pos_l == "support services" ~ "Student Support Staff -- Professional",
+      TRUE ~ "SUBTOTAL Instructional Staff Teachers"
+    )
+  }
+
+  combineddata <- combineddata %>%
+    mutate(WDE_Group = map_pos_to_wde_group(Position, Title)) %>%
+    left_join(
+      wde_staff %>%
+        filter(!is.na(canon_district) & !is.na(Salary_Num) & Salary_Num > 0) %>%
+        select(canon_district, Group_Name, Salary_Num),
+      by = c("District" = "canon_district", "WDE_Group" = "Group_Name")
+    ) %>%
+    left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
+    mutate(
+      Role_Suffix = case_when(
+        WDE_Group == "School Building Administrators" ~ " (Admin)",
+        WDE_Group == "Instructional Aides" ~ " (Aide)",
+        WDE_Group == "School Bus Drivers" ~ " (Bus)",
+        WDE_Group == "Operation and Maintenance" ~ " (Maint)",
+        WDE_Group == "Food Service Staff" ~ " (Food)",
+        WDE_Group == "School Secretary/Clerical Support" ~ " (Clerical)",
+        WDE_Group == "TOTAL Counselors" ~ " (Counselor)",
+        WDE_Group == "Student Support Staff -- Professional" ~ " (Support)",
+        TRUE ~ ""
+      ),
+      Final_Salary = coalesce(Salary_Num, Teacher_Avg_Salary),
+      `Role Avg Salary` = ifelse(
+        is.na(Final_Salary),
+        "—",
+        paste0(scales::dollar(round(Final_Salary), accuracy = 1), ifelse(is.na(Salary_Num), "", Role_Suffix))
+      )
+    ) %>%
+    select(District, Title, Position, Location, `District Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+} else {
+  combineddata <- combineddata %>%
+    left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
+    mutate(
+      `Role Avg Salary` = ifelse(
+        is.na(Teacher_Avg_Salary),
+        "—",
+        scales::dollar(Teacher_Avg_Salary, accuracy = 1)
+      )
+    ) %>%
+    select(District, Title, Position, Location, `District Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+}
 
 # Weekly ALL-category posting totals per district/institution (not scoped
 # to Teacher/Faculty like k12_history/he_history below) -- powers the
@@ -987,7 +1059,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "k12_table",
         div(style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px;",
-            tags$span(class = "help-block", style = "margin: 0;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). District Avg Salary reflects average teacher total compensation from the Wyoming Department of Education (Source: WDE602)."),
+            tags$span(class = "help-block", style = "margin: 0;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). Role Avg Salary reflects average total compensation from the Wyoming Department of Education (Source: WDE602) for that specific job category (e.g. Teacher, Admin, Aide, Bus Driver, Custodial) in that district."),
             tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
                    target = "_blank", class = "btn btn-default btn-xs",
                    icon("flag"), " Report Mistake / Closed Job")
