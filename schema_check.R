@@ -44,7 +44,8 @@ REQUIRED_SCHEMAS <- list(
                        "Salary_Note", "Salary_Source", "Faculty_Avg_Salary_Y1Ago", "Faculty_Avg_Salary_Y2Ago",
                        "County", "Median_Household_Income", "Median_Gross_Rent",
                        "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year", "Enrollment",
-                       "Enrollment_Change_Pct", "Pell_Recipient_Share", "Pell_Year")
+                       "Enrollment_Change_Pct", "Pell_Recipient_Share", "Pell_Year"),
+  "data_dictionary.csv" = c("Dataset", "File_Name", "Column_Name", "Data_Type", "Primary_Authority", "Definition")
 )
 
 REQUIRED_SCHEMAS_XLSX <- list(

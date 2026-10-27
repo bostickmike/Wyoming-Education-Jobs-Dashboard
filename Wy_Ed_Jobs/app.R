@@ -208,6 +208,13 @@ he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fil
   validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv") %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 
+data_dictionary <- if (file.exists("data_dictionary.csv")) {
+  read.csv("data_dictionary.csv", stringsAsFactors = FALSE)
+} else {
+  data.frame(Dataset = character(0), File_Name = character(0), Column_Name = character(0),
+             Data_Type = character(0), Primary_Authority = character(0), Definition = character(0))
+}
+
 # Tiny inline trend chart (no axes/legend, just the shape of a trend) for
 # the Top Hiring tables -- lets "31 openings" read differently depending
 # on whether that's a district climbing steadily or one that just posted a
@@ -825,9 +832,9 @@ map_he <- mapdata2_he %>%
     # ipeds_salary_scraper.R), Faculty_Count will stop being identical for
     # both rows and this collapses back to each institution's own rate with
     # no code change needed here.
-    Vacancy_Rate_Shared = !is.na(Salary_Note),
+    Vacancy_Rate_Shared = !is.na(Salary_Note) & nzchar(trimws(Salary_Note)),
     Vacancy_Numerator = ifelse(Vacancy_Rate_Shared,
-                                sum(FacultyCurrentCount[!is.na(Salary_Note)]),
+                                sum(FacultyCurrentCount[!is.na(Salary_Note) & nzchar(trimws(Salary_Note))]),
                                 FacultyCurrentCount),
     Vacancy_Rate = ifelse(!is.na(Faculty_Count) & Faculty_Count >= VACANCY_RATE_MIN_FTE,
                            Vacancy_Numerator / Faculty_Count, NA_real_),
@@ -1064,51 +1071,73 @@ ui <- dashboardPage(
             width = 12, title = "Open Research Downloads", status = "primary", solidHeader = TRUE,
             p("Every weekly snapshot is preserved. Download current or multi-year longitudinal datasets in standard CSV format:"),
             fluidRow(
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("briefcase"), " Active K-12 Jobs", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks."),
-                  downloadButton("download_active_k12", "Download Active Jobs (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("briefcase"), " Active K-12 Jobs", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks."),
+                  downloadButton("download_active_k12", "Active Jobs (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("clock-rotate-left"), " K-12 Postings Archive", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records). For hiring seasonality and longitudinal teacher demand studies."),
-                  downloadButton("download_history_k12", "Download Historical K-12 (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("clock-rotate-left"), " K-12 History Archive", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies."),
+                  downloadButton("download_history_k12", "Historical K-12 (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("school"), " District Benchmarks & Context", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "District-level profiles: WSBA base salaries, WDE average salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, Census median income, rent, and child poverty."),
-                  downloadButton("download_district_benchmarks", "Download District Profiles (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("stopwatch"), " Vacancy Spells Panel", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Deduplicated unique posting spells with NCES LEAID, estimated days open (time-to-fill), and binary shortage flags (STEM, SPED, etc.)."),
+                  downloadButton("download_spells", "Vacancy Spells (CSV)", class = "btn-default btn-xs btn-block")
+                )
+              ),
+              column(3,
+                div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
+                  h4(icon("school"), " District Benchmarks", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent."),
+                  downloadButton("download_district_benchmarks", "District Profiles (CSV)", class = "btn-default btn-xs btn-block")
                 )
               )
             ),
             fluidRow(
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("building-columns"), " Higher Ed Historical Archive", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and the University of Wyoming (29,000+ records)."),
-                  downloadButton("download_history_he", "Download Higher Ed Archive (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("users"), " WDE602 Staff Matrix", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Wyoming Dept of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories."),
+                  downloadButton("download_wde_staff", "WDE602 Matrix (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("graduation-cap"), " Higher Ed Benchmarks", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "Institution-level profiles: IPEDS instructional faculty salaries (all ranks and professor rank), 5-year enrollment trends, and federal FSA Pell Grant recipient shares."),
-                  downloadButton("download_he_benchmarks", "Download Higher Ed Profiles (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("building-columns"), " Higher Ed Archive", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records)."),
+                  downloadButton("download_history_he", "Higher Ed Archive (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
-              column(4,
+              column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("users"), " WDE602 Staff Salary Collection", style = "margin-top: 0; font-size: 16px; font-weight: 600;"),
-                  p(style = "font-size: 13px; color: #555;", "Wyoming Department of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories (principals, teachers, aides, bus drivers)."),
-                  downloadButton("download_wde_staff", "Download WDE602 Matrix (CSV)", class = "btn-default btn-sm btn-block")
+                  h4(icon("graduation-cap"), " Higher Ed Profiles", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares."),
+                  downloadButton("download_he_benchmarks", "Higher Ed Profiles (CSV)", class = "btn-default btn-xs btn-block")
+                )
+              ),
+              column(3,
+                div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
+                  h4(icon("book"), " Data Dictionary", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Comprehensive machine-readable codebook documenting variable names, data types, definitions, and source authorities across all datasets."),
+                  downloadButton("download_dictionary", "Codebook (CSV)", class = "btn-default btn-xs btn-block")
                 )
               )
             )
+          )
+        ),
+        
+        fluidRow(
+          box(
+            width = 12, title = "Interactive Data Dictionary & Variable Codebook", status = "primary",
+            p("Search, sort, and filter variable definitions, data types, and primary source authorities across all datasets:"),
+            div(style = "overflow-x: auto;", withSpinner(DTOutput("data_dictionary_table")))
           )
         ),
         
@@ -1616,6 +1645,30 @@ server <- function(input, output, session) {
       file.copy("wde602_district_staff_salaries.csv", file)
     }
   )
+
+  output$download_spells <- downloadHandler(
+    filename = function() { paste0("wyoming_job_duration_spells_", Sys.Date(), ".csv") },
+    content = function(file) {
+      file.copy("job_duration_spells.csv", file)
+    }
+  )
+
+  output$download_dictionary <- downloadHandler(
+    filename = function() { paste0("wyoming_data_dictionary_", Sys.Date(), ".csv") },
+    content = function(file) {
+      file.copy("data_dictionary.csv", file)
+    }
+  )
+
+  output$data_dictionary_table <- renderDT({
+    req(data_dictionary)
+    datatable(
+      data_dictionary,
+      filter = "top",
+      escape = FALSE,
+      options = list(pageLength = 15, scrollX = TRUE, autoWidth = TRUE)
+    )
+  })
 
   # -------- K-12 --------
   output$k12_jobs <- renderDT({
