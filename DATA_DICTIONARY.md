@@ -148,8 +148,8 @@ To support seamless merges with federal, state, and academic datasets, the follo
 If you utilize these datasets in academic papers, policy briefs, or journalistic reporting, please use the following citation:
 
 ```bibtex
-@misc{perkins_bostick_2026_wyoming,
-  author = {Perkins, Mark and Bostick, Michael},
+@misc{bostick_perkins_2026_wyoming,
+  author = {Bostick, Michael and Perkins, Mark},
   title = {Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context},
   year = {2026},
   publisher = {GitHub},

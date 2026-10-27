@@ -1,6 +1,6 @@
 ---
 title: "R Job Scrape"
-author: "Mark Perkins"
+author: "Mike Bostick and Mark Perkins"
 date: "2025-09-18"
 output: html_document
 
