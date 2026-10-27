@@ -4,9 +4,9 @@
   "platform": "4.6.1",
   "metadata": {
     "appmode": "shiny",
-    "primary_rmd": {},
-    "primary_html": {},
-    "content_category": {},
+    "primary_rmd": null,
+    "primary_html": null,
+    "content_category": null,
     "has_parameters": false
   },
   "packages": {
@@ -3886,5 +3886,5 @@
       "checksum": "ddb50d7b1b97ce2e35d22068368650dd"
     }
   },
-  "users": {}
+  "users": null
 }
