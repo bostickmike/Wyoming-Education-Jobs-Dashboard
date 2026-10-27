@@ -59,3 +59,11 @@ test_that("all chunk-level fetch_* calls in Wy_ED_Jobs.Rmd are wrapped in safe_s
   expect_equal(length(naked_calls), 0,
                info = paste(vapply(naked_calls, function(n) paste0("[", n$chunk, "]: ", n$call), character(1)), collapse = ", "))
 })
+
+test_that("Wy_ED_Jobs.Rmd does not contain typo %% modulo operator instead of %>% pipe", {
+  rmd_path <- here::here("Wy_ED_Jobs.Rmd")
+  lines <- readLines(rmd_path, warn = FALSE)
+  typo_lines <- which(grepl("%%[[:space:]]*$", lines) | grepl("\\w+_df[[:space:]]*%%", lines))
+  expect_equal(length(typo_lines), 0,
+               info = paste("Typo %% operator found on line(s):", paste(typo_lines, collapse = ", ")))
+})

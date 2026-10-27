@@ -45,7 +45,8 @@ REQUIRED_SCHEMAS <- list(
                        "County", "Median_Household_Income", "Median_Gross_Rent",
                        "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year", "Enrollment",
                        "Enrollment_Change_Pct", "Pell_Recipient_Share", "Pell_Year"),
-  "data_dictionary.csv" = c("Dataset", "File_Name", "Column_Name", "Data_Type", "Primary_Authority", "Definition")
+  "data_dictionary.csv" = c("Dataset", "File_Name", "Column_Name", "Data_Type", "Primary_Authority", "Definition"),
+  "job_duration_spells.csv" = c("District", "Title", "Category", "Broad_Category", "Position", "First_Seen_Date", "Last_Seen_Date", "Weeks_Observed", "Estimated_Days_Open", "Status")
 )
 
 REQUIRED_SCHEMAS_XLSX <- list(
