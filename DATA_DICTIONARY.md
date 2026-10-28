@@ -10,13 +10,14 @@ Each dataset is accessible via the **Data Sources & Open Research Downloads** ta
 
 | Dataset Layer | Primary File | Description | Granularity | Refresh Cadence |
 | :--- | :--- | :--- | :--- | :--- |
-| **Active K-12 Jobs** | `combinedclean.csv` | All active public school job vacancies currently open across Wyoming school districts. | Posting level | Weekly |
+| **Active K-12 Jobs** | `combinedclean.csv` | All active public school job vacancies currently open across school districts. | Posting level | Weekly |
+| **K-12 Historical Archive** | `k12jobanalysis.csv` | Multi-year longitudinal archive of all weekly K-12 job postings with standardized categorizations. | Posting level | Weekly |
 | **K-12 Job Duration Spells** | `job_duration_spells.csv` | Longitudinal panel tracking vacancy duration (time-to-fill) and shortage dummy flags. | Posting spell | Weekly |
-| **District Profiles & Benchmarks** | `salarymap2.csv` | District-level staffing, compensation benchmarks (WSBA base & WDE602 average), and Census context. | District level | Weekly / Annual |
+| **District Profiles & Benchmarks** | `salarymap2.csv` | District-level staffing, compensation benchmarks, and Census context. | District level | Weekly / Annual |
 | **WDE602 District Staffing Matrix** | `wde602_district_staff_salaries.csv` | Staff headcount, FTE, and average base/total compensation across 30+ assignment categories. | District × Role | Annual |
-| **Higher Ed Institutional Profiles** | `salarymap.csv` | College and university profiles: IPEDS instructional faculty salaries, enrollment, and Pell recipient shares. | Institution level | Weekly / Annual |
 | **Higher Ed Historical Postings** | `facultydata.csv` | Multi-year longitudinal postings for instructional faculty, adjuncts, and staff. | Posting level | Weekly |
 | **Higher Ed Job Duration Spells** | `he_job_duration_spells.csv` | Longitudinal spell panel tracking collegiate faculty search duration (time-to-fill) and discipline flags. | Posting spell | Weekly |
+| **Higher Ed Institutional Profiles** | `salarymap.csv` | College and university profiles: IPEDS instructional faculty salaries, enrollment, and Pell recipient shares. | Institution level | Weekly / Annual |
 | **K-12 Weekly Vacancy Time Series** | `k12_district_weekly_totals.csv` | Weekly aggregate open job vacancy counts by school district over time. | District × Week | Weekly |
 | **Higher Ed Weekly Vacancy Time Series** | `he_institution_weekly_totals.csv` | Weekly aggregate open job vacancy counts by higher education institution. | Institution × Week | Weekly |
 | **Data Dictionary & Codebook** | `data_dictionary.csv` | Machine-readable column definitions, types, and primary source authorities across all files. | Variable level | Static / Maintained |
@@ -27,195 +28,211 @@ Each dataset is accessible via the **Data Sources & Open Research Downloads** ta
 
 To support seamless merges with federal, state, and academic datasets, the following universal identifiers are embedded:
 
-- **`NCES_LEAID`**: Official 7-digit federal National Center for Education Statistics Local Education Agency identifier (e.g., `5600730` for Albany #1, `5601980` for Laramie #1). Enables 1:1 joining with the **Stanford Educational Data Archive (SEDA)**, **Civil Rights Data Collection (CRDC)**, and **Census F-33 School District Finance Survey**.
-- **`IPEDS_UNITID`**: Official 6-digit federal Integrated Postsecondary Education Data System identifier (e.g., `240727` for University of Wyoming, `240505` for Casper College).
+- **`NCES_LEAID`**: Official 7-digit federal National Center for Education Statistics Local Education Agency identifier. Enables 1:1 joining with the **Stanford Educational Data Archive (SEDA)**, **Civil Rights Data Collection (CRDC)**, and **Census F-33 School District Finance Survey**.
+- **`IPEDS_UNITID`**: Official 6-digit federal Integrated Postsecondary Education Data System identifier.
 - **`District_ID`**: 6-digit Wyoming Department of Education state district identification code.
 
 ---
 
 ## 3. Data Dictionary: Detailed Variable Definitions
 
-### A. Active K-12 Job Vacancies (`combinedclean.csv`)
-*Current active openings, updated weekly.*
+### A. Active K-12 Jobs (`combinedclean.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `title` | String | District Job Board | Job vacancy title as published by the school district or charter school. |
+| `title` | String | District Job Board | Official job vacancy title as published by the school district or charter school. |
+| `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Weekly snapshot observation date on which the vacancy was captured as actively open. |
 | `date_posted` | String / Date | District Job Board | Original posted date string as published on the district applicant tracking board. |
-| `position` | Categorical | Classifier | Broad occupational classification (Teacher, Administration, Support Services, etc.). |
-| `location` | String | District Job Board | Specific school building, school campus, facility, or central administrative office. |
-| `url` | URL | District Job Board | Direct URL link to the official job vacancy listing or online application portal. |
-| `posting_id` | String | Project Key | Durable posting fingerprint used to track unique openings longitudinally across weekly scrapers. |
+| `position` | Categorical | Classification Model | Broad staff position group (Teacher, Administrator, Support Services, etc.). |
+| `location` | String | District Job Board | Specific school building, school campus, facility, or district administrative office. |
+| `url` | URL | District Job Board | Direct link to the job posting or district applicant tracking portal. |
+| `posting_id` | String | Project Pipeline | Durable unique posting identifier used to track openings longitudinally across weekly snapshots. |
+| `District` | String | Canonical Registry | Canonical public school district or charter school name. |
+
+---
+
+### B. K-12 Historical Archive (`k12jobanalysis.csv`)
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `title` | String | District Job Board | Standardized job vacancy title as published by the school district or charter school. |
+| `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Weekly snapshot observation date on which the vacancy was captured as open. |
+| `position` | Categorical | Classification Model | Broad staff position group (Teacher, Administrator, Support Services, etc.). |
+| `location` | String | District Job Board | Specific school building, facility, or district administrative office location. |
+| `url` | URL | District Job Board | Direct URL link to the official job vacancy listing or district portal. |
+| `posting_id` | String | Project Pipeline | Durable unique posting identifier tracking vacancies across multi-year weekly snapshots. |
 | `District` | String | Canonical Registry | Canonical public school district or charter school Local Education Agency (LEA) name. |
-| `Category` | String | Classifier | Fine-grained subject specialization or departmental role assignment. |
-| `Broad_Category` | Categorical | Classifier | High-level clustered role grouping (Elementary, STEM, Special Education, Humanities, etc.). |
-| `Role_Avg_Salary` | Currency ($) | WDE602 Staff Matrix | District benchmark average total compensation for this specific job classification. |
-| `Role_Avg_Salary_Note` | String | WDE602 Staff Matrix | Tag indicating which staff assignment group benchmark applies (e.g., Admin, Aide, Bus, Maint, Food). |
+| `Category` | String | Classification Model | Fine-grained subject specialization or departmental role assignment. |
+| `Broad_Category` | Categorical | Classification Model | Clustered high-level category grouping (Elementary, STEM, Special Education, Humanities, etc.). |
 
 ---
 
-### B. K-12 Job Duration & Shortage Spells Panel (`job_duration_spells.csv`)
-*Longitudinal spell panel tracking vacancy duration and subject-area shortages. Essential for labor economists and empirical policy analysts.*
+### C. K-12 Job Duration Spells (`job_duration_spells.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
 | `District` | String | Canonical Registry | Canonical public school district or charter school name. |
-| `NCES_LEAID` | String (7-digit) | NCES CCD | Federal NCES 7-digit Local Education Agency identifier. |
+| `NCES_LEAID` | String (7-digit) | NCES CCD | Official federal National Center for Education Statistics Local Education Agency 7-digit identifier. |
 | `Title` | String | District Job Board | Standardized job vacancy title. |
-| `Position` | Categorical | Classifier | Broad staff position group (Teacher, Administrator, Support Services). |
-| `Category` | String | Classifier | Fine-grained subject area or functional assignment. |
-| `Broad_Category` | Categorical | Classifier | High-level clustered subject or role category. |
-| `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run in which this job posting was observed active. |
-| `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Latest weekly scraper run in which this job posting was observed active. |
-| `Weeks_Observed` | Integer | Project Scraper | Total count of weekly snapshots where this posting was present. |
-| `Estimated_Days_Open` | Integer | Derived Metric | Estimated calendar duration of the vacancy (proxy for labor shortage / time-to-fill). |
-| `Status` | Categorical | Derived Metric | State of posting: `Closed / Filled` or `Still Active` as of the latest pipeline run. |
-| `is_stem` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Science, Technology, Engineering, or Math; 0 otherwise. |
-| `is_sped` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Special Education; 0 otherwise. |
-| `is_elementary` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Elementary Education; 0 otherwise. |
-| `is_secondary` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Middle or High School; 0 otherwise. |
-| `is_admin` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Administration, Principal, or Superintendent; 0 otherwise. |
-| `is_support_staff` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Paraprofessional, Aide, Custodial, Bus, or Food Service; 0 otherwise. |
+| `Category` | String | Classification Model | Fine-grained subject area or departmental functional assignment. |
+| `Broad_Category` | Categorical | Classification Model | High-level clustered role grouping (Elementary, STEM, Special Education, etc.). |
+| `Position` | Categorical | Classification Model | Broad staff position group (Teacher, Administrator, Support Services). |
+| `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run date in which this job vacancy was observed active. |
+| `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Most recent weekly scraper run date in which this job vacancy was observed active. |
+| `Weeks_Observed` | Integer | Project Derived | Total count of weekly snapshots in which this posting was continuously observed. |
+| `Estimated_Days_Open` | Integer | Project Derived | Estimated calendar duration of the vacancy spell (proxy for time-to-fill and labor shortage persistence). |
+| `Status` | Categorical | Project Derived | Vacancy spell state: Still Active or Closed / Filled as of latest weekly pipeline sweep. |
+| `is_stem` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |
+| `is_sped` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Special Education; 0 otherwise. |
+| `is_elementary` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Elementary Education; 0 otherwise. |
+| `is_secondary` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Middle School or High School; 0 otherwise. |
+| `is_admin` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Administration, Principal, or Superintendent; 0 otherwise. |
+| `is_support_staff` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Paraprofessional, Aide, Custodial, Bus, or Food Service; 0 otherwise. |
 
 ---
 
-### C. District Profiles & Socioeconomic Context (`salarymap2.csv`)
-*District-level profiles combining compensation surveys, federal CCD staffing, and Census economic indicators.*
+### D. District Profiles & Context (`salarymap2.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
 | `District` | String | Canonical Registry | Canonical public school district or charter school name. |
-| `NCES_LEAID` | String (7-digit) | NCES CCD | Federal NCES 7-digit Local Education Agency identifier. |
-| `County` | String | US Census Bureau | Primary county in which the district central administrative office is located. |
-| `Latitude` / `Longitude` | Decimal Degrees | US Census / Geocoding | Geographic coordinates of district central headquarters. |
-| `Job_Link` | URL | District Registry | Official employment or applicant tracking portal link for the district. |
-| `Teacher_Base_Salary` | Currency ($) | WSBA Survey | Published starting base salary for a certified teacher with a BA and Step 1 experience. |
-| `Teacher_Base_Salary_Prior_Year` | Currency ($) | WSBA Survey | Published starting base salary for BA Step 1 in the preceding academic year. |
-| `Salary_Year` | String | WSBA Survey | Academic school year corresponding to the published WSBA base salary survey. |
-| `Teacher_Avg_Salary` | Currency ($) | WDE602 Collection | Actual average total compensation across all certified classroom teachers in the district. |
-| `Teacher_Avg_Base_Salary` | Currency ($) | WDE602 Collection | Actual average base contract salary across all certified classroom teachers in the district. |
-| `WDE_Salary_Year` | String | WDE602 Collection | Academic school year corresponding to the WDE602 certified staff collection. |
-| `Superintendent_Salary` | Currency ($) | WSBA Survey | Contracted annual salary of the district superintendent. |
-| `Superintendent_Contract_Days` | Integer | WSBA Survey | Annual contracted working days for the district superintendent. |
-| `Teachers_Total_FTE` | Numeric | NCES CCD via Urban Inst | Total full-time-equivalent certified classroom teachers employed by the district. |
-| `Enrollment` | Integer | NCES CCD via Urban Inst | Total pre-K through grade 12 student enrollment count. |
-| `CCD_Year` | Integer | NCES CCD | Data collection school year for federal CCD staffing and enrollment counts. |
+| `NCES_LEAID` | String (7-digit) | NCES CCD | Official federal NCES Local Education Agency 7-digit identifier. |
+| `County` | String | US Census Bureau | County in which the district central administrative headquarters is located. |
+| `Latitude` | Decimal Degrees | US Census / Geocoding | Geographic latitude coordinate of district central headquarters. |
+| `Longitude` | Decimal Degrees | US Census / Geocoding | Geographic longitude coordinate of district central headquarters. |
+| `Link` | URL | District Registry | Official website home page URL for the school district. |
+| `Job_Link` | URL | District Registry | Official employment, careers, or applicant tracking portal link for the district. |
+| `Teacher_Base_Salary` | Currency ($) | WSBA Salary Survey | Published starting base salary for a certified teacher with a Bachelors degree and Step 1 experience. |
+| `Teacher_Base_Salary_Prior_Year` | Currency ($) | WSBA Salary Survey | Published starting base salary for BA Step 1 in the preceding academic school year. |
+| `Salary_Year` | String | WSBA Salary Survey | Academic school year corresponding to the published WSBA base salary survey. |
+| `Superintendent_Salary` | Currency ($) | WSBA Salary Survey | Contracted annual salary of the district superintendent. |
+| `Superintendent_Contract_Days` | Integer | WSBA Salary Survey | Contracted annual working days for the district superintendent. |
+| `Salary_Source` | String | WSBA Salary Survey | Publishing authority and survey title for district teacher base salaries. |
+| `Data_Coverage` | Categorical | Project Methodology | Scraper coverage fidelity tier: Full (direct ATS integration) vs Partial (heuristic site or state feed scrape). |
+| `Teachers_Total_FTE` | Numeric | NCES CCD | Total full-time-equivalent certified classroom teachers employed by the district. |
+| `Enrollment` | Integer | NCES CCD | Total pre-K through grade 12 student fall enrollment headcount. |
+| `CCD_Year` | Integer | NCES CCD | Reporting school year for federal Common Core of Data staffing and enrollment counts. |
+| `CCD_Source` | String | NCES CCD | Federal source citation for NCES CCD public school district universe data. |
 | `Median_Household_Income` | Currency ($) | US Census ACS 5-Year | County median annual household income in inflation-adjusted dollars. |
 | `Median_Gross_Rent` | Currency ($) | US Census ACS 5-Year | County median monthly gross rent including estimated utilities. |
 | `Population` | Integer | US Census ACS 5-Year | Total estimated resident population of the county. |
-| `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Share of county civilian employed labor force in agriculture, forestry, mining, and energy extraction. |
+| `ACS_Year` | Integer | US Census ACS 5-Year | Data release year for US Census American Community Survey 5-year estimates. |
+| `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Proportion of county civilian employed workforce in agriculture, forestry, mining, and energy extraction. |
 | `Population_Change_Pct` | Proportion | US Census ACS 5-Year | County 5-year percentage change in total resident population. |
-| `Child_Poverty_Rate` | Proportion (0-1) | US Census SAIPE | Estimated share of school-age children (ages 5-17) living in families below the federal poverty line. |
-| `SAIPE_Year` | Integer | US Census SAIPE | Release year of federal Small Area Income and Poverty Estimates data. |
-| `Data_Coverage` | Categorical | Project Methodology | Scraper coverage fidelity: `Full` (direct ATS integration) vs `Partial` (heuristic site scrape). |
+| `Child_Poverty_Rate` | Proportion (0-1) | US Census SAIPE | Estimated proportion of school-age children (ages 5-17) living in families below the federal poverty line. |
+| `SAIPE_Year` | Integer | US Census SAIPE | Release year of federal Small Area Income and Poverty Estimates (SAIPE) data. |
+| `Teacher_Avg_Salary` | Currency ($) | WDE602 Staff Collection | Actual average total compensation paid across all employed certified classroom teachers in the district. |
+| `Teacher_Avg_Base_Salary` | Currency ($) | WDE602 Staff Collection | Actual average base contract salary paid across all employed certified classroom teachers in the district. |
+| `WDE_Salary_Year` | String | WDE602 Staff Collection | Academic school year corresponding to the WDE602 certified staff collection. |
+| `WDE_Salary_Source` | String | WDE602 Staff Collection | Publishing state agency authority for Wyoming Department of Education staff collections. |
 
 ---
 
-### D. WDE602 District Staffing Matrix (`wde602_district_staff_salaries.csv`)
-*Wyoming Department of Education certified and classified staff compensation matrix.*
+### E. WDE602 Staff Salary Collection (`wde602_district_staff_salaries.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `School_Year` | String | Wyoming Dept of Ed | State reporting academic year for the WDE602 staff member collection. |
-| `District_ID` | Integer | Wyoming Dept of Ed | Official 6-digit WDE state district identification number. |
-| `District_Name` | String | Wyoming Dept of Ed | District name as reported in official WDE collections (e.g., 'Albany #1'). |
-| `District` | String | Project Canonical | Project canonical district name matching `salarymap2.csv` and job tables. |
-| `NCES_LEAID` | String (7-digit) | NCES CCD | Federal NCES 7-digit Local Education Agency identifier. |
-| `Group_Name` | String | Wyoming Dept of Ed | Staff assignment code group (Teachers, Principals, Aides, Bus Drivers, Custodians, Food Service). |
-| `Total_FTE` | Numeric | Wyoming Dept of Ed | Total full-time-equivalent employees employed in that specific assignment group. |
-| `Average_Base_Salary` | Currency ($) | Wyoming Dept of Ed | Average contracted base salary for staff in that assignment group. |
-| `Average_Total_Salary` | Currency ($) | Wyoming Dept of Ed | Average total compensation including stipends and benefits adjustments for staff in that assignment group. |
+| `School_Year` | String | Wyoming Dept of Education | Official state reporting academic school year for the certified and classified staff collection. |
+| `Data_Scope` | String | Wyoming Dept of Education | Scope classification of staff reporting (District-level collection). |
+| `District_ID` | Integer | Wyoming Dept of Education | Official 6-digit Wyoming Department of Education state district identification number. |
+| `District_Name` | String | Wyoming Dept of Education | Official district name as recorded in WDE state reporting collections. |
+| `District` | String | Canonical Registry | Standardized canonical district name harmonized with project job boards and benchmarks. |
+| `NCES_LEAID` | String (7-digit) | NCES CCD | Official federal NCES Local Education Agency 7-digit identifier. |
+| `Group_Scope` | String | Wyoming Dept of Education | Staff assignment classification scope (All Staff, Certified, Classified). |
+| `Group_Name` | String | Wyoming Dept of Education | Specific staff assignment code group (Teachers, Principals, Aides, Bus Drivers, Custodians, Food Service). |
+| `Male_FTE` | Numeric | Wyoming Dept of Education | Total full-time-equivalent male employees in this staff assignment group. |
+| `Female_FTE` | Numeric | Wyoming Dept of Education | Total full-time-equivalent female employees in this staff assignment group. |
+| `Total_FTE` | Numeric | Wyoming Dept of Education | Total full-time-equivalent staff employed in that specific assignment group. |
+| `Average_Base_Salary` | Currency ($) | Wyoming Dept of Education | Average contracted base salary for staff in that assignment group. |
+| `Average_Total_Salary` | Currency ($) | Wyoming Dept of Education | Average total compensation including stipends and benefits for staff in that assignment group. |
 
 ---
 
-### E. Higher Education Institutional Profiles (`salarymap.csv`)
-*Profiles for Wyoming's public community colleges and the University of Wyoming.*
+### F. Higher Ed Historical Archive (`facultydata.csv`)
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `Title` | String | Institutional Job Board | Published collegiate job vacancy title as advertised on the college or university careers portal. |
+| `Location` | String | Institutional Job Board | Campus location, city, or remote work designation. |
+| `Posted_Date` | String / Date | Institutional Job Board | Original date of vacancy posting as published by the college or university. |
+| `Institution` | String | IPEDS Directory | Canonical name of the public college or university. |
+| `Link` | URL | Institutional Job Board | Direct URL link to the official higher education employment vacancy announcement. |
+| `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Weekly snapshot observation date on which the vacancy was captured as open. |
+| `Job_Type` | Categorical | Classification Model | Collegiate appointment category: Instructor/Teacher/Faculty, Adjunct/Part-Time Faculty, or Staff. |
+| `Category` | String | Classification Model | Academic discipline, instructional field, or administrative functional area. |
+
+---
+
+### G. Higher Ed Job Duration Spells (`he_job_duration_spells.csv`)
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `Institution` | String | IPEDS Directory | Canonical name of the public college or university. |
+| `IPEDS_UNITID` | String (6-digit) | NCES IPEDS | Official 6-digit federal NCES Integrated Postsecondary Education Data System Unit ID. |
+| `Title` | String | Institutional Job Board | Standardized collegiate job vacancy title. |
+| `Category` | String | Classification Model | Academic discipline or collegiate functional assignment area. |
+| `Job_Type` | Categorical | Classification Model | Collegiate appointment classification: Instructor/Teacher/Faculty or Adjunct/Part-Time Faculty. |
+| `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run date in which this collegiate job posting was observed active. |
+| `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Most recent weekly scraper run date in which this collegiate job posting was observed active. |
+| `Weeks_Observed` | Integer | Project Derived | Total count of weekly snapshots in which this collegiate posting was observed. |
+| `Estimated_Days_Open` | Integer | Project Derived | Estimated calendar duration of the collegiate search (proxy for search length and time-to-fill). |
+| `Status` | Categorical | Project Derived | Search status: Still Active or Closed / Filled as of the latest pipeline sweep. |
+| `is_stem` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |
+| `is_health` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Nursing, Health Sciences, or Medical; 0 otherwise. |
+| `is_cte` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Career & Technical Education or Trades; 0 otherwise. |
+| `is_adjunct` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Part-Time or Adjunct Faculty; 0 otherwise. |
+| `is_faculty` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Full-Time Instructional Faculty; 0 otherwise. |
+
+---
+
+### H. Higher Ed Institutional Profiles (`salarymap.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
 | `Name` | String | IPEDS Directory | Official legal institution name of the public college or university. |
-| `IPEDS_UNITID` | String / Integer | NCES IPEDS | Official 6-digit federal NCES Integrated Postsecondary Education Data System Unit ID. |
-| `County` | String | US Census Bureau | County in which the collegiate campus is located. |
-| `Latitude` / `Longitude` | Decimal Degrees | IPEDS Directory | Geographic coordinates of campus centroid. |
-| `Faculty_Avg_Salary` | Currency ($) | NCES IPEDS via Urban Inst | Average full-time instructional faculty salary across all academic ranks combined. |
-| `Faculty_Avg_Salary_Professor` | Currency ($) | NCES IPEDS via Urban Inst | Average full-time instructional faculty salary for the Full Professor rank. |
-| `Faculty_Count` | Integer | NCES IPEDS via Urban Inst | Total count of full-time instructional faculty employed by the institution. |
-| `Salary_Year` | String / Integer | NCES IPEDS | Academic reporting year for IPEDS faculty compensation data. |
-| `Enrollment` | Integer | NCES IPEDS | Total unduplicated fall student enrollment count. |
-| `Pell_Recipient_Share` | Proportion (0-1) | US Dept of Ed FSA | Share of undergraduate degree-seeking students awarded federal need-based Pell Grants. |
-
----
-
-### F. Higher Education Historical Postings (`facultydata.csv`)
-*Longitudinal academic and administrative vacancies across higher education institutions.*
-
-| Column Name | Data Type | Source Authority | Description |
-| :--- | :--- | :--- | :--- |
-| `Title` | String | Institutional Board | Published higher education job vacancy title. |
-| `Institution` | String | IPEDS Directory | Collegiate institution name. |
-| `Location` | String | Institutional Board | Campus location or city. |
-| `Appointment` | Categorical | Classifier | Position appointment category (Faculty/Instructor non-adjunct, Adjunct/Part-Time, Other/Staff). |
-| `Category` | String | Classifier | Academic discipline or administrative functional area. |
-| `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Snapshot observation date when the posting was captured open. |
-| `Link` | URL | Institutional Board | Direct web URL to the employment vacancy listing. |
-
----
-
-### G. Higher Education Job Duration Spells Panel (`he_job_duration_spells.csv`)
-*Longitudinal spell panel tracking vacancy duration, search persistence, and academic disciplines across colleges and universities.*
-
-| Column Name | Data Type | Source Authority | Description |
-| :--- | :--- | :--- | :--- |
-| `Institution` | String | IPEDS Directory | Collegiate institution name. |
 | `IPEDS_UNITID` | String (6-digit) | NCES IPEDS | Official 6-digit federal NCES Integrated Postsecondary Education Data System Unit ID. |
-| `Title` | String | Institutional Board | Standardized collegiate job vacancy title. |
-| `Category` | String | Classifier | Academic discipline or functional assignment area. |
-| `Job_Type` | Categorical | Classifier | Collegiate appointment type (Instructor/Teacher/Faculty or Adjunct/Part-Time Faculty). |
-| `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run in which this job posting was observed active. |
-| `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Latest weekly scraper run in which this job posting was observed active. |
-| `Weeks_Observed` | Integer | Project Scraper | Total count of weekly snapshots where this posting was present. |
-| `Estimated_Days_Open` | Integer | Derived Metric | Estimated calendar duration of the vacancy (proxy for search length and time-to-fill). |
-| `Status` | Categorical | Derived Metric | State of posting: `Closed / Filled` or `Still Active` as of the latest pipeline run. |
-| `is_stem` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Science, Technology, Engineering, or Math; 0 otherwise. |
-| `is_health` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Health Sciences, Nursing, or Medical; 0 otherwise. |
-| `is_cte` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if position is Career & Technical Education; 0 otherwise. |
-| `is_adjunct` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if appointment is Adjunct or Part-Time Faculty; 0 otherwise. |
-| `is_faculty` | Binary (0/1) | Taxonomy Indicator | Dummy indicator: 1 if appointment is Full-Time or Regular Instructional Faculty; 0 otherwise. |
+| `Longitude` | Decimal Degrees | IPEDS Directory | Geographic longitude coordinate of main campus centroid. |
+| `Latitude` | Decimal Degrees | IPEDS Directory | Geographic latitude coordinate of main campus centroid. |
+| `Link` | URL | Institutional Directory | Official careers or employment opportunities portal URL for the institution. |
+| `County` | String | US Census Bureau | County in which the collegiate campus is located. |
+| `Faculty_Avg_Salary` | Currency ($) | NCES IPEDS | Average full-time instructional faculty salary across all academic ranks combined. |
+| `Faculty_Avg_Salary_Professor` | Currency ($) | NCES IPEDS | Average full-time instructional faculty salary for the Full Professor academic rank. |
+| `Faculty_Count` | Integer | NCES IPEDS | Total count of full-time instructional staff employed by the institution. |
+| `Salary_Year` | Integer | NCES IPEDS | Academic reporting year corresponding to the IPEDS faculty compensation survey. |
+| `Salary_Note` | String | Project Methodology | Methodological reporting note (e.g., joint IPEDS reporting for multi-campus community college districts). |
+| `Salary_Source` | String | NCES IPEDS | Data provenance and primary survey source citation for instructional faculty pay. |
+| `Faculty_Avg_Salary_Y1Ago` | Currency ($) | NCES IPEDS | Average full-time instructional faculty salary in the prior academic year (t-1). |
+| `Faculty_Avg_Salary_Y2Ago` | Currency ($) | NCES IPEDS | Average full-time instructional faculty salary two academic years prior (t-2). |
+| `Enrollment` | Integer | NCES IPEDS | Total unduplicated fall student headcount enrollment. |
+| `Enrollment_Year` | Integer | NCES IPEDS | Academic reporting year for IPEDS fall enrollment figures. |
+| `Enrollment_Change_Pct` | Proportion | NCES IPEDS | 5-year percentage change in total fall student enrollment. |
+| `Pell_Recipient_Share` | Proportion (0-1) | US Dept of Education FSA | Share of undergraduate degree-seeking students awarded federal need-based Pell Grants. |
+| `Pell_Year` | Integer | US Dept of Education FSA | Award year for Federal Student Aid (FSA) Pell Grant recipient figures. |
+| `Median_Household_Income` | Currency ($) | US Census ACS 5-Year | County median annual household income in inflation-adjusted dollars. |
+| `Median_Gross_Rent` | Currency ($) | US Census ACS 5-Year | County median monthly gross rent including estimated utilities. |
+| `Population` | Integer | US Census ACS 5-Year | Total estimated resident population of the county in which the campus is located. |
+| `ACS_Year` | Integer | US Census ACS 5-Year | Data release year for US Census American Community Survey 5-year estimates. |
+| `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Proportion of county civilian employed workforce in agriculture, forestry, mining, and energy extraction. |
+| `Population_Change_Pct` | Proportion | US Census ACS 5-Year | County 5-year percentage change in total resident population. |
 
 ---
 
-### G. K-12 Weekly Vacancy Time Series (`k12_district_weekly_totals.csv`)
-*Longitudinal weekly vacancy counts by school district.*
+### I. K-12 Weekly Vacancy Time Series (`k12_district_weekly_totals.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `District` | String | Canonical Registry | Canonical public school district or charter school LEA name. |
+| `District` | String | Canonical Registry | Canonical public school district or charter school name. |
 | `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Snapshot observation date for that weekly pipeline sweep. |
-| `n` | Integer | Project Scraper | Total count of active job postings observed open for that district in that week. |
+| `n` | Integer | Project Scraper | Total count of active job postings observed open for that district in that weekly snapshot. |
 
 ---
 
-### H. Higher Education Weekly Vacancy Time Series (`he_institution_weekly_totals.csv`)
-*Longitudinal weekly vacancy counts by higher education institution.*
+### J. Higher Ed Weekly Vacancy Time Series (`he_institution_weekly_totals.csv`)
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `Institution` | String | IPEDS Directory | Canonical public higher education institution name. |
+| `Institution` | String | IPEDS Directory | Canonical public college or university name. |
 | `Archive_Date` | Date (YYYY-MM-DD) | Project Scraper | Snapshot observation date for that weekly pipeline sweep. |
-| `n` | Integer | Project Scraper | Total count of active collegiate job postings observed open for that institution in that week. |
+| `n` | Integer | Project Scraper | Total count of active job postings observed open for that higher education institution in that weekly snapshot. |
 
 ---
-
-## 4. Citation Guidance
-
-If you utilize these datasets in academic papers, policy briefs, or journalistic reporting, please use the following citation:
-
-```bibtex
-@misc{bostick_perkins_2026_wyoming,
-  author = {Bostick, Michael and Perkins, Mark},
-  title = {Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context},
-  year = {2026},
-  publisher = {GitHub},
-  howpublished = {\url{https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard}}
-}
-```

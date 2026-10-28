@@ -40,7 +40,8 @@ ALL_OUTPUT_CSVS <- c(
   "combinedclean.csv", "k12jobanalysis.csv", "allsum.csv", "allnow.csv",
   "allsum_he.csv", "allnow_he.csv", "k12_district_weekly_totals.csv",
   "he_institution_weekly_totals.csv", "salarymap2.csv", "salarymap.csv",
-  "facultydata.csv", "job_duration_spells.csv", "he_job_duration_spells.csv"
+  "facultydata.csv", "job_duration_spells.csv", "he_job_duration_spells.csv",
+  "data_dictionary.csv"
 )
 
 

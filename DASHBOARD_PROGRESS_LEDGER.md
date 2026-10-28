@@ -132,6 +132,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
 * **Automated Reactive Test Coverage:**
   * Added comprehensive tests in `test-app-reactives.R` verifying default filtering, single and combined filter attributes, county zoom coordinates, empty state handling, and reset triggers (20 new tests, 1,332 total tests passing with 0 fails and 0 warnings).
 
+### Milestone 7: Research Data Dictionary Completeness & Automated Codebook Invariants (2026-10-28)
+* **100% Data Dictionary & Codebook Column Coverage:**
+  * Expanded `Wy_Ed_Jobs/data_dictionary.csv` to 131 variables across all 10 public research download CSVs on the Data Sources tab.
+  * Resolved documentation drift for `k12jobanalysis.csv` (76,000+ historical records), Census ACS variables (`Median_Household_Income`, `Median_Gross_Rent`, `Population`, `Mining_Employment_Share`), WDE staffing subgroups, and IPEDS historical faculty compensation.
+  * Synchronized [`DATA_DICTIONARY.md`](file:///Users/mikebostick/Jobs_Dash_repos/Wyoming-Education-Jobs-Dashboard/DATA_DICTIONARY.md) markdown codebook with complete markdown tables and universal identifier definitions (`NCES_LEAID`, `IPEDS_UNITID`).
+* **Automated Codebook Invariant Test Harness:**
+  * Created [`tests/testthat/test-data-dictionary.R`](file:///Users/mikebostick/Jobs_Dash_repos/Wyoming-Education-Jobs-Dashboard/tests/testthat/test-data-dictionary.R) enforcing:
+    - 100% column documentation: every column in every public download CSV must exist in `data_dictionary.csv`.
+    - Zero phantom columns: every documented column must exist in the target dataset.
+    - Non-empty descriptions and valid data types.
+    - Synchronized dataset inventories between Shiny UI download handlers and `data_dictionary.csv`.
+* **Data Quality Test Suite Registration:**
+  * Added `data_dictionary.csv` to `ALL_OUTPUT_CSVS` in `tests/testthat/test-weekly-data-quality.R`.
+  * Verified 1,390 passing tests across the entire test suite (0 fails, 0 warnings, 1 skip on CRAN).
+
 ---
 
 ## 4. Key Architectural Contracts & Invariants
@@ -167,3 +182,4 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
 - [x] Streamline sidebar navigation into consolidated tabBoxes (10 main tabs).
 - [x] Implement Head-to-Head District and College Comparator modules.
 - [x] Multi-dimensional map filtering (salary tiers, county cluster, posting volume/urgency) with dynamic count badge and auto-zoom.
+- [x] 100% data dictionary column coverage and automated codebook invariant test suite.
