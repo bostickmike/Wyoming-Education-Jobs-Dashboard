@@ -180,6 +180,28 @@ One row per (`Institution`, `Archive_Date`), all job types. Same purpose as K-12
 | `Archive_Date` | date | |
 | `n` | integer | |
 
+### `he_job_duration_spells.csv` — collegiate faculty vacancy duration spells
+
+Longitudinal spell panel tracking vacancy duration (time-to-fill) across weekly snapshots for higher education institutions. Derived from `facultydata.csv` via `scripts/generate_he_job_duration_spells.R`.
+
+| Column | Type | Notes |
+|---|---|---|
+| `Institution` | text | Canonical collegiate institution name matching `salarymap.csv`. |
+| `IPEDS_UNITID` | integer | Official 6-digit federal NCES IPEDS Unit ID. |
+| `Title` | text | Standardized collegiate job vacancy title. |
+| `Category` | text | Academic discipline or functional assignment area. |
+| `Job_Type` | text | Appointment type (`Instructor/Teacher/Faculty` or `Adjunct/Part-Time Faculty`). |
+| `First_Seen_Date` | text | Earliest weekly snapshot date (YYYY-MM-DD) where posting was active. |
+| `Last_Seen_Date` | text | Latest weekly snapshot date (YYYY-MM-DD) where posting was active. |
+| `Weeks_Observed` | integer | Total weekly snapshots the posting appeared. |
+| `Estimated_Days_Open` | integer | Estimated calendar duration open (`as.Date(Last_Seen_Date) - as.Date(First_Seen_Date) + 7`). |
+| `Status` | text | `"Still Active"` or `"Closed / Filled"`. |
+| `is_stem` | integer | 1 if STEM discipline; 0 otherwise. |
+| `is_health` | integer | 1 if Health Sciences or Nursing; 0 otherwise. |
+| `is_cte` | integer | 1 if Career & Technical Education; 0 otherwise. |
+| `is_adjunct` | integer | 1 if Adjunct / Part-Time Faculty; 0 otherwise. |
+| `is_faculty` | integer | 1 if Regular / Full-Time Instructional Faculty; 0 otherwise. |
+
 ### `salarymap.csv` — one row per institution, static reference + refreshed figures
 
 One current row per Wyoming's 9 public HE institutions. `Name`/`Longitude`/`Latitude`/`Link` are hand-maintained; the salary/staffing figures refresh from IPEDS every run (walking backward from the current year until a non-empty response is found, since IPEDS publishes with a 1-2 year lag).

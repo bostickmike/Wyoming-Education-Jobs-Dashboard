@@ -221,6 +221,12 @@ job_duration_spells <- if (file.exists("job_duration_spells.csv")) {
   data.frame()
 }
 
+he_job_duration_spells <- if (file.exists("he_job_duration_spells.csv")) {
+  read.csv("he_job_duration_spells.csv", fileEncoding = "UTF-8", stringsAsFactors = FALSE)
+} else {
+  data.frame()
+}
+
 # Tiny inline trend chart (no axes/legend, just the shape of a trend) for
 # the Top Hiring tables -- lets "31 openings" read differently depending
 # on whether that's a district climbing steadily or one that just posted a
@@ -951,6 +957,7 @@ ui <- dashboardPage(
       menuItem("Longitudinal Trends", tabName = "he_trends", icon = icon("chart-line")),
       menuItem("Current Trends", tabName = "he_current", icon = icon("chart-column")),
       menuItem("New This Week", tabName = "he_new", icon = icon("calendar-plus")),
+      menuItem("Vacancy Spells", tabName = "he_spells", icon = icon("stopwatch")),
       tags$li(class = "header", "COMMUNITY & FEEDBACK"),
       menuItem("Data Sources & Downloads", tabName = "data_tab", icon = icon("database")),
       menuItem("Report Data Mistake", icon = icon("flag"),
@@ -1124,12 +1131,21 @@ ui <- dashboardPage(
               ),
               column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
+                  h4(icon("stopwatch"), " Higher Ed Spells", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Longitudinal vacancy duration panel tracking time-to-fill, active/closed search status, and discipline indicators for collegiate faculty."),
+                  downloadButton("download_he_spells", "Higher Ed Spells (CSV)", class = "btn-default btn-xs btn-block")
+                )
+              ),
+              column(3,
+                div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
                   h4(icon("graduation-cap"), " Higher Ed Profiles", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
                   p(style = "font-size: 12px; color: #555; min-height: 48px;", "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares."),
                   downloadButton("download_he_benchmarks", "Higher Ed Profiles (CSV)", class = "btn-default btn-xs btn-block")
                 )
-              ),
-              column(3,
+              )
+            ),
+            fluidRow(
+              column(4,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
                   h4(icon("book"), " Data Dictionary", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
                   p(style = "font-size: 12px; color: #555; min-height: 48px;", "Comprehensive machine-readable codebook documenting variable names, data types, definitions, and source authorities across all datasets."),
@@ -1490,6 +1506,70 @@ ui <- dashboardPage(
           selected = "all", inline = TRUE
         ),
         DTOutput("he_new_table")
+      ),
+      tabItem(
+        tabName = "he_spells",
+        h3(style = "margin-top: 0; font-weight: 600;", "Higher Ed Vacancy Spells & Time-to-Fill"),
+        p(class = "help-block",
+          "Longitudinal tracking of collegiate faculty vacancy duration across weekly snapshots. Measures time-to-fill and search persistence across academic disciplines and institutions."),
+        fluidRow(
+          valueBoxOutput("he_spell_median_box", width = 3),
+          valueBoxOutput("he_spell_active_box", width = 3),
+          valueBoxOutput("he_spell_persistent_box", width = 3),
+          valueBoxOutput("he_spell_hardest_box", width = 3)
+        ),
+        box(
+          width = 12, status = "primary", solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 3,
+              selectInput("he_spell_status", "Vacancy Status:",
+                          choices = c("All Postings" = "all",
+                                      "Still Active (Open)" = "Still Active",
+                                      "Filled / Closed" = "Closed / Filled"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("he_spell_job_type", "Appointment Type:",
+                          choices = c("All Appointments" = "all",
+                                      "Full-Time / Regular Faculty" = "Instructor/Teacher/Faculty",
+                                      "Adjunct / Part-Time Faculty" = "Adjunct/Part-Time Faculty"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("he_spell_discipline", "Academic Focus:",
+                          choices = c("All Disciplines" = "all",
+                                      "STEM Fields" = "stem",
+                                      "Health Sciences & Nursing" = "health",
+                                      "Career & Technical (CTE)" = "cte"),
+                          selected = "all")
+            ),
+            column(
+              width = 3,
+              selectInput("he_spell_institution", "Filter Institution:",
+                          choices = c("All Institutions" = "all"),
+                          selected = "all")
+            )
+          )
+        ),
+        fluidRow(
+          box(
+            width = 7, title = "Median Days Open by Academic Discipline", status = "info",
+            withSpinner(plotlyOutput("he_spell_duration_plot", height = "360px"))
+          ),
+          box(
+            width = 5, title = "Collegiate Vacancy Duration Distribution", status = "info",
+            withSpinner(plotlyOutput("he_spell_distrib_plot", height = "360px"))
+          )
+        ),
+        box(
+          width = 12, title = "Collegiate Vacancy Spells Explorer", status = "primary",
+          p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+          DTOutput("he_spell_table")
+        )
       )
     )
   )
@@ -1725,6 +1805,17 @@ server <- function(input, output, session) {
     filename = function() { paste0("wyoming_job_duration_spells_", Sys.Date(), ".csv") },
     content = function(file) {
       file.copy("job_duration_spells.csv", file)
+    }
+  )
+
+  output$download_he_spells <- downloadHandler(
+    filename = function() { paste0("wyoming_he_job_duration_spells_", Sys.Date(), ".csv") },
+    content = function(file) {
+      if (file.exists("he_job_duration_spells.csv")) {
+        file.copy("he_job_duration_spells.csv", file)
+      } else {
+        write.csv(data.frame(), file)
+      }
     }
   )
 
@@ -2593,6 +2684,187 @@ server <- function(input, output, session) {
     req(nrow(df) > 0)
 
     cols_to_show <- c("District", "Title", "Position", "Broad_Category",
+                      "First_Seen_Date", "Last_Seen_Date", "Estimated_Days_Open", "Status")
+    existing_cols <- intersect(cols_to_show, names(df))
+
+    df_display <- df %>%
+      select(all_of(existing_cols)) %>%
+      arrange(desc(Estimated_Days_Open))
+
+    datatable(
+      df_display,
+      options = list(
+        pageLength = 15,
+        lengthMenu = c(10, 15, 25, 50, 100),
+        dom = "Bfrtip",
+        buttons = c("copy", "csv", "excel")
+      ),
+      extensions = "Buttons",
+      rownames = FALSE,
+      escape = FALSE
+    )
+  })
+
+  # ------------------ Higher Ed Vacancy Spells ------------------
+  observe({
+    if (nrow(he_job_duration_spells) > 0) {
+      insts <- sort(unique(he_job_duration_spells$Institution))
+      updateSelectInput(session, "he_spell_institution",
+                        choices = c("All Institutions" = "all", setNames(insts, insts)),
+                        selected = "all")
+    }
+  })
+
+  filtered_he_spells <- reactive({
+    req(nrow(he_job_duration_spells) > 0)
+    df <- he_job_duration_spells
+
+    if (!is.null(input$he_spell_status) && !identical(input$he_spell_status, "all")) {
+      df <- df %>% filter(Status == input$he_spell_status)
+    }
+
+    if (!is.null(input$he_spell_job_type) && !identical(input$he_spell_job_type, "all")) {
+      df <- df %>% filter(Job_Type == input$he_spell_job_type)
+    }
+
+    if (!is.null(input$he_spell_discipline) && !identical(input$he_spell_discipline, "all")) {
+      disc <- input$he_spell_discipline
+      if (disc == "stem" && "is_stem" %in% names(df)) df <- df %>% filter(is_stem == 1)
+      else if (disc == "health" && "is_health" %in% names(df)) df <- df %>% filter(is_health == 1)
+      else if (disc == "cte" && "is_cte" %in% names(df)) df <- df %>% filter(is_cte == 1)
+    }
+
+    if (!is.null(input$he_spell_institution) && !identical(input$he_spell_institution, "all")) {
+      df <- df %>% filter(Institution == input$he_spell_institution)
+    }
+
+    df
+  })
+
+  output$he_spell_median_box <- renderValueBox({
+    df <- filtered_he_spells()
+    med <- if (nrow(df) > 0) round(median(df$Estimated_Days_Open, na.rm = TRUE)) else 0
+    valueBox(
+      paste0(med, " Days"),
+      "Median Vacancy Duration",
+      icon = icon("stopwatch"),
+      color = "blue"
+    )
+  })
+
+  output$he_spell_active_box <- renderValueBox({
+    df <- filtered_he_spells()
+    active_n <- if (nrow(df) > 0) sum(df$Status == "Still Active", na.rm = TRUE) else 0
+    valueBox(
+      scales::comma(active_n),
+      "Currently Open Searches",
+      icon = icon("door-open"),
+      color = "green"
+    )
+  })
+
+  output$he_spell_persistent_box <- renderValueBox({
+    df <- filtered_he_spells()
+    persist_n <- if (nrow(df) > 0) sum(df$Status == "Still Active" & df$Estimated_Days_Open >= 90, na.rm = TRUE) else 0
+    valueBox(
+      scales::comma(persist_n),
+      "Persistent Searches (≥90 Days)",
+      icon = icon("triangle-exclamation"),
+      color = "red"
+    )
+  })
+
+  output$he_spell_hardest_box <- renderValueBox({
+    df <- filtered_he_spells()
+    hardest <- "N/A"
+    if (nrow(df) >= 3 && "Category" %in% names(df)) {
+      cat_dur <- df %>%
+        group_by(Category) %>%
+        summarize(med = median(Estimated_Days_Open, na.rm = TRUE), n = n(), .groups = "drop") %>%
+        filter(n >= 2) %>%
+        arrange(desc(med))
+      if (nrow(cat_dur) > 0) hardest <- cat_dur$Category[1]
+    }
+    valueBox(
+      hardest,
+      "Longest Duration Discipline",
+      icon = icon("building-columns"),
+      color = "purple"
+    )
+  })
+
+  output$he_spell_duration_plot <- renderPlotly({
+    df <- filtered_he_spells()
+    req(nrow(df) > 0)
+
+    cat_summary <- df %>%
+      group_by(Category) %>%
+      summarize(
+        Median_Days = round(median(Estimated_Days_Open, na.rm = TRUE)),
+        Postings = n(),
+        .groups = "drop"
+      ) %>%
+      filter(!is.na(Category) & Category != "" & Postings >= 2) %>%
+      arrange(desc(Median_Days)) %>%
+      head(12)
+
+    req(nrow(cat_summary) > 0)
+
+    p <- ggplot(cat_summary, aes(
+      x = reorder(Category, Median_Days),
+      y = Median_Days,
+      text = paste0("<b>", Category, "</b><br>Median Open: ", Median_Days, " days<br>Total Spells: ", Postings)
+    )) +
+      geom_col(fill = "#2a78d6", width = 0.65) +
+      coord_flip() +
+      labs(x = NULL, y = "Median Days Open") +
+      theme_minimal() +
+      theme(
+        axis.text.y = element_text(size = 9),
+        panel.grid.major.y = element_blank()
+      )
+
+    ggplotly(p, tooltip = "text") %>% config(displayModeBar = FALSE)
+  })
+
+  output$he_spell_distrib_plot <- renderPlotly({
+    df <- filtered_he_spells()
+    req(nrow(df) > 0)
+
+    df <- df %>%
+      mutate(Duration_Bin = case_when(
+        Estimated_Days_Open <= 30 ~ "1–30 Days",
+        Estimated_Days_Open <= 60 ~ "31–60 Days",
+        Estimated_Days_Open <= 90 ~ "61–90 Days",
+        Estimated_Days_Open <= 180 ~ "91–180 Days",
+        TRUE ~ "180+ Days"
+      )) %>%
+      mutate(Duration_Bin = factor(Duration_Bin, levels = c("1–30 Days", "31–60 Days", "61–90 Days", "91–180 Days", "180+ Days")))
+
+    bin_counts <- df %>%
+      count(Duration_Bin, name = "Count") %>%
+      filter(!is.na(Duration_Bin))
+
+    p <- ggplot(bin_counts, aes(
+      x = Duration_Bin, y = Count,
+      text = paste0("<b>", Duration_Bin, "</b><br>Spells: ", Count)
+    )) +
+      geom_col(fill = "#9b59b6", width = 0.6) +
+      labs(x = NULL, y = "Number of Vacancies") +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(angle = 25, hjust = 1, size = 8),
+        panel.grid.major.x = element_blank()
+      )
+
+    ggplotly(p, tooltip = "text") %>% config(displayModeBar = FALSE)
+  })
+
+  output$he_spell_table <- renderDT({
+    df <- filtered_he_spells()
+    req(nrow(df) > 0)
+
+    cols_to_show <- c("Institution", "Title", "Job_Type", "Category",
                       "First_Seen_Date", "Last_Seen_Date", "Estimated_Days_Open", "Status")
     existing_cols <- intersect(cols_to_show, names(df))
 

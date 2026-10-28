@@ -1,3 +1,6 @@
+# Mock Sys.sleep to no-op so test pagination does not sleep 10s per page:
+testthat::local_mocked_bindings(Sys.sleep = function(...) invisible(NULL), .package = "base")
+
 # These test the pure HTML-parsing functions against static fixtures --
 # real page structure as observed in the original scraper's selectors, not
 # a live fetch. They exercise parsing logic without needing RSelenium,

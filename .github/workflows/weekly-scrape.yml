@@ -86,6 +86,11 @@ jobs:
         run: |
           Rscript -e 'rmarkdown::render("Wy_ED_Jobs.Rmd")'
 
+      - name: Refresh K-12 and Higher Ed vacancy duration spells
+        run: |
+          Rscript scripts/generate_job_duration_spells.R
+          Rscript scripts/generate_he_job_duration_spells.R
+
       - name: Sanity-check the new data before committing anything
         run: Rscript .github/scripts/sanity_check.R
 
@@ -247,6 +252,8 @@ jobs:
             Wy_Ed_Jobs/he_institution_weekly_totals.csv \
             Wy_Ed_Jobs/salarymap2.csv \
             Wy_Ed_Jobs/salarymap.csv \
+            Wy_Ed_Jobs/job_duration_spells.csv \
+            Wy_Ed_Jobs/he_job_duration_spells.csv \
             Wy_Ed_Jobs/k12_salary_history.csv \
             Wy_Ed_Jobs/manifest.json \
             Archived_HE_Data/*.xlsx \
