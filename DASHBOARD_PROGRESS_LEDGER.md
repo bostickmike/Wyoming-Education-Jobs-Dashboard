@@ -77,6 +77,25 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * Documented all schema variables in `DATA_DICTIONARY.md`, `data_dictionary.csv`, and `DATA_COOKBOOK.md`.
   * Integrated automated spell generation step into `.github/workflows/weekly-scrape.yml`.
 
+### Milestone 4: Interactive Spells Hardening, Research Downloads Parity & UX Polish
+* **Interactive Vacancy Spells Resiliency:**
+  * Added zero-row / empty filter state handling across both K-12 and Higher Ed vacancy spells modules (`k12_spells`, `he_spells`):
+    - Reactive KPIs return clean zero counts (`0 Days`, `0 Open Spells`, `0 Persistent Spells`, `None`) instead of NaN or errors.
+    - Plotly duration and distribution charts render clean, informative placeholder notifications (`"No vacancy spells match the selected filter criteria"`) instead of leaving an empty white canvas.
+    - Duration distribution histograms regularized with `tidyr::complete()` across all 5 standard duration bins (`1–14 Days`, `15–30 Days`, `31–60 Days`, `61–90 Days`, `90+ Days` for K-12; `1–30 Days`, `31–60 Days`, `61–90 Days`, `91–180 Days`, `180+ Days` for Higher Ed), guaranteeing consistent axes and comparable geometries under dynamic filtering.
+    - Searchable DT spell tables render clean empty states without `req()` blocking.
+* **Homepage Interactive Drill-Down:**
+  * Enhanced "Top K-12 Hiring Districts This Week" and "Top Higher Ed Hiring Institutions This Week" tables with clickable employer action links.
+  * Clicking any top employer automatically selects that employer, switches to the filtered `k12_table` or `he_table`, and displays all active positions.
+  * Hardened `observeEvent(input$popup_view_jobs)` to seamlessly handle mapped institutions, direct scrape LEAs, and statewide locations.
+* **Open Research Downloads Completeness:**
+  * Added direct CSV downloads for both **K-12 Weekly Vacancies** (`download_weekly_totals`, serving `k12_district_weekly_totals.csv`) and **Higher Ed Weekly Vacancies** (`download_he_weekly_totals`, serving `he_institution_weekly_totals.csv`).
+  * Documented both series in `Wy_Ed_Jobs/data_dictionary.csv` and `DATA_DICTIONARY.md`.
+* **Data Quality Test Suite Expansion:**
+  * Registered `job_duration_spells.csv` and `he_job_duration_spells.csv` into `ALL_OUTPUT_CSVS` in `test-weekly-data-quality.R`, enforcing automated verification against NaN, Inf, and literal string leakage across 1,296 passing tests.
+* **Attribution Harmonization:**
+  * Harmonized home tab footer attribution to `"Developed by Mike Bostick and Mark Perkins"`.
+
 ---
 
 ## 4. Key Architectural Contracts & Invariants
@@ -104,3 +123,8 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
 - [x] Create reproducible generator scripts `scripts/generate_job_duration_spells.R` and `scripts/generate_he_job_duration_spells.R`.
 - [x] Expand Higher Ed analytics to include vacancy duration metrics (`he_job_duration_spells.csv` and `he_spells` tab).
 - [x] Optimize test suite runtime for heuristic scrapers (mock `Sys.sleep()` in `test-eastern-wyoming-scraper.R`, cutting run time from 64s to <1s).
+- [x] Harden interactive Vacancy Spells modules against empty filter states and regularize duration distribution bins.
+- [x] Enable 1-click drill-down navigation from Homepage top hiring employers tables to filtered jobs tables.
+- [x] Add K-12 and Higher Ed weekly vacancy series downloads and codebook definitions.
+- [x] Add spell panels to automated data-quality invariant suite.
+- [x] Harmonize attribution across all dashboard views.
