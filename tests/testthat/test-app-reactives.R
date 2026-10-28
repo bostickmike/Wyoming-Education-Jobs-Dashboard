@@ -535,3 +535,80 @@ test_that("K-12 and HE comparator reactives and presets execute cleanly", {
     session$setInputs(he_comp_preset_clear = 1)
   })
 })
+
+test_that("Map multi-dimensional filters and reset reactive controls function without error", {
+  env <- load_app()
+  shiny::testServer(env$server, {
+    # Default state
+    session$setInputs(
+      map_types = c("K-12 District", "Higher Ed Institution"),
+      map_county = "all",
+      map_salary_tier = "all",
+      map_urgency = "all"
+    )
+    initial_df <- map_filtered()
+    expect_true(nrow(initial_df) > 0)
+    expect_true(all(initial_df$CurrentCount > 0))
+    expect_no_error(output$map_filter_count)
+
+    # Employer Type filter: K-12 only
+    session$setInputs(map_types = c("K-12 District"))
+    k12_only <- map_filtered()
+    expect_true(nrow(k12_only) > 0)
+    expect_true(all(k12_only$Type == "K-12 District"))
+
+    # Employer Type filter: Higher Ed only
+    session$setInputs(map_types = c("Higher Ed Institution"))
+    he_only <- map_filtered()
+    expect_true(nrow(he_only) > 0)
+    expect_true(all(he_only$Type == "Higher Ed Institution"))
+
+    # County filter: Albany County
+    albany_county <- grep("Albany", env$map_county_choices, value = TRUE)[1]
+    session$setInputs(
+      map_types = c("K-12 District", "Higher Ed Institution"),
+      map_county = albany_county
+    )
+    albany_df <- map_filtered()
+    expect_true(nrow(albany_df) > 0)
+    expect_true(all(albany_df$County == albany_county))
+
+    # Salary tier filters
+    session$setInputs(map_county = "all", map_salary_tier = "70k_plus")
+    s70 <- map_filtered()
+    expect_true(nrow(s70) > 0)
+
+    session$setInputs(map_salary_tier = "60k_70k")
+    s60 <- map_filtered()
+    expect_true(nrow(s60) > 0)
+
+    session$setInputs(map_salary_tier = "under_60k")
+    s_under <- map_filtered()
+    expect_true(nrow(s_under) > 0)
+
+    # Posting volume filters
+    session$setInputs(map_salary_tier = "all", map_urgency = "5_plus")
+    v5 <- map_filtered()
+    expect_true(nrow(v5) > 0)
+    expect_true(all(v5$CurrentCount >= 5))
+
+    session$setInputs(map_urgency = "2_plus")
+    v2 <- map_filtered()
+    expect_true(nrow(v2) > 0)
+    expect_true(all(v2$CurrentCount >= 2))
+
+    session$setInputs(map_urgency = "has_new")
+    v_new <- map_filtered()
+    expect_true(nrow(v_new) > 0)
+    expect_true(all(v_new$WeeklyNew > 0))
+
+    # Empty match state
+    session$setInputs(map_types = character(0))
+    empty_df <- map_filtered()
+    expect_equal(nrow(empty_df), 0)
+    expect_no_error(output$map_filter_count)
+
+    # Reset trigger
+    session$setInputs(map_filter_reset = 1)
+  })
+})
