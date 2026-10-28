@@ -96,6 +96,24 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
 * **Attribution Harmonization:**
   * Harmonized home tab footer attribution to `"Developed by Mike Bostick and Mark Perkins"`.
 
+### Milestone 5: Tab Navigation Consolidation & Head-to-Head Comparator Modules
+* **Sidebar Navigation Consolidation:**
+  * Streamlined sidebar navigation from 16 tabs down to 10 tabs, removing sidebar clutter while preserving 100% of underlying analytical modules.
+  * Replaced flat tab list with organized `tabBox` subtab navigation:
+    - **Profiles & Compare** (`k12_summary` / `he_summary`): Subtab 1: Directory Table, Subtab 2: Head-to-Head Comparator.
+    - **Current Trends & New** (`k12_current` / `he_current`): Subtab 1: Category & Discipline Breakdown, Subtab 2: New This Week Postings.
+    - **Trends & Duration Spells** (`k12_trends` / `he_trends`): Subtab 1: Longitudinal Hiring Trends, Subtab 2: Vacancy Spells & Time-to-Fill.
+* **Side-by-Side District & College Comparator:**
+  * Built interactive Head-to-Head Comparators allowing users to select and benchmark up to 4 districts or colleges simultaneously.
+  * Dynamic comparative cards display active openings, vacancy rates, compensation (starting base, average total pay, IPEDS faculty compensation), student enrollment, student-to-staff ratios, and community socioeconomic metrics.
+  * Comparative Plotly visualizations for salary benchmarks, staffing scale, and appointment distributions.
+  * Real-time filtered openings table showing active postings across the selected employers.
+  * One-touch quick presets for "Top Hiring" and "Largest Enrollment" employers.
+* **Test Suite Expansion & Zero-Warning Cleanliness:**
+  * Added automated reactive tests in `test-app-reactives.R` verifying comparator card rendering, Plotly graphics, tabular filters, and preset button event handlers.
+  * Updated `LEAF_TABS` contract in `test-app-boot-smoke.R` to reflect the 10 consolidated destination tabs.
+  * Verified 1,312 passing tests (0 fails, 0 warnings, 1 skip on CRAN).
+
 ---
 
 ## 4. Key Architectural Contracts & Invariants
@@ -128,3 +146,5 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
 - [x] Add K-12 and Higher Ed weekly vacancy series downloads and codebook definitions.
 - [x] Add spell panels to automated data-quality invariant suite.
 - [x] Harmonize attribution across all dashboard views.
+- [x] Streamline sidebar navigation into consolidated tabBoxes (10 main tabs).
+- [x] Implement Head-to-Head District and College Comparator modules.
