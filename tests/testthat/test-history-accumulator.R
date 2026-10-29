@@ -143,6 +143,7 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
   this_week_combinedclean <- raw_latest %>%
     mutate(
       District = canonicalize_k12_district(District),
+      title = fix_title_encoding(title),
       position = classify_k12_position(title),
       posting_id = build_k12_posting_id(
         source_id = posting_id,

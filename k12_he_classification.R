@@ -38,6 +38,13 @@ fix_title_encoding <- function(title) {
     sub = "byte"
   )
   out <- enc2utf8(out)
+  # Unescape common HTML entities that appear in scraped job titles / board text
+  out <- gsub("&amp;", "&", out, fixed = TRUE)
+  out <- gsub("&quot;", "\"", out, fixed = TRUE)
+  out <- gsub("&#39;|&apos;", "'", out, perl = TRUE)
+  out <- gsub("&lt;", "<", out, fixed = TRUE)
+  out <- gsub("&gt;", ">", out, fixed = TRUE)
+  out <- gsub("&nbsp;|\u00a0", " ", out, perl = TRUE)
   out <- gsub("[\r\n]+", " ", out)
   out <- trimws(out)
   out[missing] <- NA_character_
@@ -53,17 +60,17 @@ classify_k12_position <- function(title) {
   title <- fix_title_encoding(title)
   dplyr::case_when(
     # Paraprofessional-related positions
-    grepl("Paraprofessional|Para|Paraeducator|Teacher Assistant|Teaching Assistant|Instructional Assistant", title, ignore.case = TRUE) ~ "Paraprofessional",
+    grepl("Paraprofessional|Para|Paraeducator|Teacher Assistant|Teaching Assistant|Instructional Assistant|Library Assistant|Media Assistant|Media Center Assistant", title, ignore.case = TRUE) ~ "Paraprofessional",
 
     # Substitute
     grepl("Sub|Substitute", title, ignore.case = TRUE) ~ "Substitute",
 
     # Support Services-related positions
-    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support",
+    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support|Intern|Technician",
           title, ignore.case = TRUE) ~ "Support Services",
 
     # Staff-related positions (checked before Teacher so clerical titles like "General Secretary - Library" land here)
-    grepl("Secretary|Office Clerk|Office Manager|Desk Clerk|Clerical|Registrar", title, ignore.case = TRUE) ~ "Staff",
+    grepl("Secretary|Clerk|Office Manager|Clerical|Registrar", title, ignore.case = TRUE) ~ "Staff",
 
     # Custodial/Maintenance-related positions
     grepl("Custodian|Custodial|Maintenance|Cleaner|Snow Removal|Facility|Electrician|HVAC",
@@ -119,25 +126,25 @@ classify_k12_position <- function(title) {
 # each backed by real observed titles, not speculative -- see the audit
 # notes in the project's memory/commit history for the specific samples.
 k12_category_keywords <- list(
-  "Technical Education" = "\\b(Welding|Weld|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Woodworking|Industrial Arts|Industrial Tech|Shop|Tech Ed|Technical Education|Drivers?\\s*Ed(ucation)?|Traffic Ed|Career and Technic(i)?al)\\b",
-  "Agriculture Education" = "\\b(Agriculture|Ag Teacher|Ag Program|Agricultural teacher|FFA|Vo[-/]?Ag)\\b",
-  "Computer Science Education" = "\\b(Computer Science|Information Technology|\\bIT\\b|Technology Education(?! Teacher Assistant))\\b",
+  "Technical Education" = "\\b(Welding|Weld|WeldingTeacher|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Woodworking|Industrial Arts|Industrial Tech|Shop|Tech Ed|Technical Education|Trade and Technical|Drivers?\\s*Ed(ucation)?|Traffic Ed|Career and Technic(i)?al)\\b",
+  "Agriculture Education" = "(\\b(Agriculture|Ag Teacher|Ag Program|Agricultural teacher|FFA|Vo[-/]?Ag)\\b|\\(AG\\))",
+  "Computer Science Education" = "\\b(Computer Science|Information Technology|\\bIT\\b|Technology Education(?! Teacher Assistant)|Technology Teacher)\\b",
   # Pre[- ]?school covers "Preschool"/"Pre-school"/"Pre school" in one
   # pattern; Head Start is a real, common federal early-childhood program
   # name that doesn't otherwise contain any of the other keywords here.
   "Early Childhood Education" = "\\b(Early Childhood|Pre\\s*[- ]?\\s*K(?!indergarten)|Pre\\s*[- ]?\\s*school|Birth to age|Ages 3-5|Head Start|Toddler|Daycare|Early Learning|\\bSACC\\b)\\b",
-  "Elementary Education" = "\\b(Elementary|Kindergarten|1st|2nd|3rd|4th|5th|First|Second|Third|Fourth|Fifth|Grade [1-6]|Grades?\\s*K-[1-6]|K-[1-6]\\s*Teacher|Classroom Teacher|Colony Teacher|Sixth Grade|6th Grade)\\b",
+  "Elementary Education" = "\\b(Elementary|Kindergarten|1st|2nd|3rd|4th|5th|First|Second|Third|Fourth|Fifth|Grade [1-7]|Grades?\\s*K-[1-7]|K-[1-7]\\s*Teacher|Classroom Teacher|Colony Teacher|Sixth Grade|6th Grade|Seventh Grade|7th Grade|Primary Grade|Primary Teacher)\\b",
   # "Literacy/Reading Interventionist" specifically (not bare "Interventionist"
   # or "Academic Interventionist" -- those don't name a subject and are
   # genuinely ambiguous, left as Uncategorized rather than guessed).
-  "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator)|(Literacy|Reading) Interventionist|Title\\s*(One|1|I)\\b|Reading Recovery|Literacy Teacher|Reading and Writing|Intervention Teacher)\\b",
+  "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator)|(Literacy|Reading) Interventionist|Title\\s*(One|1|I)\\b|Reading Recovery|Literacy Teacher|Reading Teacher|Literacy Specialist|Reading and Writing|Intervention Teacher|Teacher Reading)\\b",
   "Family and Consumer Science" = "\\b(Family and Consumer Sciences?|FCS|Home Economics)\\b",
-  "Language Education" = "\\b(ESL|ELL|English as a Second Language|English Learner|Bilingual|Spanish|French|Dual Language|World Language|Foreign Language|Shoshone|Salish|Kootenai|Cree|Crow|Blackfeet|Cheyenne|Assiniboine|Lakota|Dakota|Native Language|Indigenous Language|Culture Teacher|\\bEL Teacher\\b|\\bELL Teacher\\b|\\bESL Teacher\\b)\\b",
+  "Language Education" = "\\b(ESL|ELL|English as a Second Language|English Learner|Bilingual|Spanish|French|Dual Language|World Language|Foreign Language|Arapaho|Arapahoe|Shoshone|Salish|Kootenai|Cree|Crow|Blackfeet|Cheyenne|Assiniboine|Lakota|Dakota|Native Language|Indigenous Language|Culture Teacher|\\bEL Teacher\\b|\\bELL Teacher\\b|\\bESL Teacher\\b)\\b",
   "Mathematics Education" = "\\b(Mathematics|\\bMath\\b)\\b",
-  "Music Education" = "\\b(Music|Orchestra|Band)\\b",
+  "Music Education" = "\\b(Music|Orchestra|Band|Choir|Chorus|Vocal)\\b",
   "Health Science" = "(?i)\\b(Nurse Educator|Health Science(s)? Teacher|Health Science(s)?|Certified Nursing Assistant|Nursing Assistant|CNA)\\b",
   "Science Education" = "\\b(Science|Biology|Chemistry|Physics|Earth Science)\\b",
-  "Social Studies Education" = "\\b(Social Studies|History|Geography|Civics|Political Science)\\b",
+  "Social Studies Education" = "\\b(Social Studies|History|Geography|Civics|Political Science|\\bSS Teacher\\b)\\b",
   # Special Education was the single largest category by a wide margin
   # (3,239 -- more than the next two categories combined), so it's split
   # into two here rather than left as one monolithic bucket: program types
@@ -146,15 +153,15 @@ k12_category_keywords <- list(
   # specific first) since a title can plausibly contain both kinds of
   # words.
   "Special Education - Resource/Life Skills" = "\\b(Resource (Teacher|Room)|Life Skills|Affective Needs|Daily Living Skills|Special Needs|\\bPALS\\b|\\bSE - TEACHER LS\\b|\\bACP\\b|Alternative Communication(s)? Program)\\b",
-  "Special Education - General" = "\\b(Special[- ]Education|Special Ed\\.?\\b|SPED|Exceptional Children|Deaf|Visually Impaired|\\bSE - TEACHER\\b|\\bSE TEACHER\\b|\\bSp\\.?\\s*Ed\\b|Disabilities Educator)\\b",
+  "Special Education - General" = "\\b(Special[- ]Educat(i)?on|Special Ed\\.?\\b|SPED|Exceptional Children|Deaf|Visually Impaired|Autism|\\bASD\\b|\\bSE - TEACHER\\b|\\bSE TEACHER\\b|\\bSp\\.?\\s*Ed\\b|Disabilities Educator)\\b",
   "Physical Education" = "(?i)\\b(Physical Education|P\\.?E\\.?|PE\\s*/\\s*Health|Health\\s*/\\s*PE|Health and Physical Education|Phys\\.?\\s*Ed\\.?|Water Safety|Pickleball|Yoga|Aquatics|Lifeguard Instructor)\\b",
   "Business and Economics" = "\\b(Business|Economics|Econ|Financial Literacy)\\b",
   # "Guest Teacher" is a common euphemism for substitute teacher used by
   # some districts/staffing agencies (e.g. Kelly Education), not a distinct
   # role.
-  "Substitute Teaching" = "\\b(Substitute|Guest Teachers?)\\b",
-  "Virtual Education" = "\\b(Virtual|Online|Remote)\\b",
-  "Art Teacher" = "\\b(Art Teacher|\\bArt\\b|Visual Art|Pottery|Sculpture|Drawing|Ceramics)\\b",
+  "Substitute Teaching" = "(?i)\\b(Substitute Teacher|Sub Teacher|Guest Teacher(s)?)\\b",
+  "Virtual Education" = "\\b(Virtual|Remote|Online)\\b",
+  "Art Teacher" = "\\b(Art Teacher|\\bArt\\b|Visual Art|Pottery|Sculpture|Drawing|Ceramics|Theater|Theatre|Drama)\\b",
   "STEM Teacher" = "\\b(STEM|STEAM|Robotics)\\b",
   # JROTC/military-science instructors fold into CTE, matching how many
   # state frameworks classify JROTC.

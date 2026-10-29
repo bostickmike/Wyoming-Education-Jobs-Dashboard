@@ -58,6 +58,7 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
       }
       df <- df %>%
         mutate(
+          title = fix_title_encoding(title),
           Archive_Date = case_when(
             grepl("/", Archive_Date) ~ as.Date(Archive_Date, format = "%m/%d/%Y"),
             grepl("-", Archive_Date) ~ as.Date(Archive_Date, format = "%Y-%m-%d"),
