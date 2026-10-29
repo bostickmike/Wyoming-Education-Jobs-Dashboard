@@ -150,6 +150,28 @@ test_that("remove_wsba_direct_duplicates removes only exact district/title/date 
   expect_equal(as.character(result$date_posted), c("2026-05-23", "2026-05-22", NA))
 })
 
+test_that("remove_wsba_direct_duplicates provides full central safety net fallback when direct scraper is empty", {
+  wsba <- data.frame(
+    title = c("Elementary Teacher", "Substitute Teacher"),
+    date_posted = as.Date(c("2026-10-28", "2026-10-29")),
+    District = c("Fremont County School District 24", "Fremont County School District 24"),
+    stringsAsFactors = FALSE
+  )
+  # Direct scraper errored or returned 0 rows for Fremont 24
+  direct <- data.frame(
+    title = "Math Teacher",
+    date_posted = as.Date("2026-10-28"),
+    District = "Natrona School District 1",
+    stringsAsFactors = FALSE
+  )
+
+  result <- remove_wsba_direct_duplicates(wsba, direct)
+
+  expect_equal(nrow(result), 2)
+  expect_equal(result$District, c("Fremont County School District 24", "Fremont County School District 24"))
+  expect_equal(result$title, c("Elementary Teacher", "Substitute Teacher"))
+})
+
 test_that("generate_wsba_discrepancy_report categorizes ghosts, unmatched jobs, and non-district rows", {
   wsba <- data.frame(
     title = c(

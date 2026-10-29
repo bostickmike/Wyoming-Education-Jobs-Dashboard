@@ -235,7 +235,7 @@ direct <- direct %>%
 other <- other %>%
   mutate(date_posted = standardize_date(date_posted))
 
-is_wsba <- other$District %in% direct$District | (!is.na(other$url) & other$url == WSBA_VACANCIES_URL)
+is_wsba <- other$District %in% registry$District | (!is.na(other$url) & other$url == WSBA_VACANCIES_URL)
 wsba_rows <- remove_wsba_direct_duplicates(
   other[is_wsba, , drop = FALSE],
   direct,
