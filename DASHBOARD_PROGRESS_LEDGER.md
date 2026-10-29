@@ -225,4 +225,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * Replaced technical jargon like "scraped" with clean phrasing ("compiled", "weekly updates") across data provenance and Vacancy Spells modules.
   * Single-word navigation clarity: Renamed tabs to concise, intuitive terms (`Jobs` for postings, `Colleges` for institutions, `Time-to-Fill` for duration metrics, `Feedback` for bug reporting).
   * Narrowed sidebar container: Reduced sidebar width from default 230px to 180px (`width = "180px"`, `titleWidth = "180px"`), eliminating empty void space after tab labels and giving 50px more width to data tables and maps. Streamlined category headers to `K-12`, `HIGHER ED`, and `COMMUNITY`.
+- [x] Full Wyoming K-12 and Higher Education Statewide Infrastructure & Platform Drift Audit:
+  * **Fremont County School District 24** (Shoshoni, WY): Recovered from silent platform drift (AppliTrack throwing `HTTP 500 Internal Server Error`); migrated registry to RedRoverK12 (org `4335`, slug `fremont24`), restoring 2 active vacancies (`Elementary Special Education Paraprofessional`, `Substitute Teacher`) to direct pipeline.
+  * **Comprehensive K-12 Structured Registry Audit (38/38 - 100% Active)**:
+    - 21 AppliTrack districts: 100% operational, 313 live vacancies (Big Horn, Carbon, Converse, Fremont, Park, Sheridan, Sweetwater, Teton, Uinta, Washakie).
+    - 8 SchoolSpring districts: 100% operational, 220 live vacancies (Crook, Laramie 1 & 2, Natrona, Fremont 25, Albany, Campbell, Lincoln 2).
+    - 2 TedK12 districts: 100% operational, 18 live vacancies (Fremont 2, Goshen 1).
+    - 7 RedRoverK12 districts: 100% operational, 51 live vacancies (Johnson 1, Hot Springs 1, Fremont 38, Lincoln 1, Sublette 9, Platte 2, Fremont 24).
+    - Total structured pipeline: 568 live postings extracted across all 38 districts with 0 errors.
+  * **Heuristic District & Charter Audit (13/13 - 100% Active, 78 live postings)**:
+    - 10 public districts: Niobrara 1 (5), Park 16 (2), Platte 1 (13), Sheridan 3 (0), Sublette 1 (2), Uinta 4 (4), Uinta 6 (5), Washakie 2 (1), Weston 1 (14), Weston 7 (5).
+    - 3 charter schools: Cheyenne Classical (1), Wyoming Classical (21), Prairie View (5).
+  * **Higher Education Institutions (9/9 - 100% Active, 489 live postings)**:
+    - University of Wyoming (231), LCCC (84), Sheridan College (71), Western Wyoming CC (41), Gillette College (27), Central Wyoming College (13), Eastern Wyoming College (10), Casper College (8), Northwest College (4).
+  * **Charter Schools & WSBA (100% Active)**:
+    - Laramie Montessori Charter School (Paylocity): 2 live postings.
+    - WSBA Statewide Vacancy Portal: 110 live postings.
+  * Total suite: 1,424 tests PASS (0 failures, 0 warnings, 1 skip on CRAN).
 
