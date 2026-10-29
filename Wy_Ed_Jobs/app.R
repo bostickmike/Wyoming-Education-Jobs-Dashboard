@@ -943,25 +943,26 @@ vacancy_rate_palette <- colorNumeric(palette = "YlOrRd", domain = vacancy_rate_d
 #--------------------------------------------------
 ui <- dashboardPage(
   skin = 'black',
-  dashboardHeader(title = "Wyo Edu Jobs"),
+  dashboardHeader(title = "Wyo Edu Jobs", titleWidth = "180px"),
   dashboardSidebar(
+    width = "180px",
     sidebarMenu(
       id = "sidebar_tabs",
       menuItem("Home", tabName = "intro", icon = icon("house")),
       menuItem("Map", tabName = "map_tab", icon = icon("map-location-dot")),
-      tags$li(class = "header", "K-12 CAREERS"),
-      menuItem("All Postings", tabName = "k12_table", icon = icon("table")),
+      tags$li(class = "header", "K-12"),
+      menuItem("Jobs", tabName = "k12_table", icon = icon("table")),
       menuItem("Districts", tabName = "k12_summary", icon = icon("school")),
       menuItem("Trends", tabName = "k12_trends", icon = icon("chart-line")),
-      menuItem("Vacancy Spells", tabName = "k12_spells", icon = icon("stopwatch")),
-      tags$li(class = "header", "HIGHER EDUCATION"),
-      menuItem("All Postings", tabName = "he_table", icon = icon("table")),
-      menuItem("Colleges & Universities", tabName = "he_summary", icon = icon("building-columns")),
+      menuItem("Time-to-Fill", tabName = "k12_spells", icon = icon("stopwatch")),
+      tags$li(class = "header", "HIGHER ED"),
+      menuItem("Jobs", tabName = "he_table", icon = icon("table")),
+      menuItem("Colleges", tabName = "he_summary", icon = icon("building-columns")),
       menuItem("Trends", tabName = "he_trends", icon = icon("chart-line")),
-      menuItem("Vacancy Spells", tabName = "he_spells", icon = icon("stopwatch")),
-      tags$li(class = "header", "COMMUNITY & FEEDBACK"),
+      menuItem("Time-to-Fill", tabName = "he_spells", icon = icon("stopwatch")),
+      tags$li(class = "header", "COMMUNITY"),
       menuItem("Data", tabName = "data_tab", icon = icon("database")),
-      menuItem("Report Mistake", icon = icon("flag"),
+      menuItem("Feedback", icon = icon("flag"),
                href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
                newtab = TRUE)
     )
@@ -971,8 +972,9 @@ ui <- dashboardPage(
       tags$style(HTML("
     /* AdminLTE header logo styling */
     .main-header .logo {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 600;
+      padding: 0 8px;
     }
     .leaflet-tooltip {
       max-width: min(800px, 92vw) !important;
@@ -1114,14 +1116,14 @@ ui <- dashboardPage(
         fluidRow(
           box(title = "Highest Teacher Vacancy Rate", width = 6, status = "primary",
               withSpinner(plotlyOutput("k12_vacancy_leaderboard", height = 320)),
-              helpText("Districts with at least", VACANCY_RATE_MIN_FTE, "teacher FTE.")),
+              helpText("Districts with at least", VACANCY_RATE_MIN_FTE, "full-time teachers (FTE).")),
           box(title = "Highest Faculty Vacancy Rate", width = 6, status = "primary",
               withSpinner(plotlyOutput("he_vacancy_leaderboard", height = 320)),
               helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty.",
                         "* Sheridan College and Gillette College are reported jointly by IPEDS and share one combined rate."))
         ),
         div(style = "color:#999; font-size:0.8em; padding: 0 5px 5px;",
-            "K-12 vacancy rate is current teacher postings ÷ CCD teacher FTE; Higher Ed vacancy rate is current instructor/faculty postings ÷ IPEDS full-time instructional staff. ",
+            "K-12 vacancy rate is current teacher postings ÷ full-time teacher staffing (NCES CCD); Higher Ed vacancy rate is current instructor/faculty postings ÷ full-time instructional staff (NCES IPEDS). ",
             "The two use different staffing sources and reporting years — compare rates within a type (district vs. district, institution vs. institution), not across K-12 and Higher Ed."),
         div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
             paste0("Refreshed on: ", last_refreshed_date, " · Developed by Mike Bostick and Mark Perkins"))
@@ -1219,9 +1221,9 @@ ui <- dashboardPage(
               ),
               column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("stopwatch"), " Vacancy Spells Panel", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
-                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Deduplicated unique posting spells with NCES LEAID, estimated days open (time-to-fill), and binary shortage flags (STEM, SPED, etc.)."),
-                  downloadButton("download_spells", "Vacancy Spells (CSV)", class = "btn-default btn-xs btn-block")
+                  h4(icon("stopwatch"), " K-12 Time-to-Fill", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Unique job postings with NCES LEAID, estimated days open (time-to-fill), and high-need subject areas (STEM, SPED, etc.) across weekly snapshots."),
+                  downloadButton("download_spells", "Job Duration Data (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
               column(3,
@@ -1249,9 +1251,9 @@ ui <- dashboardPage(
               ),
               column(3,
                 div(style = "border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;",
-                  h4(icon("stopwatch"), " Higher Ed Spells", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
-                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Longitudinal vacancy duration panel tracking time-to-fill, active/closed search status, and discipline indicators for collegiate faculty."),
-                  downloadButton("download_he_spells", "Higher Ed Spells (CSV)", class = "btn-default btn-xs btn-block")
+                  h4(icon("stopwatch"), " Higher Ed Time-to-Fill", style = "margin-top: 0; font-size: 15px; font-weight: 600;"),
+                  p(style = "font-size: 12px; color: #555; min-height: 48px;", "Posting duration dataset tracking time-to-fill, active/closed search status, and discipline indicators for collegiate faculty."),
+                  downloadButton("download_he_spells", "Higher Ed Time-to-Fill (CSV)", class = "btn-default btn-xs btn-block")
                 )
               ),
               column(3,
@@ -1313,9 +1315,9 @@ ui <- dashboardPage(
                 tags$tbody(
                   tags$tr(
                     tags$td(strong("Job Openings")),
-                    tags$td("Direct District ATS Platforms & Statewide Feeds"),
+                    tags$td("District Hiring Portals & Statewide Feeds"),
                     tags$td(span(class = "label label-success", "Weekly Refresh")),
-                    tags$td("Directly scraped from district applicant tracking systems (Frontline/AppliTrack, SchoolSpring, Red Rover, NEOGOV, Oracle Cloud) and statewide aggregators. Deduplicated and standardized into consistent role categories.")
+                    tags$td("Directly compiled from online district hiring portals (Frontline/AppliTrack, SchoolSpring, Red Rover, NEOGOV, Oracle Cloud) and statewide aggregators. Cleaned to remove duplicate listings and standardized into consistent role categories.")
                   ),
                   tags$tr(
                     tags$td(strong("Starting Base Salaries")),
@@ -1473,8 +1475,8 @@ ui <- dashboardPage(
               column(
                 width = 6,
                 radioButtons("k12_detail_level_current", "View:",
-                             choices = c("Detailed subjects" = "detail",
-                                         "Broad rollup (includes Core Academic)" = "agg"),
+                             choices = c("Individual subjects" = "detail",
+                                         "Major subject groups" = "agg"),
                              selected = "detail", inline = TRUE)
               ),
               column(
@@ -1492,13 +1494,13 @@ ui <- dashboardPage(
                 withSpinner(tableOutput("k12_current_trends_table")))
           ),
           tabPanel(
-            title = tagList(icon("chart-line"), " Longitudinal Trends"),
+            title = tagList(icon("chart-line"), " Multi-Year Trends"),
             value = "k12_trends_historical",
             p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
               "Multi-year vacancy volume time series tracking hiring trends across weekly snapshots."),
             radioButtons("k12_detail_level_trends", "View:",
-                         choices = c("Detailed subjects" = "detail",
-                                     "Broad rollup (includes Core Academic)" = "agg"),
+                         choices = c("Individual subjects" = "detail",
+                                     "Major subject groups" = "agg"),
                          selected = "detail", inline = TRUE),
             fluidRow(
               column(
@@ -1541,9 +1543,9 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "k12_spells",
-        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " K-12 Vacancy Spells & Time-to-Fill")),
+        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " K-12 Job Duration & Time-to-Fill")),
         p(class = "help-block",
-          "Longitudinal tracking of vacancy duration across weekly snapshots. Measures time-to-fill and persistence as a proxy for labor market tightness and hiring friction."),
+          "Weekly tracking of posting duration and hiring speed. Measures time-to-fill and persistent vacancies across Wyoming school districts."),
         fluidRow(
           valueBoxOutput("k12_spell_median_box", width = 3),
           valueBoxOutput("k12_spell_active_box", width = 3),
@@ -1601,9 +1603,9 @@ ui <- dashboardPage(
           )
         ),
         box(
-          width = 12, title = "Vacancy Spells Explorer", status = "primary",
+          width = 12, title = "Job Duration & Time-to-Fill Explorer", status = "primary",
           p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
-            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly updates (or weeks observed × 7)."),
           DTOutput("k12_spell_table")
         )
       ),
@@ -1715,7 +1717,7 @@ ui <- dashboardPage(
               column(
                 width = 4,
                 radioButtons("he_detail_level_current", "View:",
-                             choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                             choices = c("Individual fields" = "detail", "Major academic areas" = "agg"),
                              selected = "detail", inline = TRUE)
               ),
               column(
@@ -1738,12 +1740,12 @@ ui <- dashboardPage(
                 withSpinner(tableOutput("he_current_trends_table")))
           ),
           tabPanel(
-            title = tagList(icon("chart-line"), " Longitudinal Trends"),
+            title = tagList(icon("chart-line"), " Multi-Year Trends"),
             value = "he_trends_historical",
             p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
               "Multi-year vacancy volume time series tracking higher education hiring trends across weekly snapshots."),
             radioButtons("he_detail_level_trends", "View:",
-                         choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                         choices = c("Individual fields" = "detail", "Major academic areas" = "agg"),
                          selected = "detail", inline = TRUE),
             fluidRow(
               column(
@@ -1794,9 +1796,9 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "he_spells",
-        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " Higher Ed Vacancy Spells & Time-to-Fill")),
+        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " Higher Ed Job Duration & Time-to-Fill")),
         p(class = "help-block",
-          "Longitudinal tracking of collegiate faculty vacancy duration across weekly snapshots. Measures time-to-fill and search persistence across academic disciplines and institutions."),
+          "Weekly tracking of collegiate faculty vacancy duration across snapshots. Measures time-to-fill and search persistence across academic disciplines and institutions."),
         fluidRow(
           valueBoxOutput("he_spell_median_box", width = 3),
           valueBoxOutput("he_spell_active_box", width = 3),
@@ -1850,9 +1852,9 @@ ui <- dashboardPage(
           )
         ),
         box(
-          width = 12, title = "Collegiate Vacancy Spells Explorer", status = "primary",
+          width = 12, title = "Collegiate Job Duration & Time-to-Fill Explorer", status = "primary",
           p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
-            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly updates (or weeks observed × 7)."),
           DTOutput("he_spell_table")
         )
       )

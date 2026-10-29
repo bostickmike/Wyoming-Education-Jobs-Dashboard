@@ -221,3 +221,8 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     - K-12 CAREERS: `All Postings`, `Districts`, `Trends`, `Vacancy Spells`
     - HIGHER EDUCATION: `All Postings`, `Colleges & Universities`, `Trends`, `Vacancy Spells`
   * 100% test pass rate across both WY (1,424 tests) and MT (3,051 tests).
+- [x] Refine public-facing terminology and sidebar proportions:
+  * Replaced technical jargon like "scraped" with clean phrasing ("compiled", "weekly updates") across data provenance and Vacancy Spells modules.
+  * Single-word navigation clarity: Renamed tabs to concise, intuitive terms (`Jobs` for postings, `Colleges` for institutions, `Time-to-Fill` for duration metrics, `Feedback` for bug reporting).
+  * Narrowed sidebar container: Reduced sidebar width from default 230px to 180px (`width = "180px"`, `titleWidth = "180px"`), eliminating empty void space after tab labels and giving 50px more width to data tables and maps. Streamlined category headers to `K-12`, `HIGHER ED`, and `COMMUNITY`.
+
