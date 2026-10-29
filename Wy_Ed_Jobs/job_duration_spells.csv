@@ -30,7 +30,6 @@
 "Albany County School District 1",5600730,"High School Spanish/ELL Teacher","Language Education","Language","Teacher","2026-03-20","2026-04-03",3,21,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"Library & Media Specialist","Library Media","Library Media","Teacher","2025-05-02","2025-05-23",3,28,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"Middle School Art Teacher","Art Teacher","Art","Teacher","2025-05-09","2026-02-20",4,294,"Closed / Filled",0,0,0,0,0,0
-"Albany County School District 1",5600730,"Middle School Band Teacher / Band Director","Music Education","Music","Teacher","2026-02-13","2026-02-20",2,14,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"Middle School English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-15","2026-05-22",2,14,"Closed / Filled",0,0,0,1,0,0
 "Albany County School District 1",5600730,"Middle School Math Teacher","Mathematics Education","Math","Teacher","2026-04-10","2026-04-17",2,14,"Closed / Filled",1,0,0,0,0,0
 "Albany County School District 1",5600730,"Middle School PE Teacher","Physical Education","Physical Education","Teacher","2026-08-11","2026-08-14",2,10,"Closed / Filled",0,0,0,0,0,0
@@ -66,13 +65,13 @@
 "Big Horn School District 1",5601420,"Special Education MS/HS Life Skills Teacher - RMMHS","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-06-06","2025-08-01",9,63,"Closed / Filled",0,1,0,0,0,0
 "Big Horn School District 1",5601420,"Special Education MS/HS Life Skills Teacher RMMHS","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-27","2026-04-17",4,28,"Closed / Filled",0,1,0,0,0,0
 "Big Horn School District 1",5601420,"Special Education Teacher-Cowley","Special Education - General","Special Education - General","Teacher","2026-05-15","2026-05-22",2,14,"Closed / Filled",0,1,0,0,0,0
-"Big Horn School District 1",5601420,"Teacher - Title I (Grades 6-8) RMMS","Uncategorized","Other","Teacher","2025-02-28","2025-03-14",3,21,"Closed / Filled",0,0,0,0,0,0
+"Big Horn School District 1",5601420,"Teacher - Title I (Grades 6-8) RMMS","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-28","2025-03-14",3,21,"Closed / Filled",0,0,0,1,0,0
 "Big Horn School District 2",5601460,"Elementary Classroom Teacher","Elementary Education","Elementary","Teacher","2026-04-17","2026-05-01",3,21,"Closed / Filled",0,0,1,0,0,0
 "Big Horn School District 2",5601460,"Elementary Classroom Teacher K-5","Elementary Education","Elementary","Teacher","2025-03-14","2025-04-25",7,49,"Closed / Filled",0,0,1,0,0,0
 "Big Horn School District 2",5601460,"Family and Consumer Science Teacher - Middle and High School","Family and Consumer Science","CTE - Business & Family Sciences","Teacher","2025-02-28","2026-04-10",13,413,"Closed / Filled",1,0,0,0,0,0
 "Big Horn School District 2",5601460,"High School Mathematics Teacher","Mathematics Education","Math","Teacher","2025-04-04","2026-01-30",11,308,"Closed / Filled",1,0,0,0,0,0
 "Big Horn School District 2",5601460,"Middle School English Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-24","2026-05-01",2,14,"Closed / Filled",0,0,0,1,0,0
-"Big Horn School District 2",5601460,"Reading/Math Intervention Teacher (K-5)","Mathematics Education","Math","Teacher","2026-09-04","2026-10-23",8,56,"Still Active",1,0,0,0,0,0
+"Big Horn School District 2",5601460,"Reading/Math Intervention Teacher (K-5)","English Language Arts Education","English Language Arts Secondary","Teacher","2026-09-04","2026-10-23",8,56,"Still Active",0,0,0,1,0,0
 "Big Horn School District 3",5603170,"8-12 Secondary Science Teacher","Science Education","Science","Teacher","2026-02-13","2026-03-06",4,28,"Closed / Filled",1,0,0,0,0,0
 "Big Horn School District 3",5603170,"Agriculture Teacher - FFA Sponsor","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2024-08-09","2025-03-07",15,217,"Closed / Filled",0,0,0,0,0,0
 "Big Horn School District 3",5603170,"Elementary Classroom Teacher- 4th grade","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-11",2,14,"Closed / Filled",0,0,1,0,0,0
@@ -94,7 +93,6 @@
 "Big Horn School District 4",5601090,"Agriculture Teacher / FFA Advisor","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2025-02-28","2025-03-28",5,35,"Closed / Filled",0,0,0,0,0,0
 "Big Horn School District 4",5601090,"CTE Woods/CAD Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-05-16","2025-08-01",12,84,"Closed / Filled",0,0,0,0,0,0
 "Big Horn School District 4",5601090,"CTE, Drones, Computer Science and CAD Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-04-24","2026-05-08",4,21,"Closed / Filled",0,0,0,0,0,0
-"Big Horn School District 4",5601090,"Drivers Ed Teacher","Uncategorized","Other","Teacher","2026-01-16","2026-04-03",12,84,"Closed / Filled",0,0,0,0,0,0
 "Big Horn School District 4",5601090,"Elementary Teacher","Elementary Education","Elementary","Teacher","2025-03-28","2025-04-18",3,28,"Closed / Filled",0,0,1,0,0,0
 "Big Horn School District 4",5601090,"K-12 Art Teacher","Art Teacher","Art","Teacher","2025-01-24","2025-03-21",9,63,"Closed / Filled",0,0,0,0,0,0
 "Big Horn School District 4",5601090,"Kindergarten Teacher","Elementary Education","Elementary","Teacher","2026-04-24","2026-05-08",4,21,"Closed / Filled",0,0,1,0,0,0
@@ -113,7 +111,6 @@
 "Campbell County School District 1",5601470,"Business Education Teacher","Business and Economics","CTE - Business & Family Sciences","Teacher","2026-02-06","2026-04-24",7,84,"Closed / Filled",1,0,0,0,0,0
 "Campbell County School District 1",5601470,"Dual Language Immersion Teacher - Social Studies","Language Education","Language","Teacher","2025-04-04","2025-05-02",5,35,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Dual Language Immersion Teacher - Spanish","Language Education","Language","Teacher","2025-04-04","2026-04-10",25,378,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"ESL (English as a Second Language) Teacher Assistant","Elementary Education","Elementary","Teacher","2024-08-09","2026-05-08",55,644,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Elementary Art Teacher","Elementary Education","Elementary","Teacher","2026-10-09","2026-10-23",3,21,"Still Active",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Elementary Instrumental Music Teacher","Elementary Education","Elementary","Teacher","2025-03-14","2025-07-11",13,126,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Elementary Multiple Teacher","Elementary Education","Elementary","Teacher","2025-04-04","2026-07-17",6,476,"Closed / Filled",0,0,1,0,0,0
@@ -129,39 +126,33 @@
 "Campbell County School District 1",5601470,"Foreign Language Teacher - Spanish","Language Education","Language","Teacher","2025-05-02","2026-06-05",27,406,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Fourth Grade Teacher","Elementary Education","Elementary","Teacher","2025-03-07","2026-05-08",18,434,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Gifted and Talented Education Teacher","Gifted and Talented","Gifted and Talented","Teacher","2024-08-30","2026-05-15",6,630,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"Instructional Assistant - ESL (English as a Second Language) Teacher Assistant","Elementary Education","Elementary","Teacher","2026-07-17","2026-08-14",8,35,"Closed / Filled",0,0,1,0,0,0
-"Campbell County School District 1",5601470,"Instructional Assistant - Library Media Teacher Assistant","Library Media","Library Media","Teacher","2026-07-17","2026-08-04",5,25,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"Instructional Assistant - Title I Teacher Assistant","Uncategorized","Other","Teacher","2026-07-17","2026-08-28",8,49,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"Instructional Teacher Assistant","Uncategorized","Other","Teacher","2024-08-09","2026-10-23",33,812,"Still Active",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Interventionist","Uncategorized","Other","Teacher","2024-08-23","2025-05-30",7,287,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Itinerant Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-10-31","2025-11-28",5,35,"Closed / Filled",0,1,0,0,0,0
 "Campbell County School District 1",5601470,"Kindergarten Teacher","Elementary Education","Elementary","Teacher","2025-03-07","2026-03-20",14,385,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Library Media Specialist","Library Media","Library Media","Teacher","2026-02-20","2026-03-27",3,42,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"Library Media Teacher Assistant","Library Media","Library Media","Teacher","2024-11-15","2025-07-18",5,252,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Math Teacher","Mathematics Education","Math","Teacher","2024-08-09","2026-08-03",29,731,"Closed / Filled",1,0,0,0,0,0
 "Campbell County School District 1",5601470,"Music Teacher","Music Education","Music","Teacher","2024-08-23","2026-06-12",46,665,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Physical Education Teacher","Physical Education","Physical Education","Teacher","2025-02-21","2026-06-05",13,476,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Physical Education/Health Teacher","Physical Education","Physical Education","Teacher","2025-07-25","2025-07-25",1,7,"Closed / Filled",0,0,0,0,0,0
-"Campbell County School District 1",5601470,"Reading Recovery Teacher","Uncategorized","Other","Teacher","2025-05-16","2026-04-10",6,336,"Closed / Filled",0,0,0,0,0,0
+"Campbell County School District 1",5601470,"Reading Recovery Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-05-16","2026-04-10",6,336,"Closed / Filled",0,0,0,1,0,0
 "Campbell County School District 1",5601470,"Science Teacher","Science Education","Science","Teacher","2025-02-21","2026-02-13",9,364,"Closed / Filled",1,0,0,0,0,0
 "Campbell County School District 1",5601470,"Second Grade Teacher","Elementary Education","Elementary","Teacher","2025-03-07","2026-07-03",12,490,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Secondary Academic Interventionist","Uncategorized","Other","Teacher","2026-10-09","2026-10-23",3,21,"Still Active",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Secondary English Language Arts Interventionist","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-14","2025-02-28",3,21,"Closed / Filled",0,0,0,1,0,0
-"Campbell County School District 1",5601470,"Sixth Grade Teacher","Uncategorized","Other","Teacher","2025-05-16","2026-06-26",11,413,"Closed / Filled",0,0,0,0,0,0
+"Campbell County School District 1",5601470,"Sixth Grade Teacher","Elementary Education","Elementary","Teacher","2025-05-16","2026-06-26",11,413,"Closed / Filled",0,0,1,0,0,0
 "Campbell County School District 1",5601470,"Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-02-14","2026-03-13",5,399,"Closed / Filled",0,0,0,1,0,0
 "Campbell County School District 1",5601470,"Teacher for the Deaf and Hard of Hearing","Special Education - General","Special Education - General","Teacher","2025-01-24","2026-04-17",62,455,"Closed / Filled",0,1,0,0,0,0
 "Campbell County School District 1",5601470,"Teacher of the Visually Impaired","Special Education - General","Special Education - General","Teacher","2026-03-06","2026-10-23",38,238,"Still Active",0,1,0,0,0,0
 "Campbell County School District 1",5601470,"Technology Education Teacher","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-02-21","2026-06-05",8,476,"Closed / Filled",1,0,0,0,0,0
 "Campbell County School District 1",5601470,"Technology Teacher","Uncategorized","Other","Teacher","2025-05-23","2026-07-24",9,434,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Third Grade Teacher","Elementary Education","Elementary","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,1,0,0,0
-"Campbell County School District 1",5601470,"Title I Teacher Assistant","Uncategorized","Other","Teacher","2024-08-09","2026-03-20",25,595,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Transitional Teacher-YES House","Uncategorized","Other","Teacher","2024-12-13","2026-05-08",6,518,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Vocal Music Teacher","Music Education","Music","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"6-12 Vocal Music Instructor","Music Education","Music","Teacher","2026-05-15","2026-06-05",4,28,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"Aqua Instructor","Uncategorized","Other","Teacher","2025-06-20","2025-06-20",1,7,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"Automotive Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-02-07","2025-10-10",36,252,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"Choir Teacher/Music","Music Education","Music","Teacher","2024-10-04","2025-04-11",28,196,"Closed / Filled",0,0,0,0,0,0
-"Carbon County School District 1",5601030,"Daycare Lead Teacher","Uncategorized","Other","Teacher","2025-04-18","2025-08-01",16,112,"Closed / Filled",0,0,0,0,0,0
+"Carbon County School District 1",5601030,"Daycare Lead Teacher","Early Childhood Education","Early Childhood","Teacher","2025-04-18","2025-08-01",16,112,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"ESL/ELL Teacher","Language Education","Language","Teacher","2025-04-18","2026-02-27",46,322,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 1",5601030,"Elementary 2nd Grade Teacher","Elementary Education","Elementary","Teacher","2026-01-09","2026-02-27",8,56,"Closed / Filled",0,0,1,0,0,0
 "Carbon County School District 1",5601030,"Elementary Music Teacher","Elementary Education","Elementary","Teacher","2026-08-11","2026-10-23",12,80,"Still Active",0,0,1,0,0,0
@@ -198,7 +189,7 @@
 "Carbon County School District 2",5601700,"Physical Education Teacher","Physical Education","Physical Education","Teacher","2024-08-09","2024-08-23",3,21,"Closed / Filled",0,0,0,0,0,0
 "Carbon County School District 2",5601700,"Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",0,0,0,1,0,0
 "Converse County School District 1",5602140,"3rd Grade Teacher","Elementary Education","Elementary","Teacher","2026-06-05","2026-06-05",1,7,"Closed / Filled",0,0,1,0,0,0
-"Converse County School District 1",5602140,"6th Grade Science Teacher","Science Education","Science","Teacher","2026-05-07","2026-05-08",2,8,"Closed / Filled",1,0,0,0,0,0
+"Converse County School District 1",5602140,"6th Grade Science Teacher","Elementary Education","Elementary","Teacher","2026-05-07","2026-05-08",2,8,"Closed / Filled",0,0,1,0,0,0
 "Converse County School District 1",5602140,"Alternative Program Teacher","Uncategorized","Other","Teacher","2025-02-21","2025-03-21",4,35,"Closed / Filled",0,0,0,0,0,0
 "Converse County School District 1",5602140,"Alternative Program Teacher - Special Education","Special Education - General","Special Education - General","Teacher","2025-02-21","2025-03-21",5,35,"Closed / Filled",0,1,0,0,0,0
 "Converse County School District 1",5602140,"DHS Agriculture Teacher and FFA Advisor","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2025-03-07","2025-03-28",4,28,"Closed / Filled",0,0,0,0,0,0
@@ -209,7 +200,6 @@
 "Converse County School District 1",5602140,"DMS Science Teacher","Science Education","Science","Teacher","2026-03-06","2026-04-03",5,35,"Closed / Filled",1,0,0,0,0,0
 "Converse County School District 1",5602140,"DMS Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-05-16","2025-08-01",12,84,"Closed / Filled",0,1,0,0,0,0
 "Converse County School District 1",5602140,"DPS SPED Teacher","Special Education - General","Special Education - General","Teacher","2025-08-01","2025-08-01",1,7,"Closed / Filled",0,1,0,0,0,0
-"Converse County School District 1",5602140,"Douglas Intermediate and Upper Elementary School Assistant Principal","Elementary Education","Elementary","Teacher","2025-03-14","2025-04-11",5,35,"Closed / Filled",0,0,1,0,0,0
 "Converse County School District 1",5602140,"Douglas Middle School ELA Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",0,0,0,1,0,0
 "Converse County School District 1",5602140,"Douglas Middle School Science Teacher","Science Education","Science","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",1,0,0,0,0,0
 "Converse County School District 1",5602140,"Early Childhood Teacher","Early Childhood Education","Early Childhood","Teacher","2025-02-14","2025-04-04",8,56,"Closed / Filled",0,0,0,0,0,0
@@ -265,7 +255,6 @@
 "Crook County School District 1",5602370,"Secondary Art Teacher","Art Teacher","Art","Teacher","2025-03-07","2025-03-14",2,14,"Closed / Filled",0,0,0,0,0,0
 "Crook County School District 1",5602370,"Secondary Science Teacher","Science Education","Science","Teacher","2025-02-28","2025-03-28",5,35,"Closed / Filled",1,0,0,0,0,0
 "Crook County School District 1",5602370,"Secondary Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-03-07","2025-03-21",3,21,"Closed / Filled",0,0,0,1,0,0
-"Crook County School District 1",5602370,"Special Education Life Skills Teacher/Transition Coordinator","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-03-14","2025-04-04",4,28,"Closed / Filled",0,1,0,0,0,0
 "Crook County School District 1",5602370,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2026-02-27","2026-05-01",10,70,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District #21",,"Middle School Physical Education/Health Teacher","Physical Education","Physical Education","Teacher","2026-09-25","2026-10-16",4,28,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 1",5602870,"Adaptive PE Teacher","Physical Education","Physical Education","Teacher","2026-03-20","2026-06-05",13,84,"Closed / Filled",0,0,0,0,0,0
@@ -284,8 +273,8 @@
 "Fremont County School District 1",5602870,"Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-14","2025-03-14",5,35,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 1",5602870,"Lights On Summer Pre-K Teacher","Early Childhood Education","Early Childhood","Teacher","2026-03-20","2026-04-03",3,21,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 1",5602870,"Lights On Summer Pre-K Teacher (summer temporary at-will)","Early Childhood Education","Early Childhood","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 1",5602870,"Lights On Summer Reading Intervention Teacher","Uncategorized","Other","Teacher","2026-05-07","2026-05-15",3,15,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 1",5602870,"Lights On Summer Reading Intervention Teacher (up to 5 teacher positions) (summer at-will temporary)","Uncategorized","Other","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 1",5602870,"Lights On Summer Reading Intervention Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-07","2026-05-15",3,15,"Closed / Filled",0,0,0,1,0,0
+"Fremont County School District 1",5602870,"Lights On Summer Reading Intervention Teacher (up to 5 teacher positions) (summer at-will temporary)","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 1",5602870,"Math Teacher","Mathematics Education","Math","Teacher","2026-07-24","2026-10-23",8,98,"Still Active",1,0,0,0,0,0
 "Fremont County School District 1",5602870,"Media Center Assistant","Uncategorized","Other","Teacher","2025-07-11","2025-07-18",2,14,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 1",5602870,"Music Teacher (Instrumental)","Music Education","Music","Teacher","2025-04-25","2026-04-17",12,364,"Closed / Filled",0,0,0,0,0,0
@@ -304,9 +293,8 @@
 "Fremont County School District 1",5602870,"Summer School Teachers - Math, Social Studies, English, Science and SPED (summer temporary at-will)","Special Education - General","Special Education - General","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 1",5602870,"Summer School Teachers - multiple positions - summer temporary (at-will)","Uncategorized","Other","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 1",5602870,"Trade/Technical -- Industrial Arts Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-05-09","2025-06-06",5,35,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 14",5604450,"6th Grade Middle School Mathematics","Mathematics Education","Math","Teacher","2025-04-11","2025-04-25",3,21,"Closed / Filled",1,0,0,0,0,0
-"Fremont County School District 14",5604450,"Arapaho Language Teacher","Language Education","Language","Teacher","2026-04-17","2026-05-15",6,35,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 14",5604450,"Athletic Director/Teacher","Uncategorized","Other","Teacher","2025-01-24","2025-03-14",8,56,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 14",5604450,"6th Grade Middle School Mathematics","Elementary Education","Elementary","Teacher","2025-04-11","2025-04-25",3,21,"Closed / Filled",0,0,1,0,0,0
+"Fremont County School District 14",5604450,"Arapaho Language Teacher","Uncategorized","Other","Teacher","2026-04-17","2026-05-15",6,35,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 14",5604450,"Elementary Special Education Teacher","Special Education - General","Special Education - General","Teacher","2024-08-09","2025-02-28",30,210,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 14",5604450,"Elementary Teacher","Elementary Education","Elementary","Teacher","2025-03-21","2026-04-24",8,406,"Closed / Filled",0,0,1,0,0,0
 "Fremont County School District 14",5604450,"Health/Interventionist Teacher","Uncategorized","Other","Teacher","2026-02-13","2026-03-20",6,42,"Closed / Filled",0,0,0,0,0,0
@@ -314,14 +302,14 @@
 "Fremont County School District 14",5604450,"High School Science Teacher","Science Education","Science","Teacher","2026-01-16","2026-03-27",11,77,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 14",5604450,"High School Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2024-08-09","2025-03-14",32,224,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 14",5604450,"High School Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-09-12","2026-04-24",17,231,"Closed / Filled",0,1,0,0,0,0
-"Fremont County School District 14",5604450,"Middle School Alternative Classroom Teacher","Uncategorized","Other","Teacher","2026-03-06","2026-04-03",5,35,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 14",5604450,"Middle School Alternative Classroom Teacher","Elementary Education","Elementary","Teacher","2026-03-06","2026-04-03",5,35,"Closed / Filled",0,0,1,0,0,0
 "Fremont County School District 14",5604450,"Middle School ELA Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-03-27","2026-05-15",9,56,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 14",5604450,"Middle School Mathematics","Mathematics Education","Math","Teacher","2025-02-28","2026-05-15",12,448,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 14",5604450,"Middle School Science Teacher","Science Education","Science","Teacher","2025-03-28","2025-03-28",1,7,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 14",5604450,"Pre-K Classroom Teacher","Early Childhood Education","Early Childhood","Teacher","2026-02-13","2026-04-10",9,63,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 14",5604450,"Secondary Art Teacher","Art Teacher","Art","Teacher","2026-04-17","2026-05-15",6,35,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 14",5604450,"Secondary Reading Interventionist Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-20","2026-04-03",7,49,"Closed / Filled",0,0,0,1,0,0
-"Fremont County School District 14",5604450,"Shoshone Language Teacher","Uncategorized","Other","Teacher","2025-08-22","2026-02-06",25,175,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 14",5604450,"Shoshone Language Teacher","Language Education","Language","Teacher","2025-08-22","2026-02-06",25,175,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 14",5604450,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-04-11","2025-04-25",3,21,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 2",5602670,"2026-2027 High School Math Teacher","Mathematics Education","Math","Teacher","2026-04-17","2026-05-15",6,35,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 2",5602670,"K-12 Librarian/Media Specialist","Library Media","Library Media","Teacher","2025-04-18","2025-05-23",6,42,"Closed / Filled",0,0,0,0,0,0
@@ -338,8 +326,8 @@
 "Fremont County School District 21",5602820,"Math Teacher - Middle School 2025-2026 School Year","Mathematics Education","Math","Teacher","2025-02-07","2025-04-11",10,70,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 21",5602820,"Middle School Physical Education/Health Teacher","Physical Education","Physical Education","Teacher","2026-10-23","2026-10-23",1,7,"Still Active",0,0,0,0,0,0
 "Fremont County School District 21",5602820,"Music Teacher K-8th Grade (Open Until Filled)","Music Education","Music","Teacher","2024-08-09","2025-04-11",36,252,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 21",5602820,"Northern Arapaho Language Teacher - Secondary - Open Until Filled","Language Education","Language","Teacher","2026-09-11","2026-10-23",7,49,"Still Active",0,0,0,0,0,0
-"Fremont County School District 21",5602820,"Northern Arapaho Language Teachers - Open Until Filled","Language Education","Language","Teacher","2026-05-15","2026-08-21",18,105,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 21",5602820,"Northern Arapaho Language Teacher - Secondary - Open Until Filled","Uncategorized","Other","Teacher","2026-09-11","2026-10-23",7,49,"Still Active",0,0,0,0,0,0
+"Fremont County School District 21",5602820,"Northern Arapaho Language Teachers - Open Until Filled","Uncategorized","Other","Teacher","2026-05-15","2026-08-21",18,105,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 21",5602820,"Physical Education Teacher K - 5 (Open Until Filled)","Physical Education","Physical Education","Teacher","2026-08-28","2026-10-23",9,63,"Still Active",0,0,0,0,0,0
 "Fremont County School District 21",5602820,"Physical Education/Health Teacher - Middle School - Open until filled","Physical Education","Physical Education","Teacher","2026-09-25","2026-10-23",5,35,"Still Active",0,0,0,0,0,0
 "Fremont County School District 21",5602820,"Special Education Teachers","Special Education - General","Special Education - General","Teacher","2024-08-09","2026-04-17",9,623,"Closed / Filled",0,1,0,0,0,0
@@ -351,7 +339,7 @@
 "Fremont County School District 24",5605700,"Elementary (K-6) Teacher 2025-2026","Elementary Education","Elementary","Teacher","2025-03-21","2025-03-28",2,14,"Closed / Filled",0,0,1,0,0,0
 "Fremont County School District 24",5605700,"Elementary Special Education Teacher 2025-2026","Special Education - General","Special Education - General","Teacher","2025-03-07","2025-06-06",2,98,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 24",5605700,"High School Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-02-28","2025-02-28",1,7,"Closed / Filled",0,0,0,1,0,0
-"Fremont County School District 24",5605700,"School Nurse and CNA Instructor","Uncategorized","Other","Teacher","2025-07-18","2025-08-01",3,21,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 24",5605700,"School Nurse and CNA Instructor","Health Science","CTE - Business & Family Sciences","Teacher","2025-07-18","2025-08-01",3,21,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 24",5605700,"Secondary English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-20","2026-04-24",9,70,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 24",5605700,"Secondary Special Education Teacher","Special Education - General","Special Education - General","Teacher","2026-08-11","2026-08-14",2,10,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 24",5605700,"Secondary Strength Conditioning/PE/Health Teacher 2025-2026","Physical Education","Physical Education","Teacher","2025-03-07","2025-03-14",2,14,"Closed / Filled",0,0,0,0,0,0
@@ -404,10 +392,10 @@
 "Fremont County School District 25",5605220,"TEACHER (ELA)","English Language Arts Education","English Language Arts Secondary","Teacher","2026-03-13","2026-03-20",2,14,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 25",5605220,"TEACHER (SPED IDEAL)","Special Education - General","Special Education - General","Teacher","2025-04-11","2025-04-11",1,7,"Closed / Filled",0,1,0,0,0,0
 "Fremont County School District 25",5605220,"TEACHER (THEATER)","Uncategorized","Other","Teacher","2026-03-13","2026-04-17",6,42,"Closed / Filled",0,0,0,0,0,0
-"Fremont County School District 25",5605220,"Teacher (Arapaho Language)","Language Education","Language","Teacher","2024-08-09","2024-08-30",4,28,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 25",5605220,"Teacher (Arapaho Language)","Uncategorized","Other","Teacher","2024-08-09","2024-08-30",4,28,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 25",5605220,"Teacher (High School Business)","Business and Economics","CTE - Business & Family Sciences","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 25",5605220,"Teacher (High School ELA)","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",0,0,0,1,0,0
-"Fremont County School District 25",5605220,"WATER SAFETY INSTRUCTOR","Uncategorized","Other","Teacher","2025-04-25","2025-06-06",7,49,"Closed / Filled",0,0,0,0,0,0
+"Fremont County School District 25",5605220,"WATER SAFETY INSTRUCTOR","Physical Education","Physical Education","Teacher","2025-04-25","2025-06-06",7,49,"Closed / Filled",0,0,0,0,0,0
 "Fremont County School District 25",5605220,"WOLVERINE ACADEMY TEACHER (ELA)","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-17","2026-04-17",1,7,"Closed / Filled",0,0,0,1,0,0
 "Fremont County School District 25",5605220,"WOLVERINE ACADEMY TEACHER (LIFE SCIENCE/BIOLOGY)","Science Education","Science","Teacher","2026-04-24","2026-05-01",2,14,"Closed / Filled",1,0,0,0,0,0
 "Fremont County School District 25",5605220,"WOLVERINE ACADEMY TEACHER (MATH)","Mathematics Education","Math","Teacher","2026-04-17","2026-04-17",1,7,"Closed / Filled",1,0,0,0,0,0
@@ -478,7 +466,7 @@
 "Hot Springs County School District 1",5603310,"Secondary English Teacher - Middle School","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2024-08-16",2,14,"Closed / Filled",0,0,0,1,0,0
 "Hot Springs County School District 1",5603310,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2024-08-09","2025-06-20",12,322,"Closed / Filled",0,1,0,0,0,0
 "Hot Springs County School District 1",5603310,"Teacherage Worker","Uncategorized","Other","Teacher","2024-11-29","2024-11-29",1,7,"Closed / Filled",0,0,0,0,0,0
-"Johnson County School District 1",5603770,"Ag Program Instructor","Uncategorized","Other","Teacher","2026-01-16","2026-02-27",7,49,"Closed / Filled",0,0,0,0,0,0
+"Johnson County School District 1",5603770,"Ag Program Instructor","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-01-16","2026-02-27",7,49,"Closed / Filled",0,0,0,0,0,0
 "Johnson County School District 1",5603770,"Art Instructor","Art Teacher","Art","Teacher","2025-05-02","2025-05-16",3,21,"Closed / Filled",0,0,0,0,0,0
 "Johnson County School District 1",5603770,"Elementary Teacher","Elementary Education","Elementary","Teacher","2026-05-01","2026-05-08",3,14,"Closed / Filled",0,0,1,0,0,0
 "Johnson County School District 1",5603770,"High School Science","Science Education","Science","Teacher","2026-05-22","2026-05-22",1,7,"Closed / Filled",1,0,0,0,0,0
@@ -529,11 +517,11 @@
 "Laramie County School District 1",5601980,"5th Grade Teacher [TA11] - 2025/2026 Contract Year Only","Elementary Education","Elementary","Teacher","2025-04-11","2025-05-23",7,49,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"5th or 6th Grade Teacher","Elementary Education","Elementary","Teacher","2025-04-11","2025-04-11",1,7,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"5th or 6th Grade Teacher [TA11]","Elementary Education","Elementary","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,1,0,0,0
-"Laramie County School District 1",5601980,"6th Grade Teacher (Gifted and Talented) [TA14]","Gifted and Talented","Gifted and Talented","Teacher","2025-04-25","2026-05-01",6,378,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"6th Grade Teacher - 2 positions available [TA13]","Uncategorized","Other","Teacher","2026-05-29","2026-05-29",1,7,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"6th Grade Teacher [TA13]","Uncategorized","Other","Teacher","2025-03-14","2026-07-03",22,483,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"6th Grade Teacher [TA13] - 2025/2026 Contract Year Only","Uncategorized","Other","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"6th Grade Teacher [TA13] - Remainder of the 2024/2025 contract year only","Uncategorized","Other","Teacher","2024-12-20","2025-01-10",4,28,"Closed / Filled",0,0,0,0,0,0
+"Laramie County School District 1",5601980,"6th Grade Teacher (Gifted and Talented) [TA14]","Elementary Education","Elementary","Teacher","2025-04-25","2026-05-01",6,378,"Closed / Filled",0,0,1,0,0,0
+"Laramie County School District 1",5601980,"6th Grade Teacher - 2 positions available [TA13]","Elementary Education","Elementary","Teacher","2026-05-29","2026-05-29",1,7,"Closed / Filled",0,0,1,0,0,0
+"Laramie County School District 1",5601980,"6th Grade Teacher [TA13]","Elementary Education","Elementary","Teacher","2025-03-14","2026-07-03",22,483,"Closed / Filled",0,0,1,0,0,0
+"Laramie County School District 1",5601980,"6th Grade Teacher [TA13] - 2025/2026 Contract Year Only","Elementary Education","Elementary","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",0,0,1,0,0,0
+"Laramie County School District 1",5601980,"6th Grade Teacher [TA13] - Remainder of the 2024/2025 contract year only","Elementary Education","Elementary","Teacher","2024-12-20","2025-01-10",4,28,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"7th Grade English Language Arts Teacher - Remainder 2024/2025 Contract Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2024-11-22","2024-11-29",2,14,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"7th Grade English Teacher [TC11]","English Language Arts Education","English Language Arts Secondary","Teacher","2025-04-11","2025-04-11",1,7,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"7th Grade Language Arts Teacher [TC11]","English Language Arts Education","English Language Arts Secondary","Teacher","2025-05-16","2025-05-23",2,14,"Closed / Filled",0,0,0,1,0,0
@@ -564,10 +552,9 @@
 "Laramie County School District 1",5601980,"Center Based Autism Program Teacher [XT20]","Uncategorized","Other","Teacher","2025-04-25","2025-05-02",2,14,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"Center-Based Resource Teacher [XT20]","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-06-20","2025-08-08",8,56,"Closed / Filled",0,1,0,0,0,0
 "Laramie County School District 1",5601980,"Chess Teacher","Uncategorized","Other","Teacher","2024-10-18","2024-12-13",9,63,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"Classroom Teacher","Uncategorized","Other","Teacher","2024-11-22","2024-11-22",1,7,"Closed / Filled",0,0,0,0,0,0
+"Laramie County School District 1",5601980,"Classroom Teacher","Elementary Education","Elementary","Teacher","2024-11-22","2024-11-22",1,7,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"Computer Science Teacher - 2026/2027 Contract Year Only [TC21]","Computer Science Education","CTE - Business & Family Sciences","Teacher","2026-08-14","2026-08-14",1,7,"Closed / Filled",1,0,0,0,0,0
 "Laramie County School District 1",5601980,"Computer Science Teacher [TC21]","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",1,0,0,0,0,0
-"Laramie County School District 1",5601980,"Coordinator - English Language Arts Secondary [CD14]","English Language Arts Education","English Language Arts Secondary","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"ELS/ELL Teacher (2026-2027 School Year)","Language Education","Language","Teacher","2026-05-01","2026-06-05",7,42,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"ESL Teacher","Language Education","Language","Teacher","2025-06-06","2025-08-29",13,91,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"ESL Teacher - Elementary","Elementary Education","Elementary","Teacher","2025-01-17","2025-01-24",2,14,"Closed / Filled",0,0,1,0,0,0
@@ -590,8 +577,8 @@
 "Laramie County School District 1",5601980,"General Music Teacher - Elementary [TB03]","Elementary Education","Elementary","Teacher","2025-03-21","2025-05-09",8,56,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"General Music Teacher - Elementary and Secondary [TB03]","Elementary Education","Elementary","Teacher","2025-09-19","2025-10-17",5,35,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"Grade 6 Teacher [TA13]","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",0,0,1,0,0,0
-"Laramie County School District 1",5601980,"Health Sciences Teacher - 2026/2027 Contract Year Only [TC18]","Uncategorized","Other","Teacher","2026-08-14","2026-09-25",7,49,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"Health Sciences Teacher [TC18]","Uncategorized","Other","Teacher","2026-07-10","2026-08-11",8,39,"Closed / Filled",0,0,0,0,0,0
+"Laramie County School District 1",5601980,"Health Sciences Teacher - 2026/2027 Contract Year Only [TC18]","Health Science","CTE - Business & Family Sciences","Teacher","2026-08-14","2026-09-25",7,49,"Closed / Filled",1,0,0,0,0,0
+"Laramie County School District 1",5601980,"Health Sciences Teacher [TC18]","Health Science","CTE - Business & Family Sciences","Teacher","2026-07-10","2026-08-11",8,39,"Closed / Filled",1,0,0,0,0,0
 "Laramie County School District 1",5601980,"High School English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-08-08","2025-08-08",1,7,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"Homebound Teacher [XT34]","Uncategorized","Other","Teacher","2025-05-09","2025-06-27",3,56,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"JROTC Instructor {TC25]","CTE Teacher","CTE - Trades, Ag & Technical","Teacher","2026-04-10","2026-05-01",4,28,"Closed / Filled",0,0,0,0,0,0
@@ -675,10 +662,9 @@
 "Laramie County School District 1",5601980,"Secondary TV Media/Photography Teacher [TO12]","Uncategorized","Other","Teacher","2025-03-14","2025-04-04",4,28,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"Secondary Tech Ed Manufacturing Teacher [TC50]","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"Secondary US History Teacher [TC39]","Social Studies Education","Secondary Social Studies","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",0,0,0,1,0,0
-"Laramie County School District 1",5601980,"Secretary - Coordinator of Language Arts [CS56]","English Language Arts Education","English Language Arts Secondary","Teacher","2025-01-10","2025-01-24",3,21,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"Senior JROTC Instructor","CTE Teacher","CTE - Trades, Ag & Technical","Teacher","2024-12-20","2025-04-18",18,126,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"Sixth Grade Teacher - Remainder of the 2024/2025 Contract Year Only","Uncategorized","Other","Teacher","2024-11-15","2024-11-22",2,14,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"Sixth Grade Teacher - Remainder of the 2024/2025 Contract Year Only - +SIGN-ON BONUS","Uncategorized","Other","Teacher","2024-11-29","2024-11-29",1,7,"Closed / Filled",0,0,0,0,0,0
+"Laramie County School District 1",5601980,"Sixth Grade Teacher - Remainder of the 2024/2025 Contract Year Only","Elementary Education","Elementary","Teacher","2024-11-15","2024-11-22",2,14,"Closed / Filled",0,0,1,0,0,0
+"Laramie County School District 1",5601980,"Sixth Grade Teacher - Remainder of the 2024/2025 Contract Year Only - +SIGN-ON BONUS","Elementary Education","Elementary","Teacher","2024-11-29","2024-11-29",1,7,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"Social Studies Teacher - One Year Only [TC39]","Social Studies Education","Secondary Social Studies","Teacher","2026-05-22","2026-05-29",2,14,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"Social Studies/US History Teacher [TC39]","Social Studies Education","Secondary Social Studies","Teacher","2025-04-11","2025-04-18",2,14,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"SpEd Resource Teacher - 2024/2025 Contract year only","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2024-09-13","2025-01-24",20,140,"Closed / Filled",0,1,0,0,0,0
@@ -709,7 +695,6 @@
 "Laramie County School District 1",5601980,"Summer School Elementary Teachers","Elementary Education","Elementary","Teacher","2025-02-14","2025-02-14",1,7,"Closed / Filled",0,0,1,0,0,0
 "Laramie County School District 1",5601980,"Summer School Secondary English Teacher - 1 position available","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-07","2026-05-08",2,8,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"Summer School Secondary Math Teacher - 1 position available","Mathematics Education","Math","Teacher","2026-05-07","2026-06-05",6,36,"Closed / Filled",1,0,0,0,0,0
-"Laramie County School District 1",5601980,"TEACHER BUS ED KEYBDG/COMP APP [TC06]","Uncategorized","Other","Teacher","2026-07-10","2026-08-11",8,39,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"TEACHER LITERACY SPECIALIST [TA24]","Uncategorized","Other","Teacher","2026-05-15","2026-06-26",6,49,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"TEACHER SCIENCE BIOLOGY/LIFE [TC26]","Science Education","Science","Teacher","2026-07-10","2026-07-10",1,7,"Closed / Filled",1,0,0,0,0,0
 "Laramie County School District 1",5601980,"Teacher - Math","Mathematics Education","Math","Teacher","2024-09-20","2024-11-29",11,77,"Closed / Filled",1,0,0,0,0,0
@@ -734,7 +719,7 @@
 "Laramie County School District 1",5601980,"Tech Ed Teacher - Remainder of the 2024/2025 Contract Year","Technical Education","CTE - Trades, Ag & Technical","Teacher","2024-12-06","2024-12-13",2,14,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"Technical Education Teacher [TC53]","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-03-28","2025-05-02",6,42,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 1",5601980,"Technician - Library [CE25]","Library Media","Library Media","Teacher","2025-08-01","2026-07-03",5,343,"Closed / Filled",0,0,0,0,0,0
-"Laramie County School District 1",5601980,"Title One Teacher - 2026/2027 Contract Year Only [TB09]","Uncategorized","Other","Teacher","2026-05-29","2026-05-29",1,7,"Closed / Filled",0,0,0,0,0,0
+"Laramie County School District 1",5601980,"Title One Teacher - 2026/2027 Contract Year Only [TB09]","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-29","2026-05-29",1,7,"Closed / Filled",0,0,0,1,0,0
 "Laramie County School District 1",5601980,"Welding or Auto Teacher [TC52]","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 2",5604120,"2025 - 26 Agriculture Teacher","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2025-04-18","2025-05-09",4,28,"Closed / Filled",0,0,0,0,0,0
 "Laramie County School District 2",5604120,"Elementary Teacher 2025-26 School Year","Elementary Education","Elementary","Teacher","2025-02-28","2025-05-09",11,77,"Closed / Filled",0,0,1,0,0,0
@@ -801,7 +786,7 @@
 "Lincoln County School District 2",5604060,"Teacher of the Deaf – District Wide – 2026–2027 school year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-03-27",1,7,"Closed / Filled",0,1,0,0,0,0
 "Lincoln County School District 2",5604060,"Teacher of the Deaf- District Wide- 2026-2027 School Year","Special Education - General","Special Education - General","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Bar Nunn Special Education Teacher","Special Education - General","Special Education - General","Teacher","2024-12-13","2025-01-10",5,35,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"CCA 6th Grade Science Teacher for the 26-27 School Year Only","Science Education","Science","Teacher","2026-07-17","2026-07-24",2,14,"Closed / Filled",1,0,0,0,0,0
+"Natrona School District 1",5604510,"CCA 6th Grade Science Teacher for the 26-27 School Year Only","Elementary Education","Elementary","Teacher","2026-07-17","2026-07-24",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"CCA Computer Science Teacher for the 2025-26 School Year Only","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-05-16","2025-05-23",2,14,"Closed / Filled",1,0,0,0,0,0
 "Natrona School District 1",5604510,"CCA Language Arts Teacher for the 2025-26 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,1,0,0
 "Natrona School District 1",5604510,"CCA Language Arts Teacher for the 26-27 school year only","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-10","2026-06-05",9,63,"Closed / Filled",0,0,0,1,0,0
@@ -814,16 +799,16 @@
 "Natrona School District 1",5604510,"CCA Special Education Teacher Resource beginning 26-27 school year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-04-03",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"CMS- Social Studies Teacher for the 2025-26 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-04-18","2025-05-16",4,35,"Closed / Filled",0,0,0,1,0,0
 "Natrona School District 1",5604510,"CYMS Classroom Teacher - CTE Manufacturing Technology Beginning for the 2026-2027 School Year","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-04-03","2026-04-03",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher - Gifted and Talented Math/Social Studies for the 25-26 School Year Only","Mathematics Education","Math","Teacher","2025-08-08","2025-09-12",6,42,"Closed / Filled",1,0,0,0,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher - Gifted and Talented Math/Social Studies for the 25-26 School Year Only","Elementary Education","Elementary","Teacher","2025-08-08","2025-09-12",6,42,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"CYMS Classroom Teacher - Special Education Beginning for the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-03-21","2025-03-28",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"CYMS Classroom Teacher - Special Education Beginning for the 2026-2027 School Year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-03-27",1,7,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher- Fine Arts (Art) for the 2026-2027 School Year Only","Art Teacher","Art","Teacher","2026-03-27","2026-04-10",3,21,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher- Language Arts for the 25-26 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2025-06-06","2025-06-13",2,14,"Closed / Filled",0,0,0,1,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher- Math for the 2025-2026 School Year Only","Mathematics Education","Math","Teacher","2025-08-15","2025-08-22",2,14,"Closed / Filled",1,0,0,0,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher- Fine Arts (Art) for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-03-27","2026-04-10",3,21,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher- Language Arts for the 25-26 School Year Only","Elementary Education","Elementary","Teacher","2025-06-06","2025-06-13",2,14,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher- Math for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-08-15","2025-08-22",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"CYMS Classroom Teacher- Special Education-BASE Beginning for the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher-Family & Consumer Science Teacher for the 26-27 School Year Only","Science Education","Science","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",1,0,0,0,0,0
-"Natrona School District 1",5604510,"CYMS Classroom Teacher-Social Studies for the 25-26 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",0,0,0,1,0,0
-"Natrona School District 1",5604510,"CYMS Social Studies Classroom Teacher for the 2025-2026 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-03-14","2025-03-28",3,21,"Closed / Filled",0,0,0,1,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher-Family & Consumer Science Teacher for the 26-27 School Year Only","Elementary Education","Elementary","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"CYMS Classroom Teacher-Social Studies for the 25-26 School Year Only","Elementary Education","Elementary","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"CYMS Social Studies Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-28",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Casper Mountain Science Intern Fall 2024","Science Education","Science","Teacher","2024-09-06","2024-09-06",1,7,"Closed / Filled",1,0,0,0,0,0
 "Natrona School District 1",5604510,"Casper Mountain Science Program Intern","Science Education","Science","Teacher","2024-08-30","2026-08-14",21,721,"Closed / Filled",1,0,0,0,0,0
 "Natrona School District 1",5604510,"Casper Mountain Science Program Intern Spring 2025","Science Education","Science","Teacher","2024-09-06","2024-11-08",10,70,"Closed / Filled",1,0,0,0,0,0
@@ -834,12 +819,12 @@
 "Natrona School District 1",5604510,"Centennial Phys Ed. Teacher for the 2025-26 School Year Only","Physical Education","Physical Education","Teacher","2025-03-14","2025-03-28",3,21,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"Centennial Spanish Dual Language Immersion Teacher beginning the 2025-2026 School Year","Language Education","Language","Teacher","2024-12-13","2025-02-14",9,70,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"Centennial Special Education Resource Teacher- Beginning 26-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-27","2026-04-17",3,28,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Classroom Teacher- Dual Language Immersion Spanish Teacher (starting 2025-2026 school year)","Language Education","Language","Teacher","2025-01-10","2025-01-24",2,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Classroom Teacher- Dual Language Immersion Spanish Teacher (starting 2025-2026 school year)","Elementary Education","Elementary","Teacher","2025-01-10","2025-01-24",2,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Cottonwood Elementary Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-05-16","2025-05-23",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Cottonwood Special Education Classroom Teacher beginning for the 25-26 School Year","Special Education - General","Special Education - General","Teacher","2025-05-23","2025-05-23",1,7,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Cottonwood Special Education Teacher beginning 2026-2027","Special Education - General","Special Education - General","Teacher","2026-04-03","2026-04-03",1,7,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Crest Hill 5th Grade Elementary Teacher for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-05-15","2026-05-15",1,7,"Closed / Filled",0,0,1,0,0,0
-"Natrona School District 1",5604510,"Crest Hill Classroom Teacher for the 2025-2026 School Year Only","Uncategorized","Other","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Crest Hill Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Crest Hill Elementary Classroom Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-07-04","2025-07-25",4,28,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Crest Hill Elementary Library Media Technician","Elementary Education","Elementary","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Crest Hill Elementary Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-05-02","2025-05-09",2,14,"Closed / Filled",0,0,1,0,0,0
@@ -864,31 +849,31 @@
 "Natrona School District 1",5604510,"Dean Morgan Special Education Teacher beginning 26-27 school year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-04-24",5,35,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"District Based Special Education Teacher Beginning the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-03-21","2025-06-06",12,84,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"District Special Education Teacher to begin the 2026-2027 School Year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-04-17",4,28,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Evansville Classroom Teacher - Physical Education for the 2025-2026 School Year Only","Physical Education","Physical Education","Teacher","2025-04-04","2025-04-25",4,28,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Evansville Classroom Teacher for the 2026-27 School Year Only","Uncategorized","Other","Teacher","2026-04-03","2026-04-17",3,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Evansville Classroom Teacher - Physical Education for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-25",4,28,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Evansville Classroom Teacher for the 2026-27 School Year Only","Elementary Education","Elementary","Teacher","2026-04-03","2026-04-17",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Evansville Elementary Art Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-21","2025-04-04",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Evansville Elementary Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Evansville Elementary Special Education Teacher","Special Education - General","Special Education - General","Teacher","2024-12-06","2025-01-24",7,56,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Evansville Special Education Teacher to Begin the 2026-27 School Year","Special Education - General","Special Education - General","Teacher","2026-04-17","2026-05-08",5,28,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"FCA Classroom Teacher for the 2024-2025 year only","Uncategorized","Other","Teacher","2024-08-09","2024-08-23",3,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"FCA Classroom Teacher for the 2024-2025 year only","Elementary Education","Elementary","Teacher","2024-08-09","2024-08-23",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Fort Caspar Academy Special Education Resource Teacher Beginning the 2026-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-27","2026-04-24",5,35,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Fort Caspar Academy/Cottonwood Elementary Resource Special Education Teacher beginning the 25-26 school year","Special Education - General","Special Education - General","Teacher","2025-04-11","2025-06-06",9,63,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Fort Casper Academy Classroom Teacher for the 2026-27 School Year Only","Uncategorized","Other","Teacher","2026-08-04","2026-10-09",12,73,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Fort Casper Academy Classroom Teacher for the 2026-27 School Year Only","Elementary Education","Elementary","Teacher","2026-08-04","2026-10-09",12,73,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Journey 2nd Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-05-23","2025-05-23",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Journey 4th Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Journey Classroom Teacher-Kindergarten for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-04-24","2026-05-01",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Journey Kindergarten Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-08-01","2025-08-08",2,14,"Closed / Filled",0,0,1,0,0,0
-"Natrona School District 1",5604510,"Journey P.E. Classroom Teacher for the 2025-2026 School Year Only","Physical Education","Physical Education","Teacher","2025-08-01","2025-08-15",3,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Journey P.E. Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-08-01","2025-08-15",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Journey Special Education Classroom Teacher beginning for the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Journey/Pineview PE Classroom Teacher for the 2026-2027 School Year Only","Physical Education","Physical Education","Teacher","2026-04-10","2026-04-24",3,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Journey/Pineview PE Classroom Teacher for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-04-10","2026-04-24",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"KWHS - Marine Instructor (MI) OR Senior ROTC Marine Instructor (SMI)","CTE Teacher","CTE - Trades, Ag & Technical","Teacher","2025-01-31","2026-10-23",95,637,"Still Active",0,0,0,0,0,0
 "Natrona School District 1",5604510,"KWHS - ROTC Marine Instructor","CTE Teacher","CTE - Trades, Ag & Technical","Teacher","2024-11-15","2025-01-24",5,77,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"KWHS - Social Studies Teacher for the 2025-26 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-04-04","2025-04-04",1,7,"Closed / Filled",0,0,0,1,0,0
 "Natrona School District 1",5604510,"KWHS Language Arts Teacher For the 2025-2026 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2025-08-08","2025-08-08",1,7,"Closed / Filled",0,0,0,1,0,0
-"Natrona School District 1",5604510,"KWHS Math Classroom Teacher Beginning the 2025-26 School Year","Mathematics Education","Math","Teacher","2025-04-04","2025-04-11",2,14,"Closed / Filled",1,0,0,0,0,0
-"Natrona School District 1",5604510,"KWHS Math Classroom Teacher for the 2025-2026 School Year Only","Mathematics Education","Math","Teacher","2025-03-14","2025-11-28",7,266,"Closed / Filled",1,0,0,0,0,0
-"Natrona School District 1",5604510,"KWHS Science Classroom Teacher for the 2026-2027 School Year Only","Science Education","Science","Teacher","2026-03-27","2026-03-27",1,7,"Closed / Filled",1,0,0,0,0,0
-"Natrona School District 1",5604510,"KWHS Social Studies Classroom Teacher for the 25-26 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-11-21","2025-11-28",2,14,"Closed / Filled",0,0,0,1,0,0
+"Natrona School District 1",5604510,"KWHS Math Classroom Teacher Beginning the 2025-26 School Year","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-11",2,14,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"KWHS Math Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-11-28",7,266,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"KWHS Science Classroom Teacher for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-03-27","2026-03-27",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"KWHS Social Studies Classroom Teacher for the 25-26 School Year Only","Elementary Education","Elementary","Teacher","2025-11-21","2025-11-28",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"KWHS Special Education Teacher beginning for the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"KWHS Special Education Teacher beginning for the 2026-27 School Year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-04-03",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Lincoln 1st Grade Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-03-28","2025-03-28",1,7,"Closed / Filled",0,0,1,0,0,0
@@ -905,13 +890,13 @@
 "Natrona School District 1",5604510,"Manor Heights 1st Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-04-18","2025-05-02",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Manor Heights 4th Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-05-30","2025-06-13",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Manor Heights Classroom K-5 Art Teacher for the 2025-2026 School Year Only","Art Teacher","Art","Teacher","2025-11-14","2026-02-20",15,105,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Manor Heights Classroom Teacher-K-5 General Music for the 2024-2025 School Year Only","Music Education","Music","Teacher","2024-08-09","2024-12-27",21,147,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Manor Heights Classroom Teacher-K-5 General Music for the 2024-2025 School Year Only","Elementary Education","Elementary","Teacher","2024-08-09","2024-12-27",21,147,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Manor Heights Elementary Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-05-09","2025-05-16",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Manor Heights Elementary K-5 Classroom Music Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-04-04",4,28,"Closed / Filled",0,0,1,0,0,0
-"Natrona School District 1",5604510,"Manor Heights K-5 Art Classroom Teacher for the 2025-2026 School Year Only","Art Teacher","Art","Teacher","2025-05-02","2025-05-09",2,14,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Manor Heights K-6 Art Classroom Teacher for the 2025-2026 School Year Only","Art Teacher","Art","Teacher","2025-04-25","2025-04-25",1,7,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Manor Heights K-5 Art Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-05-02","2025-05-09",2,14,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Manor Heights K-6 Art Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-04-25","2025-04-25",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Math Teacher- Roosevelt High School Beginning the 2025-2026 School Year","Mathematics Education","Math","Teacher","2025-04-04","2025-04-25",4,28,"Closed / Filled",1,0,0,0,0,0
-"Natrona School District 1",5604510,"Midwest Classroom Teacher","Uncategorized","Other","Teacher","2025-08-08","2025-08-08",1,7,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Midwest Classroom Teacher","Elementary Education","Elementary","Teacher","2025-08-08","2025-08-08",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Midwest Elementary Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-08-15","2025-08-15",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Midwest Kinder / 1st Grade / 2nd Grade Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-04",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Midwest Middle School ELA Teacher for the 26-27 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2026-03-27","2026-04-03",2,14,"Closed / Filled",0,0,0,1,0,0
@@ -926,15 +911,15 @@
 "Natrona School District 1",5604510,"NCHS Language Arts Teacher for the 2026-27 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2026-06-12","2026-07-10",5,35,"Closed / Filled",0,0,0,1,0,0
 "Natrona School District 1",5604510,"NCHS Social Studies Teacher for the 2025-26 School Year Only","Social Studies Education","Secondary Social Studies","Teacher","2025-05-02","2025-05-02",1,7,"Closed / Filled",0,0,0,1,0,0
 "Natrona School District 1",5604510,"NCHS Special Education Teacher Beginning the 2025-26 School Year","Special Education - General","Special Education - General","Teacher","2025-06-06","2025-06-06",1,7,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"NCHS World Language Classroom Teacher beginning the 2025-26 school year","Language Education","Language","Teacher","2025-02-21","2025-02-28",2,14,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"NCHS World Language French Classroom Teacher beginning the 2025-26 school year","Language Education","Language","Teacher","2024-12-13","2025-02-14",9,70,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"NCHS World Language Classroom Teacher beginning the 2025-26 school year","Elementary Education","Elementary","Teacher","2025-02-21","2025-02-28",2,14,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"NCHS World Language French Classroom Teacher beginning the 2025-26 school year","Elementary Education","Elementary","Teacher","2024-12-13","2025-02-14",9,70,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Oregon Trail 1st Grade Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-03-21","2025-04-04",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Oregon Trail 2nd Grade Classroom Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-04-11","2025-04-11",1,7,"Closed / Filled",0,0,1,0,0,0
-"Natrona School District 1",5604510,"Oregon Trail Classroom Teacher for the 2025-26 School Year Only","Uncategorized","Other","Teacher","2025-04-18","2025-05-23",4,42,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion (Spanish) Beginning the 2026-2027 School Year","Language Education","Language","Teacher","2026-02-20","2026-02-20",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion Beginning the 2026-2027 School Year","Language Education","Language","Teacher","2026-02-13","2026-02-13",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion to Begin the 2026-27 School Year","Language Education","Language","Teacher","2026-06-05","2026-06-05",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Park Classroom Teacher- Spanish Dual Language Immersion to Begin the 2026-27 School Year","Language Education","Language","Teacher","2026-06-12","2026-09-18",18,105,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Oregon Trail Classroom Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-04-18","2025-05-23",4,42,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion (Spanish) Beginning the 2026-2027 School Year","Elementary Education","Elementary","Teacher","2026-02-20","2026-02-20",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion Beginning the 2026-2027 School Year","Elementary Education","Elementary","Teacher","2026-02-13","2026-02-13",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Park Classroom Teacher- Dual Language Immersion to Begin the 2026-27 School Year","Elementary Education","Elementary","Teacher","2026-06-05","2026-06-05",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Park Classroom Teacher- Spanish Dual Language Immersion to Begin the 2026-27 School Year","Elementary Education","Elementary","Teacher","2026-06-12","2026-09-18",18,105,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Park Elementary Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Park Elementary Special Education Teacher Beginning 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-03-21","2025-03-28",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Pineview 4th Grade Teacher for the 26-27 School Year Only","Elementary Education","Elementary","Teacher","2026-05-01","2026-05-22",5,28,"Closed / Filled",0,0,1,0,0,0
@@ -944,14 +929,14 @@
 "Natrona School District 1",5604510,"Pineview/Crest Hill Music Teacher for 2024-2025 ONLY","Music Education","Music","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"Poison Spider Special Education Resource Teacher to Begin 26-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-27","2026-04-10",3,21,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Poison Spider Special Education Teacher Beginning 2025-26 School Year","Special Education - General","Special Education - General","Teacher","2025-05-23","2025-06-06",3,21,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"RHS Math Classroom Teacher for the 2026-2027 School Year Only","Mathematics Education","Math","Teacher","2026-05-07","2026-06-12",7,43,"Closed / Filled",1,0,0,0,0,0
+"Natrona School District 1",5604510,"RHS Math Classroom Teacher for the 2026-2027 School Year Only","Elementary Education","Elementary","Teacher","2026-05-07","2026-06-12",7,43,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"RHS Special Education Resource Teacher to Begin the 26-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-27","2026-04-03",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Sagewood Art Teacher for the 2025-2026 School Year Only","Art Teacher","Art","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Sagewood Classroom Teacher for the 2025-26 School Year Only","Uncategorized","Other","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Sagewood Classroom Teacher for the 26-27 School Year Only","Uncategorized","Other","Teacher","2026-04-17","2026-05-01",3,21,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Sagewood Classroom Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Sagewood Classroom Teacher for the 26-27 School Year Only","Elementary Education","Elementary","Teacher","2026-04-17","2026-05-01",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Sagewood Kindergarten Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Sagewood Preschool Teacher for the 26-27 School Year Only","Early Childhood Education","Early Childhood","Teacher","2026-03-27","2026-03-27",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Sagewood Primary Classroom Teacher for the 26-27 School Year Only","Uncategorized","Other","Teacher","2026-05-15","2026-05-15",1,7,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Sagewood Primary Classroom Teacher for the 26-27 School Year Only","Elementary Education","Elementary","Teacher","2026-05-15","2026-05-15",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Southridge 1st Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-05-30",2,84,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Southridge Elementary Library Media Technician","Elementary Education","Elementary","Teacher","2025-09-19","2025-10-10",2,28,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Southridge Elementary-Special Education Teacher Beginning for the 2026-2027 School Year","Special Education - General","Special Education - General","Teacher","2026-03-27","2026-04-17",4,28,"Closed / Filled",0,1,0,0,0,0
@@ -962,12 +947,12 @@
 "Natrona School District 1",5604510,"Summit 1st Grade Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-05-02","2025-05-09",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Summit Elementary Kindergarten Teacher for the 2025-26 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-28",3,21,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Verda James 5th Grade Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-25",4,28,"Closed / Filled",0,0,1,0,0,0
-"Natrona School District 1",5604510,"Verda James Classroom Teacher for the 2026-27 School Year Only","Uncategorized","Other","Teacher","2026-04-24","2026-04-24",1,7,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Verda James Classroom Teacher for the 2026-27 School Year Only","Elementary Education","Elementary","Teacher","2026-04-24","2026-04-24",1,7,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Verda James Elementary Dual Language Immersion (Spanish) Teacher Beginning the 2026-27 School Year","Elementary Education","Elementary","Teacher","2026-02-06","2026-05-22",17,112,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Verda James Elementary Library Media Technician","Elementary Education","Elementary","Teacher","2025-02-14","2025-02-21",2,14,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Verda James Spanish Dual Language Immersion Teacher beginning the 2025-26 School Year","Language Education","Language","Teacher","2025-03-28","2025-04-11",3,21,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"Verda James Special Education Resource Teacher to Begin the 2026-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-04-10","2026-04-24",3,21,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Virtual Classroom Teacher - Language Arts for the 2024-2025 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2024-10-11",10,70,"Closed / Filled",0,0,0,1,0,0
+"Natrona School District 1",5604510,"Virtual Classroom Teacher - Language Arts for the 2024-2025 School Year Only","Elementary Education","Elementary","Teacher","2024-08-09","2024-10-11",10,70,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Vision Specialist (Teacher of the Visually Impaired) Begins the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-05-23","2025-06-06",3,21,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Woods 2/3 Grade Teacher for the 2025-2026 School Year Only","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,0,0,0
 "Natrona School District 1",5604510,"Woods Elementary Library Media Technician","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-08-08","2025-08-08",1,7,"Closed / Filled",0,0,0,0,0,0
@@ -1024,7 +1009,7 @@
 "Park County School District 1",5605160,"Math Teacher","Mathematics Education","Math","Teacher","2026-02-06","2026-02-27",4,28,"Closed / Filled",1,0,0,0,0,0
 "Park County School District 1",5605160,"Physical Education Teacher","Physical Education","Physical Education","Teacher","2026-05-07","2026-05-15",3,15,"Closed / Filled",0,0,0,0,0,0
 "Park County School District 1",5605160,"Primary Grade Teacher K-3","Uncategorized","Other","Teacher","2026-02-06","2026-03-20",7,49,"Closed / Filled",0,0,0,0,0,0
-"Park County School District 1",5605160,"Reading Recovery Teacher","Uncategorized","Other","Teacher","2026-02-06","2026-03-20",7,49,"Closed / Filled",0,0,0,0,0,0
+"Park County School District 1",5605160,"Reading Recovery Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-06","2026-03-20",7,49,"Closed / Filled",0,0,0,1,0,0
 "Park County School District 1",5605160,"Science Teacher","Science Education","Science","Teacher","2026-02-06","2026-03-06",5,35,"Closed / Filled",1,0,0,0,0,0
 "Park County School District 1",5605160,"Spanish Teacher","Language Education","Language","Teacher","2026-04-24","2026-05-15",5,28,"Closed / Filled",0,0,0,0,0,0
 "Park County School District 1",5605160,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-01-17","2026-07-10",14,546,"Closed / Filled",0,1,0,0,0,0
@@ -1032,8 +1017,7 @@
 "Park County School District 16",5604380,"ELEMENTARY TEACHER","Elementary Education","Elementary","Teacher","2025-04-04","2025-04-11",2,14,"Closed / Filled",0,0,1,0,0,0
 "Park County School District 16",5604380,"Elementary Teacher","Elementary Education","Elementary","Teacher","2025-04-18","2025-05-09",4,28,"Closed / Filled",0,0,1,0,0,0
 "Park County School District 16",5604380,"English Langauge Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-17","2026-05-01",3,21,"Closed / Filled",0,0,0,1,0,0
-"Park County School District 16",5604380,"Special Education Supervisor/Teacher","Special Education - General","Special Education - General","Teacher","2025-01-31","2025-02-21",4,28,"Closed / Filled",0,1,0,0,0,0
-"Park County School District 16",5604380,"Title 1 Teacher","Uncategorized","Other","Teacher","2025-05-16","2025-07-18",10,70,"Closed / Filled",0,0,0,0,0,0
+"Park County School District 16",5604380,"Title 1 Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-05-16","2025-07-18",10,70,"Closed / Filled",0,0,0,1,0,0
 "Park County School District 6",5602070,"ASD Special Education Teacher","Special Education - General","Special Education - General","Teacher","2024-08-30","2026-10-23",39,791,"Still Active",0,1,0,0,0,0
 "Park County School District 6",5602070,"Broadcast Journalism/Media Teacher","Uncategorized","Other","Teacher","2025-05-09","2025-06-27",8,56,"Closed / Filled",0,0,0,0,0,0
 "Park County School District 6",5602070,"Elementary 3-5 Rural School Classroom Teacher","Elementary Education","Elementary","Teacher","2025-06-06","2025-06-27",4,28,"Closed / Filled",0,0,1,0,0,0
@@ -1061,14 +1045,14 @@
 "Park County School District 6",5602070,"Physical Education Teacher","Physical Education","Physical Education","Teacher","2025-05-16","2025-05-16",1,7,"Closed / Filled",0,0,0,0,0,0
 "Park County School District 6",5602070,"Physical Education/Health Teacher","Physical Education","Physical Education","Teacher","2025-01-17","2025-02-07",4,28,"Closed / Filled",0,0,0,0,0,0
 "Park County School District 6",5602070,"Science Teacher","Science Education","Science","Teacher","2024-08-09","2024-08-16",2,14,"Closed / Filled",1,0,0,0,0,0
-"Park County School District 6",5602070,"Secondary Literacy Teacher","Uncategorized","Other","Teacher","2026-04-17","2026-05-08",5,28,"Closed / Filled",0,0,0,0,0,0
+"Park County School District 6",5602070,"Secondary Literacy Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-17","2026-05-08",5,28,"Closed / Filled",0,0,0,1,0,0
 "Park County School District 6",5602070,"Secondary Special Education Resource Teacher (2) Positions","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-02-06","2026-03-06",5,35,"Closed / Filled",0,1,0,0,0,0
 "Park County School District 6",5602070,"Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-03-14","2026-03-06",17,364,"Closed / Filled",0,0,0,1,0,0
 "Park County School District 6",5602070,"Special Education Resource Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2024-08-09","2025-03-14",32,224,"Closed / Filled",0,1,0,0,0,0
-"Park County School District 6",5602070,"Title I Teacher","Uncategorized","Other","Teacher","2026-05-22","2026-07-10",7,56,"Closed / Filled",0,0,0,0,0,0
+"Park County School District 6",5602070,"Title I Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-22","2026-07-10",7,56,"Closed / Filled",0,0,0,1,0,0
 "Platte County School District 1",5605090,"Ag Teacher WMS","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-08-07","2026-08-14",3,14,"Closed / Filled",0,0,0,0,0,0
 "Platte County School District 1",5605090,"Ag/FFA Teacher Vacancy","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-04-10","2026-04-17",2,14,"Closed / Filled",0,0,0,0,0,0
-"Platte County School District 1",5605090,"Agricultural Teacher Closes 8/10 8AM","Uncategorized","Other","Teacher","2026-08-07","2026-08-07",1,7,"Closed / Filled",0,0,0,0,0,0
+"Platte County School District 1",5605090,"Agricultural Teacher Closes 8/10 8AM","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-08-07","2026-08-07",1,7,"Closed / Filled",0,0,0,0,0,0
 "Platte County School District 1",5605090,"Agriculture/FFA Teacher","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-04-24","2026-05-01",2,14,"Closed / Filled",0,0,0,0,0,0
 "Platte County School District 1",5605090,"Certified English/ Reading Interventionist","English Language Arts Education","English Language Arts Secondary","Teacher","2024-11-29","2025-02-07",11,77,"Closed / Filled",0,0,0,1,0,0
 "Platte County School District 1",5605090,"Certified Reading Interventionist","English Language Arts Education","English Language Arts Secondary","Teacher","2024-11-22","2024-11-22",1,7,"Closed / Filled",0,0,0,1,0,0
@@ -1109,7 +1093,7 @@
 "Platte County School District 2",5603180,"K12 Music Band Teacher","Music Education","Music","Teacher","2025-03-14","2025-06-06",13,91,"Closed / Filled",0,0,0,0,0,0
 "Platte County School District 2",5603180,"Secondary Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2026-08-04","2026-08-14",4,17,"Closed / Filled",0,0,0,1,0,0
 "Platte County School District 2",5603180,"Special Education k12 Teachers","Special Education - General","Special Education - General","Teacher","2025-03-14","2025-06-06",13,91,"Closed / Filled",0,1,0,0,0,0
-"Platte County School District 2",5603180,"Title 1 Teacher","Uncategorized","Other","Teacher","2025-04-18","2025-05-16",5,35,"Closed / Filled",0,0,0,0,0,0
+"Platte County School District 2",5603180,"Title 1 Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-04-18","2025-05-16",5,35,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 1",5605690,"6-12 CTE/.STEM Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-04-17","2026-05-01",3,21,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 1",5605690,"6-12 Spanish Teacher at TRHS/TRMS","Language Education","Language","Teacher","2025-03-28","2025-05-09",7,49,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 1",5605690,"BHHS Math Teacher","Mathematics Education","Math","Teacher","2025-01-24","2025-04-11",12,84,"Closed / Filled",1,0,0,0,0,0
@@ -1127,7 +1111,7 @@
 "Sheridan County School District 2",5605695,"4th Grade Teacher - Highland Park Elementary","Elementary Education","Elementary","Teacher","2025-03-28","2025-04-04",2,14,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"4th/5th Grade Classroom Teacher - Story Elementary","Elementary Education","Elementary","Teacher","2025-02-28","2025-03-21",4,28,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"5th Grade Teacher - Highland Park Elementary","Elementary Education","Elementary","Teacher","2026-04-10","2026-04-17",2,14,"Closed / Filled",0,0,1,0,0,0
-"Sheridan County School District 2",5605695,"Agriculture/Industrial Tech Classroom Teacher - Sheridan High School","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-05-07","2026-05-22",4,22,"Closed / Filled",0,0,0,0,0,0
+"Sheridan County School District 2",5605695,"Agriculture/Industrial Tech Classroom Teacher - Sheridan High School","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-05-07","2026-05-22",4,22,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Classroom Teacher - Kindergarten-2nd - Grade Highland Park Elementary","Elementary Education","Elementary","Teacher","2026-03-06","2026-04-03",5,35,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"Classroom Teacher - Story Elementary","Elementary Education","Elementary","Teacher","2026-02-20","2026-03-06",3,21,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"Elementary Classroom Special Education Teacher - Henry A. Coffeen Elementary","Special Education - General","Special Education - General","Teacher","2026-02-20","2026-02-27",2,14,"Closed / Filled",0,1,0,0,0,0
@@ -1141,16 +1125,16 @@
 "Sheridan County School District 2",5605695,"Elementary Reading Recovery / Special Education Teacher - Districtwide","Special Education - General","Special Education - General","Teacher","2025-03-28","2025-10-03",11,196,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Elementary Special Education Teacher- Sagebrush","Special Education - General","Special Education - General","Teacher","2026-02-20","2026-03-06",3,21,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Elementary Title I Literacy Teacher - Henry A. Coffeen Elementary","Elementary Education","Elementary","Teacher","2026-05-07","2026-05-29",5,29,"Closed / Filled",0,0,1,0,0,0
-"Sheridan County School District 2",5605695,"English Classroom Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-28","2025-03-07",2,14,"Closed / Filled",0,0,0,1,0,0
+"Sheridan County School District 2",5605695,"English Classroom Teacher - Sheridan Junior High School","Elementary Education","Elementary","Teacher","2025-02-28","2025-03-07",2,14,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"English Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-27","2026-03-27",5,35,"Closed / Filled",0,0,0,1,0,0
-"Sheridan County School District 2",5605695,"Family and Consumer Science Classroom Teacher - Sheridan Junior High School","Family and Consumer Science","CTE - Business & Family Sciences","Teacher","2026-02-27","2026-03-06",2,14,"Closed / Filled",1,0,0,0,0,0
+"Sheridan County School District 2",5605695,"Family and Consumer Science Classroom Teacher - Sheridan Junior High School","Elementary Education","Elementary","Teacher","2026-02-27","2026-03-06",2,14,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"High School Computer Science/Business Teacher (Grades 9-12)","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-10-31","2026-02-06",15,105,"Closed / Filled",1,0,0,0,0,0
 "Sheridan County School District 2",5605695,"High School Computer Science/Business Teacher (Grades 9-12) - Sheridan High School","Computer Science Education","CTE - Business & Family Sciences","Teacher","2026-02-13","2026-05-01",12,84,"Closed / Filled",1,0,0,0,0,0
-"Sheridan County School District 2",5605695,"High School English Classroom Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-28","2026-08-21",13,546,"Closed / Filled",0,0,0,1,0,0
+"Sheridan County School District 2",5605695,"High School English Classroom Teacher","Elementary Education","Elementary","Teacher","2025-02-28","2026-08-21",13,546,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"High School English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-08-11","2026-08-21",3,17,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 2",5605695,"High School English Teacher - Sheridan High School","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-13","2026-04-03",8,56,"Closed / Filled",0,0,0,1,0,0
-"Sheridan County School District 2",5605695,"High School Math Classroom Teacher - Sheridan High School","Mathematics Education","Math","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",1,0,0,0,0,0
-"Sheridan County School District 2",5605695,"High School Mathematics Classroom Teacher - John C. Schiffer","Mathematics Education","Math","Teacher","2026-01-23","2026-03-27",10,70,"Closed / Filled",1,0,0,0,0,0
+"Sheridan County School District 2",5605695,"High School Math Classroom Teacher - Sheridan High School","Elementary Education","Elementary","Teacher","2025-05-09","2025-05-23",3,21,"Closed / Filled",0,0,1,0,0,0
+"Sheridan County School District 2",5605695,"High School Mathematics Classroom Teacher - John C. Schiffer","Elementary Education","Elementary","Teacher","2026-01-23","2026-03-27",10,70,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"High School Mathematics Teacher - Sheridan High School","Mathematics Education","Math","Teacher","2025-03-14","2025-04-04",4,28,"Closed / Filled",1,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Job Coach / Family and Consumer Science Teacher - Sheridan High School","Family and Consumer Science","CTE - Business & Family Sciences","Teacher","2026-02-27","2026-03-20",4,28,"Closed / Filled",1,0,0,0,0,0
 "Sheridan County School District 2",5605695,"K-5 Classroom Teacher - HAC Elementary","Elementary Education","Elementary","Teacher","2025-02-21","2025-03-21",5,35,"Closed / Filled",0,0,1,0,0,0
@@ -1165,9 +1149,9 @@
 "Sheridan County School District 2",5605695,"Physical Education Teacher - Sheridan High School","Physical Education","Physical Education","Teacher","2026-01-16","2026-03-27",8,77,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Pre-K Teacher","Early Childhood Education","Early Childhood","Teacher","2024-12-06","2025-01-17",7,49,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Rotating Teacher - Districtwide","Uncategorized","Other","Teacher","2026-05-01","2026-05-29",6,35,"Closed / Filled",0,0,0,0,0,0
-"Sheridan County School District 2",5605695,"Science Classroom Teacher - Sheridan High School","Science Education","Science","Teacher","2026-05-15","2026-05-29",3,21,"Closed / Filled",1,0,0,0,0,0
-"Sheridan County School District 2",5605695,"Social Studies Classroom Teacher - Sheridan High School","Social Studies Education","Secondary Social Studies","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,0,1,0,0
-"Sheridan County School District 2",5605695,"Social Studies Classroom Teacher - Sheridan Junior High School","Social Studies Education","Secondary Social Studies","Teacher","2025-02-21","2025-05-23",9,98,"Closed / Filled",0,0,0,1,0,0
+"Sheridan County School District 2",5605695,"Science Classroom Teacher - Sheridan High School","Elementary Education","Elementary","Teacher","2026-05-15","2026-05-29",3,21,"Closed / Filled",0,0,1,0,0,0
+"Sheridan County School District 2",5605695,"Social Studies Classroom Teacher - Sheridan High School","Elementary Education","Elementary","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,1,0,0,0
+"Sheridan County School District 2",5605695,"Social Studies Classroom Teacher - Sheridan Junior High School","Elementary Education","Elementary","Teacher","2025-02-21","2025-05-23",9,98,"Closed / Filled",0,0,1,0,0,0
 "Sheridan County School District 2",5605695,"Social Studies Teacher - Sheridan Junior High School","Social Studies Education","Secondary Social Studies","Teacher","2026-02-27","2026-03-20",4,28,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 2",5605695,"Spanish/EL Teacher - Sheridan High School","Language Education","Language","Teacher","2026-03-13","2026-04-10",5,35,"Closed / Filled",0,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Special Education Classroom Teacher - Sheridan High School","Special Education - General","Special Education - General","Teacher","2025-02-21","2025-03-21",5,35,"Closed / Filled",0,1,0,0,0,0
@@ -1179,8 +1163,8 @@
 "Sheridan County School District 2",5605695,"Special Education Teacher - Henry A. Coffeen/Sagebrush Elementary Schools","Special Education - General","Special Education - General","Teacher","2025-02-21","2025-02-28",2,14,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Special Education Teacher - Highland Park Elementary","Special Education - General","Special Education - General","Teacher","2026-02-27","2026-03-06",2,14,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Special Education Teacher - Sheridan Junior High School","Special Education - General","Special Education - General","Teacher","2025-03-07","2025-04-25",8,56,"Closed / Filled",0,1,0,0,0,0
-"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","Mathematics Education","Math","Teacher","2025-12-12","2026-02-27",8,84,"Closed / Filled",1,0,0,0,0,0
-"Sheridan County School District 2",5605695,"Title I Reading Teacher - Sheridan Junior High School","Uncategorized","Other","Teacher","2025-03-28","2025-04-11",3,21,"Closed / Filled",0,0,0,0,0,0
+"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2025-12-12","2026-02-27",8,84,"Closed / Filled",0,0,0,1,0,0
+"Sheridan County School District 2",5605695,"Title I Reading Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-28","2025-04-11",3,21,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 3",5605680,"7-12 Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-12-12","2026-03-06",13,91,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 3",5605680,"7–12 Science Teacher","Science Education","Science","Teacher","2026-06-19","2026-07-10",4,28,"Closed / Filled",1,0,0,0,0,0
 "Sheridan County School District 3",5605680,"Agriculture Education Teacher","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2025-03-07","2025-03-14",2,14,"Closed / Filled",0,0,0,0,0,0
@@ -1189,7 +1173,6 @@
 "Snowy Range Academy",5601980,"K-5 Music Teacher","Music Education","Music","Teacher","2026-08-07","2026-08-11",2,11,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 1",5604860,"Ag Teacher","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2025-04-11","2025-05-02",4,28,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 1",5604860,"Ag Teacher 2026-2027","Agriculture Education","CTE - Trades, Ag & Technical","Teacher","2026-03-20","2026-04-24",6,42,"Closed / Filled",0,0,0,0,0,0
-"Sublette County School District 1",5604860,"Auto MechanicsTeacher 2026-2027","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-03-20","2026-04-17",5,35,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 1",5604860,"Culinary Arts Teacher 5/12/2026.docx","Uncategorized","Other","Teacher","2026-05-15","2026-06-05",4,28,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 1",5604860,"Elemenatary Art Teacher","Art Teacher","Art","Teacher","2025-01-17","2025-01-31",3,21,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 1",5604860,"Elementary School 5th Grade Teacher (26–27)","Elementary Education","Elementary","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,0,1,0,0,0
@@ -1206,8 +1189,8 @@
 "Sublette County School District 1",5604860,"WeldingTeacher 2026-2027","Uncategorized","Other","Teacher","2026-03-20","2026-04-24",6,42,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 9",5601260,"6-12 Computer Science Teacher","Computer Science Education","CTE - Business & Family Sciences","Teacher","2026-05-22","2026-06-05",3,21,"Closed / Filled",1,0,0,0,0,0
 "Sublette County School District 9",5601260,"6-8 Math Teacher","Mathematics Education","Math","Teacher","2026-02-06","2026-05-01",12,91,"Closed / Filled",1,0,0,0,0,0
-"Sublette County School District 9",5601260,"6-8 Title I Interventionist","Uncategorized","Other","Teacher","2026-05-22","2026-06-12",4,28,"Closed / Filled",0,0,0,0,0,0
-"Sublette County School District 9",5601260,"BPES Title 1 Interventionist","Uncategorized","Other","Teacher","2026-04-17","2026-04-24",2,14,"Closed / Filled",0,0,0,0,0,0
+"Sublette County School District 9",5601260,"6-8 Title I Interventionist","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-22","2026-06-12",4,28,"Closed / Filled",0,0,0,1,0,0
+"Sublette County School District 9",5601260,"BPES Title 1 Interventionist","English Language Arts Education","English Language Arts Secondary","Teacher","2026-04-17","2026-04-24",2,14,"Closed / Filled",0,0,0,1,0,0
 "Sublette County School District 9",5601260,"Elementary Teacher","Elementary Education","Elementary","Teacher","2025-01-31","2025-02-21",4,28,"Closed / Filled",0,0,1,0,0,0
 "Sublette County School District 9",5601260,"K-5 Physical Education Teacher","Physical Education","Physical Education","Teacher","2025-02-28","2025-03-21",4,28,"Closed / Filled",0,0,0,0,0,0
 "Sublette County School District 9",5601260,"Secondary English Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-28","2025-02-28",1,7,"Closed / Filled",0,0,0,1,0,0
@@ -1221,9 +1204,9 @@
 "Sweetwater County School District 1",5605302,"Alternative Academic-Daily Living Skills Program Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-01-24","2026-05-15",59,483,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Alternative Academic-Daily Living Skills Program Teacher (1)","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-04-18","2025-08-29",20,140,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Alternative Academic-Daily Living Skills Program Teacher (2)","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-03-07","2025-04-11",6,42,"Closed / Filled",0,1,0,0,0,0
-"Sweetwater County School District 1",5605302,"Alternative Communication Program (ACP) Teacher","Uncategorized","Other","Teacher","2025-04-18","2026-05-29",51,413,"Closed / Filled",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"Alternative Communication Program Teacher","Uncategorized","Other","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"Alternative Communications Program (ACP) Teacher","Uncategorized","Other","Teacher","2026-03-13","2026-06-12",15,98,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"Alternative Communication Program (ACP) Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-04-18","2026-05-29",51,413,"Closed / Filled",0,1,0,0,0,0
+"Sweetwater County School District 1",5605302,"Alternative Communication Program Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,1,0,0,0,0
+"Sweetwater County School District 1",5605302,"Alternative Communications Program (ACP) Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-03-13","2026-06-12",15,98,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Alternative Daily Living Skills Program Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-11-07","2026-03-13",19,133,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Art Teacher","Art Teacher","Art","Teacher","2025-04-04","2025-06-06",10,70,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Art Teacher (Shared RSJH/RSHS)","Art Teacher","Art","Teacher","2025-04-18","2025-05-16",5,35,"Closed / Filled",0,0,0,0,0,0
@@ -1241,9 +1224,9 @@
 "Sweetwater County School District 1",5605302,"Certified Teacher - Virtual 7-12 Secondary Performing Arts - Music","Music Education","Music","Teacher","2025-05-23","2025-05-23",1,7,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Certified Teacher - Virtual 7-12 Secondary Science","Science Education","Science","Teacher","2025-05-23","2025-05-23",1,7,"Closed / Filled",1,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Certified Teacher - Virtual 7-12 Secondary Social Studies","Social Studies Education","Secondary Social Studies","Teacher","2025-05-23","2025-05-23",1,7,"Closed / Filled",0,0,0,1,0,0
-"Sweetwater County School District 1",5605302,"EL Teacher","Uncategorized","Other","Teacher","2025-03-21","2026-10-23",49,588,"Still Active",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"EL Teacher (2)","Uncategorized","Other","Teacher","2025-08-01","2026-03-06",23,224,"Closed / Filled",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"EL Teacher - Desert View / Overland","Uncategorized","Other","Teacher","2026-07-31","2026-10-23",16,91,"Still Active",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"EL Teacher","Language Education","Language","Teacher","2025-03-21","2026-10-23",49,588,"Still Active",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"EL Teacher (2)","Language Education","Language","Teacher","2025-08-01","2026-03-06",23,224,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"EL Teacher - Desert View / Overland","Language Education","Language","Teacher","2026-07-31","2026-10-23",16,91,"Still Active",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Early Head Start Full-Time Teacher","Early Childhood Education","Early Childhood","Teacher","2025-10-31","2025-11-14",3,21,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Elementary Special Education Resource Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-08-11","2026-10-23",12,80,"Still Active",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Elementary Special Education Resource Teachers","Special Education - General","Special Education - General","Teacher","2026-08-11","2026-10-23",12,80,"Still Active",0,1,0,0,0,0
@@ -1265,8 +1248,6 @@
 "Sweetwater County School District 1",5605302,"English/Language Arts","English Language Arts Education","English Language Arts Secondary","Teacher","2025-02-14","2026-10-23",48,623,"Still Active",0,0,0,1,0,0
 "Sweetwater County School District 1",5605302,"English/Language Arts (2)","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2025-02-07",26,189,"Closed / Filled",0,0,0,1,0,0
 "Sweetwater County School District 1",5605302,"Family and Consumer Science Teacher","Family and Consumer Science","CTE - Business & Family Sciences","Teacher","2025-05-16","2026-08-11",34,459,"Closed / Filled",1,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"Full-Time Daycare Assistant and Preschool Teacher Assistant","Early Childhood Education","Early Childhood","Teacher","2024-08-30","2026-08-11",37,718,"Closed / Filled",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"Full-Time TANF Preschool Teacher Assistant","Early Childhood Education","Early Childhood","Teacher","2025-05-09","2025-10-24",7,175,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Head Start Full-Time Assistant Teacher","Early Childhood Education","Early Childhood","Teacher","2024-08-16","2024-08-23",2,14,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Interventionist - Grant Funded","Uncategorized","Other","Teacher","2025-03-21","2025-05-09",7,56,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"JROTC Army Non-Senior Military Instructor","CTE Teacher","CTE - Trades, Ag & Technical","Teacher","2024-08-09","2025-08-15",53,378,"Closed / Filled",0,0,0,0,0,0
@@ -1322,19 +1303,19 @@
 "Sweetwater County School District 1",5605302,"Special Education - Resource Teacher (2)","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-05-16","2026-08-07",59,455,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 1",5605302,"Student Achievement Teacher (SAT) (4)","Uncategorized","Other","Teacher","2025-04-11","2025-05-09",5,35,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"Teacher of the Visually Impaired","Special Education - General","Special Education - General","Teacher","2025-03-21","2025-04-11",4,28,"Closed / Filled",0,1,0,0,0,0
-"Sweetwater County School District 1",5605302,"Title One Teacher","Uncategorized","Other","Teacher","2025-05-02","2026-07-10",24,441,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"Title One Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-05-02","2026-07-10",24,441,"Closed / Filled",0,0,0,1,0,0
 "Sweetwater County School District 1",5605302,"Trade and Technical Teacher (Industrial Arts/Ag)","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-03-14","2025-05-09",9,63,"Closed / Filled",0,0,0,0,0,0
-"Sweetwater County School District 1",5605302,"Virtual EL Teacher","Virtual Education","Other","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 1",5605302,"Virtual EL Teacher","Language Education","Language","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 1",5605302,"WYBILT EL Literacy Interventionist - One Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,1,0,0
 "Sweetwater County School District 1",5605302,"WYBILT Literacy Interventionist - One Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,1,0,0
 "Sweetwater County School District 1",5605302,"WYBILT Literacy Interventionist - One Year Only (2)","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2025-01-10",23,161,"Closed / Filled",0,0,0,1,0,0
-"Sweetwater County School District 2",5605762,"6th Grade Classroom Teacher","Uncategorized","Other","Teacher","2026-02-27","2026-03-13",3,21,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 2",5605762,"6th Grade Classroom Teacher","Elementary Education","Elementary","Teacher","2026-02-27","2026-03-13",3,21,"Closed / Filled",0,0,1,0,0,0
 "Sweetwater County School District 2",5605762,"Athletic Trainer/Health Science Teacher","Health Science","CTE - Business & Family Sciences","Teacher","2025-04-11","2025-05-30",8,56,"Closed / Filled",1,0,0,0,0,0
 "Sweetwater County School District 2",5605762,"Elementary Classroom Teacher (K-5)","Elementary Education","Elementary","Teacher","2025-05-16","2026-03-20",9,315,"Closed / Filled",0,0,1,0,0,0
 "Sweetwater County School District 2",5605762,"Elementary Classroom Teacher (K-6)","Elementary Education","Elementary","Teacher","2025-03-14","2025-05-09",8,63,"Closed / Filled",0,0,1,0,0,0
 "Sweetwater County School District 2",5605762,"Elementary Special Education Classroom Teacher","Special Education - General","Special Education - General","Teacher","2025-06-06","2026-02-13",9,259,"Closed / Filled",0,1,0,0,0,0
 "Sweetwater County School District 2",5605762,"English Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-06-27","2026-05-08",5,322,"Closed / Filled",0,0,0,1,0,0
-"Sweetwater County School District 2",5605762,"Industrial Art Woodworking/Construction Teacher","Art Teacher","Art","Teacher","2026-02-20","2026-03-27",6,42,"Closed / Filled",0,0,0,0,0,0
+"Sweetwater County School District 2",5605762,"Industrial Art Woodworking/Construction Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-02-20","2026-03-27",6,42,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 2",5605762,"Industrial Art Work Based Learning GRIP Teacher","Art Teacher","Art","Teacher","2026-07-31","2026-08-04",3,11,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 2",5605762,"Instrumental Music Teacher","Music Education","Music","Teacher","2026-02-06","2026-03-27",8,56,"Closed / Filled",0,0,0,0,0,0
 "Sweetwater County School District 2",5605762,"Kindergarten Classroom Teacher","Elementary Education","Elementary","Teacher","2025-10-24","2025-11-07",3,21,"Closed / Filled",0,0,1,0,0,0
@@ -1391,7 +1372,6 @@
 "Teton County School District 1",5605830,"Math Instructional Specialist, Colter Elementary and Wilson Elementary Schools","Elementary Education","Elementary","Teacher","2025-05-02","2025-05-16",3,21,"Closed / Filled",0,0,1,0,0,0
 "Teton County School District 1",5605830,"Middle School Math Teacher","Mathematics Education","Math","Teacher","2025-05-16","2025-06-06",4,28,"Closed / Filled",1,0,0,0,0,0
 "Teton County School District 1",5605830,"Middle School Music Teacher","Music Education","Music","Teacher","2026-04-24","2026-05-22",6,35,"Closed / Filled",0,0,0,0,0,0
-"Teton County School District 1",5605830,"Middle School Music Teacher/Band Director","Music Education","Music","Teacher","2026-03-06","2026-04-03",5,35,"Closed / Filled",0,0,0,0,0,0
 "Teton County School District 1",5605830,"Middle School STEM Teacher","STEM Teacher","Science","Teacher","2026-03-20","2026-05-15",10,63,"Closed / Filled",1,0,0,0,0,0
 "Teton County School District 1",5605830,"Middle School STEM/Computer Science Teacher","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-04-11","2025-04-25",3,21,"Closed / Filled",1,0,0,0,0,0
 "Teton County School District 1",5605830,"Middle School Science Teacher","Science Education","Science","Teacher","2025-02-21","2025-02-21",1,7,"Closed / Filled",1,0,0,0,0,0
@@ -1403,11 +1383,9 @@
 "Teton County School District 1",5605830,"PEAK Teacher (Gifted and Talented)","Gifted and Talented","Gifted and Talented","Teacher","2025-02-28","2025-04-04",6,42,"Closed / Filled",0,0,0,0,0,0
 "Teton County School District 1",5605830,"Performing Arts Teacher","Uncategorized","Other","Teacher","2026-03-27","2026-04-10",3,21,"Closed / Filled",0,0,0,0,0,0
 "Teton County School District 1",5605830,"Secondary English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-21","2025-05-02",7,49,"Closed / Filled",0,0,0,1,0,0
-"Teton County School District 1",5605830,"Secondary Math Coordinator","Mathematics Education","Math","Teacher","2025-05-23","2025-06-06",3,21,"Closed / Filled",1,0,0,0,0,0
 "Uinta County School District 1",5602760,"Elementary Teacher","Elementary Education","Elementary","Teacher","2024-08-09","2026-06-26",47,693,"Closed / Filled",0,0,1,0,0,0
 "Uinta County School District 1",5602760,"Industrial Technology Teacher","Uncategorized","Other","Teacher","2026-03-13","2026-04-03",4,28,"Closed / Filled",0,0,0,0,0,0
 "Uinta County School District 1",5602760,"Instrumental Music/Strings Teacher","Music Education","Music","Teacher","2026-03-13","2026-04-17",6,42,"Closed / Filled",0,0,0,0,0,0
-"Uinta County School District 1",5602760,"Media Director/Computer Science Teacher","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-02-07","2025-02-21",3,21,"Closed / Filled",1,0,0,0,0,0
 "Uinta County School District 1",5602760,"SPED Elementary Resource Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2024-08-09","2026-04-24",6,630,"Closed / Filled",0,1,0,0,0,0
 "Uinta County School District 1",5602760,"SPED Life Skills Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-01-10","2025-02-14",6,42,"Closed / Filled",0,1,0,0,0,0
 "Uinta County School District 1",5602760,"SPED Resource Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-02-07","2025-04-25",12,84,"Closed / Filled",0,1,0,0,0,0
@@ -1421,7 +1399,7 @@
 "Uinta County School District 1",5602760,"Temporary SPED Resource Room and Life Skills Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-09-25","2026-10-23",5,35,"Still Active",0,1,0,0,0,0
 "Uinta County School District 1",5602760,"Temporary SPED Resource Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-01-23","2026-01-30",2,14,"Closed / Filled",0,1,0,0,0,0
 "Uinta County School District 4",5604500,"Business and Computer Teacher","Business and Economics","CTE - Business & Family Sciences","Teacher","2025-02-28","2025-06-27",18,126,"Closed / Filled",1,0,0,0,0,0
-"Uinta County School District 4",5604500,"Career and Technicial Education Teacher","Uncategorized","Other","Teacher","2025-02-28","2025-04-25",9,63,"Closed / Filled",0,0,0,0,0,0
+"Uinta County School District 4",5604500,"Career and Technicial Education Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-02-28","2025-04-25",9,63,"Closed / Filled",0,0,0,0,0,0
 "Uinta County School District 4",5604500,"Elementary Physical Education Teacher","Elementary Education","Elementary","Teacher","2026-05-07","2026-05-08",2,8,"Closed / Filled",0,0,1,0,0,0
 "Uinta County School District 4",5604500,"High School Spanish Teacher","Language Education","Language","Teacher","2026-01-30","2026-03-06",6,42,"Closed / Filled",0,0,0,0,0,0
 "Uinta County School District 4",5604500,"K-12 Music Teacher","Music Education","Music","Teacher","2025-04-11","2025-07-11",14,98,"Closed / Filled",0,0,0,0,0,0
@@ -1430,8 +1408,6 @@
 "Uinta County School District 4",5604500,"K12 Special Education Teacher","Special Education - General","Special Education - General","Teacher","2026-01-30","2026-03-20",8,56,"Closed / Filled",0,1,0,0,0,0
 "Uinta County School District 4",5604500,"K–12 Special Education Teacher","Special Education - General","Special Education - General","Teacher","2026-05-07","2026-06-05",6,36,"Closed / Filled",0,1,0,0,0,0
 "Uinta County School District 4",5604500,"Middle School Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-15","2026-06-05",4,28,"Closed / Filled",0,0,0,1,0,0
-"Uinta County School District 4",5604500,"School Bus Route Driver (Immediate)","Uncategorized","Other","Teacher","2026-05-29","2026-06-05",2,14,"Closed / Filled",0,0,0,0,0,0
-"Uinta County School District 4",5604500,"School Bus Route Driver (immediate)","Uncategorized","Other","Teacher","2026-05-15","2026-06-19",4,42,"Closed / Filled",0,0,0,0,0,0
 "Uinta County School District 4",5604500,"Secondary Math Teacher","Mathematics Education","Math","Teacher","2026-04-03","2026-10-09",32,196,"Closed / Filled",1,0,0,0,0,0
 "Uinta County School District 4",5604500,"Secondary Science Teacher","Science Education","Science","Teacher","2026-06-26","2026-08-28",13,70,"Closed / Filled",1,0,0,0,0,0
 "Uinta County School District 6",5604260,"High School English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-21","2025-04-11",4,28,"Closed / Filled",0,0,0,1,0,0
@@ -1439,10 +1415,10 @@
 "Uinta County School District 6",5604260,"High School Science Teacher","Science Education","Science","Teacher","2025-03-21","2025-03-21",1,7,"Closed / Filled",1,0,0,0,0,0
 "Uinta County School District 6",5604260,"Middle School English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-04-18","2025-04-25",2,14,"Closed / Filled",0,0,0,1,0,0
 "Uinta County School District 6",5604260,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-05-02","2026-07-31",21,462,"Closed / Filled",0,1,0,0,0,0
-"Uinta County School District 6",5604260,"Title 1 Teacher","Uncategorized","Other","Teacher","2026-06-12","2026-06-12",1,7,"Closed / Filled",0,0,0,0,0,0
-"Uinta County School District 6",5604260,"Title I Teacher","Uncategorized","Other","Teacher","2026-05-07","2026-07-10",8,71,"Closed / Filled",0,0,0,0,0,0
-"Uinta County School District 6",5604260,"Title I Teacher (2026–2027 School Year)","Uncategorized","Other","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,0,0,0,0,0
-"Uinta County School District 6",5604260,"Title I Teacher (2026–2027)","Uncategorized","Other","Teacher","2026-05-15","2026-05-15",1,7,"Closed / Filled",0,0,0,0,0,0
+"Uinta County School District 6",5604260,"Title 1 Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-06-12","2026-06-12",1,7,"Closed / Filled",0,0,0,1,0,0
+"Uinta County School District 6",5604260,"Title I Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-07","2026-07-10",8,71,"Closed / Filled",0,0,0,1,0,0
+"Uinta County School District 6",5604260,"Title I Teacher (2026–2027 School Year)","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,0,0,1,0,0
+"Uinta County School District 6",5604260,"Title I Teacher (2026–2027)","English Language Arts Education","English Language Arts Secondary","Teacher","2026-05-15","2026-05-15",1,7,"Closed / Filled",0,0,0,1,0,0
 "Uinta County School District 6",5604260,"WHS Math Teacher","Mathematics Education","Math","Teacher","2026-06-05","2026-06-05",1,7,"Closed / Filled",1,0,0,0,0,0
 "Washakie County School District 1",5606240,"6-12 Chorus Teacher","Uncategorized","Other","Teacher","2026-04-10","2026-05-08",6,35,"Closed / Filled",0,0,0,0,0,0
 "Washakie County School District 1",5606240,"Alternative High School Teacher","Uncategorized","Other","Teacher","2025-12-19","2026-04-10",17,119,"Closed / Filled",0,0,0,0,0,0
@@ -1452,7 +1428,6 @@
 "Washakie County School District 1",5606240,"High School Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-02-28","2025-03-07",2,14,"Closed / Filled",0,1,0,0,0,0
 "Washakie County School District 1",5606240,"Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2024-11-01","2024-11-22",4,28,"Closed / Filled",0,0,0,1,0,0
 "Washakie County School District 1",5606240,"Middle School Agriculture or CTE Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-02-13","2026-03-06",4,28,"Closed / Filled",0,0,0,0,0,0
-"Washakie County School District 1",5606240,"Middle School Assistant Principal / Teacher","Uncategorized","Other","Teacher","2025-02-28","2025-02-28",1,7,"Closed / Filled",0,0,0,0,0,0
 "Washakie County School District 1",5606240,"Middle School Electives Teacher - Computer Science or STEM","Computer Science Education","CTE - Business & Family Sciences","Teacher","2025-05-16","2025-06-06",4,28,"Closed / Filled",1,0,0,0,0,0
 "Washakie County School District 1",5606240,"Middle School Language Arts Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-01-09","2026-02-06",5,35,"Closed / Filled",0,0,0,1,0,0
 "Washakie County School District 1",5606240,"Middle School Mathematics Teacher","Mathematics Education","Math","Teacher","2025-02-28","2026-04-10",4,413,"Closed / Filled",1,0,0,0,0,0
@@ -1462,13 +1437,13 @@
 "Washakie County School District 1",5606240,"Secondary Social Studies Teacher (with coaching available)","Social Studies Education","Secondary Social Studies","Teacher","2026-03-13","2026-04-10",5,35,"Closed / Filled",0,0,0,1,0,0
 "Washakie County School District 1",5606240,"Special Education Life Skills Teacher","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-01-30","2026-04-10",11,77,"Closed / Filled",0,1,0,0,0,0
 "Washakie County School District 1",5606240,"Special Education Teacher","Special Education - General","Special Education - General","Teacher","2025-12-05","2026-04-17",20,140,"Closed / Filled",0,1,0,0,0,0
-"Washakie County School District 1",5606240,"Title I Reading Specialist Teacher","Uncategorized","Other","Teacher","2026-02-20","2026-03-13",4,28,"Closed / Filled",0,0,0,0,0,0
+"Washakie County School District 1",5606240,"Title I Reading Specialist Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-20","2026-03-13",4,28,"Closed / Filled",0,0,0,1,0,0
 "Washakie County School District 2",5605820,"Elementary Teacher (Grade 3) (2026–27 School Year)","Elementary Education","Elementary","Teacher","2026-03-27","2026-04-24",5,35,"Closed / Filled",0,0,1,0,0,0
 "Washakie County School District 2",5605820,"K-12 Music Teacher","Music Education","Music","Teacher","2026-08-03","2026-10-09",13,74,"Closed / Filled",0,0,0,0,0,0
 "Washakie County School District 2",5605820,"K-12 Music Teacher 2026-27 School Year","Music Education","Music","Teacher","2026-08-03","2026-10-09",13,74,"Closed / Filled",0,0,0,0,0,0
 "Washakie County School District 2",5605820,"K–12 Music Teacher (2026–27 School Year)","Music Education","Music","Teacher","2026-03-27","2026-07-31",20,133,"Closed / Filled",0,0,0,0,0,0
 "Weston County School District 1",5604830,"9-12 Trade and Technical Teacher","Uncategorized","Other","Teacher","2026-09-11","2026-10-02",4,28,"Closed / Filled",0,0,0,0,0,0
-"Weston County School District 1",5604830,"9-12 Woodworking Teacher","Uncategorized","Other","Teacher","2026-08-03","2026-09-04",8,39,"Closed / Filled",0,0,0,0,0,0
+"Weston County School District 1",5604830,"9-12 Woodworking Teacher","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-08-03","2026-09-04",8,39,"Closed / Filled",0,0,0,0,0,0
 "Weston County School District 1",5604830,"Ag and Welding Teacher (9-12) Description","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-04-24","2026-05-22",5,35,"Closed / Filled",0,0,0,0,0,0
 "Weston County School District 1",5604830,"Ag and Welding Teacher (9–12)","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",0,0,0,0,0,0
 "Weston County School District 1",5604830,"Agriculture & Welding Teacher (9–12)","Technical Education","CTE - Trades, Ag & Technical","Teacher","2026-05-29","2026-05-29",1,7,"Closed / Filled",0,0,0,0,0,0
@@ -1498,11 +1473,11 @@
 "Weston County School District 7",5606090,"Secondary Math Teacher","Mathematics Education","Math","Teacher","2026-04-24","2026-05-22",6,35,"Closed / Filled",1,0,0,0,0,0
 "Wyoming Boys School",,"Physical Education Teacher","Physical Education","Physical Education","Teacher","2026-10-16","2026-10-23",2,14,"Still Active",0,0,0,0,0,0
 "Wyoming Classical Academy",5680258,"Art Teacher","Art Teacher","Art","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
-"Wyoming Classical Academy",5680258,"Grades 3-6 Classroom Teacher","Uncategorized","Other","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
+"Wyoming Classical Academy",5680258,"Grades 3-6 Classroom Teacher","Elementary Education","Elementary","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,1,0,0,0
 "Wyoming Classical Academy",5680258,"Grades 7-9 Latin and History Teacher","Social Studies Education","Secondary Social Studies","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,1,0,0
 "Wyoming Classical Academy",5680258,"Grades 7-9 Math and Science Teacher","Mathematics Education","Math","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",1,0,0,0,0,0
-"Wyoming Classical Academy",5680258,"Grades 7-9 Reading and Writing Teacher","Uncategorized","Other","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
-"Wyoming Classical Academy",5680258,"Grades K-2 Classroom Teacher","Uncategorized","Other","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
+"Wyoming Classical Academy",5680258,"Grades 7-9 Reading and Writing Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,1,0,0
+"Wyoming Classical Academy",5680258,"Grades K-2 Classroom Teacher","Elementary Education","Elementary","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,1,0,0,0
 "Wyoming Classical Academy",5680258,"Health/PE Teacher","Physical Education","Physical Education","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
 "Wyoming Classical Academy",5680258,"Music Teacher","Music Education","Music","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,0,0,0,0,0
 "Wyoming Classical Academy",5680258,"Special Education Teacher (SPED)","Special Education - General","Special Education - General","Teacher","2026-08-07","2026-10-23",12,84,"Still Active",0,1,0,0,0,0

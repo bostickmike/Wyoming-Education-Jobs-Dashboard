@@ -950,18 +950,20 @@ ui <- dashboardPage(
       menuItem("Home", tabName = "intro", icon = icon("house")),
       menuItem("Map", tabName = "map_tab", icon = icon("map-location-dot")),
       tags$li(class = "header", "K-12 CAREERS"),
-      menuItem("Jobs Table", tabName = "k12_table", icon = icon("table")),
-      menuItem("Profiles & Compare", tabName = "k12_summary", icon = icon("school")),
-      menuItem("Current Trends & New", tabName = "k12_current", icon = icon("chart-column")),
-      menuItem("Trends & Duration Spells", tabName = "k12_trends", icon = icon("chart-line")),
+      menuItem("All Postings", tabName = "k12_table", icon = icon("table")),
+      menuItem("Districts", tabName = "k12_summary", icon = icon("school")),
+      menuItem("New Postings", tabName = "k12_new", icon = icon("calendar-plus")),
+      menuItem("Current Trends", tabName = "k12_current", icon = icon("chart-column")),
+      menuItem("Longitudinal Trends", tabName = "k12_trends", icon = icon("chart-line")),
       tags$li(class = "header", "HIGHER EDUCATION"),
-      menuItem("Jobs Table", tabName = "he_table", icon = icon("table")),
-      menuItem("Profiles & Compare", tabName = "he_summary", icon = icon("building-columns")),
-      menuItem("Current Trends & New", tabName = "he_current", icon = icon("chart-column")),
-      menuItem("Trends & Duration Spells", tabName = "he_trends", icon = icon("chart-line")),
+      menuItem("All Postings", tabName = "he_table", icon = icon("table")),
+      menuItem("Colleges & Universities", tabName = "he_summary", icon = icon("building-columns")),
+      menuItem("New Postings", tabName = "he_new", icon = icon("calendar-plus")),
+      menuItem("Current Trends", tabName = "he_current", icon = icon("chart-column")),
+      menuItem("Longitudinal Trends", tabName = "he_trends", icon = icon("chart-line")),
       tags$li(class = "header", "COMMUNITY & FEEDBACK"),
-      menuItem("Data Sources & Downloads", tabName = "data_tab", icon = icon("database")),
-      menuItem("Report Data Mistake", icon = icon("flag"),
+      menuItem("Data", tabName = "data_tab", icon = icon("database")),
+      menuItem("Report Mistake", icon = icon("flag"),
                href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
                newtab = TRUE)
     )
@@ -1026,6 +1028,59 @@ ui <- dashboardPage(
     .nav-tabs-custom > .nav-tabs > li.active > a {
       font-weight: 600;
       color: #2a78d6;
+    }
+    /* Table toolbar styling */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    /* Clean table styling so tables do not overfill space */
+    .trends-table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    .trends-table-container table {
+      width: 100% !important;
+      max-width: 980px !important;
+      margin: 0 auto;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      font-size: 13.5px;
+    }
+    .trends-table-container th {
+      background-color: #f8fafc !important;
+      color: #334155;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 10px 14px !important;
+      border-bottom: 2px solid #e2e8f0 !important;
+    }
+    .trends-table-container td {
+      padding: 8px 14px !important;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      vertical-align: middle !important;
+    }
+    .trends-table-container tr:last-child td {
+      border-bottom: none;
+    }
+    .trends-table-container tr:hover td {
+      background-color: #f8fafc;
     }
   ")),
       tags$script(HTML("
@@ -1324,8 +1379,27 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "k12_table",
+        div(
+          class = "table-toolbar",
+          div(
+            style = "display: flex; align-items: center; gap: 8px; flex-wrap: wrap;",
+            span(style = "font-weight: 600; font-size: 13.5px; color: #334155;", "Filter Postings:"),
+            radioGroupButtons(
+              inputId = "k12_quick_filter",
+              label = NULL,
+              choices = c(
+                "All Active Postings" = "all",
+                "🟢 New This Week" = "new"
+              ),
+              selected = "all",
+              status = "primary",
+              size = "sm",
+              checkIcon = list(yes = icon("check"))
+            )
+          ),
+          uiOutput("k12_filter_status")
+        ),
         p(class = "help-block", style = "margin-bottom: 8px;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). Role Avg Salary reflects average total compensation from the Wyoming Department of Education (Source: WDE602) for that specific job category (e.g. Teacher, Admin, Aide, Bus Driver, Custodial) in that district."),
-        uiOutput("k12_filter_status"),
         DTOutput("k12_jobs")
       ),
       tabItem(
@@ -1388,31 +1462,46 @@ ui <- dashboardPage(
       ),
 
       tabItem(
-        tabName = "k12_current",
-        tabBox(
-          id = "k12_current_tabs",
+        tabName = "k12_new",
+        box(
           width = 12,
-          tabPanel(
-            title = tagList(icon("chart-column"), " Category Breakdown"),
-            value = "k12_current_breakdown",
-            radioButtons("k12_detail_level_current", "View:",
-                         choices = c("Detailed subjects" = "detail",
-                                     "Broad rollup (includes Core Academic)" = "agg"),
-                         selected = "detail", inline = TRUE),
-            selectInput(
-              "district_current",
-              "Choose District:",
-              choices = sort(unique(k12nowsum$District)),
-              selected = "Total"
+          title = tagList(icon("calendar-plus"), " New K-12 Postings This Week"),
+          status = "primary",
+          solidHeader = FALSE,
+          p(class = "text-muted", style = "margin-bottom: 12px;",
+            "K-12 teacher postings that first appeared in the current weekly snapshot compared to the previous week."),
+          DTOutput("k12_new_table")
+        )
+      ),
+
+      tabItem(
+        tabName = "k12_current",
+        box(
+          width = 12,
+          title = tagList(icon("chart-column"), " Current Subject Breakdown & 12-Week Sparklines"),
+          status = "primary",
+          solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 6,
+              radioButtons("k12_detail_level_current", "View:",
+                           choices = c("Detailed subjects" = "detail",
+                                       "Broad rollup (includes Core Academic)" = "agg"),
+                           selected = "detail", inline = TRUE)
             ),
-            div(style = "overflow-x: auto;", withSpinner(tableOutput("k12_current_trends_table")))
+            column(
+              width = 6,
+              selectInput(
+                "district_current",
+                "Choose District:",
+                choices = sort(unique(k12nowsum$District)),
+                selected = "Total",
+                width = "100%"
+              )
+            )
           ),
-          tabPanel(
-            title = tagList(icon("calendar-plus"), " New This Week"),
-            value = "k12_current_new",
-            h4("New teacher postings since the previous weekly snapshot"),
-            DTOutput("k12_new_table")
-          )
+          div(class = "trends-table-container",
+              withSpinner(tableOutput("k12_current_trends_table")))
         )
       ),
 
@@ -1539,18 +1628,37 @@ ui <- dashboardPage(
       # ------------------ Higher Ed ------------------
       tabItem(
         tabName = "he_table",
-        p(class = "help-block", style = "margin-bottom: 8px;", "Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
-        uiOutput("he_filter_status"),
-        radioButtons(
-          "he_table_appointment", "Appointment:",
-          choices = c(
-            "All roles" = "all",
-            "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
-            "Adjunct/part-time faculty" = "Adjunct/part-time faculty",
-            "Other / not faculty" = "Other / not faculty"
+        div(
+          class = "table-toolbar",
+          div(
+            style = "display: flex; align-items: center; gap: 8px; flex-wrap: wrap;",
+            span(style = "font-weight: 600; font-size: 13.5px; color: #334155;", "Filter Postings:"),
+            radioGroupButtons(
+              inputId = "he_quick_filter",
+              label = NULL,
+              choices = c(
+                "All Active Postings" = "all",
+                "🟢 New This Week" = "new"
+              ),
+              selected = "all",
+              status = "primary",
+              size = "sm",
+              checkIcon = list(yes = icon("check"))
+            ),
+            radioButtons(
+              "he_table_appointment", "Appointment:",
+              choices = c(
+                "All roles" = "all",
+                "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
+                "Adjunct/part-time faculty" = "Adjunct/part-time faculty",
+                "Other / not faculty" = "Other / not faculty"
+              ),
+              selected = "all", inline = TRUE
+            )
           ),
-          selected = "all", inline = TRUE
+          uiOutput("he_filter_status")
         ),
+        p(class = "help-block", style = "margin-bottom: 8px;", "Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
         DTOutput("he_jobs")
       ),
       tabItem(
@@ -1611,42 +1719,64 @@ ui <- dashboardPage(
         )
       ),
       tabItem(
-        tabName = "he_current",
-        tabBox(
-          id = "he_current_tabs",
+        tabName = "he_new",
+        box(
           width = 12,
-          tabPanel(
-            title = tagList(icon("chart-column"), " Discipline Breakdown"),
-            value = "he_current_breakdown",
-            radioButtons("he_detail_level_current", "View:",
-                         choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
-                         selected = "detail", inline = TRUE),
-            radioButtons("he_current_appointment", "Appointment:",
-                         choices = c(
-                           "All faculty postings" = "all",
-                           "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
-                           "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
-                         ),
-                         selected = "all", inline = TRUE),
-            selectInput("inst_current", "Select Institution:",
-                        choices = sort(unique(henowsum_he$Institution)), selected = "Total"),
-            div(style = "overflow-x: auto;", withSpinner(tableOutput("he_current_trends_table")))
+          title = tagList(icon("calendar-plus"), " New Faculty Postings This Week"),
+          status = "primary",
+          solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 12,
+              p(class = "text-muted", style = "margin-bottom: 8px;",
+                "Collegiate faculty vacancies that first appeared in the current weekly snapshot compared to the previous week."),
+              radioButtons(
+                "he_new_appointment", "Appointment:",
+                choices = c(
+                  "All faculty postings" = "all",
+                  "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
+                  "Adjunct/part-time faculty" = "Adjunct/part-time faculty"
+                ),
+                selected = "all", inline = TRUE
+              )
+            )
           ),
-          tabPanel(
-            title = tagList(icon("calendar-plus"), " New Faculty This Week"),
-            value = "he_current_new",
-            h4("New faculty postings since the previous weekly snapshot"),
-            radioButtons(
-              "he_new_appointment", "Appointment:",
-              choices = c(
-                "All faculty postings" = "all",
-                "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
-                "Adjunct/part-time faculty" = "Adjunct/part-time faculty"
-              ),
-              selected = "all", inline = TRUE
+          DTOutput("he_new_table")
+        )
+      ),
+
+      tabItem(
+        tabName = "he_current",
+        box(
+          width = 12,
+          title = tagList(icon("chart-column"), " Current Discipline Breakdown & 12-Week Sparklines"),
+          status = "primary",
+          solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 4,
+              radioButtons("he_detail_level_current", "View:",
+                           choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                           selected = "detail", inline = TRUE)
             ),
-            DTOutput("he_new_table")
-          )
+            column(
+              width = 4,
+              radioButtons("he_current_appointment", "Appointment:",
+                           choices = c(
+                             "All faculty postings" = "all",
+                             "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
+                             "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
+                           ),
+                           selected = "all", inline = TRUE)
+            ),
+            column(
+              width = 4,
+              selectInput("inst_current", "Select Institution:",
+                          choices = sort(unique(henowsum_he$Institution)), selected = "Total", width = "100%")
+            )
+          ),
+          div(class = "trends-table-container",
+              withSpinner(tableOutput("he_current_trends_table")))
         )
       ),
 
@@ -2069,6 +2199,11 @@ server <- function(input, output, session) {
   output$k12_jobs <- renderDT({
     df <- combineddata
     if (!is.null(selected_district())) df <- df %>% filter(District == selected_district())
+    if (isTRUE(identical(input$k12_quick_filter, "new"))) {
+      new_keys <- paste(k12_new_this_week$title, k12_new_this_week$District, sep = "@@@")
+      current_keys <- paste(df$Title, df$District, sep = "@@@")
+      df <- df[current_keys %in% new_keys, ]
+    }
     datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
   })
@@ -2723,6 +2858,11 @@ server <- function(input, output, session) {
     if (!is.null(selected_institution())) df <- df %>% filter(Institution == selected_institution())
     if (!identical(input$he_table_appointment, "all")) {
       df <- df %>% filter(Appointment == input$he_table_appointment)
+    }
+    if (isTRUE(identical(input$he_quick_filter, "new"))) {
+      new_keys <- paste(he_new_this_week$Title, he_new_this_week$Institution, sep = "@@@")
+      current_keys <- paste(df$Title, df$Institution, sep = "@@@")
+      df <- df[current_keys %in% new_keys, ]
     }
     datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
               options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))

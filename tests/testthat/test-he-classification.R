@@ -59,3 +59,40 @@ test_that("canonicalize_he_institution fixes the Eastern Wyoming typo and passes
   expect_equal(canonicalize_he_institution("Eastern Wyoming Commmunity College"), "Eastern Wyoming Community College")
   expect_equal(canonicalize_he_institution("Casper College"), "Casper College")
 })
+
+test_that("classify_he_faculty_category prevents precedence-order misclassifications", {
+  # 1. Political Science & Social Science must not be stolen by Science
+  expect_equal(classify_he_faculty_category("Assistant Professor of Political Science"), "Social Science")
+  expect_equal(classify_he_faculty_category("Gen Ed - Social Sciences Non-Tenure Track Faculty"), "Social Science")
+
+  # 2. Health Sciences must not be stolen by Science
+  expect_equal(classify_he_faculty_category("Gen Ed – Health Sciences Non-Tenure Track Faculty"), "CTE - Health Sciences")
+  expect_equal(classify_he_faculty_category("Instructor, General Health Sciences"), "CTE - Health Sciences")
+
+  # 3. Zoology must land in Science, not Business & Computing
+  expect_equal(classify_he_faculty_category("Asst Professor - Sensory Biology/Zoology & Physiology"), "Science")
+  expect_equal(classify_he_faculty_category("Zoology/Biology Instructor"), "Science")
+
+  # 4. Agricultural Economics must land in Business & Computing, not Trades & Engineering
+  expect_equal(
+    classify_he_faculty_category("Agricultural Economics & Economics Non-Tenure Track Faculty"),
+    "CTE - Business & Computing"
+  )
+
+  # 5. Hospitality in College of Business must land in Culinary/Hospitality
+  expect_equal(
+    classify_he_faculty_category("Hospitality Instructors for the Jake Jabs College of Business"),
+    "Culinary/Hospitality"
+  )
+
+  # 6. Languages and Humanities
+  expect_equal(classify_he_faculty_category("Japanese Non-Tenure Track Faculty"), "Language")
+  expect_equal(classify_he_faculty_category("Arabic Non-Tenure Track Faculty"), "Language")
+  expect_equal(classify_he_faculty_category("Chinese Non-Tenure Track Faculty"), "Language")
+  expect_equal(classify_he_faculty_category("Philosophy Instructor"), "Humanities")
+  expect_equal(classify_he_faculty_category("Texts and Critics Instructor"), "Humanities")
+
+  # 7. Trades & Architecture
+  expect_equal(classify_he_faculty_category("Instructor of Architecture Non-Tenure Track Faculty"), "CTE - Trades & Engineering")
+  expect_equal(classify_he_faculty_category("Commercial Driver's License Instructor"), "CTE - Trades & Engineering")
+})

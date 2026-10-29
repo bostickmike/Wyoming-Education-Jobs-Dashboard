@@ -612,3 +612,29 @@ test_that("Map multi-dimensional filters and reset reactive controls function wi
     session$setInputs(map_filter_reset = 1)
   })
 })
+
+test_that("K-12 and HE quick filter buttons and new postings tables evaluate cleanly", {
+  env <- load_app()
+  shiny::testServer(env$server, {
+    # Default: All Active Postings
+    session$setInputs(k12_quick_filter = "all")
+    expect_no_error(output$k12_jobs)
+
+    # Filter to New This Week
+    session$setInputs(k12_quick_filter = "new")
+    expect_no_error(output$k12_jobs)
+
+    # HE Default: All Active Postings
+    session$setInputs(he_quick_filter = "all", he_table_appointment = "all")
+    expect_no_error(output$he_jobs)
+
+    # HE Filter to New This Week
+    session$setInputs(he_quick_filter = "new")
+    expect_no_error(output$he_jobs)
+
+    # Dedicated New This Week tables
+    expect_no_error(output$k12_new_table)
+    session$setInputs(he_new_appointment = "all")
+    expect_no_error(output$he_new_table)
+  })
+})

@@ -53,6 +53,9 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
       if (!has_source_ids) {
         df$posting_id <- NA_character_
       }
+      if (!"date_posted" %in% names(df)) {
+        df$date_posted <- NA_character_
+      }
       df <- df %>%
         mutate(
           Archive_Date = case_when(
@@ -71,7 +74,7 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
             district = District
           )
         ) %>%
-        dplyr::select(title, Archive_Date, position, location, url, posting_id, District)
+        dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
       # Mirrors Wy_ED_Jobs.Rmd's collapse_duplicate_posting_ids() -- only for
       # snapshots the modern pipeline wrote (they carry posting_id), since
       # that step never ran on the older ones, whose building-in-`position`
@@ -103,12 +106,23 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
     select(Broad_Category, Archive_Date, District, sum)
 
   allsum <- bind_rows(k12sum, k12sumdistrict)
+  latest_k12sumdistrict <- k12sumdistrict %>%
+    filter(Archive_Date == max(Archive_Date))
+  allnow <- bind_rows(
+    latest_k12sumdistrict %>%
+      group_by(Broad_Category) %>%
+      summarize(Sum = sum(sum), .groups = "drop") %>%
+      mutate(District = "Total"),
+    latest_k12sumdistrict %>%
+      transmute(Broad_Category, Sum = sum, District)
+  )
 
   list(
-    combinedclean = combinedclean,
+    combinedclean = combinedclean %>% filter(Archive_Date == max(Archive_Date)),
     k12jobs = k12jobs,
     k12_district_weekly_totals = k12_district_weekly_totals,
-    allsum = allsum
+    allsum = allsum,
+    allnow = allnow
   )
 }
 
@@ -120,12 +134,15 @@ if (sys.nframe() == 0) {
   source("k12_he_classification.R")
   result <- rebuild_k12_history_from_archive()
 
+  write.csv(result$combinedclean, file.path("Wy_Ed_Jobs", "combinedclean.csv"), row.names = FALSE)
   write.csv(result$k12jobs, file.path("Wy_Ed_Jobs", "k12jobanalysis.csv"), row.names = FALSE)
   write.csv(result$allsum, file.path("Wy_Ed_Jobs", "allsum.csv"), row.names = FALSE)
+  write.csv(result$allnow, file.path("Wy_Ed_Jobs", "allnow.csv"), row.names = FALSE)
   write.csv(result$k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
 
-  cat("Rebuilt k12jobanalysis.csv (", nrow(result$k12jobs), " rows), allsum.csv (",
-      nrow(result$allsum), " rows), k12_district_weekly_totals.csv (",
+  cat("Rebuilt combinedclean.csv (", nrow(result$combinedclean), " rows), k12jobanalysis.csv (",
+      nrow(result$k12jobs), " rows), allsum.csv/allnow.csv (",
+      nrow(result$allsum), "/", nrow(result$allnow), " rows), k12_district_weekly_totals.csv (",
       nrow(result$k12_district_weekly_totals), " rows) from ",
       length(list.files("Archivek12_Data", pattern = "\\.csv$")), " archive snapshots.\n", sep = "")
 }

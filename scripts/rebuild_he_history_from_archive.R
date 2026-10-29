@@ -47,9 +47,26 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
 
   allsum_he <- bind_rows(hesum, hesuminst)
 
+  latest_date <- max(facultydata$Archive_Date)
+  latest_facultydata <- facultydata %>% filter(Archive_Date == latest_date)
+
+  henowsum <- latest_facultydata %>%
+    group_by(Category, Job_Type) %>%
+    summarize(Sum = n(), .groups = "drop") %>%
+    mutate(Institution = "Total") %>%
+    select(Category, Job_Type, Sum, Institution)
+
+  henowinstsum <- latest_facultydata %>%
+    group_by(Category, Institution, Job_Type) %>%
+    summarize(Sum = n(), .groups = "drop") %>%
+    select(Category, Job_Type, Sum, Institution)
+
+  allnow_he <- bind_rows(henowsum, henowinstsum)
+
   list(
     facultydata = facultydata,
     allsum_he = allsum_he,
+    allnow_he = allnow_he,
     he_institution_weekly_totals = he_institution_weekly_totals
   )
 }
@@ -62,10 +79,11 @@ if (sys.nframe() == 0) {
 
   write.csv(result$facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
   write.csv(result$allsum_he, file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
+  write.csv(result$allnow_he, file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
   write.csv(result$he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
 
-  cat("Rebuilt facultydata.csv (", nrow(result$facultydata), " rows), allsum_he.csv (",
-      nrow(result$allsum_he), " rows), he_institution_weekly_totals.csv (",
+  cat("Rebuilt facultydata.csv (", nrow(result$facultydata), " rows), allsum_he.csv/allnow_he.csv (",
+      nrow(result$allsum_he), "/", nrow(result$allnow_he), " rows), he_institution_weekly_totals.csv (",
       nrow(result$he_institution_weekly_totals), " rows) from ",
       length(list.files("Archived_HE_Data", pattern = "\\.xlsx$")), " archive snapshots.\n", sep = "")
 }
