@@ -952,15 +952,13 @@ ui <- dashboardPage(
       tags$li(class = "header", "K-12 CAREERS"),
       menuItem("All Postings", tabName = "k12_table", icon = icon("table")),
       menuItem("Districts", tabName = "k12_summary", icon = icon("school")),
-      menuItem("New Postings", tabName = "k12_new", icon = icon("calendar-plus")),
-      menuItem("Current Trends", tabName = "k12_current", icon = icon("chart-column")),
-      menuItem("Longitudinal Trends", tabName = "k12_trends", icon = icon("chart-line")),
+      menuItem("Trends", tabName = "k12_trends", icon = icon("chart-line")),
+      menuItem("Vacancy Spells", tabName = "k12_spells", icon = icon("stopwatch")),
       tags$li(class = "header", "HIGHER EDUCATION"),
       menuItem("All Postings", tabName = "he_table", icon = icon("table")),
       menuItem("Colleges & Universities", tabName = "he_summary", icon = icon("building-columns")),
-      menuItem("New Postings", tabName = "he_new", icon = icon("calendar-plus")),
-      menuItem("Current Trends", tabName = "he_current", icon = icon("chart-column")),
-      menuItem("Longitudinal Trends", tabName = "he_trends", icon = icon("chart-line")),
+      menuItem("Trends", tabName = "he_trends", icon = icon("chart-line")),
+      menuItem("Vacancy Spells", tabName = "he_spells", icon = icon("stopwatch")),
       tags$li(class = "header", "COMMUNITY & FEEDBACK"),
       menuItem("Data", tabName = "data_tab", icon = icon("database")),
       menuItem("Report Mistake", icon = icon("flag"),
@@ -1462,57 +1460,42 @@ ui <- dashboardPage(
       ),
 
       tabItem(
-        tabName = "k12_new",
-        box(
-          width = 12,
-          title = tagList(icon("calendar-plus"), " New K-12 Postings This Week"),
-          status = "primary",
-          solidHeader = FALSE,
-          p(class = "text-muted", style = "margin-bottom: 12px;",
-            "K-12 teacher postings that first appeared in the current weekly snapshot compared to the previous week."),
-          DTOutput("k12_new_table")
-        )
-      ),
-
-      tabItem(
-        tabName = "k12_current",
-        box(
-          width = 12,
-          title = tagList(icon("chart-column"), " Current Subject Breakdown & 12-Week Sparklines"),
-          status = "primary",
-          solidHeader = FALSE,
-          fluidRow(
-            column(
-              width = 6,
-              radioButtons("k12_detail_level_current", "View:",
-                           choices = c("Detailed subjects" = "detail",
-                                       "Broad rollup (includes Core Academic)" = "agg"),
-                           selected = "detail", inline = TRUE)
-            ),
-            column(
-              width = 6,
-              selectInput(
-                "district_current",
-                "Choose District:",
-                choices = sort(unique(k12nowsum$District)),
-                selected = "Total",
-                width = "100%"
-              )
-            )
-          ),
-          div(class = "trends-table-container",
-              withSpinner(tableOutput("k12_current_trends_table")))
-        )
-      ),
-
-      tabItem(
         tabName = "k12_trends",
         tabBox(
           id = "k12_trends_tabs",
           width = 12,
           tabPanel(
-            title = tagList(icon("chart-line"), " Longitudinal Hiring Trends"),
+            title = tagList(icon("chart-column"), " Current Trends"),
+            value = "k12_trends_current",
+            p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
+              "Current subject distribution across active K-12 postings with 12-week vacancy sparklines."),
+            fluidRow(
+              column(
+                width = 6,
+                radioButtons("k12_detail_level_current", "View:",
+                             choices = c("Detailed subjects" = "detail",
+                                         "Broad rollup (includes Core Academic)" = "agg"),
+                             selected = "detail", inline = TRUE)
+              ),
+              column(
+                width = 6,
+                selectInput(
+                  "district_current",
+                  "Choose District:",
+                  choices = sort(unique(k12nowsum$District)),
+                  selected = "Total",
+                  width = "100%"
+                )
+              )
+            ),
+            div(class = "trends-table-container",
+                withSpinner(tableOutput("k12_current_trends_table")))
+          ),
+          tabPanel(
+            title = tagList(icon("chart-line"), " Longitudinal Trends"),
             value = "k12_trends_historical",
+            p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
+              "Multi-year vacancy volume time series tracking hiring trends across weekly snapshots."),
             radioButtons("k12_detail_level_trends", "View:",
                          choices = c("Detailed subjects" = "detail",
                                      "Broad rollup (includes Core Academic)" = "agg"),
@@ -1552,76 +1535,76 @@ ui <- dashboardPage(
               width = "100%"
             ),
             withSpinner(plotlyOutput("k12_longitudinal_plot"))
-          ),
-          tabPanel(
-            title = tagList(icon("stopwatch"), " Vacancy Spells & Time-to-Fill"),
-            value = "k12_trends_spells",
-            h3(style = "margin-top: 5px; font-weight: 600;", "K-12 Vacancy Spells & Time-to-Fill"),
-            p(class = "help-block",
-              "Longitudinal tracking of vacancy duration across weekly snapshots. Measures time-to-fill and persistence as a proxy for labor market tightness and hiring friction."),
-            fluidRow(
-              valueBoxOutput("k12_spell_median_box", width = 3),
-              valueBoxOutput("k12_spell_active_box", width = 3),
-              valueBoxOutput("k12_spell_persistent_box", width = 3),
-              valueBoxOutput("k12_spell_hardest_box", width = 3)
+          )
+        )
+      ),
+
+      tabItem(
+        tabName = "k12_spells",
+        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " K-12 Vacancy Spells & Time-to-Fill")),
+        p(class = "help-block",
+          "Longitudinal tracking of vacancy duration across weekly snapshots. Measures time-to-fill and persistence as a proxy for labor market tightness and hiring friction."),
+        fluidRow(
+          valueBoxOutput("k12_spell_median_box", width = 3),
+          valueBoxOutput("k12_spell_active_box", width = 3),
+          valueBoxOutput("k12_spell_persistent_box", width = 3),
+          valueBoxOutput("k12_spell_hardest_box", width = 3)
+        ),
+        box(
+          width = 12, status = "primary", solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 3,
+              selectInput("k12_spell_status", "Vacancy Status:",
+                          choices = c("All Postings" = "all",
+                                      "Still Active (Open)" = "Still Active",
+                                      "Filled / Closed" = "Closed / Filled"),
+                          selected = "all")
             ),
-            box(
-              width = 12, status = "primary", solidHeader = FALSE,
-              fluidRow(
-                column(
-                  width = 3,
-                  selectInput("k12_spell_status", "Vacancy Status:",
-                              choices = c("All Postings" = "all",
-                                          "Still Active (Open)" = "Still Active",
-                                          "Filled / Closed" = "Closed / Filled"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("k12_spell_position", "Position Group:",
-                              choices = c("All Roles" = "all",
-                                          "Teacher" = "Teacher",
-                                          "Administration" = "Administration",
-                                          "Support Staff / Classified" = "Support"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("k12_spell_discipline", "Discipline / Shortage Area:",
-                              choices = c("All Disciplines" = "all",
-                                          "STEM (Math & Science)" = "stem",
-                                          "Special Education" = "sped",
-                                          "Elementary Education" = "elementary",
-                                          "Secondary Education" = "secondary",
-                                          "Administration" = "admin",
-                                          "Support / Classified" = "support"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("k12_spell_district", "Filter District:",
-                              choices = c("All Districts" = "all"),
-                              selected = "all")
-                )
-              )
+            column(
+              width = 3,
+              selectInput("k12_spell_position", "Position Group:",
+                          choices = c("All Roles" = "all",
+                                      "Teacher" = "Teacher",
+                                      "Administration" = "Administration",
+                                      "Support Staff / Classified" = "Support"),
+                          selected = "all")
             ),
-            fluidRow(
-              box(
-                width = 7, title = "Median Days Open by Subject Category", status = "info",
-                withSpinner(plotlyOutput("k12_spell_duration_plot", height = "360px"))
-              ),
-              box(
-                width = 5, title = "Vacancy Duration Distribution", status = "info",
-                withSpinner(plotlyOutput("k12_spell_distrib_plot", height = "360px"))
-              )
+            column(
+              width = 3,
+              selectInput("k12_spell_discipline", "Discipline / Shortage Area:",
+                          choices = c("All Disciplines" = "all",
+                                      "STEM (Math & Science)" = "stem",
+                                      "Special Education" = "sped",
+                                      "Elementary Education" = "elementary",
+                                      "Secondary Education" = "secondary",
+                                      "Administration" = "admin",
+                                      "Support / Classified" = "support"),
+                          selected = "all")
             ),
-            box(
-              width = 12, title = "Vacancy Spells Explorer", status = "primary",
-              p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
-                "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
-              DTOutput("k12_spell_table")
+            column(
+              width = 3,
+              selectInput("k12_spell_district", "Filter District:",
+                          choices = c("All Districts" = "all"),
+                          selected = "all")
             )
           )
+        ),
+        fluidRow(
+          box(
+            width = 7, title = "Median Days Open by Subject Category", status = "info",
+            withSpinner(plotlyOutput("k12_spell_duration_plot", height = "360px"))
+          ),
+          box(
+            width = 5, title = "Vacancy Duration Distribution", status = "info",
+            withSpinner(plotlyOutput("k12_spell_distrib_plot", height = "360px"))
+          )
+        ),
+        box(
+          width = 12, title = "Vacancy Spells Explorer", status = "primary",
+          p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+          DTOutput("k12_spell_table")
         )
       ),
 
@@ -1719,75 +1702,46 @@ ui <- dashboardPage(
         )
       ),
       tabItem(
-        tabName = "he_new",
-        box(
-          width = 12,
-          title = tagList(icon("calendar-plus"), " New Faculty Postings This Week"),
-          status = "primary",
-          solidHeader = FALSE,
-          fluidRow(
-            column(
-              width = 12,
-              p(class = "text-muted", style = "margin-bottom: 8px;",
-                "Collegiate faculty vacancies that first appeared in the current weekly snapshot compared to the previous week."),
-              radioButtons(
-                "he_new_appointment", "Appointment:",
-                choices = c(
-                  "All faculty postings" = "all",
-                  "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
-                  "Adjunct/part-time faculty" = "Adjunct/part-time faculty"
-                ),
-                selected = "all", inline = TRUE
-              )
-            )
-          ),
-          DTOutput("he_new_table")
-        )
-      ),
-
-      tabItem(
-        tabName = "he_current",
-        box(
-          width = 12,
-          title = tagList(icon("chart-column"), " Current Discipline Breakdown & 12-Week Sparklines"),
-          status = "primary",
-          solidHeader = FALSE,
-          fluidRow(
-            column(
-              width = 4,
-              radioButtons("he_detail_level_current", "View:",
-                           choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
-                           selected = "detail", inline = TRUE)
-            ),
-            column(
-              width = 4,
-              radioButtons("he_current_appointment", "Appointment:",
-                           choices = c(
-                             "All faculty postings" = "all",
-                             "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
-                             "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
-                           ),
-                           selected = "all", inline = TRUE)
-            ),
-            column(
-              width = 4,
-              selectInput("inst_current", "Select Institution:",
-                          choices = sort(unique(henowsum_he$Institution)), selected = "Total", width = "100%")
-            )
-          ),
-          div(class = "trends-table-container",
-              withSpinner(tableOutput("he_current_trends_table")))
-        )
-      ),
-
-      tabItem(
         tabName = "he_trends",
         tabBox(
           id = "he_trends_tabs",
           width = 12,
           tabPanel(
-            title = tagList(icon("chart-line"), " Longitudinal Hiring Trends"),
+            title = tagList(icon("chart-column"), " Current Trends"),
+            value = "he_trends_current",
+            p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
+              "Current institution and discipline breakdown across active higher education postings with 12-week sparklines."),
+            fluidRow(
+              column(
+                width = 4,
+                radioButtons("he_detail_level_current", "View:",
+                             choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
+                             selected = "detail", inline = TRUE)
+              ),
+              column(
+                width = 4,
+                radioButtons("he_current_appointment", "Appointment:",
+                             choices = c(
+                               "All faculty postings" = "all",
+                               "Faculty/instructor (non-adjunct)" = "Instructor/Teacher/Faculty",
+                               "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
+                             ),
+                             selected = "all", inline = TRUE)
+              ),
+              column(
+                width = 4,
+                selectInput("inst_current", "Select Institution:",
+                            choices = sort(unique(henowsum_he$Institution)), selected = "Total", width = "100%")
+              )
+            ),
+            div(class = "trends-table-container",
+                withSpinner(tableOutput("he_current_trends_table")))
+          ),
+          tabPanel(
+            title = tagList(icon("chart-line"), " Longitudinal Trends"),
             value = "he_trends_historical",
+            p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
+              "Multi-year vacancy volume time series tracking higher education hiring trends across weekly snapshots."),
             radioButtons("he_detail_level_trends", "View:",
                          choices = c("Detailed fields" = "detail", "Broad rollup" = "agg"),
                          selected = "detail", inline = TRUE),
@@ -1834,72 +1788,72 @@ ui <- dashboardPage(
               "Adjunct/part-time faculty" = "Adjunct/Part-Time Faculty"
             ), selected = "all", inline = TRUE),
             withSpinner(plotlyOutput("he_longitudinal_plot"))
-          ),
-          tabPanel(
-            title = tagList(icon("stopwatch"), " Vacancy Spells & Time-to-Fill"),
-            value = "he_trends_spells",
-            h3(style = "margin-top: 5px; font-weight: 600;", "Higher Ed Vacancy Spells & Time-to-Fill"),
-            p(class = "help-block",
-              "Longitudinal tracking of collegiate faculty vacancy duration across weekly snapshots. Measures time-to-fill and search persistence across academic disciplines and institutions."),
-            fluidRow(
-              valueBoxOutput("he_spell_median_box", width = 3),
-              valueBoxOutput("he_spell_active_box", width = 3),
-              valueBoxOutput("he_spell_persistent_box", width = 3),
-              valueBoxOutput("he_spell_hardest_box", width = 3)
+          )
+        )
+      ),
+
+      tabItem(
+        tabName = "he_spells",
+        h3(style = "margin-top: 5px; font-weight: 600;", tagList(icon("stopwatch"), " Higher Ed Vacancy Spells & Time-to-Fill")),
+        p(class = "help-block",
+          "Longitudinal tracking of collegiate faculty vacancy duration across weekly snapshots. Measures time-to-fill and search persistence across academic disciplines and institutions."),
+        fluidRow(
+          valueBoxOutput("he_spell_median_box", width = 3),
+          valueBoxOutput("he_spell_active_box", width = 3),
+          valueBoxOutput("he_spell_persistent_box", width = 3),
+          valueBoxOutput("he_spell_hardest_box", width = 3)
+        ),
+        box(
+          width = 12, status = "primary", solidHeader = FALSE,
+          fluidRow(
+            column(
+              width = 3,
+              selectInput("he_spell_status", "Vacancy Status:",
+                          choices = c("All Postings" = "all",
+                                      "Still Active (Open)" = "Still Active",
+                                      "Filled / Closed" = "Closed / Filled"),
+                          selected = "all")
             ),
-            box(
-              width = 12, status = "primary", solidHeader = FALSE,
-              fluidRow(
-                column(
-                  width = 3,
-                  selectInput("he_spell_status", "Vacancy Status:",
-                              choices = c("All Postings" = "all",
-                                          "Still Active (Open)" = "Still Active",
-                                          "Filled / Closed" = "Closed / Filled"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("he_spell_job_type", "Appointment Type:",
-                              choices = c("All Appointments" = "all",
-                                          "Full-Time / Regular Faculty" = "Instructor/Teacher/Faculty",
-                                          "Adjunct / Part-Time Faculty" = "Adjunct/Part-Time Faculty"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("he_spell_discipline", "Academic Focus:",
-                              choices = c("All Disciplines" = "all",
-                                          "STEM Fields" = "stem",
-                                          "Health Sciences & Nursing" = "health",
-                                          "Career & Technical (CTE)" = "cte"),
-                              selected = "all")
-                ),
-                column(
-                  width = 3,
-                  selectInput("he_spell_institution", "Filter Institution:",
-                              choices = c("All Institutions" = "all"),
-                              selected = "all")
-                )
-              )
+            column(
+              width = 3,
+              selectInput("he_spell_job_type", "Appointment Type:",
+                          choices = c("All Appointments" = "all",
+                                      "Full-Time / Regular Faculty" = "Instructor/Teacher/Faculty",
+                                      "Adjunct / Part-Time Faculty" = "Adjunct/Part-Time Faculty"),
+                          selected = "all")
             ),
-            fluidRow(
-              box(
-                width = 7, title = "Median Days Open by Academic Discipline", status = "info",
-                withSpinner(plotlyOutput("he_spell_duration_plot", height = "360px"))
-              ),
-              box(
-                width = 5, title = "Collegiate Vacancy Duration Distribution", status = "info",
-                withSpinner(plotlyOutput("he_spell_distrib_plot", height = "360px"))
-              )
+            column(
+              width = 3,
+              selectInput("he_spell_discipline", "Academic Focus:",
+                          choices = c("All Disciplines" = "all",
+                                      "STEM Fields" = "stem",
+                                      "Health Sciences & Nursing" = "health",
+                                      "Career & Technical (CTE)" = "cte"),
+                          selected = "all")
             ),
-            box(
-              width = 12, title = "Collegiate Vacancy Spells Explorer", status = "primary",
-              p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
-                "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
-              DTOutput("he_spell_table")
+            column(
+              width = 3,
+              selectInput("he_spell_institution", "Filter Institution:",
+                          choices = c("All Institutions" = "all"),
+                          selected = "all")
             )
           )
+        ),
+        fluidRow(
+          box(
+            width = 7, title = "Median Days Open by Academic Discipline", status = "info",
+            withSpinner(plotlyOutput("he_spell_duration_plot", height = "360px"))
+          ),
+          box(
+            width = 5, title = "Collegiate Vacancy Duration Distribution", status = "info",
+            withSpinner(plotlyOutput("he_spell_distrib_plot", height = "360px"))
+          )
+        ),
+        box(
+          width = 12, title = "Collegiate Vacancy Spells Explorer", status = "primary",
+          p(style = "font-size: 12px; color: #777; margin-bottom: 12px;",
+            "Estimated Days Open represents the calendar duration between when a posting was first captured and when it disappeared from weekly scrapes (or weeks observed × 7)."),
+          DTOutput("he_spell_table")
         )
       )
     )
