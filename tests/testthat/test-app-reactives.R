@@ -610,6 +610,46 @@ test_that("Map multi-dimensional filters and reset reactive controls function wi
 
     # Reset trigger
     session$setInputs(map_filter_reset = 1)
+
+    # Keyword / Position / Subject search on map
+    session$setInputs(
+      map_types = c("K-12 District", "Higher Ed Institution"),
+      map_county = "all",
+      map_salary_tier = "all",
+      map_urgency = "all",
+      map_search_keyword = "special ed"
+    )
+    sped_df <- map_filtered()
+    expect_true(nrow(sped_df) > 0)
+    expect_true(all(sped_df$MatchingCount > 0))
+    expect_true(all(sped_df$SearchActive))
+    expect_equal(sped_df$SearchQuery[1], "special ed")
+    expect_no_error(output$map_filter_count)
+
+    # Search for mathematics
+    session$setInputs(map_search_keyword = "mathematics")
+    math_df <- map_filtered()
+    expect_true(nrow(math_df) > 0)
+    expect_true(all(math_df$MatchingCount > 0))
+    expect_true(all(math_df$SearchActive))
+    expect_no_error(output$map_filter_count)
+
+    # Search suggestion chip triggers execute cleanly
+    expect_no_error(session$setInputs(map_chip_math = 1))
+    expect_no_error(session$setInputs(map_chip_sped = 1))
+    expect_no_error(session$setInputs(map_chip_clear = 1))
+
+    # Zero match search query
+    session$setInputs(map_search_keyword = "astronaut nonesuch 999xyz")
+    zero_match_df <- map_filtered()
+    expect_equal(nrow(zero_match_df), 0)
+    expect_no_error(output$map_filter_count)
+
+    # Clear query restores all
+    session$setInputs(map_search_keyword = "")
+    restored_df <- map_filtered()
+    expect_equal(nrow(restored_df), nrow(initial_df))
+    expect_false(restored_df$SearchActive[1])
   })
 })
 

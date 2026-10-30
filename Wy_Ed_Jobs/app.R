@@ -922,6 +922,34 @@ MAP_MARKER_MAX_RADIUS <- 24
 map_marker_radius <- function(current_count) {
   pmin(MAP_MARKER_MAX_RADIUS, MAP_MARKER_MIN_RADIUS + 1.2 * sqrt(current_count))
 }
+# Flexible query matching for map and job searches. Supports keywords,
+# abbreviations (e.g. "special ed", "sped", "math", "cte"), and multi-word queries.
+match_job_query <- function(title_vec, query) {
+  if (is.null(query) || !nzchar(trimws(query))) return(rep(TRUE, length(title_vec)))
+  q <- trimws(query)
+  q_lower <- tolower(q)
+  pattern <- if (q_lower %in% c("special ed", "sped", "special education")) {
+    "special[[:space:]]*ed|sped|special[[:space:]]*educ"
+  } else if (q_lower %in% c("math", "mathematics")) {
+    "math"
+  } else if (q_lower %in% c("pe", "phys ed", "physical education")) {
+    "physical[[:space:]]*ed|phys[[:space:]]*ed|\\bpe\\b"
+  } else if (q_lower %in% c("cte", "career and technical", "vocational")) {
+    "cte|career[[:space:]]*and[[:space:]]*tech|vocational|industrial[[:space:]]*arts"
+  } else if (q_lower %in% c("bus driver", "driver", "transportation")) {
+    "driver|transportation"
+  } else {
+    words <- strsplit(q, "[[:space:]]+")[[1]]
+    words <- words[nzchar(words)]
+    if (length(words) > 1) {
+      paste0("(?=.*", words, ")", collapse = "")
+    } else {
+      words
+    }
+  }
+  !is.na(title_vec) & grepl(pattern, title_vec, ignore.case = TRUE, perl = TRUE)
+}
+
 # If every Vacancy_Rate is NA (both the CCD and IPEDS staffing fetches
 # failing the same week, or a fresh checkout before either has ever
 # succeeded once), range(..., na.rm = TRUE) on an all-NA vector returns
@@ -1136,12 +1164,23 @@ ui <- dashboardPage(
           width = 12, title = "Wyoming Education Job Openings Map", status = "primary",
           fluidRow(
             column(
-              3,
-              checkboxGroupInput(
-                "map_types", "Employer Type:",
-                choices = c("K-12 Districts" = "K-12 District", "Higher Ed" = "Higher Ed Institution"),
-                selected = c("K-12 District", "Higher Ed Institution"),
-                inline = TRUE
+              6,
+              textInput(
+                "map_search_keyword",
+                label = tagList(icon("magnifying-glass"), " Search Open Positions by Keyword or Role:"),
+                value = "",
+                placeholder = "e.g., special ed, mathematics, science, music, coach, bus driver..."
+              ),
+              div(
+                style = "margin-top: -5px; margin-bottom: 8px; font-size: 11.5px; color: #64748b;",
+                span("Popular: "),
+                actionLink("map_chip_sped", "Special Ed", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_math", "Mathematics", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_elem", "Elementary", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_science", "Science", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_music", "Music / Art", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_driver", "Bus Driver", style = "margin-right: 8px; font-weight: 500;"),
+                actionLink("map_chip_clear", "✕ Clear", style = "color: #d9534f; margin-left: 4px; font-weight: 600;")
               )
             ),
             column(
@@ -1153,7 +1192,18 @@ ui <- dashboardPage(
               )
             ),
             column(
-              2,
+              3,
+              checkboxGroupInput(
+                "map_types", "Employer Type:",
+                choices = c("K-12 Districts" = "K-12 District", "Higher Ed" = "Higher Ed Institution"),
+                selected = c("K-12 District", "Higher Ed Institution"),
+                inline = TRUE
+              )
+            )
+          ),
+          fluidRow(
+            column(
+              4,
               selectInput(
                 "map_salary_tier", "Salary Level:",
                 choices = c(
@@ -1166,7 +1216,7 @@ ui <- dashboardPage(
               )
             ),
             column(
-              2,
+              4,
               selectInput(
                 "map_urgency", "Posting Volume:",
                 choices = c(
@@ -1179,10 +1229,10 @@ ui <- dashboardPage(
               )
             ),
             column(
-              2,
+              4,
               div(
                 style = "padding-top: 25px;",
-                actionButton("map_filter_reset", "Reset Filters", icon = icon("arrow-rotate-left"), class = "btn-sm btn-default btn-block")
+                actionButton("map_filter_reset", "Reset All Filters", icon = icon("arrow-rotate-left"), class = "btn-sm btn-default btn-block")
               )
             )
           ),
@@ -2439,8 +2489,14 @@ server <- function(input, output, session) {
   # -------- Combined map (Introduction tab) --------
   output$combined_map <- renderLeaflet({
     leaflet() %>%
-      addTiles() %>%
+      addProviderTiles(providers$CartoDB.Positron, group = "Clean (Default)") %>%
+      addTiles(group = "OpenStreetMap") %>%
+      addProviderTiles(providers$Esri.WorldTopoMap, group = "Topographic") %>%
       setView(lng = -107.5, lat = 43, zoom = 7) %>%
+      addLayersControl(
+        baseGroups = c("Clean (Default)", "OpenStreetMap", "Topographic"),
+        options = layersControlOptions(collapsed = TRUE)
+      ) %>%
       addLegend(position = "bottomright", pal = vacancy_rate_palette, values = vacancy_rate_domain,
                 title = "Vacancy rate", labFormat = labelFormat(suffix = "%", transform = function(x) 100 * x),
                 na.label = "N/A")
@@ -2453,8 +2509,97 @@ server <- function(input, output, session) {
   # "Couldn't find map with id combined_map" in the browser console.
   outputOptions(output, "combined_map", suspendWhenHidden = FALSE)
 
+  # Quick suggestion chips for position search
+  observeEvent(input$map_chip_sped, {
+    updateTextInput(session, "map_search_keyword", value = "special ed")
+  })
+  observeEvent(input$map_chip_math, {
+    updateTextInput(session, "map_search_keyword", value = "mathematics")
+  })
+  observeEvent(input$map_chip_elem, {
+    updateTextInput(session, "map_search_keyword", value = "elementary")
+  })
+  observeEvent(input$map_chip_science, {
+    updateTextInput(session, "map_search_keyword", value = "science")
+  })
+  observeEvent(input$map_chip_music, {
+    updateTextInput(session, "map_search_keyword", value = "music")
+  })
+  observeEvent(input$map_chip_driver, {
+    updateTextInput(session, "map_search_keyword", value = "bus driver")
+  })
+  observeEvent(input$map_chip_clear, {
+    updateTextInput(session, "map_search_keyword", value = "")
+  })
+
   map_filtered <- reactive({
     df <- combined_map_data %>% filter(Type %in% input$map_types, CurrentCount > 0)
+
+    # Search keyword / role / subject query filter
+    kw <- if (!is.null(input$map_search_keyword)) trimws(input$map_search_keyword) else ""
+    if (nzchar(kw)) {
+      searchable_k12 <- paste(coalesce(combineddata$Title, ""), coalesce(combineddata$Position, ""))
+      k12_matches <- combineddata[match_job_query(searchable_k12, kw), , drop = FALSE]
+
+      searchable_he <- paste(coalesce(ccdata$Title, ""), coalesce(ccdata$Appointment, ""))
+      he_matches <- ccdata[match_job_query(searchable_he, kw), , drop = FALSE]
+
+      k12_counts <- if (nrow(k12_matches) > 0) {
+        as.data.frame(table(Name = k12_matches$District), stringsAsFactors = FALSE)
+      } else {
+        data.frame(Name = character(0), Freq = integer(0))
+      }
+      names(k12_counts) <- c("Name", "MatchingCount")
+
+      k12_samples <- if (nrow(k12_matches) > 0) {
+        k12_matches %>%
+          group_by(District) %>%
+          summarize(MatchingSample = paste(head(unique(Title), 3), collapse = "; "), .groups = "drop") %>%
+          rename(Name = District)
+      } else {
+        data.frame(Name = character(0), MatchingSample = character(0))
+      }
+
+      he_counts <- if (nrow(he_matches) > 0) {
+        as.data.frame(table(Name = he_matches$Institution), stringsAsFactors = FALSE)
+      } else {
+        data.frame(Name = character(0), Freq = integer(0))
+      }
+      names(he_counts) <- c("Name", "MatchingCount")
+
+      he_samples <- if (nrow(he_matches) > 0) {
+        he_matches %>%
+          group_by(Institution) %>%
+          summarize(MatchingSample = paste(head(unique(Title), 3), collapse = "; "), .groups = "drop") %>%
+          rename(Name = Institution)
+      } else {
+        data.frame(Name = character(0), MatchingSample = character(0))
+      }
+
+      all_counts <- bind_rows(k12_counts, he_counts)
+      all_samples <- bind_rows(k12_samples, he_samples)
+
+      df <- df %>%
+        inner_join(all_counts, by = "Name") %>%
+        left_join(all_samples, by = "Name") %>%
+        mutate(
+          MatchingCount = coalesce(MatchingCount, 0L),
+          MatchingSample = coalesce(MatchingSample, ""),
+          DisplayCount = MatchingCount,
+          SearchActive = TRUE,
+          SearchQuery = kw
+        ) %>%
+        filter(MatchingCount > 0)
+    } else {
+      df <- df %>%
+        mutate(
+          MatchingCount = CurrentCount,
+          MatchingSample = SampleTitles,
+          DisplayCount = CurrentCount,
+          SearchActive = FALSE,
+          SearchQuery = ""
+        )
+    }
 
     # Filter by county
     if (!is.null(input$map_county) && input$map_county != "all") {
@@ -2479,9 +2624,9 @@ server <- function(input, output, session) {
     # Filter by posting volume / freshness
     if (!is.null(input$map_urgency) && input$map_urgency != "all") {
       if (input$map_urgency == "5_plus") {
-        df <- df %>% filter(CurrentCount >= 5)
+        df <- df %>% filter(DisplayCount >= 5)
       } else if (input$map_urgency == "2_plus") {
-        df <- df %>% filter(CurrentCount >= 2)
+        df <- df %>% filter(DisplayCount >= 2)
       } else if (input$map_urgency == "has_new") {
         df <- df %>% filter(WeeklyNew > 0)
       }
@@ -2493,26 +2638,45 @@ server <- function(input, output, session) {
   output$map_filter_count <- renderUI({
     filtered_df <- map_filtered()
     filtered_n <- nrow(filtered_df)
+    kw <- if (!is.null(input$map_search_keyword)) trimws(input$map_search_keyword) else ""
     total_active <- nrow(combined_map_data %>% filter(CurrentCount > 0))
-    total_postings <- sum(filtered_df$CurrentCount, na.rm = TRUE)
+    total_postings <- sum(filtered_df$DisplayCount, na.rm = TRUE)
 
     if (filtered_n == 0) {
-      tags$span(
-        class = "badge",
-        style = "background-color: #d9534f; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
-        "No locations match all selected filters — broaden criteria or click Reset Filters."
-      )
+      if (nzchar(kw)) {
+        tags$span(
+          class = "badge",
+          style = "background-color: #d9534f; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
+          sprintf('No locations currently have open positions matching "%s" under selected filters — try broadening your search or click Reset.', kw)
+        )
+      } else {
+        tags$span(
+          class = "badge",
+          style = "background-color: #d9534f; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
+          "No locations match all selected filters — broaden criteria or click Reset Filters."
+        )
+      }
     } else {
-      tags$span(
-        class = "badge",
-        style = "background-color: #3c8dbc; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
-        sprintf("Showing %d of %d active locations (%s current openings across filtered locations)",
-                filtered_n, total_active, format(total_postings, big.mark = ","))
-      )
+      if (nzchar(kw)) {
+        tags$span(
+          class = "badge",
+          style = "background-color: #198754; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
+          sprintf('Showing %d locations with %s matching openings for "%s"',
+                  filtered_n, format(total_postings, big.mark = ","), kw)
+        )
+      } else {
+        tags$span(
+          class = "badge",
+          style = "background-color: #3c8dbc; font-size: 0.9em; padding: 6px 12px; font-weight: 500; border-radius: 4px;",
+          sprintf("Showing %d of %d active locations (%s current openings across filtered locations)",
+                  filtered_n, total_active, format(total_postings, big.mark = ","))
+        )
+      }
     }
   })
 
   observeEvent(input$map_filter_reset, {
+    updateTextInput(session, "map_search_keyword", value = "")
     updateCheckboxGroupInput(session, "map_types", selected = c("K-12 District", "Higher Ed Institution"))
     updateSelectInput(session, "map_county", selected = "all")
     updateSelectInput(session, "map_salary_tier", selected = "all")
@@ -2551,6 +2715,18 @@ server <- function(input, output, session) {
     proxy <- leafletProxy("combined_map", data = df) %>% clearMarkers()
     if (nrow(df) == 0) return()
 
+    # Informative hover tooltip labels
+    labels <- with(df, sprintf(
+      "<strong>%s</strong><br/>%s%s%s",
+      Name,
+      ifelse(SearchActive,
+             sprintf("<span style='color:#198754;font-weight:600;'>🎯 %d matching opening%s for \"%s\"</span><br/>",
+                     DisplayCount, ifelse(DisplayCount == 1, "", "s"), SearchQuery),
+             sprintf("%d active opening%s<br/>", CurrentCount, ifelse(CurrentCount == 1, "", "s"))),
+      ifelse(!is.na(Vacancy_Rate), sprintf("Vacancy rate: %.1f%%<br/>", Vacancy_Rate * 100), ""),
+      "<span style='color:#666;font-size:11px;'>Click marker for details & jobs</span>"
+    )) %>% lapply(HTML)
+
     # A marker click always just opens its popup (leaflet's default) --
     # navigating away from the map has to be a second, deliberate action,
     # so the "View all jobs" link below fires a Shiny input from inside
@@ -2559,11 +2735,17 @@ server <- function(input, output, session) {
     # immediately navigated away before it could be read.
     popups <- with(df, paste0(
       "<div><strong>", Name, "</strong><br/>", Type, "</div>",
+      ifelse(SearchActive,
+             paste0("<div style='margin:4px 0;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:4px;font-weight:600;font-size:0.9em;'>",
+                    "🎯 ", DisplayCount, " matching opening", ifelse(DisplayCount == 1, "", "s"),
+                    " for &ldquo;", SearchQuery, "&rdquo; (out of ", CurrentCount, " total)</div>",
+                    ifelse(nzchar(MatchingSample), paste0("<div style='margin-bottom:4px;font-size:0.85em;'><strong>Matching:</strong> ", MatchingSample, "</div>"), "")),
+             ""),
       # Visible badge, not just a footnote or a code comment -- Data_Coverage
       # is "Full" for every district on a real structured job-board platform;
       # the ~25-40% (own page) / ~25-40% only (WSBA-only) partial tiers come
       # from misc_district_coverage_tiers() in misc_district_scrapers.R.
-      ifelse(Data_Coverage != "Full",
+      ifelse(!SearchActive & !is.na(Data_Coverage) & Data_Coverage != "Full",
              paste0("<div style='margin:2px 0;'><span style='background:#fdecea;color:#a92f1e;",
                     "font-size:0.78em;font-weight:bold;padding:1px 6px;border-radius:8px;'>",
                     Data_Coverage, "</span></div>"),
@@ -2578,7 +2760,7 @@ server <- function(input, output, session) {
                            ""),
                     "</div>"),
              ""),
-      ifelse(nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
+      ifelse(!SearchActive & nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
       ifelse(!is.na(Students_Per_Teacher),
              paste0("<div>Students per ", ifelse(Type == "K-12 District", "teacher", "faculty member"), ": ",
                     sprintf("%.1f", Students_Per_Teacher),
@@ -2664,11 +2846,17 @@ server <- function(input, output, session) {
     proxy %>%
       addCircleMarkers(
         lng = ~Longitude, lat = ~Latitude,
-        radius = ~map_marker_radius(CurrentCount),
+        radius = ~map_marker_radius(DisplayCount),
         fillColor = ~vacancy_rate_palette(Vacancy_Rate),
         color = "#333333", weight = 1,
         fillOpacity = 0.85,
         layerId = ~Name,
+        label = labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "4px 8px"),
+          textsize = "12px",
+          direction = "auto"
+        ),
         popup = popups
       )
   })
