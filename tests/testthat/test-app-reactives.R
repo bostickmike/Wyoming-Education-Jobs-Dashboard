@@ -678,3 +678,26 @@ test_that("K-12 and HE quick filter buttons and new postings tables evaluate cle
     expect_no_error(output$he_new_table)
   })
 })
+
+test_that("map popup 'View matching jobs' carries the map search to the Jobs table", {
+  env <- load_app()
+  query <- "special ed"
+  searchable <- paste(dplyr::coalesce(env$combineddata$Title, ""), dplyr::coalesce(env$combineddata$Position, ""))
+  hits <- env$combineddata[env$match_job_query(searchable, query), , drop = FALSE]
+  skip_if(nrow(hits) == 0, "no current postings match the test query")
+  district <- names(sort(table(hits$District), decreasing = TRUE))[1]
+  expected <- sum(hits$District == district)
+
+  shiny::testServer(env$server, {
+    session$setInputs(map_popup_view_jobs = list(entity = district, query = utils::URLencode(query, reserved = TRUE)))
+    expect_equal(selected_district(), district)
+    expect_equal(selected_k12_query(), query)
+    df <- env$combineddata[env$combineddata$District == district, , drop = FALSE]
+    shown <- df[env$match_job_query(paste(dplyr::coalesce(df$Title, ""), dplyr::coalesce(df$Position, "")), selected_k12_query()), ]
+    expect_equal(nrow(shown), expected)
+
+    # Any other route to the Jobs tab (home-page employer links) drops the map search.
+    session$setInputs(popup_view_jobs = district)
+    expect_null(selected_k12_query())
+  })
+})
