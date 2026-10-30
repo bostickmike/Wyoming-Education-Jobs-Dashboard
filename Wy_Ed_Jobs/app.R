@@ -2489,7 +2489,15 @@ server <- function(input, output, session) {
   # -------- Combined map (Introduction tab) --------
   output$combined_map <- renderLeaflet({
     leaflet() %>%
-      addProviderTiles(providers$CartoDB.Positron, group = "Clean (Default)") %>%
+      # CARTO tiles by URL, not providers$CartoDB.Positron: leaflet.providers
+      # 3.0.0 made that provider demand an apikey, so the default layer showed
+      # "API key required" instead of a map. The tile server itself is keyless.
+      addTiles(
+        urlTemplate = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        options = tileOptions(subdomains = "abcd", maxZoom = 20),
+        group = "Clean (Default)"
+      ) %>%
       addTiles(group = "OpenStreetMap") %>%
       addProviderTiles(providers$Esri.WorldTopoMap, group = "Topographic") %>%
       setView(lng = -107.5, lat = 43, zoom = 7) %>%
