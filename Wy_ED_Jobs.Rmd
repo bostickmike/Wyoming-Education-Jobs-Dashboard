@@ -482,7 +482,11 @@ salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding =
 if (nrow(teacher_fte) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA/IPEDS salary
   # chunks. CCD_Year is the real freshness signal for this data.
+  # Drop last run's copies first: since salarymap2.csv is now read back with
+  # every column kept, joining without this emitted Teachers_Total_FTE.x/.y,
+  # Enrollment.x/.y and CCD_Year.x/.y, which verify_schema.R rejects.
   salarymap2 <- salarymap2 %>%
+    select(-any_of(c("Teachers_Total_FTE", "Enrollment", "CCD_Year", "CCD_Source"))) %>%
     left_join(teacher_fte, by = "District") %>%
     mutate(CCD_Source = "NCES Common Core of Data via Urban Institute Education Data Portal (educationdata.urban.org)")
 
@@ -912,8 +916,11 @@ he_salary <- safe_scrape(
 # County (added 2026-08-06) is the join key the census county context
 # chunk below needs; kept here in this early select() so it survives
 # untouched through this chunk the same way Longitude/Latitude/Link do.
+# IPEDS_UNITID is carried through every select() in this chunk: it isn't
+# re-fetched each run, and dropping it here once broke the weekly run (the HE
+# spells generator joins on it).
 salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-  select(Name, Longitude, Latitude, Link, County)
+  select(Name, any_of("IPEDS_UNITID"), Longitude, Latitude, Link, County)
 
 if (nrow(he_salary) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA chunk above.
@@ -947,7 +954,7 @@ if (nrow(he_salary) > 0) {
   }
 
   salarymap <- salarymap %>%
-    select(Name, Longitude, Latitude, Link, County, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
+    select(Name, any_of("IPEDS_UNITID"), Longitude, Latitude, Link, County, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
            Faculty_Count, Salary_Year, Salary_Note, Salary_Source,
            starts_with("Faculty_Avg_Salary_Y"))
 
