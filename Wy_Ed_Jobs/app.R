@@ -150,7 +150,10 @@ if (file.exists(wde_staff_file)) {
       pos_l == "staff" ~ "School Secretary/Clerical Support",
       pos_l == "support services" & grepl("counselor", title_l) ~ "TOTAL Counselors",
       pos_l == "support services" ~ "Student Support Staff -- Professional",
-      TRUE ~ "SUBTOTAL Instructional Staff Teachers"
+      # Substitutes (daily rate), coaches (stipends), child care and
+      # unclassified postings have no WDE602 counterpart -- leave them blank
+      # rather than showing the teacher average.
+      TRUE ~ NA_character_
     )
   }
 
@@ -175,25 +178,31 @@ if (file.exists(wde_staff_file)) {
         WDE_Group == "Student Support Staff -- Professional" ~ " (Support)",
         TRUE ~ ""
       ),
-      Final_Salary = coalesce(Salary_Num, Teacher_Avg_Salary),
+      is_teacher_row = Position %in% c("Teacher", "Part-Time Teacher"),
+      # Only a teacher row may fall back to the district teacher average; any
+      # other role without its own WDE602 figure stays blank.
+      Final_Salary = ifelse(is_teacher_row, coalesce(Salary_Num, Teacher_Avg_Salary), Salary_Num),
+      `Teacher Starting Base` = ifelse(is_teacher_row, `District Starting Base`, "—"),
       `Role Avg Salary` = ifelse(
         is.na(Final_Salary),
         "—",
         paste0(scales::dollar(round(Final_Salary), accuracy = 1), ifelse(is.na(Salary_Num), "", Role_Suffix))
       )
     ) %>%
-    select(District, Title, Position, Location, `District Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+    select(District, Title, Position, Location, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
 } else {
   combineddata <- combineddata %>%
     left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
     mutate(
+      is_teacher_row = Position %in% c("Teacher", "Part-Time Teacher"),
       `Role Avg Salary` = ifelse(
-        is.na(Teacher_Avg_Salary),
+        !is_teacher_row | is.na(Teacher_Avg_Salary),
         "—",
         scales::dollar(Teacher_Avg_Salary, accuracy = 1)
-      )
+      ),
+      `Teacher Starting Base` = ifelse(is_teacher_row, `District Starting Base`, "—")
     ) %>%
-    select(District, Title, Position, Location, `District Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+    select(District, Title, Position, Location, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
 }
 
 # Weekly ALL-category posting totals per district/institution (not scoped
@@ -1449,7 +1458,7 @@ ui <- dashboardPage(
           ),
           uiOutput("k12_filter_status")
         ),
-        p(class = "help-block", style = "margin-bottom: 8px;", "District Starting Base reflects published starting base salary (BA Step 1, Source: WSBA). Role Avg Salary reflects average total compensation from the Wyoming Department of Education (Source: WDE602) for that specific job category (e.g. Teacher, Admin, Aide, Bus Driver, Custodial) in that district."),
+        p(class = "help-block", style = "margin-bottom: 8px;", "Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches."),
         DTOutput("k12_jobs")
       ),
       tabItem(
