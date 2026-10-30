@@ -15,7 +15,7 @@ root_dir <- if (file.exists("Wy_Ed_Jobs/facultydata.csv")) {
 } else if (file.exists("facultydata.csv")) {
   ".."
 } else {
-  "/Users/mikebostick/Jobs_Dash_repos/Wyoming-Education-Jobs-Dashboard"
+  stop("Run from the repo root (or its app folder): Rscript scripts/generate_he_job_duration_spells.R")
 }
 
 he_path <- file.path(root_dir, "Wy_Ed_Jobs", "facultydata.csv")

@@ -65,8 +65,16 @@ classify_k12_position <- function(title) {
     # Substitute
     grepl("Sub|Substitute", title, ignore.case = TRUE) ~ "Substitute",
 
+    # Teaching roles whose titles also carry a word claimed by an earlier
+    # non-teaching rule below: ensemble "Band/Choir Director" (Administration)
+    # and "Drivers Ed" (Transportation).
+    grepl("\\b(Band|Choir|Choral|Orchestra|Music)\\s+Director\\b|\\bDriver'?s?\\s*Ed(ucation)?\\b|\\bTraffic Ed",
+          title, ignore.case = TRUE) ~ "Teacher",
+
     # Support Services-related positions
-    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support|Intern|Technician",
+    # \bIntern\b, not bare "Intern" -- matched inside "Internal Applicants Only"
+    # otherwise, pulling teacher and bus-driver postings into this bucket.
+    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support|\\bIntern(ship)?s?\\b",
           title, ignore.case = TRUE) ~ "Support Services",
 
     # Staff-related positions (checked before Teacher so clerical titles like "General Secretary - Library" land here)
@@ -83,6 +91,11 @@ classify_k12_position <- function(title) {
     # landing in Transportation instead of their real roles.
     grepl("Bus Driver|Driver|Transportation|Route|\\bBus\\b|Mechanic|Bus Mechanic|Bus Monitor",
           title, ignore.case = TRUE) ~ "Transportation",
+
+    # Technicians not already claimed by Custodial/Maintenance or Transportation
+    # above; cafeteria technicians fall through to Food Services below.
+    (grepl("Technician", title, ignore.case = TRUE) &
+       !grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher", title, ignore.case = TRUE)) ~ "Support Services",
 
     # Administration-related positions
     grepl("Principal|Director|Coordinator|Administrator|Supervisor|Administrative",
