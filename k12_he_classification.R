@@ -371,6 +371,100 @@ is_placeholder_posting <- function(title) {
 }
 
 # ---------------------------------------------------------------------------
+# Posted pay
+# ---------------------------------------------------------------------------
+
+# Pulls the advertised pay out of a posting's free text: the amount (or
+# range), its unit, and the snippet it came from, so every figure can be
+# traced back to the posting's own words. Returns one row per input text;
+# all-NA when the posting states no dollar amount. Amounts tied to bonuses,
+# fees, reimbursements or benefits are ignored, and an amount preceded by a
+# pay word ("Salary:", "Wage", "Stipend") wins over an earlier bare one.
+extract_posted_pay <- function(text) {
+  n <- length(text)
+  out <- data.frame(Pay_Min = rep(NA_real_, n), Pay_Max = NA_real_,
+                    Pay_Unit = NA_character_, Pay_Text = NA_character_,
+                    stringsAsFactors = FALSE)
+  # "\\*{0,2}" tolerates footnote marks ("$20.60* - $21.95*/hr").
+  amount <- "\\$\\s?((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,2})?)\\s?([kK](?![a-z]))?\\*{0,2}"
+  pattern <- paste0(amount, "(?:\\s*(?:-|\u2013|\u2014|to)(?:\\s+(?:a\\s+)?max(?:imum)?(?:\\s+of)?)?\\s*\\$?\\s?((?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d{1,2})?)\\s?([kK](?![a-z]))?\\*{0,2})?")
+  to_num <- function(x, k) {
+    v <- suppressWarnings(as.numeric(gsub(",", "", x)))
+    ifelse(!is.na(k) & nzchar(k), v * 1000, v)
+  }
+  for (i in seq_len(n)) {
+    t <- text[i]
+    if (is.na(t) || !grepl("$", t, fixed = TRUE)) next
+    t <- gsub("[[:space:] ]+", " ", t)
+    m <- gregexpr(pattern, t, perl = TRUE)[[1]]
+    if (m[1] == -1) next
+    starts <- as.integer(m); lens <- attr(m, "match.length")
+    cs <- attr(m, "capture.start"); cl <- attr(m, "capture.length")
+    best <- NULL; best_score <- -Inf
+    for (j in seq_along(starts)) {
+      before <- tolower(substr(t, max(1, starts[j] - 60), starts[j] - 1))
+      after <- tolower(substr(t, starts[j] + lens[j], starts[j] + lens[j] + 45))
+      near_before <- substr(before, max(1, nchar(before) - 30), nchar(before))
+      # Only the amount's own sentence decides whether it's a bonus/fee, so a
+      # "signing bonus." just before "Starting salary: $X" doesn't veto $X.
+      near_before <- sub("^.*[.;!]\\s", "", near_before)
+      if (grepl("bonus|fee|reimburs|insurance|retire|deductible|allowance|incentive|signing|relocation|tuition|premium|contribut|match|donat|scholarship|award|grant of|differential|up to \\$", paste(near_before, substr(after, 1, 25)))) next
+      cap <- function(k) if (cl[j, k] > 0) substr(t, cs[j, k], cs[j, k] + cl[j, k] - 1) else NA_character_
+      lo <- to_num(cap(1), cap(2)); hi <- if (!is.na(cap(3))) to_num(cap(3), cap(4)) else lo
+      if (is.na(lo)) next
+      unit <- dplyr::case_when(
+        grepl("^[^a-z]{0,3}(/|per|an|a)?\\s*(hour|hr\\b)|^[^a-z]{0,3}hourly", after) ~ "hour",
+        grepl("^[^a-z]{0,3}(/|per|a)?\\s*((whole|half|full) )?(day\\b|daily)|^[^a-z]{0,3}per diem", after) |
+          grepl("daily rate[^.]{0,60}$", before) ~ "day",
+        grepl("^[^a-z]{0,3}(/|per|a)?\\s*(month|mo\\b)|^[^a-z]{0,3}monthly", after) ~ "month",
+        grepl("^[^a-z]{0,3}(/|per|a)?\\s*(year|yr\\b|annum)|^[^a-z]{0,3}annual", after) ~ "year",
+        grepl("^[^a-z]{0,3}(/|per|a)?\\s*credit", after) ~ "credit hour",
+        grepl("^[^a-z]{0,3}(/|per|a)?\\s*(season|unit|event|game|stipend)", after) |
+          grepl("stipend[^.$]{0,20}$", before) ~ "stipend",
+        grepl("hourly[^.$]{0,25}$|hour(ly)? (rate|wage)[^.$]{0,15}$|per hour[^.$]{0,10}$", before) ~ "hour",
+        grepl("(annual|yearly) (salary|pay)[^.$]{0,20}$", before) ~ "year",
+        hi >= 15000 ~ "year",
+        # No unit next to the amount: infer one only when the rest of the
+        # posting backs it up -- a classified pay-grade figure ("Salary:
+        # SEC-II, $22.45") in a posting that describes hours per day/week is
+        # hourly; a few-thousand-dollar amount on a coaching/advisor posting
+        # is a season stipend.
+        hi >= 7 & hi <= 100 & grepl("\\bhours?\\b|\\bhrs?\\b", tolower(t)) ~ "hour",
+        hi >= 250 & hi < 15000 & grepl("coach|advisor|sponsor|stipend|season|extra[- ]?duty|extracurricular", tolower(t)) ~ "stipend",
+        TRUE ~ NA_character_
+      )
+      # An "hourly" figure in the thousands, or a "yearly" one under $1,000,
+      # is a misread unit -- keep the amount, drop the unit.
+      if (!is.na(unit) && ((unit == "hour" && hi > 500) || (unit == "year" && hi < 1000))) unit <- NA_character_
+      score <- (if (grepl("salary|wage|pay|rate|stipend|compensation|starting|step|lane|schedule", near_before)) 2 else 0) +
+        (if (!is.na(unit)) 1 else 0)
+      if (score > best_score) {
+        best_score <- score
+        snippet <- trimws(substr(t, max(1, starts[j] - 50), starts[j] + lens[j] + 35))
+        best <- list(lo = min(lo, hi), hi = max(lo, hi), unit = unit, text = snippet)
+      }
+    }
+    if (!is.null(best)) {
+      out$Pay_Min[i] <- best$lo; out$Pay_Max[i] <- best$hi
+      out$Pay_Unit[i] <- best$unit; out$Pay_Text[i] <- best$text
+    }
+  }
+  out
+}
+
+POSTED_PAY_COLUMNS <- c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")
+
+# Guarantees the posted-pay columns exist (NA where a source states no pay),
+# so combinedclean.csv keeps one schema whether or not this run's sources --
+# or a rebuild from archives written before pay was captured -- carry them.
+ensure_posted_pay_columns <- function(df) {
+  for (col in POSTED_PAY_COLUMNS) {
+    if (!col %in% names(df)) df[[col]] <- if (col %in% c("Pay_Min", "Pay_Max")) NA_real_ else NA_character_
+  }
+  df
+}
+
+# ---------------------------------------------------------------------------
 # Higher Ed
 # ---------------------------------------------------------------------------
 

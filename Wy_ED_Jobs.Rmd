@@ -76,9 +76,11 @@ for (i in seq_len(nrow(registry))) {
       # platform, so this placeholder was never actually needed to make an
       # empty week visible.
       if (nrow(df) > 0) {
+        df <- ensure_posted_pay_columns(df)
         data.frame(title = df$title, date_posted = df$date_posted, position = df$position,
                    location = df$location, url = row$Job_Link, District = row$District,
-                   stringsAsFactors = FALSE)
+                   Pay_Min = df$Pay_Min, Pay_Max = df$Pay_Max, Pay_Unit = df$Pay_Unit,
+                   Pay_Text = df$Pay_Text, stringsAsFactors = FALSE)
       } else {
         NULL
       }
@@ -302,7 +304,11 @@ combinedclean <- combined %>%
   filter(!is_placeholder_posting(title)) %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
-  dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
+  # Pay_* is the pay the posting itself states (extract_posted_pay()); NA
+  # where the source states none.
+  ensure_posted_pay_columns() %>%
+  dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District,
+                dplyr::all_of(POSTED_PAY_COLUMNS))
 
 write.csv(combinedclean, file=file.path('Wy_Ed_Jobs','combinedclean.csv'), row.names = FALSE)
 

@@ -80,12 +80,33 @@ format_posted_or_listed_date <- function(dates, stale_after_days = 180) {
   values
 }
 
+# Pay as the posting itself states it (Pay_* from extract_posted_pay() in the
+# pipeline): "$21.46–$22.81/hr", "$46,500–$71,803/yr", "$3,691 stipend".
+# Units are never converted -- an hourly wage isn't turned into an annual
+# figure, since hours per year aren't known.
+format_posted_pay <- function(pay_min, pay_max, pay_unit) {
+  fmt <- function(x) ifelse(x >= 1000, scales::dollar(x, accuracy = 1), scales::dollar(x, accuracy = 0.01))
+  amount <- ifelse(is.na(pay_min), NA_character_,
+                   ifelse(is.na(pay_max) | pay_min == pay_max, fmt(pay_min), paste0(fmt(pay_min), "\u2013", fmt(pay_max))))
+  suffix <- unname(c(hour = "/hr", day = "/day", month = "/mo", year = "/yr",
+                     "credit hour" = "/credit hr", stipend = " stipend")[pay_unit])
+  ifelse(is.na(amount), "\u2014", paste0(amount, ifelse(is.na(suffix), "", suffix)))
+}
+
 #--------------------------------------------------
 # Load K-12 data
 #--------------------------------------------------
-combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8") %>%
+combineddata <- read.csv("combinedclean.csv", fileEncoding = "UTF-8")
+# Posted-pay columns are optional (absent from files written before the
+# pipeline captured pay) -- padded here rather than in validate_and_pad_schema(),
+# which would flag their absence as a schema problem on the Home tab.
+for (col in c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")) {
+  if (!col %in% names(combineddata)) combineddata[[col]] <- NA
+}
+combineddata <- combineddata %>%
   validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv") %>%
-  select(District, title, position, location, date_posted, url) %>%
+  mutate(`Posted Pay` = format_posted_pay(Pay_Min, Pay_Max, Pay_Unit)) %>%
+  select(District, title, position, location, `Posted Pay`, date_posted, url) %>%
   mutate(District = str_squish(as.character(District))) %>%
   mutate(date_posted = format_posted_or_listed_date(date_posted)) %>%
   arrange(District, title) %>%
@@ -189,7 +210,7 @@ if (file.exists(wde_staff_file)) {
         paste0(scales::dollar(round(Final_Salary), accuracy = 1), ifelse(is.na(Salary_Num), "", Role_Suffix))
       )
     ) %>%
-    select(District, Title, Position, Location, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+    select(District, Title, Position, Location, `Posted Pay`, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
 } else {
   combineddata <- combineddata %>%
     left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
@@ -202,7 +223,7 @@ if (file.exists(wde_staff_file)) {
       ),
       `Teacher Starting Base` = ifelse(is_teacher_row, `District Starting Base`, "—")
     ) %>%
-    select(District, Title, Position, Location, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
+    select(District, Title, Position, Location, `Posted Pay`, `Teacher Starting Base`, `Role Avg Salary`, `Posted / listed`, Link)
 }
 
 # Weekly ALL-category posting totals per district/institution (not scoped
@@ -1458,7 +1479,7 @@ ui <- dashboardPage(
           ),
           uiOutput("k12_filter_status")
         ),
-        p(class = "help-block", style = "margin-bottom: 8px;", "Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches."),
+        p(class = "help-block", style = "margin-bottom: 8px;", "Posted Pay is the pay the job posting itself states (hourly, daily, annual, or a season stipend, as written); blank where the posting gives no figure. Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches."),
         DTOutput("k12_jobs")
       ),
       tabItem(

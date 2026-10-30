@@ -263,3 +263,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * **MT `salarymap2.csv`:** the read-back + registry join emitted `NCES_LEAID.x`/`.y` (a third copy would follow next run); collapsed to one `NCES_LEAID` and fixed at the source.
   * **District name variants:** MT OPI location labels normalized ("BILLINGS" / "Billings, MT" → "Billings"); WY "#21" / "No.1" spellings canonicalized.
   * Regression tests added for every fix; histories and spells rebuilt from archive.
+- [x] WY weekly run fix (2026-10-30): the weekly salary chunks now keep `IPEDS_UNITID` and no longer duplicate the CCD
+  columns (`.x`/`.y`). Both had been introduced by Oct 27 hand-edits to the committed CSVs that the pipeline didn't
+  reproduce. Verified with full local rehearsals of both weekly workflows.
+- [ ] Posted pay from the job posting itself (in progress):
+  * [x] Increment 1: shared `extract_posted_pay()` (amount/range, unit, source snippet; never converted between units).
+    AppliTrack postings carry `Pay_Min`/`Pay_Max`/`Pay_Unit`/`Pay_Text` into `combinedclean.csv`, with a "Posted Pay"
+    column in the Jobs table. About 91% of sampled live AppliTrack postings state an amount.
+  * [ ] RedRover; HE platforms (isolvedHire, NEOGOV, Paycom); OPI detail pages (~50% state an amount); map salary filter
+    on posted pay; BLS OEWS regional benchmarks as a labeled fallback.

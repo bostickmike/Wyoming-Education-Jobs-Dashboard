@@ -75,7 +75,9 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
             district = District
           )
         ) %>%
-        dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
+        ensure_posted_pay_columns() %>%
+        dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District,
+                      dplyr::all_of(POSTED_PAY_COLUMNS))
       # Mirrors Wy_ED_Jobs.Rmd's collapse_duplicate_posting_ids() -- only for
       # snapshots the modern pipeline wrote (they carry posting_id), since
       # that step never ran on the older ones, whose building-in-`position`

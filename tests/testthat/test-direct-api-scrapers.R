@@ -321,7 +321,8 @@ test_that("parse_applitrack_output un-escapes document.write literals and preser
 test_that("parse_applitrack_output returns zero rows (not an error) when there's no postingsList content", {
   result <- parse_applitrack_output("document.write('<div>No postings here</div>');")
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("title", "position", "position2", "date_posted", "location", "closing_date"))
+  expect_equal(names(result), c("title", "position", "position2", "date_posted", "location", "closing_date",
+                                "Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text"))
 })
 
 test_that("fetch_applitrack_postings decodes Windows-1252 bytes instead of silently dropping them as NA", {

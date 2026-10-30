@@ -428,6 +428,10 @@ fetch_applitrack_postings <- function(tenant_path) {
   parse_applitrack_output(resp_body_string(resp, encoding = "Windows-1252"))
 }
 
+# extract_posted_pay() lives in k12_he_classification.R; standalone scripts
+# (repro_scraper.R, live_check_autofix.R) source this file on its own.
+if (!exists("extract_posted_pay", mode = "function")) source("k12_he_classification.R")
+
 parse_applitrack_output <- function(js_text) {
   # Response body is a series of document.write('<html fragment>') calls
   # with single quotes escaped as \' for JS string-literal safety; joining
@@ -440,7 +444,8 @@ parse_applitrack_output <- function(js_text) {
   if (!nzchar(html)) {
     return(data.frame(title = character(0), position = character(0), position2 = character(0),
                        date_posted = character(0), location = character(0), closing_date = character(0),
-                       stringsAsFactors = FALSE))
+                       Pay_Min = numeric(0), Pay_Max = numeric(0), Pay_Unit = character(0),
+                       Pay_Text = character(0), stringsAsFactors = FALSE))
   }
 
   soup <- rvest::read_html(html)
@@ -449,7 +454,8 @@ parse_applitrack_output <- function(js_text) {
   if (length(postings) == 0) {
     return(data.frame(title = character(0), position = character(0), position2 = character(0),
                        date_posted = character(0), location = character(0), closing_date = character(0),
-                       stringsAsFactors = FALSE))
+                       Pay_Min = numeric(0), Pay_Max = numeric(0), Pay_Unit = character(0),
+                       Pay_Text = character(0), stringsAsFactors = FALSE))
   }
 
   rows <- lapply(postings, function(p) {
@@ -485,9 +491,14 @@ parse_applitrack_output <- function(js_text) {
       j <- j + 1
     }
 
+    # Most AppliTrack postings state their pay in the body ("SALARY:
+    # $15.14 per hour", "Stipend: $3,548.00", "$46,500-$71,803"), which this
+    # all=1 listing already includes -- no extra request needed.
+    pay <- extract_posted_pay(rvest::html_text2(p))
+
     data.frame(title = title, position = field$position, position2 = field$position2,
                date_posted = field$date_posted, location = field$location,
-               closing_date = field$closing_date, stringsAsFactors = FALSE)
+               closing_date = field$closing_date, pay, stringsAsFactors = FALSE)
   })
 
   do.call(rbind, rows)
