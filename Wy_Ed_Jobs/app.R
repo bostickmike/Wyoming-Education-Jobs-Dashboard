@@ -2508,13 +2508,13 @@ server <- function(input, output, session) {
   # -------- Combined map (Introduction tab) --------
   output$combined_map <- renderLeaflet({
     leaflet() %>%
-      # CARTO tiles by URL, not providers$CartoDB.Positron: leaflet.providers
-      # 3.0.0 made that provider demand an apikey, so the default layer showed
-      # "API key required" instead of a map. The tile server itself is keyless.
+      # Esri World Light Gray, not CARTO Positron: CARTO's basemaps now require
+      # an API key and serve an "API KEY REQUIRED" image tile without one.
+      # The reference layer adds place names on top of the label-free base.
+      addProviderTiles(providers$Esri.WorldGrayCanvas, group = "Clean (Default)") %>%
       addTiles(
-        urlTemplate = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        options = tileOptions(subdomains = "abcd", maxZoom = 20),
+        urlTemplate = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+        options = tileOptions(maxZoom = 16),
         group = "Clean (Default)"
       ) %>%
       addTiles(group = "OpenStreetMap") %>%
