@@ -50,8 +50,10 @@ he_baseline <- build_historical_counts(he_snapshots, "name")
 # combinedclean.csv is already canonicalized; canonicalize again anyway so
 # the two sides of the comparison can never fall out of sync if that ever
 # changes (canonicalize_k12_district() is idempotent).
-current_k12 <- as.data.frame(table(canonicalize_k12_district(
-  read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE)$District)))
+combined_raw <- read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE)
+registry <- if (file.exists("k12_district_registry.csv")) read.csv("k12_district_registry.csv", stringsAsFactors = FALSE) else NULL
+
+current_k12 <- as.data.frame(table(canonicalize_k12_district(combined_raw$District)))
 names(current_k12) <- c("name", "count")
 current_he <- as.data.frame(table(readxl::read_xlsx("Wy_Ed_Jobs/hedata.xlsx")$Institution))
 names(current_he) <- c("name", "count")
@@ -83,9 +85,36 @@ scrape_log <- if (file.exists("scrape_log.csv")) {
 }
 flagged <- attach_scrape_log_errors(flagged, scrape_log)
 
+# Central Safety Net status summary
+safety_net_summary <- summarize_central_safety_net(
+  combined_df = combined_raw,
+  registry = registry,
+  scrape_log = scrape_log,
+  feed_label = WSBA_STATEWIDE_SOURCE,
+  feed_short_name = "WSBA",
+  discrepancy_path = "wy_discrepancy_report.csv"
+)
+
+flagged$safety_net_vacancies <- if (nrow(flagged) == 0) {
+  integer(0)
+} else {
+  vapply(seq_len(nrow(flagged)), function(i) {
+    if (flagged$type[i] == "K-12") {
+      val <- safety_net_summary$fallback_districts[[flagged$name[i]]]
+      if (!is.null(val)) as.integer(val) else 0L
+    } else {
+      NA_integer_
+    }
+  }, integer(1))
+}
+
 cat(sprintf(
   "Drift check: %d K-12 baseline sources, %d HE baseline sources, %d flagged (%d confirmed by scrape_log as errored).\n",
   nrow(k12_baseline), nrow(he_baseline), nrow(flagged), sum(!is.na(flagged$scrape_error))
+))
+cat(sprintf(
+  "Central Safety Net: %d total statewide feed vacancies, %d district(s) protected by fallback (%d vacancies preserved).\n",
+  safety_net_summary$total_feed_vacancies, length(safety_net_summary$fallback_districts), safety_net_summary$total_fallback_vacancies
 ))
 if (nrow(flagged) > 0) print(flagged)
 

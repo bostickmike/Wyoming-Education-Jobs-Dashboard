@@ -581,3 +581,122 @@ test_that("a long capture is truncated to fit an issue body", {
   expect_true(any(grepl("page text truncated", md, fixed = TRUE)))
   expect_true(any(grepl("diff truncated", md, fixed = TRUE)))
 })
+
+test_that("summarize_central_safety_net handles empty or NULL inputs gracefully", {
+  summary <- summarize_central_safety_net()
+  expect_equal(summary$total_feed_vacancies, 0L)
+  expect_equal(summary$total_fallback_vacancies, 0L)
+  expect_equal(length(summary$fallback_districts), 0)
+  expect_equal(nrow(summary$discrepancies), 0)
+  expect_true(any(grepl("0 registered districts currently require Central Safety Net fallback", summary$markdown, fixed = TRUE)))
+})
+
+test_that("summarize_central_safety_net identifies active fallback districts and counts", {
+  registry <- data.frame(
+    District = c("Fremont County School District 24", "Park County School District 1", "Natrona School District 1"),
+    stringsAsFactors = FALSE
+  )
+  combined <- data.frame(
+    District = c("Fremont County School District 24", "Fremont County School District 24", "Park County School District 1", "Unregistered Town", "Natrona School District 1"),
+    url = c(
+      WSBA_VACANCIES_URL,
+      WSBA_VACANCIES_URL,
+      WSBA_VACANCIES_URL,
+      WSBA_VACANCIES_URL,
+      "https://natrona.schoolspring.com"
+    ),
+    posting_id = c("wsba1", "wsba2", "wsba3", "wsba4", "direct1"),
+    stringsAsFactors = FALSE
+  )
+
+  summary <- summarize_central_safety_net(
+    combined_df = combined,
+    registry = registry,
+    feed_label = WSBA_STATEWIDE_SOURCE,
+    feed_short_name = "WSBA"
+  )
+
+  expect_equal(summary$total_feed_vacancies, 4L)
+  expect_equal(summary$total_fallback_vacancies, 3L)
+  expect_equal(summary$fallback_districts[["Fremont County School District 24"]], 2L)
+  expect_equal(summary$fallback_districts[["Park County School District 1"]], 1L)
+  expect_null(summary$fallback_districts[["Natrona School District 1"]])
+
+  md <- paste(summary$markdown, collapse = "\n")
+  expect_match(md, "2 registered district(s) currently protected by Central Safety Net fallback", fixed = TRUE)
+  expect_match(md, "Fremont County School District 24**: 2 vacancy/vacancies preserved", fixed = TRUE)
+  expect_match(md, "Park County School District 1**: 1 vacancy/vacancies preserved", fixed = TRUE)
+})
+
+test_that("summarize_central_safety_net reads discrepancy report for unmatched postings", {
+  disc <- data.frame(
+    District = c("Laramie County School District 1", "Natrona School District 1"),
+    Source = c("WSBA", "WSBA"),
+    Title = c("Math Teacher", "Custodian (stale)"),
+    Date_Posted = c("2026-10-25", "2026-05-01"),
+    Discrepancy_Type = c("Unmatched on direct scraper (investigate ATS drift)", "Potential ghost posting on WSBA"),
+    stringsAsFactors = FALSE
+  )
+
+  summary <- summarize_central_safety_net(
+    discrepancy_report = disc,
+    feed_short_name = "WSBA"
+  )
+
+  expect_equal(nrow(summary$discrepancies), 1)
+  expect_equal(summary$discrepancies$District, "Laramie County School District 1")
+  md <- paste(summary$markdown, collapse = "\n")
+  expect_match(md, "1 unmatched vacancy/vacancies detected on central feed", fixed = TRUE)
+  expect_match(md, "Laramie County School District 1**: \"Math Teacher\" (posted 2026-10-25)", fixed = TRUE)
+})
+
+test_that("build_drift_report_markdown includes Central Safety Net status annotations and summary", {
+  actionable <- data.frame(
+    name = c("Fremont County School District 24", "Park County School District 1", "University of Wyoming"),
+    type = c("K-12", "K-12", "Higher Ed"),
+    mean_count = c(5.0, 10.0, 30.0),
+    count = c(0, 0, 2),
+    url = c("https://fremont24.com", "https://park1.net", "https://uwyo.edu"),
+    verdict = c("confirmed_broken", "likely_broken", "likely_broken"),
+    error_message = c("500 Server Error", NA, NA),
+    llm_note = c(NA, "an LLM read 4 postings", NA),
+    safety_net_vacancies = c(2L, 0L, NA_integer_),
+    stringsAsFactors = FALSE
+  )
+
+  safety_net_summary <- list(
+    total_feed_vacancies = 50L,
+    fallback_districts = list("Fremont County School District 24" = 2L),
+    total_fallback_vacancies = 2L,
+    markdown = c(
+      "### Central Safety Net Status Summary",
+      "",
+      "- **Statewide Feed (WSBA)**: 50 active vacancies captured.",
+      "- **Active Fallback Districts**: 1 registered district(s) currently protected by Central Safety Net fallback (2 total vacancies preserved):",
+      "  - **Fremont County School District 24**: 2 vacancy/vacancies preserved via fallback",
+      "- **Central Feed Discrepancies**: 0 unmatched vacancies detected for active direct scrapers.",
+      ""
+    )
+  )
+
+  lines <- build_drift_report_markdown(
+    actionable = actionable,
+    safety_net_summary = safety_net_summary,
+    date = as.Date("2026-10-29"),
+    feed_short_name = "WSBA"
+  )
+
+  report <- paste(lines, collapse = "\n")
+  # Fremont 24: active fallback
+  expect_match(report, "Fremont County School District 24", fixed = TRUE)
+  expect_match(report, "Central Safety Net**: Active (2 fallback vacancies preserved via WSBA)", fixed = TRUE)
+  # Park 1: inactive fallback
+  expect_match(report, "Park County School District 1", fixed = TRUE)
+  expect_match(report, "Central Safety Net**: Inactive (0 fallback vacancies on WSBA)", fixed = TRUE)
+  # Higher Ed: no Central Safety Net bullet under its entry
+  expect_match(report, "University of Wyoming", fixed = TRUE)
+  expect_false(grepl("University of Wyoming.*\\n\\s+- \\*\\*Central Safety Net", report))
+  # Bottom summary block included
+  expect_match(report, "### Central Safety Net Status Summary", fixed = TRUE)
+  expect_match(report, "Statewide Feed (WSBA)**: 50 active vacancies captured", fixed = TRUE)
+})

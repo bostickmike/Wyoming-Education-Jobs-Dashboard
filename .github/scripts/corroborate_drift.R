@@ -37,6 +37,20 @@ if (nrow(flagged) == 0) {
 }
 
 if (!"scrape_error" %in% names(flagged)) flagged$scrape_error <- NA_character_
+if (!"safety_net_vacancies" %in% names(flagged)) flagged$safety_net_vacancies <- NA_integer_
+
+combined_raw <- if (file.exists("Wy_Ed_Jobs/combinedclean.csv")) read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE) else NULL
+registry <- if (file.exists("k12_district_registry.csv")) read.csv("k12_district_registry.csv", stringsAsFactors = FALSE) else NULL
+scrape_log <- if (file.exists("scrape_log.csv")) read.csv("scrape_log.csv", stringsAsFactors = FALSE) else NULL
+
+safety_net_summary <- summarize_central_safety_net(
+  combined_df = combined_raw,
+  registry = registry,
+  scrape_log = scrape_log,
+  feed_label = WSBA_STATEWIDE_SOURCE,
+  feed_short_name = "WSBA",
+  discrepancy_path = "wy_discrepancy_report.csv"
+)
 
 url_lookup <- build_source_url_lookup(misc_registry = misc_district_registry)
 # check_drift.R canonicalizes district names before flagging, so a flagged
@@ -49,11 +63,16 @@ url_lookup <- build_source_url_lookup(misc_registry = misc_district_registry)
 names(url_lookup) <- canonicalize_k12_district(names(url_lookup))
 url_lookup <- url_lookup[!duplicated(names(url_lookup), fromLast = TRUE)]
 
-b <- ChromoteSession$new()
+b <- NULL
+get_session <- function() {
+  if (is.null(b)) b <<- ChromoteSession$new()
+  b
+}
 results <- data.frame(name = character(0), type = character(0), mean_count = numeric(0),
                        count = numeric(0), url = character(0), verdict = character(0),
                        error_message = character(0), llm_note = character(0),
                        llm_titles = character(0), page_text = character(0),
+                       safety_net_vacancies = integer(0),
                        stringsAsFactors = FALSE)
 
 for (i in seq_len(nrow(flagged))) {
@@ -64,16 +83,25 @@ for (i in seq_len(nrow(flagged))) {
   llm_titles <- character(0)
   text <- NA_character_
 
+  fb_count <- if (!is.na(row$safety_net_vacancies)) {
+    as.integer(row$safety_net_vacancies)
+  } else if (!is.null(safety_net_summary$fallback_districts[[row$name]])) {
+    as.integer(safety_net_summary$fallback_districts[[row$name]])
+  } else {
+    0L
+  }
+
   if (!is.na(row$scrape_error)) {
     verdict <- "confirmed_broken"
   } else if (is.null(url)) {
     verdict <- "no_url_available"
   } else {
     text <- tryCatch({
-      b$Page$navigate(url, wait_ = TRUE)
-      b$Page$loadEventFired(wait_ = TRUE)
+      s <- get_session()
+      s$Page$navigate(url, wait_ = TRUE)
+      s$Page$loadEventFired(wait_ = TRUE)
       Sys.sleep(2.5)
-      b$Runtime$evaluate("document.body.innerText")$result$value
+      s$Runtime$evaluate("document.body.innerText")$result$value
     }, error = function(e) NA_character_)
     verdict <- score_page_text_for_job_signal(text)
 
@@ -86,6 +114,13 @@ for (i in seq_len(nrow(flagged))) {
     llm_note <- combined$note
   }
 
+  # If a K-12 scraper was flagged and text signal scored empty, but Central Safety Net
+  # is actively preserving postings for it on the statewide feed, the scraper is broken.
+  if (verdict == "looks_genuinely_empty" && fb_count > 0) {
+    verdict <- "likely_broken"
+    llm_note <- sprintf("Central Safety Net has %d active fallback vacancy/vacancies on statewide feed", fb_count)
+  }
+
   cat(sprintf("%-40s baseline=%.1f current=%d -> %s%s\n", row$name, row$mean_count,
               row$count, verdict, if (is.na(llm_note)) "" else paste0("  [", llm_note, "]")))
   results <- rbind(results, data.frame(
@@ -96,11 +131,12 @@ for (i in seq_len(nrow(flagged))) {
     # Kept for the auto-fix issue: the agent's firewalled sandbox can't be
     # trusted to render the page the same way.
     page_text = if (length(text) == 1) text else NA_character_,
+    safety_net_vacancies = fb_count,
     stringsAsFactors = FALSE
   ))
 }
 
-invisible(b$close())
+if (!is.null(b)) invisible(b$close())
 
 # Machine-readable copy for file_autofix_issues.R (per-source Copilot
 # auto-fix issues) -- written unconditionally, since that step also needs
@@ -114,33 +150,12 @@ if (nrow(actionable) == 0) {
   quit(status = 0)
 }
 
-lines <- c(
-  paste0("Automated drift check flagged ", nrow(actionable), " source(s) as of ", Sys.Date(), "."),
-  "",
-  "A source is flagged when it has at least 2 weeks of history averaging real postings, and this week's count dropped to 20% or less of that average. This is the same failure signature that hid ~200 real postings across 10 Applitrack districts on 2026-08-03 (a Windows-1252 encoding bug, not real absence of jobs) -- these entries are corroborated against the actual live page but still need a human look.",
-  ""
+lines <- build_drift_report_markdown(
+  actionable = actionable,
+  safety_net_summary = safety_net_summary,
+  date = Sys.Date(),
+  feed_short_name = "WSBA"
 )
-
-for (verdict_group in c("confirmed_broken", "likely_broken", "inconclusive", "no_url_available")) {
-  subset_rows <- actionable[actionable$verdict == verdict_group, ]
-  if (nrow(subset_rows) == 0) next
-
-  label <- switch(verdict_group,
-    confirmed_broken = "### Confirmed broken -- the scraper itself errored this run (not just a low count)",
-    likely_broken = "### Likely broken -- live page has real job-posting content, scraper reported little/none",
-    inconclusive = "### Inconclusive -- drift detected, live page didn't clearly confirm either way",
-    no_url_available = "### No URL on file -- couldn't corroborate automatically"
-  )
-  lines <- c(lines, label, "")
-  for (i in seq_len(nrow(subset_rows))) {
-    r <- subset_rows[i, ]
-    url_part <- if (is.na(r$url)) "" else sprintf(" -- %s", r$url)
-    error_part <- if (verdict_group == "confirmed_broken") sprintf(" (%s)", r$error_message) else ""
-    lines <- c(lines, sprintf("- **%s** (%s): averaged %.1f/week, now %d%s%s", r$name, r$type, r$mean_count, r$count, url_part, error_part))
-    if (!is.na(r$llm_note)) lines <- c(lines, sprintf("  - %s", r$llm_note))
-  }
-  lines <- c(lines, "")
-}
 
 writeLines(lines, "/tmp/drift_report.md")
 cat("Report written to /tmp/drift_report.md\n")

@@ -21,6 +21,9 @@
 # every affected district.
 BASELINE_VALID_FROM <- as.Date("2026-08-03")
 
+WSBA_STATEWIDE_SOURCE <- "WSBA statewide vacancies"
+WSBA_VACANCIES_URL <- "https://www.wsba-wy.org/vacancies"
+
 # --------------------------------------------------------------------------
 # Tier 1: per-source historical drift detection
 # --------------------------------------------------------------------------
@@ -338,6 +341,222 @@ combine_verdict_with_llm <- function(verdict, llm_titles) {
   }
 
   list(verdict = verdict, note = NA_character_)
+}
+
+# --------------------------------------------------------------------------
+# Tier 2c: Central Safety Net status summary & report formatting
+# --------------------------------------------------------------------------
+
+# Summarizes the status of the Central Safety Net statewide vacancy fallback
+# (WSBA in Wyoming).
+#
+# Returns a list with:
+#   - total_feed_vacancies: total vacancies from the statewide feed
+#   - feed_name: display name of the statewide feed
+#   - fallback_districts: named list of {district -> count} for registered districts
+#                         with active fallback postings
+#   - total_fallback_vacancies: sum of fallback vacancies across registered districts
+#   - discrepancies: data.frame of unmatched discrepancies for direct districts
+#   - markdown: character vector of markdown lines for the alert report
+summarize_central_safety_net <- function(
+  combined_df = NULL,
+  registry = NULL,
+  discrepancy_report = NULL,
+  scrape_log = NULL,
+  feed_label = WSBA_STATEWIDE_SOURCE,
+  feed_short_name = "WSBA",
+  discrepancy_path = "wy_discrepancy_report.csv"
+) {
+  # 1. Total vacancies on the statewide feed
+  feed_total <- 0L
+  if (!is.null(scrape_log) && nrow(scrape_log) > 0 && "source" %in% names(scrape_log)) {
+    feed_log <- scrape_log[grepl(feed_short_name, scrape_log$source, ignore.case = TRUE) |
+                           grepl(feed_label, scrape_log$source, fixed = TRUE), , drop = FALSE]
+    if (nrow(feed_log) > 0 && "n_rows" %in% names(feed_log)) {
+      latest_rows <- feed_log$n_rows[nrow(feed_log)]
+      if (!is.na(latest_rows) && is.numeric(latest_rows)) {
+        feed_total <- as.integer(latest_rows)
+      }
+    }
+  }
+
+  if (feed_total == 0L && !is.null(combined_df) && nrow(combined_df) > 0) {
+    if ("Posting_Source" %in% names(combined_df)) {
+      feed_total <- sum(!is.na(combined_df$Posting_Source) & combined_df$Posting_Source == feed_label)
+    } else {
+      is_feed <- (!is.na(combined_df$url) & grepl(feed_short_name, combined_df$url, ignore.case = TRUE)) |
+                 (!is.na(combined_df$posting_id) & grepl(feed_short_name, combined_df$posting_id, ignore.case = TRUE))
+      feed_total <- sum(is_feed)
+    }
+  }
+
+  # 2. Registered districts receiving fallback postings
+  registered_districts <- if (!is.null(registry) && "District" %in% names(registry)) {
+    unique(registry$District[!is.na(registry$District) & nzchar(registry$District)])
+  } else {
+    character(0)
+  }
+
+  fallback_districts <- list()
+  if (!is.null(combined_df) && nrow(combined_df) > 0 && length(registered_districts) > 0) {
+    is_feed_row <- if ("Posting_Source" %in% names(combined_df)) {
+      !is.na(combined_df$Posting_Source) & combined_df$Posting_Source == feed_label
+    } else {
+      (!is.na(combined_df$url) & grepl(feed_short_name, combined_df$url, ignore.case = TRUE)) |
+      (!is.na(combined_df$posting_id) & grepl(feed_short_name, combined_df$posting_id, ignore.case = TRUE))
+    }
+    feed_reg_rows <- combined_df[is_feed_row & combined_df$District %in% registered_districts, , drop = FALSE]
+    if (nrow(feed_reg_rows) > 0) {
+      tbl <- table(feed_reg_rows$District)
+      fallback_districts <- as.list(as.integer(tbl))
+      names(fallback_districts) <- names(tbl)
+    }
+  }
+
+  # 3. Discrepancy report
+  if (is.null(discrepancy_report) && !is.null(discrepancy_path) && file.exists(discrepancy_path)) {
+    discrepancy_report <- tryCatch(
+      read.csv(discrepancy_path, stringsAsFactors = FALSE),
+      error = function(e) NULL
+    )
+  }
+
+  disc_unmatched <- if (!is.null(discrepancy_report) && nrow(discrepancy_report) > 0 && "Discrepancy_Type" %in% names(discrepancy_report)) {
+    discrepancy_report[!grepl("ghost", discrepancy_report$Discrepancy_Type, ignore.case = TRUE), , drop = FALSE]
+  } else {
+    data.frame()
+  }
+
+  # If fallback_districts is empty but discrepancy_report had matching fallback districts
+  if (length(fallback_districts) == 0 && nrow(disc_unmatched) > 0 && "District" %in% names(disc_unmatched)) {
+    reg_disc <- disc_unmatched[disc_unmatched$District %in% registered_districts, , drop = FALSE]
+    if (nrow(reg_disc) > 0) {
+      tbl <- table(reg_disc$District)
+      fallback_districts <- as.list(as.integer(tbl))
+      names(fallback_districts) <- names(tbl)
+    }
+  }
+
+  total_fallback_vacancies <- sum(unlist(fallback_districts), 0L)
+
+  # 4. Generate Markdown
+  md <- c(
+    "### Central Safety Net Status Summary",
+    "",
+    "The Central Safety Net (statewide vacancy feed fallback) provides continuity when directly-scraped district job boards encounter outages, platform migrations, or parser drift.",
+    "",
+    sprintf("- **Statewide Feed (%s)**: %d active vacancies captured.", feed_short_name, feed_total)
+  )
+
+  if (length(fallback_districts) == 0) {
+    md <- c(md, "- **Active Fallback Districts**: 0 registered districts currently require Central Safety Net fallback (all direct-scraped districts reporting normally).")
+  } else {
+    md <- c(
+      md,
+      sprintf("- **Active Fallback Districts**: %d registered district(s) currently protected by Central Safety Net fallback (%d total vacancies preserved):",
+              length(fallback_districts), total_fallback_vacancies)
+    )
+    for (d_name in names(fallback_districts)) {
+      md <- c(md, sprintf("  - **%s**: %d vacancy/vacancies preserved via fallback", d_name, fallback_districts[[d_name]]))
+    }
+  }
+
+  if (nrow(disc_unmatched) == 0) {
+    md <- c(md, "- **Central Feed Discrepancies**: 0 unmatched vacancies detected for active direct scrapers.")
+  } else {
+    md <- c(
+      md,
+      sprintf("- **Central Feed Discrepancies**: %d unmatched vacancy/vacancies detected on central feed for direct-scraped districts (investigate potential ATS drift):", nrow(disc_unmatched))
+    )
+    shown_n <- min(nrow(disc_unmatched), 5L)
+    for (i in seq_len(shown_n)) {
+      r <- disc_unmatched[i, ]
+      dp <- if ("Date_Posted" %in% names(r) && !is.na(r$Date_Posted) && nzchar(r$Date_Posted)) sprintf(" (posted %s)", r$Date_Posted) else ""
+      t_title <- if ("Title" %in% names(r)) r$Title else ""
+      d_dist <- if ("District" %in% names(r)) r$District else ""
+      md <- c(md, sprintf("  - **%s**: \"%s\"%s", d_dist, t_title, dp))
+    }
+    if (nrow(disc_unmatched) > shown_n) {
+      md <- c(md, sprintf("  - ... and %d more discrepancies", nrow(disc_unmatched) - shown_n))
+    }
+  }
+  md <- c(md, "")
+
+  list(
+    total_feed_vacancies = feed_total,
+    feed_name = feed_label,
+    fallback_districts = fallback_districts,
+    total_fallback_vacancies = total_fallback_vacancies,
+    discrepancies = disc_unmatched,
+    markdown = md
+  )
+}
+
+build_drift_report_markdown <- function(
+  actionable,
+  safety_net_summary = NULL,
+  date = Sys.Date(),
+  feed_short_name = "WSBA",
+  intro_explanation = NULL
+) {
+  if (nrow(actionable) == 0) return(character(0))
+
+  default_intro <- if (is.null(intro_explanation)) {
+    "A source is flagged when it has at least 2 weeks of history averaging real postings, and this week's count dropped to 20% or less of that average. This is the same failure signature that hid ~200 real postings across 10 Applitrack districts on 2026-08-03 (a Windows-1252 encoding bug, not real absence of jobs) -- these entries are corroborated against the actual live page but still need a human look."
+  } else {
+    intro_explanation
+  }
+
+  lines <- c(
+    paste0("Automated drift check flagged ", nrow(actionable), " source(s) as of ", date, "."),
+    "",
+    default_intro,
+    ""
+  )
+
+  for (verdict_group in c("confirmed_broken", "likely_broken", "inconclusive", "no_url_available")) {
+    subset_rows <- actionable[actionable$verdict == verdict_group, ]
+    if (nrow(subset_rows) == 0) next
+
+    label <- switch(verdict_group,
+      confirmed_broken = "### Confirmed broken -- the scraper itself errored this run (not just a low count)",
+      likely_broken = "### Likely broken -- live page has real job-posting content, scraper reported little/none",
+      inconclusive = "### Inconclusive -- drift detected, live page didn't clearly confirm either way",
+      no_url_available = "### No URL on file -- couldn't corroborate automatically"
+    )
+    lines <- c(lines, label, "")
+    for (i in seq_len(nrow(subset_rows))) {
+      r <- subset_rows[i, ]
+      url_part <- if (is.na(r$url)) "" else sprintf(" -- %s", r$url)
+      error_part <- if (verdict_group == "confirmed_broken" && !is.na(r$error_message) && nzchar(r$error_message)) sprintf(" (%s)", r$error_message) else ""
+      lines <- c(lines, sprintf("- **%s** (%s): averaged %.1f/week, now %d%s%s", r$name, r$type, r$mean_count, r$count, url_part, error_part))
+      if ("llm_note" %in% names(r) && !is.na(r$llm_note) && nzchar(r$llm_note)) lines <- c(lines, sprintf("  - %s", r$llm_note))
+
+      if (r$type == "K-12" && !is.null(safety_net_summary)) {
+        sn_count <- if ("safety_net_vacancies" %in% names(r) && !is.na(r$safety_net_vacancies)) {
+          as.integer(r$safety_net_vacancies)
+        } else if (!is.null(safety_net_summary$fallback_districts[[r$name]])) {
+          as.integer(safety_net_summary$fallback_districts[[r$name]])
+        } else {
+          0L
+        }
+
+        if (sn_count > 0) {
+          lines <- c(lines, sprintf("  - **Central Safety Net**: Active (%d fallback %s preserved via %s)",
+                                    sn_count, if (sn_count == 1) "vacancy" else "vacancies", feed_short_name))
+        } else {
+          lines <- c(lines, sprintf("  - **Central Safety Net**: Inactive (0 fallback vacancies on %s)", feed_short_name))
+        }
+      }
+    }
+    lines <- c(lines, "")
+  }
+
+  if (!is.null(safety_net_summary) && !is.null(safety_net_summary$markdown)) {
+    lines <- c(lines, safety_net_summary$markdown)
+  }
+
+  lines
 }
 
 # --------------------------------------------------------------------------
