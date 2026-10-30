@@ -41,18 +41,30 @@ if (file.exists(out_path)) {
 
 max_scrape_date <- max(fac$Archive_Date, na.rm = TRUE)
 
+# A posting that drops off the board for more than SPELL_GAP_DAYS (i.e. it
+# missed two or more weekly scrapes) and later reappears under the same title
+# starts a new spell, rather than being merged into one multi-month "spell"
+# with the earlier posting.
+SPELL_GAP_DAYS <- 21
+
 spells <- fac %>%
+  mutate(obs_date = as.Date(Archive_Date)) %>%
+  arrange(Institution, Title, obs_date) %>%
   group_by(Institution, Title) %>%
+  mutate(spell_no = cumsum(c(TRUE, diff(as.numeric(obs_date)) > SPELL_GAP_DAYS))) %>%
+  group_by(Institution, Title, spell_no) %>%
   summarise(
     Category = first(Category),
     Job_Type = first(Job_Type),
     First_Seen_Date = min(Archive_Date),
     Last_Seen_Date = max(Archive_Date),
-    Weeks_Observed = n_distinct(Archive_Date),
+    # Calendar weeks, not snapshots: some weeks had more than one scrape.
+    Weeks_Observed = n_distinct(format(obs_date, "%G-%V")),
     Estimated_Days_Open = as.integer(as.Date(max(Archive_Date)) - as.Date(min(Archive_Date)) + 7),
     Status = ifelse(max(Archive_Date) == max_scrape_date, "Still Active", "Closed / Filled"),
     .groups = "drop"
-  )
+  ) %>%
+  select(-spell_no)
 
 # Join IPEDS_UNITID
 spells <- spells %>%

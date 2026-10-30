@@ -60,10 +60,14 @@ classify_k12_position <- function(title) {
   title <- fix_title_encoding(title)
   dplyr::case_when(
     # Paraprofessional-related positions
-    grepl("Paraprofessional|Para|Paraeducator|Teacher Assistant|Teaching Assistant|Instructional Assistant|Library Assistant|Media Assistant|Media Center Assistant", title, ignore.case = TRUE) ~ "Paraprofessional",
+    # \bPara, not bare "Para" -- matched inside "Preparation"/"Comparative" otherwise.
+    grepl("\\bPara|Paraeducator|Teacher Assistant|Teaching Assistant|Instructional Assistant|Instructional Aide|Classroom Aide|Library Assistant|Media Assistant|Media Center Assistant|Education Assistant|Special Needs Assistant|\\bSNA\\b|\\bSPEA\\b|Testing Assistant|Personal Care Attendant", title, ignore.case = TRUE) ~ "Paraprofessional",
 
     # Substitute
-    grepl("Sub|Substitute", title, ignore.case = TRUE) ~ "Substitute",
+    # \bSubs?\b / "Substit", not bare "Sub" -- matched inside "Subject"/
+    # "Suburban"/"Substance Abuse" otherwise. "Substit" keeps typos like
+    # "Substiture"; "subs\b" keeps run-together "Kitchensubs".
+    grepl("\\bSubs?\\b|subs\\b|Substit", title, ignore.case = TRUE) ~ "Substitute",
 
     # Teaching roles whose titles also carry a word claimed by an earlier
     # non-teaching rule below: ensemble "Band/Choir Director" (Administration)
@@ -74,14 +78,14 @@ classify_k12_position <- function(title) {
     # Support Services-related positions
     # \bIntern\b, not bare "Intern" -- matched inside "Internal Applicants Only"
     # otherwise, pulling teacher and bus-driver postings into this bucket.
-    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support|\\bIntern(ship)?s?\\b",
+    grepl("Counselor|Psychologist|Therapist|Pathologist|Occupational|Alternative Behavior Program|Audiologist|Lifeguard|Interpreter|Translator|Monitor|Safety Patrol|Social Worker|Technology Intern|Tutor|Instructional Facilitator|Resource Officer|Behavior|Occupational|Aide|Aid|Support|\\bIntern(ship)?s?\\b|Crossing Guard|Crosswalk Guard|Noon Duty|Recess|Lunchroom Supervis|General Duty Assistant|\\bGDA\\b|Liaison|Advocate|Ambassador|Orientation and Mobility|\\bSLP|Speech[- ]Language|Physical Therapy|Accompanist|\\bPsych\\b|Security|Assistive Technolog",
           title, ignore.case = TRUE) ~ "Support Services",
 
     # Staff-related positions (checked before Teacher so clerical titles like "General Secretary - Library" land here)
-    grepl("Secretary|Clerk|Office Manager|Clerical|Registrar", title, ignore.case = TRUE) ~ "Staff",
+    grepl("Secretary|Clerk|Office Manager|Clerical|Registrar|Payroll|Human Resources|Bookkeeper|Receptionist|Accounts (Payable|Receivable)|Purchasing", title, ignore.case = TRUE) ~ "Staff",
 
     # Custodial/Maintenance-related positions
-    grepl("Custodian|Custodial|Maintenance|Cleaner|Snow Removal|Facility|Electrician|HVAC",
+    grepl("Custodian|Custodial|Maintenance|Cleaner|Snow Removal|Facility|Electrician|HVAC|Grounds|Lawn|Housekeep|Carpenter|Painter|Plumber|Laborer|Sweeper|Warehouse|Field Crew",
           title, ignore.case = TRUE) ~ "Custodial/Maintenance",
 
     # Transportation-related positions
@@ -89,7 +93,7 @@ classify_k12_position <- function(title) {
     # Confirmed real impact: "Business Teacher", "Business Manager
     # Position", "Business Services Specialist/Technician" were all
     # landing in Transportation instead of their real roles.
-    grepl("Bus Driver|Driver|Transportation|Route|\\bBus\\b|Mechanic|Bus Mechanic|Bus Monitor",
+    grepl("Bus Driver|Driver|Transportation|Route|\\bBus\\b|Mechanic|Bus Mechanic|Bus Monitor|Dispatch",
           title, ignore.case = TRUE) ~ "Transportation",
 
     # Technicians not already claimed by Custodial/Maintenance or Transportation
@@ -98,7 +102,8 @@ classify_k12_position <- function(title) {
        !grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher", title, ignore.case = TRUE)) ~ "Support Services",
 
     # Administration-related positions
-    grepl("Principal|Director|Coordinator|Administrator|Supervisor|Administrative",
+    # "Dean of", not bare "Dean" -- Dean Morgan is a Casper school name.
+    grepl("Principal|Director|Coordinator|Administrator|Supervisor|Administrative|Superintendent|Business Manager|\\bChief\\b|Dean of|General Counsel",
           title, ignore.case = TRUE) ~ "Administration",
 
     # Part-time / reduced-FTE teaching positions -- kept out of the full-FTE
@@ -113,19 +118,32 @@ classify_k12_position <- function(title) {
     grepl("Teacher|Instructor|Interventionist|English|Math|Library|Media|Language Arts|Science|Educator",
           title, ignore.case = TRUE) ~ "Teacher",
 
+    # School nurses and counseling roles -- checked after Staff, Administration
+    # and Teacher so "Nurse Educator", "General Secretary - Counseling" and
+    # "Administrative Assistant - Counseling Office" keep those buckets.
+    grepl("Nurse|Counseling", title, ignore.case = TRUE) ~ "Support Services",
+
     # Coach-related positions
     # "Skiing" not bare "Ski" -- bare "Ski" matches inside "Life SKIlls".
     # Currently harmless in practice (Paraprofessional is checked earlier
     # and catches those titles first) but a real latent risk, tightened
     # defensively.
-    grepl("Coach|Athletic|Sports|Track|Football|Basketball|Golf|Soccer|Wrestling|Cheer|BB|Volleyball|Aquatics|Skiing",
+    grepl("Coach|Athletic|Sports|Track|Football|Basketball|Golf|Soccer|Wrestling|Cheer|BB|Volleyball|Aquatics|Skiing|Baseball|Softball|Swim|Cross Country|Tennis|Hockey|Rodeo|Intramural",
           title, ignore.case = TRUE) ~ "Athletics",
 
     # Food Services-related positions
-    grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher", title, ignore.case = TRUE) ~ "Food Services",
+    grepl("Food|Cook|Nutrition|Cafeteria|Dishwasher|Kitchen|Lunch|Meal|Feeding|Breakfast", title, ignore.case = TRUE) ~ "Food Services",
 
     # Student Teaching-related positions
-    grepl("Daycare|After School|Head Start", title, ignore.case = TRUE) ~ "Child Care",
+    grepl("Daycare|After School|Head Start|Before School|Early Bird|Lights On|Child ?care", title, ignore.case = TRUE) ~ "Child Care",
+
+    # Titles that are only a subject or grade ("Elementary Curriculum",
+    # "Physics", "Art HS 7-12", "K - 12 Librarian") -- OPI Jobs for Teachers
+    # publishes its subject-area field as the title -- are teaching jobs as
+    # long as nothing marks them as an assistant/advisor-type role.
+    (classify_k12_subject(title) != "Uncategorized" &
+       !grepl("Assistant|Aide|Sponsor|Advisor|Stipend|Club|Worker|Volunteer|Student Teach|Opportunit|Activity|League|Builder|Information Systems|Business Office|Business Services|Accounting|(?<!Case )Manager|Compliance|Technologist",
+              title, ignore.case = TRUE, perl = TRUE)) ~ "Teacher",
 
     # Other positions
     TRUE ~ "Other"
@@ -139,8 +157,11 @@ classify_k12_position <- function(title) {
 # each backed by real observed titles, not speculative -- see the audit
 # notes in the project's memory/commit history for the specific samples.
 k12_category_keywords <- list(
-  "Technical Education" = "\\b(Welding|Weld|WeldingTeacher|CTE|Automotive|Auto(?!nomy)|Wood|Woods|Woodworking|Industrial Arts|Industrial Tech|Shop|Tech Ed|Technical Education|Trade and Technical|Drivers?\\s*Ed(ucation)?|Traffic Ed|Career and Technic(i)?al)\\b",
-  "Agriculture Education" = "(\\b(Agriculture|Ag Teacher|Ag Program|Agricultural teacher|FFA|Vo[-/]?Ag)\\b|\\(AG\\))",
+  # Bare "CTE" / "Career and Technical" live in "CTE Teacher" below, checked
+  # last, so "CTE - Agricultural Education" / "CTE - Business and Marketing" /
+  # "CTE - Family and Consumer Sciences" reach their specific subject first.
+  "Technical Education" = "\\b(Welding|Weld|WeldingTeacher|Automotive|Auto(?!nomy)|Wood|Woods|Woodworking|Industrial Arts|Industrial Tech(nology)?|Shop|Tech Ed|Technical Education|Trade and Technical|Drivers?\\s*Ed(ucation)?|Traffic Ed(ucation)?)\\b",
+  "Agriculture Education" = "(\\b(Agricultur(e|al)|Ag Teacher|Ag Program|Agricultural teacher|FFA|Vo[-/]?Ag)\\b|\\(AG\\))",
   "Computer Science Education" = "\\b(Computer Science|Information Technology|\\bIT\\b|Technology Education(?! Teacher Assistant)|Technology Teacher)\\b",
   # Pre[- ]?school covers "Preschool"/"Pre-school"/"Pre school" in one
   # pattern; Head Start is a real, common federal early-childhood program
@@ -150,14 +171,14 @@ k12_category_keywords <- list(
   # "Literacy/Reading Interventionist" specifically (not bare "Interventionist"
   # or "Academic Interventionist" -- those don't name a subject and are
   # genuinely ambiguous, left as Uncategorized rather than guessed).
-  "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator)|(Literacy|Reading) Interventionist|Title\\s*(One|1|I)\\b|Reading Recovery|Literacy Teacher|Reading Teacher|Literacy Specialist|Reading and Writing|Intervention Teacher|Teacher Reading)\\b",
-  "Family and Consumer Science" = "\\b(Family and Consumer Sciences?|FCS|Home Economics)\\b",
-  "Language Education" = "\\b(ESL|ELL|English as a Second Language|English Learner|Bilingual|Spanish|French|Dual Language|World Language|Foreign Language|Arapaho|Arapahoe|Shoshone|Salish|Kootenai|Cree|Crow|Blackfeet|Cheyenne|Assiniboine|Lakota|Dakota|Native Language|Indigenous Language|Culture Teacher|\\bEL Teacher\\b|\\bELL Teacher\\b|\\bESL Teacher\\b)\\b",
+  "English Language Arts Education" = "(?i)\\b(English(?!\\s+as\\s+a\\s+Second\\s+Language|\\s+Learner|\\s+Language\\s+Learner)|ELA|Language Arts(?!\\s*Coordinator)|(Literacy|Reading) Interventionist|Title\\s*(One|1|I)\\b|Reading Recovery|Literacy Teacher|Reading Teacher|Literacy Specialist|Reading and Writing|Intervention Teacher|Teacher Reading|Reading|Journalism)\\b",
+  "Family and Consumer Science" = "\\b(Family and Consumer Sciences?|FCS|Home Economics|Culinary)\\b",
+  "Language Education" = "\\b(ESL|ELL|English as a Second Language|English Learner|Bilingual|Spanish|French|Dual Language|World Languages?|Foreign Languages?|English Language Learner|Arapaho|Arapahoe|Shoshone|Salish|Kootenai|Cree|Crow|Blackfeet|Cheyenne|Assiniboine|Lakota|Dakota|Native Language|Indigenous Language|Culture Teacher|\\bEL Teacher\\b|\\bELL Teacher\\b|\\bESL Teacher\\b)\\b",
   "Mathematics Education" = "\\b(Mathematics|\\bMath\\b)\\b",
   "Music Education" = "\\b(Music|Orchestra|Band|Choir|Chorus|Vocal)\\b",
   "Health Science" = "(?i)\\b(Nurse Educator|Health Science(s)? Teacher|Health Science(s)?|Certified Nursing Assistant|Nursing Assistant|CNA)\\b",
   "Science Education" = "\\b(Science|Biology|Chemistry|Physics|Earth Science)\\b",
-  "Social Studies Education" = "\\b(Social Studies|History|Geography|Civics|Political Science|\\bSS Teacher\\b)\\b",
+  "Social Studies Education" = "\\b(Social Studies|History|Geography|Civics|Political Science|Psychology|Sociology|\\bSS Teacher\\b)\\b",
   # Special Education was the single largest category by a wide margin
   # (3,239 -- more than the next two categories combined), so it's split
   # into two here rather than left as one monolithic bucket: program types
@@ -166,19 +187,19 @@ k12_category_keywords <- list(
   # specific first) since a title can plausibly contain both kinds of
   # words.
   "Special Education - Resource/Life Skills" = "\\b(Resource (Teacher|Room)|Life Skills|Affective Needs|Daily Living Skills|Special Needs|\\bPALS\\b|\\bSE - TEACHER LS\\b|\\bACP\\b|Alternative Communication(s)? Program)\\b",
-  "Special Education - General" = "\\b(Special[- ]Educat(i)?on|Special Ed\\.?\\b|SPED|Exceptional Children|Deaf|Visually Impaired|Autism|\\bASD\\b|\\bSE - TEACHER\\b|\\bSE TEACHER\\b|\\bSp\\.?\\s*Ed\\b|Disabilities Educator)\\b",
-  "Physical Education" = "(?i)\\b(Physical Education|P\\.?E\\.?|PE\\s*/\\s*Health|Health\\s*/\\s*PE|Health and Physical Education|Phys\\.?\\s*Ed\\.?|Water Safety|Pickleball|Yoga|Aquatics|Lifeguard Instructor)\\b",
+  "Special Education - General" = "\\b(Special[- ]Educ[a-z]*|Special Ed\\.?\\b|SPED|Exceptional Children|Deaf|Visually Impaired|Autism|\\bASD\\b|\\bSE - TEACHER\\b|\\bSE TEACHER\\b|\\bSp\\.?\\s*Ed\\b|Disabilities Educator)\\b",
+  "Physical Education" = "(?i)\\b(Physical Education|P\\.?E\\.?|PE\\s*/\\s*Health|Health\\s*/\\s*PE|Health and Physical Education|Phys\\.?\\s*Ed\\.?|Physical Ed|Health Enhancement|Water Safety|Pickleball|Yoga|Aquatics|Lifeguard Instructor)\\b",
   "Business and Economics" = "\\b(Business|Economics|Econ|Financial Literacy)\\b",
   # "Guest Teacher" is a common euphemism for substitute teacher used by
   # some districts/staffing agencies (e.g. Kelly Education), not a distinct
   # role.
   "Substitute Teaching" = "(?i)\\b(Substitute Teacher|Sub Teacher|Guest Teacher(s)?)\\b",
   "Virtual Education" = "\\b(Virtual|Remote|Online)\\b",
-  "Art Teacher" = "\\b(Art Teacher|\\bArt\\b|Visual Art|Pottery|Sculpture|Drawing|Ceramics|Theater|Theatre|Drama)\\b",
+  "Art Teacher" = "\\b(Art Teacher|\\bArt\\b|Visual Art|Performing Arts|Photography|Pottery|Sculpture|Drawing|Ceramics|Theater|Theatre|Drama)\\b",
   "STEM Teacher" = "\\b(STEM|STEAM|Robotics)\\b",
   # JROTC/military-science instructors fold into CTE, matching how many
   # state frameworks classify JROTC.
-  "CTE Teacher" = "\\b(Career and Technical Education|CTE Teacher|JROTC|ROTC|Military Instructor|Aviation Teacher)\\b",
+  "CTE Teacher" = "\\b(Career and Technic(i)?al|CTE|CTE Teacher|JROTC|ROTC|Military Instructor|Aviation Teacher)\\b",
   "Library Media" = "\\b(Library|Librarian|Media Specialist|Library Media)\\b",
   "Gifted and Talented" = "\\b(Gifted|Talented|GATE|Advanced Learning)\\b"
 )
@@ -262,6 +283,8 @@ canonicalize_k12_district <- function(district) {
     district == "Albany Count School District 1" ~ "Albany County School District 1",
     district == "Campbell County Scholl District 1" ~ "Campbell County School District 1",
     district == "Converse County School Distrcit 2" ~ "Converse County School District 2",
+    district == "Fremont County School District #21" ~ "Fremont County School District 21",
+    district == "Washakie County School District No.1" ~ "Washakie County School District 1",
     TRUE ~ district
   )
 }
@@ -326,6 +349,27 @@ collapse_duplicate_posting_ids <- function(df, label = "K-12 postings") {
   df[!dup, , drop = FALSE]
 }
 
+# Board entries that are not job openings: account-creation templates,
+# "future/sample position" placeholders, student-teaching notices, and a
+# scraped table header ("Job Title"). Dropped before any count, in both the
+# weekly pipeline and the rebuild-from-archive scripts. Standing applicant
+# pools (e.g. "Applicant Pool - Substitute Teacher") are real, ongoing
+# postings and are kept.
+is_placeholder_posting <- function(title) {
+  t <- trimws(as.character(title))
+  !is.na(t) & grepl(
+    paste0("^(Sample|Future) (Certified|Classified) Positions?$|",
+           "Use This Template to Create An Account|",
+           "^Student Teaching Opportunit|",
+           "^Extra-Curricular Positions for|",
+           "^No (open |current )?(positions|openings|vacancies)|",
+           "^Volunteers?$|",
+           "^No Jobs|H-?1 ?B Hiring Notification|",
+           "^Job Title$"),
+    t, ignore.case = TRUE
+  )
+}
+
 # ---------------------------------------------------------------------------
 # Higher Ed
 # ---------------------------------------------------------------------------
@@ -336,10 +380,20 @@ collapse_duplicate_posting_ids <- function(df, label = "K-12 postings") {
 # faculty hiring in the faculty trend charts.
 classify_he_job_type <- function(title) {
   dplyr::case_when(
+    # Campus child-center / classroom aides and instructional support staff
+    # aren't faculty. Checked first: "Classroom Aide/Substitute Teacher
+    # (Part-Time)" otherwise hits the Part-Time + Teacher adjunct rule, and
+    # bare "Instructional" (Technologist, Designer, Lab Coordinator) used to
+    # land these in the faculty bucket.
+    grepl("Classroom Aide|Instructional Aide|Instructional Assistant|Teacher Aide|Teacher Assistant|Assistant Teacher|Associate Teacher|Children.s (Discovery )?Center|\\bECLC\\b",
+          title, ignore.case = TRUE) ~ "Support Services",
+    grepl("Instructional (Technologist|Designer|Design|Technology|Specialist|Lab)", title, ignore.case = TRUE) ~ "Professional",
+
     # Adjunct / part-time pool positions. A bare "Part-Time" is not enough on
-    # its own -- plenty of real non-faculty postings also contain that
-    # phrase ("Children's Center Part-Time Aide", "Part-Time Bookstore Sales
-    # Clerk"), so it only counts here alongside an actual faculty-role word.
+    # its own -- plenty of real non-faculty postings ("Custodian 1-Part-Time",
+    # "Major Gift Officer - Part-time", "Part-Time Clinical Resource
+    # Registered Nurse") also contain that phrase, so it only counts here
+    # alongside an actual faculty-role word.
     grepl("Adjunct", title, ignore.case = TRUE) |
       (grepl("Part[- ]?Time", title, ignore.case = TRUE) &
          grepl("Faculty|Instructor|Professor|Lecturer|Teacher", title, ignore.case = TRUE)) ~
@@ -349,13 +403,13 @@ classify_he_job_type <- function(title) {
     grepl("Faculty Affairs|Faculty Development|Provost Office|Office of the Provost", title, ignore.case = TRUE) ~ "Administration",
 
     # Instructor/Teacher/Faculty
-    grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator", title, ignore.case = TRUE) ~ "Instructor/Teacher/Faculty",
+    grepl("Instructor|Instructional Professor|Teacher|Faculty|Professor|Lecturer|Post Doc|Postdoc|Subject Matter Expert|Librarian|Educator", title, ignore.case = TRUE) ~ "Instructor/Teacher/Faculty",
 
     # Student Positions
-    grepl("Student Worker|Student Position|Work Study|Students Only|Student Library Aid|Student Employment", title, ignore.case = TRUE) ~ "Student Positions",
+    grepl("Student Worker|Student Position|Work[- ]?Study|Students Only|Student Library Aid|Student Employment|Student Assistant|Student Staff|Student Lab Assistant|Student Ambassador|\\bFWS\\b", title, ignore.case = TRUE) ~ "Student Positions",
 
     # Healthcare
-    grepl("Nurse|Wellbeing|Health|Medicine|Medical Support Assistant", title, ignore.case = TRUE) ~ "Healthcare",
+    grepl("Nurse|Wellbeing|Health|Medicine|Medical Support Assistant|\\bRN\\b|Dietitian|Psychiatric|Practice Provider", title, ignore.case = TRUE) ~ "Healthcare",
 
     # Temporary Position
     grepl("Pooled Position|Temporary|Monthly Pooled", title, ignore.case = TRUE) ~ "Temporary Position",
@@ -364,112 +418,122 @@ classify_he_job_type <- function(title) {
     grepl("Hourly|Administrative Assistant|Administrative Associate|Secretary|Library Assistant|Office Assistant|Office Associate",
           title, ignore.case = TRUE) ~ "Staff",
 
-    # Advising (Financial Aid broadened from "Financial Aid Counselor" to
-    # bare "Financial Aid" -- was previously falling through to Technical's
-    # bare "Specialist" match, e.g. "Financial Aid Specialist")
-    grepl("Advisor|Advising|Enrollment Counselor|Financial Aid|Night ESL Class Aide|Part-time Academic Support Services Pool- Academic Support Tutor|Peer Tutor|Tribal Education Assistant", title, ignore.case = TRUE) ~ "Advising and Student Services",
+    # Advising
+    grepl("Advisor|Advising|Enrollment Counselor|Financial Aid|Tutor|Career Peer|Tribal Education Assistant|Night ESL Class Aide|Writing Consultant|Learning Commons|Testing Center|Camp Counselor", title, ignore.case = TRUE) ~ "Advising and Student Services",
 
     # Culinary -- checked before Maintenance & Service so "Cook"/"Baker"
     # land here instead of being swallowed by Maintenance & Service's own
-    # (now-removed) copy of the same words. Confirmed real impact: "Line
-    # Cook (AM)" was landing in Maintenance & Service before this fix.
-    grepl("Chef|Cook|Baker|Dining|Culinary", title, ignore.case = TRUE) ~ "Culinary",
+    # copy of the same words.
+    grepl("Chef|Cook|Baker|Dining|Culinary|Barista|Caf[eé]|Dishwasher|Kitchen|Catering|Food Service|Line Server", title, ignore.case = TRUE) ~ "Culinary",
 
     # Professional
-    grepl("Admissions|Coordinator|Registrar|Executive Assistant|Professional|Statistician|Proctor|Exec Assistant|Exec Assistant to President|Grant Writer|Graphic Designer|Negotiator|Botanist|College Relations|Controller|Database|Officer|Auditor|Web Site|Special Assistant|Retention Mentor|Buyer Assistant|Buyer, Textbooks|GEAR UP Event & College Coordination|Ombudsperson - Office of the President|Data Analyst|Employee Relations Specialist|Finance Technician|Grant Support Specialist|Marketing & Comm Spec.|Program Specialist",
+    grepl("Admissions|Coordinator|\\bCoord\\b|Registrar|Executive Assistant|Professional|Statistician|Proctor|Exec Assistant|Grant Writer|Graphic Designer|Negotiator|Botanist|College Relations|Controller|Database|Officer|Auditor|Web Site|Special Assistant|Retention Mentor|Buyer Assistant|Buyer, Textbooks|GEAR UP Event & College Coordination|Ombudsperson|Data Analyst|Employee Relations Specialist|Finance Technician|Grant Support Specialist|Marketing & Comm Spec.|Program Specialist",
           title, ignore.case = TRUE) ~ "Professional",
 
     # Administration
-    grepl("\\bDean\\b|Vice President|Provost|Chief|Business Manager|Enrollment Specialist|Finance Technician|HR Records Specialist", title, ignore.case = TRUE) ~ "Administration",
+    grepl("\\bDean\\b|Vice President|Chancellor|Provost|Chief|Business Manager|Enrollment Specialist|Finance Technician|HR Records Specialist", title, ignore.case = TRUE) ~ "Administration",
 
     # Coaching or Athletics
     grepl("coach|Athletic|Athletics", title, ignore.case = TRUE) ~ "Coaching or Athletics",
 
     # Accounting/Finance
-    grepl("Accountant|Receivable|Accounts", title, ignore.case = TRUE) ~ "Accounting/Finance",
+    grepl("Accountant|Receivable|Accounts|Payroll|Bursar|Accounting|Cashier|Financial Associate|Storekeeper", title, ignore.case = TRUE) ~ "Accounting/Finance",
 
     # Research & Science (only actual research/scientific roles)
-    grepl("Research Associate|Laboratory Technician|Research Scientist", title, ignore.case = TRUE) ~ "Research & Science",
+    grepl("Research Associate|Laboratory Technician|Research Scientist|Research Assistant|Lab Assistant|Laboratory Assistant|Lab/Clinical|Farm M|Researcher|ologist\\b|Research Pilot", title, ignore.case = TRUE) ~ "Research & Science",
 
-    # Technical -- bare "Specialist" removed (it shadowed later, more
+    # Technical -- bare "Specialist" excluded (it shadows later, more
     # specific buckets like Support Services' "Library Information
-    # Specialist"/"Museum Exhibit Specialist"; only qualified
-    # "<Thing> Specialist" phrases stay here).
-    grepl("Control Specialist|Engineer|IT Support Technician|Information Security Analyst|Programmer Analyst|Network Specialist|Data Operation Engineer|Design Engineer|GIS Specialist", title, ignore.case = TRUE) ~ "Technical",
+    # Specialist"; only qualified "<Thing> Specialist" phrases stay here).
+    grepl("Control Specialist|Engineer|IT Support Technician|Information Security Analyst|Programmer Analyst|Network Specialist|Data Operation Engineer|Design Engineer|GIS Specialist|Systems? Administrator|Network Administrator|Software|Information Technology|\\bI\\. ?T\\.|Computer|Linux|Developer|Programmer|\\bIT\\b", title, ignore.case = TRUE) ~ "Technical",
 
-    # Maintenance & Service ("Cook"/"Baker" removed -- see Culinary above)
-    grepl("Maintenance|Technician|Facilities|Grounds|HVAC|Plumber|Carpenter|Logistics Handler|Meat Plant Technician", title, ignore.case = TRUE) ~ "Maintenance & Service",
+    # Maintenance & Service ("Cook"/"Baker" excluded -- see Culinary above)
+    grepl("Maintenance|Technician|Facilities|Grounds|HVAC|Plumber|Carpenter|Logistics Handler|Glazier|Painter|Operator|Mechanic|Flooring|Electrician|Locksmith|Custodial|Warehouse|Mail|Postal|Shipping|Receiving|Foreman|Stage Tech|Scene Shop", title, ignore.case = TRUE) ~ "Maintenance & Service",
 
     # Support Services
-    grepl("Safety|Security|Custodian|Laborer|Driver|Cleaner|Facilities|Grounds|Library Information Specialist|Museum Exhibit Specialist|Specialist, Student Services|Campus Services I|Children's Center Part-Time Aide|KEY Camp Counselor|Lifeguard|Resident Assistant|Outdoor Recreation Lab Room|Part-Time Bookstore Sales Clerk|Physics Work-Study Assistant|Student Service Assistant|Subject Matter Expert, Life Enrichment Class",
+    grepl("Safety|Security|Police|Dispatch|Fire Marshal|Interpreter|Custodian|Laborer|Driver|Cleaner|Facilities|Grounds|Library Information Specialist|Museum Exhibit Specialist|Specialist, Student Services|Lifeguard|Resident Assistant|Campus Services I|Outdoor Recreation Lab Room|Bookstore Sales Clerk|Student Service Assistant|Aide|Monitor|Attendant|Scorekeeper|Referee|Accompanist|Stall Assistant",
           title, ignore.case = TRUE) ~ "Support Services",
 
-    # Management ("Coordinator" removed -- Professional's own copy of that
-    # keyword is checked earlier and always wins, making the copy here
-    # dead code; confirmed real impact: 8/8 real "...Coordinator" titles
-    # sampled all landed in Professional, never Management)
+    # Management ("Coordinator" excluded -- Professional's own copy of that
+    # keyword is checked earlier and always wins, making a copy here dead
+    # code).
     grepl("Director|\\bDirector\\b|Manager|Supervisor|Assoc Director|Assoc Dir|Assist Dir|Asst Dir",
           title, ignore.case = TRUE) ~ "Management",
+
+    # Student-facing counseling/mentoring roles, checked after Management so
+    # "Assistant Director, Academic Support Center" stays Management.
+    grepl("Counselor|Mentor|Navigator|Student Success|\\bTRIO\\b|Student Engagement|Academic Support", title, ignore.case = TRUE) ~ "Advising and Student Services",
+
+    # Generic professional titles, checked last so the specific
+    # "<Thing> Specialist"/"Analyst" phrases above keep their own buckets.
+    grepl("Specialist|Analyst|Marketing|Communications|Writer|Editor|Producer|Curator|Archivist|Buyer|Consultant|Generalist|Extension Agent|Counsel\\b|Attorney|Investigator|Reporter|Journalist|Announcer|Photographer|Designer|Planner|Program Lead|Partner\\b|Recruiter",
+          title, ignore.case = TRUE) ~ "Professional",
+
+    # Remaining generic assistant/associate/clerk titles are office staff.
+    grepl("Assistant|Associate|Clerk|\\bAid\\b", title, ignore.case = TRUE) ~ "Staff",
 
     TRUE ~ "Other"
   )
 }
 
 # Subject category, computed only for Job_Type == "Instructor/Teacher/Faculty" rows.
-# Precedence order: Highly specific disciplines first, general catch-alls last.
 classify_he_faculty_category <- function(title) {
   dplyr::case_when(
     # 1. Legal & Criminal Justice
-    grepl("law|legal|college of law|attorney|juris doctor|paralegal", title, ignore.case = TRUE) ~ "Legal",
-    grepl("criminal justice|criminology|law enforcement|police science|corrections|homeland security", title, ignore.case = TRUE) ~ "Criminal Justice",
+    grepl("criminal justice|criminology|corrections|law enforcement|police|police science|forensic|homeland security|justice studies", title, ignore.case = TRUE) ~ "Criminal Justice",
+    grepl("\\blaw\\b|legal|college of law|attorney|paralegal|juris doctor|\\bjd\\b|crimin(al)? law", title, ignore.case = TRUE) ~ "Legal",
 
-    # 2. Extension / Outreach (before general agriculture/education)
+    # 2. Extension / Outreach
     grepl("extension educator|extension specialist|\\bextension\\b|4-h", title, ignore.case = TRUE) ~ "Extension/Outreach",
 
     # 3. Culinary & Hospitality (before Business so Hospitality in College of Business lands here)
-    grepl("culinary|hospitality|tourism|baking|food service|restaurant|hotel|brewing", title, ignore.case = TRUE) ~ "Culinary/Hospitality",
+    grepl("culinary|hospitality|tourism|baking|food service|restaurant|hotel|brewing|event planning", title, ignore.case = TRUE) ~ "Culinary/Hospitality",
 
     # 4. Human Services / Social Work / Counseling (before Education / Health)
     grepl("human services?|social work|\\bmsw\\b|counseling|counselor|mental health|substance abuse|addiction|chemical dependency|\\bhdch\\b|child development|youth", title, ignore.case = TRUE) ~ "Human Services",
 
     # 5. CTE - Health Sciences (before general Science so "Health Sciences" lands here)
-    grepl("health technology|nursing|\\brn\\b|\\blpn\\b|dental|ems|paramedic|emergency medical|emergency care|\\becp\\b|medical|medicine|nutritional|nutrition|dietetics|pharmacy|pharmacist|global health|public health|allied health|health sciences?|physician assistant|physical therapy|occupational therapy|speech-language|pathology|audiol|respiratory therapy|surgical tech|phlebotom|radiolog|x-ray|sonograph|ultrasound|biomed|clinical|medical assistant", title, ignore.case = TRUE) ~ "CTE - Health Sciences",
+    grepl("health technology|nursing|\\brn\\b|\\blpn\\b|dental|\\bems\\b|paramedic|emergency medical|emergency care|\\becp\\b|medical|medicine|nutritional|nutrition|dietetics|pharmacy|pharmacist|global health|public health|allied health|health sciences?|physician assistant|physical therapy|occupational therapy|speech-language|pathology|audiol|respiratory therapy|surgical tech|phlebotom|radiolog|radiograph|x-ray|sonograph|ultrasound|biomed|clinical|medical assistant|massage|respiratory|cardiovascular|\\bdms\\b|\\bcna\\b|nurs(e|ing) assistant|physical therapist|\\bemt\\b|\\bcpr\\b|first aid|\\bfwwson\\b", title, ignore.case = TRUE) ~ "CTE - Health Sciences",
 
     # 6. Social Science (before general Science so "Political Science", "Social Sciences", "Native American Studies" land here)
     grepl("social sciences?|political science|politics|government|public policy|public administration|tribal governance|native american studies|indigenous studies|ethnic studies|african american studies|chicano|latinx|gender|sexuality|women|international relations|global studies|sociology|sociological|anthropology|psychology|psychological|behavior|geography|urban planning", title, ignore.case = TRUE) ~ "Social Science",
 
     # 7. Languages (including Indigenous and non-European)
-    grepl("spanish|foreign language|world language|french|german|japanese|arabic|chinese|russian|italian|latin|greek|salish|kootenai|cree|crow|blackfeet|cheyenne|assiniboine|lakota|dakota|shoshone|arapaho|linguistics|\\basl\\b|sign language|\\besl\\b|\\bell\\b|tesol|language instructor", title, ignore.case = TRUE) ~ "Language",
+    grepl("spanish|foreign language|world language|french|german|japanese|arabic|chinese|russian|italian|\\blatin\\b|greek|salish|kootenai|cree|crow|blackfeet|cheyenne|assiniboine|lakota|dakota|shoshone|arapaho|linguistics|\\basl\\b|sign language|\\besl\\b|\\bell\\b|tesol|language instructor", title, ignore.case = TRUE) ~ "Language",
 
     # 8. History
     grepl("history|historical|heritage|museum studies", title, ignore.case = TRUE) ~ "History",
 
     # 9. Physical Education
-    grepl("physical education|\\bpe\\b|outdoor activity|outdoor recreation|recreation|athletic train|kinesiology|strength|sports management|exercise science|fitness|wellness|activity class|coach", title, ignore.case = TRUE) ~ "Physical Education",
+    grepl("physical education|\\bpe\\b|health and human performance|yoga|outdoor program|outdoor activity|outdoor recreation|recreation|athletic train|kinesiology|strength|sports management|exercise science|fitness|wellness|activity class|coach", title, ignore.case = TRUE) ~ "Physical Education",
+
+    # Instructional design/technology is Education, checked ahead of The
+    # Arts' bare "design".
+    grepl("instructional design|instructional technolog", title, ignore.case = TRUE) ~ "Education",
 
     # 10. The Arts
-    grepl("\\bart\\b|fine arts|studio art|graphic design|media arts|film|photography|animation|theater|theatre|acting|drama|stage|dance|music|band|choir|choral|orchestra|vocal|ceramics|sculpture|painting|drawing", title, ignore.case = TRUE) ~ "The Arts",
+    grepl("\\bart\\b|visual art|fine arts?|studio art|graphic design|design|theater|theatre|drama|\\bstage\\b|\\bacting\\b|music|musical|vocal|choir|choral|instrumental|\\bband\\b|orchestra|piano|adobe|creative cloud|ceramics|sculpture|painting|drawing|photography|photo|film|cinema|animation|media arts?|digital media|\\bdance|jewelry|metalsmithing", title, ignore.case = TRUE) ~ "The Arts",
 
-    # 11. Humanities
-    grepl("humanities|philosophy|ethics|religious studies|religion|theology|literature|english|writing|composition|creative writing|communication|speech|rhetoric|journalism|broadcasting|media studies|texts and critics", title, ignore.case = TRUE) ~ "Humanities",
+    # 11. Education (including instructional technology)
+    grepl("instructional technology|instructional design|early childhood|preschool|daycare|child care|asum child care|elementary education|secondary education|special education|\\bsped\\b|teacher education|teacher prep|reading specialist|stem education|learning center|college success|pedagogy|curriculum|leadership fellows|educational leadership|education|educational|\\babe\\b|\\bged\\b|hiset|adult education|\\bae instructor|\\bstem\\b|makerspace|upward bound|gear up|disabilit|career readiness", title, ignore.case = TRUE) ~ "Education",
 
-    # 12. Education
-    grepl("education|curriculum|instructional design|educational leadership|leadership fellows|special education|sped|elementary education|secondary education|early childhood|pedagogy|teacher education|literacy education|reading education|stem education|math education|science education", title, ignore.case = TRUE) ~ "Education",
+    # 12. Library
+    grepl("library|librarian|library media|archivist|archives|information literacy", title, ignore.case = TRUE) ~ "Library",
 
-    # 13. Library
-    grepl("library|librarian|archivist|information literacy", title, ignore.case = TRUE) ~ "Library",
+    # 13. Math
+    grepl("math|mathematics|calculus|algebra|geometry|quantitative|statistics|biostatistics|actuarial|data analytics", title, ignore.case = TRUE) ~ "Math",
 
-    # 14. Mathematics
-    grepl("mathematics|\\bmath\\b|calculus|algebra|geometry|statistics|actuarial|quantitative", title, ignore.case = TRUE) ~ "Math",
+    # 14. Humanities
+    grepl("philosophy|english|communication|literature|mass communication|humanities|liberal studies|liberal arts|texts and critics|public speaking|rhetoric|writing|creative writing|journalism|religious studies|religion|ethics|folklore|classics|american studies|cultural studies|cls seminar|theology|broadcasting|media studies|speech|comp\\.?\\s*/\\s*lit|composition", title, ignore.case = TRUE) ~ "Humanities",
 
-    # 15. CTE - Business & Computing (includes Agricultural Economics/Business)
+    # 15. CTE - Business & Computing (includes Agricultural Economics BEFORE general Agricultural!)
     grepl("agricultural economics|agricultural business|computer science|computer|information technology|computing|cybersecurity|data science|software|informatics|information systems|\\bcis\\b|network|web development|artificial intelligence|\\bai\\b|machine learning|business|accounting|finance|financial planning|family financial|economics|\\becon\\b|management|marketing|commerce|entrepreneurship|\\bmba\\b|business administration|real estate|banking|\\biv&v\\b|verification & validation", title, ignore.case = TRUE) ~ "CTE - Business & Computing",
 
     # 16. CTE - Trades & Engineering
-    grepl("agricultural communications|\\bagricultural\\b|\\bag mechanics?\\b|ag instructor|college of ag|heavy equipment|\\bheo\\b|mechanic|welding|construction|hvac|electrical|powerline|lineman|substation|diesel|automotive|auto body|\\bcdl\\b|commercial driver|truck driving|transportation|drafting|architecture|architect|aviation|pilot|flight|\\buas\\b|drone|unmanned aerial|surveying|geomatics|mining|machine tool|manufacturing|industrial|printmaking|supply chain|logistics|carpentry|plumbing|engineering|engineer|energy|equine", title, ignore.case = TRUE) ~ "CTE - Trades & Engineering",
+    grepl("agricultural communications|\\bagricultural\\b|\\bag mechanics?\\b|ag instructor|college of ag|heavy equipment|\\bheo\\b|mechanic|welding|construction|hvac|electrical|powerline|lineman|substation|diesel|automotive|auto body|\\bcdl\\b|commercial driver|truck driving|transportation|drafting|architecture|architect|aviation|pilot|flight|\\buas\\b|drone|unmanned aerial|surveying|geomatics|mining|machine tool|manufacturing|industrial|printmaking|supply chain|logistics|carpentry|plumbing|engineering|engineer|energy|equine|commercial motor vehicle|\\bcmv\\b|driver training|driving|\\bmsha\\b|metallurg|gunsmith|pipe ?fitt|electronic|ag technology|\\bcad\\b|technical skills|cosmetology|\\bcnc\\b|machin", title, ignore.case = TRUE) ~ "CTE - Trades & Engineering",
 
     # 17. Science (Zoology now here; Political Science & Health Sciences safely filtered above)
-    grepl("chemistry|biology|physics|astronomy|\\blab\\b|laboratory|geology|geoscience|earth science|environmental science|environmental studies|ecology|ecological|agronom|agriculture|animal science|veterinary|vet tech|plant science|soils?|hydrology|water resources|forestry|wildlife|natural resources|conservation|fisheries|range(land)? management|microbiology|biochem|neuroscience|genetics|botany|zoology|meteorology|atmospheric|\\bmsse\\b|science", title, ignore.case = TRUE) ~ "Science",
+    grepl("chemistry|biology|physics|astronomy|\\blab\\b|laboratory|geology|geoscience|earth science|environmental science|environmental studies|ecology|ecological|agronom|agriculture|animal science|veterinary|vet tech|plant science|soils?|hydrology|water resources|forestry|wildlife|natural resources|conservation|fisheries|range(land)? management|microbiology|biochem|neuroscience|genetics|genomic|anatomy|physiology|botany|zoology|meteorology|atmospheric|\\bmsse\\b|science", title, ignore.case = TRUE) ~ "Science",
 
     TRUE ~ "Uncategorized"
   )

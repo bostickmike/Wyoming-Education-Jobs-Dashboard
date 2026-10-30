@@ -154,7 +154,8 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
         district = District
       )
     ) %>%
-    select(title, Archive_Date, position, location, url, posting_id, District)
+    select(title, Archive_Date, position, location, url, posting_id, District) %>%
+    filter(!is_placeholder_posting(title))
 
   this_week_k12jobs <- this_week_combinedclean %>%
     filter(position == "Teacher") %>%

@@ -23,7 +23,8 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
 
   combined_HE_data$Archive_Date <- as.Date(combined_HE_data$Archive_Date)
   combined_HE_data <- combined_HE_data %>%
-    mutate(Institution = canonicalize_he_institution(Institution))
+    mutate(Institution = canonicalize_he_institution(Institution)) %>%
+    filter(!is_placeholder_posting(Title))
 
   combined_cat <- combined_HE_data %>%
     mutate(Job_Type = classify_he_job_type(Title))

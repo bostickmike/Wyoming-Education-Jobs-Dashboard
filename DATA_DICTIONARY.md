@@ -79,7 +79,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Position` | Categorical | Classification Model | Broad staff position group (Teacher, Administrator, Support Services). |
 | `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run date in which this job vacancy was observed active. |
 | `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Most recent weekly scraper run date in which this job vacancy was observed active. |
-| `Weeks_Observed` | Integer | Project Derived | Total count of weekly snapshots in which this posting was continuously observed. |
+| `Weeks_Observed` | Integer | Project Derived | Number of distinct calendar weeks (ISO weeks) in which this posting was observed during the spell. A posting absent for more than 21 days that reappears under the same title starts a new spell. |
 | `Estimated_Days_Open` | Integer | Project Derived | Estimated calendar duration of the vacancy spell (proxy for time-to-fill and labor shortage persistence). |
 | `Status` | Categorical | Project Derived | Vacancy spell state: Still Active or Closed / Filled as of latest weekly pipeline sweep. |
 | `is_stem` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |
@@ -174,7 +174,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Job_Type` | Categorical | Classification Model | Collegiate appointment classification: Instructor/Teacher/Faculty or Adjunct/Part-Time Faculty. |
 | `First_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Earliest weekly scraper run date in which this collegiate job posting was observed active. |
 | `Last_Seen_Date` | Date (YYYY-MM-DD) | Project Scraper | Most recent weekly scraper run date in which this collegiate job posting was observed active. |
-| `Weeks_Observed` | Integer | Project Derived | Total count of weekly snapshots in which this collegiate posting was observed. |
+| `Weeks_Observed` | Integer | Project Derived | Number of distinct calendar weeks (ISO weeks) in which this posting was observed during the spell. A posting absent for more than 21 days that reappears under the same title starts a new spell. |
 | `Estimated_Days_Open` | Integer | Project Derived | Estimated calendar duration of the collegiate search (proxy for search length and time-to-fill). |
 | `Status` | Categorical | Project Derived | Search status: Still Active or Closed / Filled as of the latest pipeline sweep. |
 | `is_stem` | Binary (0/1) | Shortage Taxonomy | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |

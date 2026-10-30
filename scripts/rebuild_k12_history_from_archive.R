@@ -85,7 +85,8 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data") {
       }
       df
     }) %>%
-    bind_rows()
+    bind_rows() %>%
+    filter(!is_placeholder_posting(title))
 
   k12jobs <- combinedclean %>%
     filter(position == "Teacher") %>%

@@ -297,6 +297,9 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 combinedclean <- combined %>%
   dplyr::distinct() %>%
   collapse_duplicate_posting_ids("combinedclean") %>%
+  # Placeholder board entries ("Sample Certified Position", account-creation
+  # templates) are kept in the raw archive above but never counted as jobs.
+  filter(!is_placeholder_posting(title)) %>%
   mutate(position = classify_k12_position(title),
          District = canonicalize_k12_district(District)) %>%
   dplyr::select(title, Archive_Date, date_posted, position, location, url, posting_id, District)
@@ -794,6 +797,9 @@ file_name <- paste0("hedata_", Sys.Date(), ".xlsx")
 write_xlsx(hedata, path = file_name)
 
 write_xlsx(hedata, path = file.path("Archived_HE_Data", file_name))
+# Non-postings (a scraped "Job Title" header, "No Jobs" notices) stay in the
+# raw archive above but are dropped from everything shown or counted.
+hedata <- hedata %>% filter(!is_placeholder_posting(Title))
 write_xlsx(hedata, path = file.path("Wy_Ed_Jobs", "hedata.xlsx"))
 
 # Fix historical institution-name typos before anything downstream keys off
