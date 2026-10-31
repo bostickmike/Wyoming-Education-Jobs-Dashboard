@@ -336,6 +336,9 @@ fetch_redrover_postings <- function(org_id, org_slug) {
         organizationName
         location { name }
         activePublicOnDateUtc
+        payTypeId
+        minPay
+        maxPay
       }
     }
   }
@@ -351,6 +354,30 @@ fetch_redrover_postings <- function(org_id, org_slug) {
   parse_redrover_json(resp_body_string(resp), org_slug)
 }
 
+# RedRover's own pay types, mapped to Pay_Unit. The labels are the ones the
+# job board itself prints ("per unit" is how it shows a STIPEND, e.g. a
+# coaching season). The board hides pay when minPay is empty or the type is
+# UNKNOWN ("per period"), so those stay NA here too.
+REDROVER_PAY_UNITS <- c(HOURLY = "hour", DAILY = "day", SALARIED = "year", STIPEND = "stipend")
+REDROVER_PAY_LABELS <- c(HOURLY = "per hour", DAILY = "per day", SALARIED = "per year", STIPEND = "per unit")
+
+redrover_pay_columns <- function(n, pay_type, min_pay, max_pay) {
+  lo <- suppressWarnings(as.numeric(if (is.null(min_pay)) rep(NA, n) else min_pay))
+  hi <- suppressWarnings(as.numeric(if (is.null(max_pay)) rep(NA, n) else max_pay))
+  type <- if (is.null(pay_type)) rep(NA_character_, n) else as.character(pay_type)
+  stated <- !is.na(lo) & lo > 0 & !is.na(type) & type %in% names(REDROVER_PAY_UNITS)
+  hi <- ifelse(stated & (is.na(hi) | hi < lo), lo, hi)
+  money <- function(x) paste0("$", formatC(x, format = "f", digits = 2, big.mark = ","))
+  data.frame(
+    Pay_Min = ifelse(stated, lo, NA_real_),
+    Pay_Max = ifelse(stated, hi, NA_real_),
+    Pay_Unit = ifelse(stated, unname(REDROVER_PAY_UNITS[type]), NA_character_),
+    Pay_Text = ifelse(stated, paste(ifelse(hi > lo, paste(money(lo), "-", money(hi)), money(lo)),
+                                    unname(REDROVER_PAY_LABELS[type])), NA_character_),
+    stringsAsFactors = FALSE
+  )
+}
+
 parse_redrover_json <- function(json_text, org_slug) {
   parsed <- jsonlite::fromJSON(json_text, simplifyVector = TRUE)
   results <- parsed$data$jobSeekerSiteUnauthenticated$jobPostingSearch$results
@@ -359,16 +386,21 @@ parse_redrover_json <- function(json_text, org_slug) {
     return(data.frame(Title = character(0), Location = character(0),
                        Posted_Date = character(0), Posting_ID = character(0),
                        Link = character(0),
+                       Pay_Min = numeric(0), Pay_Max = numeric(0), Pay_Unit = character(0),
+                       Pay_Text = character(0),
                        stringsAsFactors = FALSE))
   }
 
-  data.frame(
-    Title = results$name,
-    Location = results$location$name,
-    Posted_Date = substr(results$activePublicOnDateUtc, 1, 10),
-    Posting_ID = paste0("redrover:", tolower(org_slug), ":", results$id),
-    Link = paste0("https://jobs.redroverk12.com/org/", org_slug, "/opening/", results$id),
-    stringsAsFactors = FALSE
+  cbind(
+    data.frame(
+      Title = results$name,
+      Location = results$location$name,
+      Posted_Date = substr(results$activePublicOnDateUtc, 1, 10),
+      Posting_ID = paste0("redrover:", tolower(org_slug), ":", results$id),
+      Link = paste0("https://jobs.redroverk12.com/org/", org_slug, "/opening/", results$id),
+      stringsAsFactors = FALSE
+    ),
+    redrover_pay_columns(nrow(results), results$payTypeId, results$minPay, results$maxPay)
   )
 }
 
@@ -384,6 +416,8 @@ normalize_id_backed_k12_postings <- function(postings) {
     )
   }
 
+  # Pay_* passes through when the platform states it (RedRover); NA otherwise.
+  postings <- ensure_posted_pay_columns(postings)
   data.frame(
     title = as.character(postings$Title),
     date_posted = as.character(postings$Posted_Date),
@@ -392,6 +426,10 @@ normalize_id_backed_k12_postings <- function(postings) {
     url = as.character(postings$Link),
     posting_id = as.character(postings$Posting_ID),
     District = as.character(postings$District),
+    Pay_Min = as.numeric(postings$Pay_Min),
+    Pay_Max = as.numeric(postings$Pay_Max),
+    Pay_Unit = as.character(postings$Pay_Unit),
+    Pay_Text = as.character(postings$Pay_Text),
     stringsAsFactors = FALSE
   )
 }

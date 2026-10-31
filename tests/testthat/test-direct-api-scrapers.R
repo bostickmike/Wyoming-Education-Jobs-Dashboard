@@ -290,7 +290,43 @@ test_that("parse_redrover_json returns zero rows (not an error) for an empty res
   fixture <- '{"data":{"jobSeekerSiteUnauthenticated":{"jobPostingSearch":{"results":[]}}}}'
   result <- parse_redrover_json(fixture, "jcsd1")
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Posting_ID", "Link"))
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Posting_ID", "Link",
+                                 "Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text"))
+})
+
+test_that("parse_redrover_json reads the posting's own pay and keeps hidden pay as NA", {
+  # Shapes from the live Johnson County SD1 response (2026-10-30): a pay
+  # range, a single figure (min == max), a daily rate, a STIPEND with no
+  # amount, and an UNKNOWN type the board itself doesn't display.
+  fixture <- '{"data":{"jobSeekerSiteUnauthenticated":{"jobPostingSearch":{"results":[
+    {"id":"142219","name":"Paraprofessional Substitute","location":{"name":"District"},"activePublicOnDateUtc":"2026-07-01T00:00:00Z","payTypeId":"HOURLY","minPay":17.66,"maxPay":18.1},
+    {"id":"131082","name":"Substitute Buffalo Bus Route Driver","location":{"name":"District"},"activePublicOnDateUtc":"2026-07-01T00:00:00Z","payTypeId":"HOURLY","minPay":20.48,"maxPay":20.48},
+    {"id":"132190","name":"Substitute Teacher","location":{"name":"District"},"activePublicOnDateUtc":"2026-07-01T00:00:00Z","payTypeId":"DAILY","minPay":68.0,"maxPay":136.0},
+    {"id":"209197","name":"Head Indoor Track Coach","location":{"name":"Buffalo High School"},"activePublicOnDateUtc":"2026-07-01T00:00:00Z","payTypeId":"STIPEND","minPay":null,"maxPay":null},
+    {"id":"1","name":"Mystery Role","location":{"name":"District"},"activePublicOnDateUtc":"2026-07-01T00:00:00Z","payTypeId":"UNKNOWN","minPay":10,"maxPay":10}
+  ]}}}}'
+
+  result <- parse_redrover_json(fixture, "jcsd1")
+
+  expect_equal(result$Pay_Min, c(17.66, 20.48, 68, NA, NA))
+  expect_equal(result$Pay_Max, c(18.1, 20.48, 136, NA, NA))
+  expect_equal(result$Pay_Unit, c("hour", "hour", "day", NA, NA))
+  expect_equal(result$Pay_Text, c("$17.66 - $18.10 per hour", "$20.48 per hour",
+                                  "$68.00 - $136.00 per day", NA, NA))
+
+  result$District <- "Johnson County School District #1"
+  normalized <- normalize_id_backed_k12_postings(result)
+  expect_equal(normalized$Pay_Unit, result$Pay_Unit)
+  expect_equal(normalized$Pay_Text, result$Pay_Text)
+})
+
+test_that("normalize_id_backed_k12_postings fills Pay_* with NA for a source that states no pay", {
+  postings <- data.frame(Title = "Teacher", Location = "Sundance", Posted_Date = "2026-10-01",
+                         Posting_ID = "schoolspring:x:1", Link = "https://x/1", District = "Crook",
+                         stringsAsFactors = FALSE)
+  normalized <- normalize_id_backed_k12_postings(postings)
+  expect_true(is.na(normalized$Pay_Min) && is.na(normalized$Pay_Unit))
+  expect_type(normalized$Pay_Min, "double")
 })
 
 test_that("parse_applitrack_output un-escapes document.write literals and preserves the original position/position2 splitting logic", {
