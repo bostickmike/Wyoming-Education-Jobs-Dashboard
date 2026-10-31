@@ -700,3 +700,47 @@ test_that("build_drift_report_markdown includes Central Safety Net status annota
   expect_match(report, "### Central Safety Net Status Summary", fixed = TRUE)
   expect_match(report, "Statewide Feed (WSBA)**: 50 active vacancies captured", fixed = TRUE)
 })
+
+# --- Posted-pay coverage -----------------------------------------------------
+
+test_that("pay_coverage_counts tallies postings and postings with pay per source", {
+  out <- pay_coverage_counts(c("A", "A", "B", "A"), c(TRUE, FALSE, FALSE, TRUE))
+  expect_equal(out$name, c("A", "B"))
+  expect_equal(out$n, c(3L, 1L))
+  expect_equal(out$with_pay, c(2L, 0L))
+  expect_equal(nrow(pay_coverage_counts(character(0), logical(0))), 0)
+})
+
+test_that("flag_pay_coverage_drop flags a source whose postings arrive but lost their pay", {
+  week <- function(n, with_pay) data.frame(name = c("Paycom College", "Free Text District"),
+                                           n = n, with_pay = with_pay)
+  history <- list(week(c(30, 10), c(16, 1)), week(c(31, 12), c(15, 2)))
+  current <- data.frame(name = c("Paycom College", "Free Text District"), n = c(31, 11), with_pay = c(0, 0))
+  out <- flag_pay_coverage_drop(current, history)
+  # The free-text district never carried much pay, so its 0 is not a drop.
+  expect_equal(out$name, "Paycom College")
+  expect_equal(out$with_pay, 0)
+  expect_equal(out$n_weeks, 2L)
+  expect_equal(round(out$mean_share, 3), round(mean(c(16 / 30, 15 / 31)), 3))
+})
+
+test_that("flag_pay_coverage_drop stays quiet without enough history or postings", {
+  hist1 <- list(data.frame(name = "A", n = 10, with_pay = 9))
+  hist2 <- c(hist1, hist1)
+  expect_equal(nrow(flag_pay_coverage_drop(data.frame(name = "A", n = 10, with_pay = 0), hist1)), 0)
+  # Too few postings this run to judge (and a lost-postings source is flag_drift()'s job).
+  expect_equal(nrow(flag_pay_coverage_drop(data.frame(name = "A", n = 2, with_pay = 0), hist2)), 0)
+  # A normal week-to-week dip is not flagged.
+  expect_equal(nrow(flag_pay_coverage_drop(data.frame(name = "A", n = 10, with_pay = 6), hist2)), 0)
+  expect_equal(nrow(flag_pay_coverage_drop(data.frame(name = "A", n = 10, with_pay = 0), list())), 0)
+  expect_equal(nrow(flag_pay_coverage_drop(data.frame(name = "A", n = 10, with_pay = 0), hist2)), 1)
+})
+
+test_that("build_pay_coverage_report_markdown names each flagged source and its numbers", {
+  expect_equal(build_pay_coverage_report_markdown(data.frame()), character(0))
+  flagged <- data.frame(name = "Paycom College", mean_share = 0.51, n_weeks = 2L, n = 31L,
+                        with_pay = 0L, type = "Higher Ed")
+  md <- build_pay_coverage_report_markdown(flagged, date = as.Date("2026-11-07"))
+  expect_true(any(grepl("Posted pay went missing (2026-11-07)", md, fixed = TRUE)))
+  expect_true(any(grepl("**Paycom College** (Higher Ed): usually 51% of postings state pay, now 0 of 31", md, fixed = TRUE)))
+})

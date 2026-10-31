@@ -149,6 +149,14 @@ jobs:
         continue-on-error: true
         run: Rscript .github/scripts/check_census_drift.R
 
+      # Postings can keep arriving while the pay a source used to carry goes
+      # blank (a changed pay field or detail endpoint) -- check_drift.R
+      # can't see that, since it counts postings. Same non-blocking shape.
+      - name: Check posted-pay coverage against each source's own history
+        id: check_pay_coverage
+        continue-on-error: true
+        run: Rscript .github/scripts/check_pay_coverage.R
+
       # Closes the one real gap continue-on-error opens up: a bug that
       # CRASHES one of the three monitoring steps above is indistinguishable
       # from "ran fine, found nothing to report" unless something checks for
@@ -164,6 +172,7 @@ jobs:
           [ "${{ steps.corroborate_drift.outcome }}" = "failure" ] && FAILED="$FAILED corroborate_drift.R"
           [ "${{ steps.check_salary_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_salary_drift.R"
           [ "${{ steps.check_census_drift.outcome }}" = "failure" ] && FAILED="$FAILED check_census_drift.R"
+          [ "${{ steps.check_pay_coverage.outcome }}" = "failure" ] && FAILED="$FAILED check_pay_coverage.R"
 
           if [ -z "$FAILED" ]; then
             echo "All monitoring steps ran without crashing."

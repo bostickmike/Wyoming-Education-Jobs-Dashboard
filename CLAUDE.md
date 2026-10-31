@@ -44,6 +44,7 @@ Rscript .github/scripts/verify_schema.R     # blocking: every column app.R expec
 Rscript .github/scripts/check_drift.R       # diagnostic only: per-source count vs. historical baseline
 Rscript .github/scripts/check_salary_drift.R   # diagnostic: WSBA/IPEDS coverage vs. known-fixed universe
 Rscript .github/scripts/check_census_drift.R   # diagnostic: ACS/SAIPE coverage + value plausibility
+Rscript .github/scripts/check_pay_coverage.R   # diagnostic: sources whose posted pay went missing vs. their own history
 ```
 
 Disaster-recovery / verification rebuilds (reprocess the full raw archive from scratch, bypassing the incremental accumulator):

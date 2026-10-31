@@ -84,6 +84,74 @@ flag_drift <- function(current_counts, baseline, min_weeks = 2, min_mean_count =
   flagged[order(-flagged$mean_count), c("name", "mean_count", "n_weeks", "count")]
 }
 
+# --------------------------------------------------------------------------
+# Posted-pay coverage
+# --------------------------------------------------------------------------
+
+# A pay source that breaks doesn't lose postings -- each one just comes
+# back with Pay_* blank -- so flag_drift() above can't see it. This compares
+# each source's share of postings with stated pay against its own history
+# in the raw archives. Archives written before a source captured pay have
+# no Pay_* column and are skipped, not counted as zero.
+
+# One row per source: postings (n) and how many state pay (with_pay).
+pay_coverage_counts <- function(names, has_pay) {
+  if (length(names) == 0) {
+    return(data.frame(name = character(0), n = integer(0), with_pay = integer(0),
+                      stringsAsFactors = FALSE))
+  }
+  n <- tapply(rep(1L, length(names)), names, sum)
+  with_pay <- tapply(as.integer(has_pay), names, sum)
+  data.frame(name = names(n), n = as.integer(n), with_pay = as.integer(with_pay[names(n)]),
+             stringsAsFactors = FALSE)
+}
+
+# current: pay_coverage_counts() for this run. history: a list of the same,
+# one per archived week that had Pay_*. A source is flagged when it has at
+# least min_weeks weeks with min_postings or more postings, its average
+# share with pay over those weeks is at least min_share, and this run --
+# with min_postings or more postings, so a source that lost its postings is
+# left to flag_drift() -- has a share at or below drop_threshold times that
+# average.
+flag_pay_coverage_drop <- function(current, history, min_weeks = 2, min_postings = 3,
+                                   min_share = 0.4, drop_threshold = 0.2) {
+  empty <- data.frame(name = character(0), mean_share = numeric(0), n_weeks = integer(0),
+                      n = integer(0), with_pay = integer(0), stringsAsFactors = FALSE)
+  weeks <- do.call(rbind, history)
+  if (is.null(weeks) || nrow(weeks) == 0 || nrow(current) == 0) return(empty)
+  weeks <- weeks[weeks$n >= min_postings, , drop = FALSE]
+  if (nrow(weeks) == 0) return(empty)
+  weeks$share <- weeks$with_pay / weeks$n
+  baseline <- data.frame(
+    name = sort(unique(weeks$name)),
+    stringsAsFactors = FALSE
+  )
+  baseline$n_weeks <- as.integer(table(weeks$name)[baseline$name])
+  baseline$mean_share <- as.numeric(tapply(weeks$share, weeks$name, mean)[baseline$name])
+
+  merged <- merge(baseline, current, by = "name")
+  merged <- merged[merged$n >= min_postings & merged$n_weeks >= min_weeks &
+                     merged$mean_share >= min_share, , drop = FALSE]
+  flagged <- merged[merged$with_pay / merged$n <= merged$mean_share * drop_threshold, , drop = FALSE]
+  if (nrow(flagged) == 0) return(empty)
+  flagged[order(-flagged$mean_share), c("name", "mean_share", "n_weeks", "n", "with_pay")]
+}
+
+build_pay_coverage_report_markdown <- function(flagged, date = Sys.Date()) {
+  if (nrow(flagged) == 0) return(character(0))
+  c(
+    paste0("### Posted pay went missing (", date, ")"),
+    "",
+    paste("These sources still return postings, but far fewer of them carry the pay the posting states",
+          "than usual -- the pay field or detail request the scraper reads has likely changed.",
+          "Postings and counts are unaffected; the Posted Pay column is blank for them."),
+    "",
+    sprintf("- **%s** (%s): usually %.0f%% of postings state pay, now %d of %d",
+            flagged$name, flagged$type, 100 * flagged$mean_share, flagged$with_pay, flagged$n),
+    ""
+  )
+}
+
 # A source dropping to (near) zero is ambiguous on count alone: a genuinely
 # quiet week looks identical to a scraper that started erroring. But
 # safe_scrape() (scrape_helpers.R) already logs which one happened, to
