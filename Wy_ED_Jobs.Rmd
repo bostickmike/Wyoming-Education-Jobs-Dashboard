@@ -593,7 +593,7 @@ lccc_raw <- safe_scrape(
 
 lccc <- lccc_raw %>%
   mutate(Institution = "Laramie County Community College") %>%
-  select(Title, Location, Posted_Date, Institution, Link)
+  select(Title, Location, Posted_Date, Institution, Link, any_of(POSTED_PAY_COLUMNS))
 
 print(lccc)
 
@@ -613,7 +613,7 @@ casper_raw <- safe_scrape(
 
 casper <- casper_raw %>%
   mutate(Institution = "Casper College") %>%
-  select(Title, Location, Posted_Date, Institution, Link)
+  select(Title, Location, Posted_Date, Institution, Link, any_of(POSTED_PAY_COLUMNS))
 
 print(casper)
 
@@ -663,7 +663,7 @@ central_raw <- safe_scrape(
 
 central <- central_raw %>%
   mutate(Institution = "Central Wyoming College") %>%
-  select(Title, Location, Posted_Date, Institution, Link)
+  select(Title, Location, Posted_Date, Institution, Link, any_of(POSTED_PAY_COLUMNS))
 
 print(central)
 
@@ -706,7 +706,7 @@ gillette_raw <- safe_scrape(
 
 gillette <- gillette_raw %>%
   mutate(Institution = "Gillette College") %>%
-  select(Title, Location, Posted_Date, Institution, Link)
+  select(Title, Location, Posted_Date, Institution, Link, any_of(POSTED_PAY_COLUMNS))
 
 print(gillette)
 
@@ -793,8 +793,18 @@ library(writexl)
 library(tidyverse)
 library(readxl)
 
-# Combine all datasets
-hedata <- rbind(lccc, casper, western, central, eastern, gillette, sheridan, northwest, UW)
+# Combine all datasets. Pay_* is the pay the posting states: the NEOGOV
+# colleges (LCCC, Casper, Central, Gillette) carry it, every other source is
+# NA. It's kept in hedata.xlsx and the raw archive, but not in the
+# accumulated facultydata.csv below.
+hedata <- list(lccc, casper, western, central, eastern, gillette, sheridan, northwest, UW) %>%
+  lapply(function(df) {
+    # bind_rows() won't mix a Date Posted_Date with a character one.
+    df$Posted_Date <- as.character(df$Posted_Date)
+    ensure_posted_pay_columns(df)
+  }) %>%
+  bind_rows() %>%
+  select(Title, Location, Posted_Date, Institution, Link, all_of(POSTED_PAY_COLUMNS))
 
 hedata$Posted_Date<- as.character(hedata$Posted_Date)
 
@@ -829,9 +839,12 @@ hedata <- hedata %>%
 this_week_he_cat <- hedata %>%
   mutate(Job_Type = classify_he_job_type(Title))
 
+# Pay_* is left out of facultydata.csv: its accumulated history predates
+# pay capture, and append_weekly_rows() refuses a changed column set.
 this_week_facultydata <- this_week_he_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
-  mutate(Category = classify_he_faculty_category(Title))
+  mutate(Category = classify_he_faculty_category(Title)) %>%
+  select(-all_of(POSTED_PAY_COLUMNS))
 
 #--------------------------------------------------------------------------
 # Append this week's newly classified rows onto the existing accumulated

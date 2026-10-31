@@ -171,7 +171,7 @@ test_that("parse_neogov_html returns zero rows (not an error) when the fragment 
   fixture <- '<div class="jobs-not-found-container"><h2>No jobs at this time.</h2></div>'
   result <- parse_neogov_html(fixture, "https://www.schooljobs.com")
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
+  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link", POSTED_PAY_COLUMNS))
 })
 
 test_that("fetch_neogov_postings follows pagination instead of only fetching page 1", {

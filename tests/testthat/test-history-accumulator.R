@@ -236,9 +236,12 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
   raw_latest <- raw_latest %>% mutate(Institution = canonicalize_he_institution(Institution))
 
   this_week_he_cat <- raw_latest %>% mutate(Job_Type = classify_he_job_type(Title))
+  # Archives from 2026-10-30 on carry Pay_*, which the pipeline keeps out of
+  # facultydata.csv.
   this_week_facultydata <- this_week_he_cat %>%
     filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
-    mutate(Category = classify_he_faculty_category(Title))
+    mutate(Category = classify_he_faculty_category(Title)) %>%
+    select(-any_of(POSTED_PAY_COLUMNS))
 
   this_week_weekly_totals <- raw_latest %>% count(Institution, Archive_Date, name = "n")
 

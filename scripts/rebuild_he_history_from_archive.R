@@ -17,9 +17,12 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
     stop("rebuild_he_history_from_archive(): no archive files found in ", archive_dir)
   }
 
+  # Archives from 2026-10-30 on also carry Pay_*, which the weekly path
+  # keeps out of facultydata.csv; dropped here so the two stay equivalent.
   combined_HE_data <- xlsx_files %>%
     lapply(readxl::read_xlsx) %>%
-    bind_rows()
+    bind_rows() %>%
+    select(-any_of(POSTED_PAY_COLUMNS))
 
   combined_HE_data$Archive_Date <- as.Date(combined_HE_data$Archive_Date)
   combined_HE_data <- combined_HE_data %>%

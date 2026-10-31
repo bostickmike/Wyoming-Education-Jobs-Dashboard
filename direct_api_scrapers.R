@@ -195,9 +195,10 @@ fetch_neogov_postings <- function(base_domain, agency_slug) {
   }
 
   if (length(all_pages) == 0) {
-    return(data.frame(Title = character(0), Location = character(0),
-                       Posted_Date = character(0), Link = character(0),
-                       stringsAsFactors = FALSE))
+    return(ensure_posted_pay_columns(
+      data.frame(Title = character(0), Location = character(0),
+                 Posted_Date = character(0), Link = character(0),
+                 stringsAsFactors = FALSE)))
   }
 
   dplyr::bind_rows(all_pages)
@@ -216,9 +217,10 @@ parse_neogov_html <- function(html_text, base_domain) {
   nodes <- rvest::html_elements(container, ".item-details-link")
 
   if (length(nodes) == 0) {
-    return(data.frame(Title = character(0), Location = character(0),
-                       Posted_Date = character(0), Link = character(0),
-                       stringsAsFactors = FALSE))
+    return(ensure_posted_pay_columns(
+      data.frame(Title = character(0), Location = character(0),
+                 Posted_Date = character(0), Link = character(0),
+                 stringsAsFactors = FALSE)))
   }
 
   titles <- rvest::html_text2(nodes)
@@ -232,8 +234,43 @@ parse_neogov_html <- function(html_text, base_domain) {
   locations <- pad_to(rvest::html_text2(rvest::html_elements(container, ".list-meta li:nth-child(1)")), n)
   posted_dates <- pad_to(rvest::html_text2(rvest::html_elements(container, ".list-entry-starts span")), n)
 
-  data.frame(Title = titles, Location = locations, Posted_Date = posted_dates,
-             Link = links, stringsAsFactors = FALSE)
+  # Pay is matched to each posting by job ID (the card's data-job-id is the
+  # number in its /jobs/<id>/ link), not by position. If reading the pay
+  # fails (a markup change), the postings still come through with NA pay.
+  pay <- tryCatch(parse_neogov_card_pay(html_text), error = function(e) {
+    message("NEOGOV card pay could not be read: ", conditionMessage(e))
+    ensure_posted_pay_columns(data.frame(Job_ID = character(0), stringsAsFactors = FALSE))
+  })
+  idx <- match(sub("^.*/jobs/([0-9]+).*$", "\\1", links), pay$Job_ID)
+
+  cbind(data.frame(Title = titles, Location = locations, Posted_Date = posted_dates,
+                   Link = links, stringsAsFactors = FALSE),
+        pay[idx, POSTED_PAY_COLUMNS, drop = FALSE], row.names = NULL)
+}
+
+# Posted pay from each card of a NEOGOV (schooljobs.com / governmentjobs.com)
+# job-list fragment, keyed by the card's data-job-id. The card's meta line
+# carries the board's pay field ("Full-Time - $61,356.00 - $76,695.00
+# Annually"); "Depends on Qualifications" or "See Position Description" means
+# none is stated, and then the card's description preview is read instead
+# ("Current adjunct pay is $775 per credit hour"). Shared verbatim with the
+# Montana dashboard's direct_api_scrapers.R.
+parse_neogov_card_pay <- function(html_text) {
+  container <- rvest::html_elements(rvest::read_html(html_text), "ul.job-listing-container")
+  cards <- rvest::html_elements(container, "li.list-item")
+  if (length(cards) == 0) {
+    return(ensure_posted_pay_columns(data.frame(Job_ID = character(0), stringsAsFactors = FALSE)))
+  }
+  meta_pay <- vapply(cards, function(card) {
+    lines <- rvest::html_text2(rvest::html_elements(card, ".list-meta li"))
+    lines <- lines[grepl("$", lines, fixed = TRUE)]
+    if (length(lines) == 0) NA_character_ else trimws(lines[1])
+  }, character(1))
+  preview <- rvest::html_text2(rvest::html_element(cards, ".list-entry"))
+  pay <- extract_posted_pay(ifelse(is.na(meta_pay), preview, meta_pay))
+  from_meta <- !is.na(meta_pay) & !is.na(pay$Pay_Min)
+  pay$Pay_Text[from_meta] <- meta_pay[from_meta]
+  cbind(data.frame(Job_ID = rvest::html_attr(cards, "data-job-id"), stringsAsFactors = FALSE), pay)
 }
 
 # ---------------------------------------------------------------------------

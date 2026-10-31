@@ -270,5 +270,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] Increment 1: shared `extract_posted_pay()` (amount/range, unit, source snippet; never converted between units).
     AppliTrack postings carry `Pay_Min`/`Pay_Max`/`Pay_Unit`/`Pay_Text` into `combinedclean.csv`, with a "Posted Pay"
     column in the Jobs table. About 91% of sampled live AppliTrack postings state an amount.
-  * [ ] RedRover; HE platforms (isolvedHire, NEOGOV, Paycom); OPI detail pages (~50% state an amount); map salary filter
-    on posted pay; BLS OEWS regional benchmarks as a labeled fallback.
+  * [x] Increment 2 (2026-10-30): RedRover boards carry Pay_* from the GraphQL `payTypeId`/`minPay`/`maxPay` fields.
+  * [x] Increment 3 (2026-10-30): higher ed. The NEOGOV colleges (LCCC, Casper, Central Wyoming, Gillette) carry Pay_*
+    from each listing card's pay line, or its description preview when that line is blank, into `hedata.xlsx` and the
+    raw HE archive, with a "Posted Pay" column in the Higher Ed Jobs table. Live 2026-10-30: LCCC 57/84 (NEOGOV prints
+    "$0.00" for adjuncts with no stated pay, now read as none), Casper 7/8, Central 8/13, Gillette 21/22.
+    `facultydata.csv` keeps its schema (no Pay_*). PeopleAdmin colleges and UW: not yet.
+  * [x] Pay-coverage monitor (2026-10-31): `check_pay_coverage.R` (non-blocking weekly step, in the monitoring
+    self-check) flags a source whose postings still arrive but whose share with stated pay fell to <=20% of its own
+    average (needs 2+ archived weeks with pay, avg share >=40%, 3+ postings), into the weekly drift issue. Pure logic
+    in `drift_check.R` (`flag_pay_coverage_drop()`), tested.
+  * [ ] Map salary filter on posted pay (and WDE602 role figures where none is posted); BLS OEWS regional benchmarks as
+    a labeled fallback.

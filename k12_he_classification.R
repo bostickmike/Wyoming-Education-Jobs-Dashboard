@@ -409,9 +409,15 @@ extract_posted_pay <- function(text) {
       # "signing bonus." just before "Starting salary: $X" doesn't veto $X.
       near_before <- sub("^.*[.;!]\\s", "", near_before)
       if (grepl("bonus|fee|reimburs|insurance|retire|deductible|allowance|incentive|signing|relocation|tuition|premium|contribut|match|donat|scholarship|award|grant of|differential|up to \\$", paste(near_before, substr(after, 1, 25)))) next
+      # A benefits package's stated value ("Benefits at FVCC (Worth ~$25K)")
+      # isn't pay. Only value wording counts, so "benefits eligible, $45,000"
+      # and "$52,000 plus benefits" are still read as pay.
+      if (grepl("\\bworth\\b|valued at|benefits? (package )?value", near_before)) next
       cap <- function(k) if (cl[j, k] > 0) substr(t, cs[j, k], cs[j, k] + cl[j, k] - 1) else NA_character_
       lo <- to_num(cap(1), cap(2)); hi <- if (!is.na(cap(3))) to_num(cap(3), cap(4)) else lo
-      if (is.na(lo)) next
+      # "$0.00" is a board's blank pay field (NEOGOV prints "Adjunct - $0.00
+      # Hourly" when none is entered), not a wage.
+      if (is.na(lo) || max(lo, hi, na.rm = TRUE) <= 0) next
       unit <- dplyr::case_when(
         grepl("^[^a-z]{0,3}(/|per|an|a)?\\s*(hour|hr\\b)|^[^a-z]{0,3}hourly", after) ~ "hour",
         grepl("^[^a-z]{0,3}(/|per|a)?\\s*((whole|half|full) )?(day\\b|daily)|^[^a-z]{0,3}per diem", after) |
@@ -459,7 +465,7 @@ POSTED_PAY_COLUMNS <- c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")
 # or a rebuild from archives written before pay was captured -- carry them.
 ensure_posted_pay_columns <- function(df) {
   for (col in POSTED_PAY_COLUMNS) {
-    if (!col %in% names(df)) df[[col]] <- if (col %in% c("Pay_Min", "Pay_Max")) NA_real_ else NA_character_
+    if (!col %in% names(df)) df[[col]] <- rep(if (col %in% c("Pay_Min", "Pay_Max")) NA_real_ else NA_character_, nrow(df))
   }
   df
 }

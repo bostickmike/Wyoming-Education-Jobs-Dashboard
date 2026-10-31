@@ -502,9 +502,15 @@ k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
 #--------------------------------------------------
 # Load Higher Ed data
 #--------------------------------------------------
-ccdata <- read_xlsx("hedata.xlsx") %>%
+ccdata <- read_xlsx("hedata.xlsx")
+# Optional posted-pay columns, padded the same way as combinedclean.csv's.
+for (col in c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")) {
+  if (!col %in% names(ccdata)) ccdata[[col]] <- NA
+}
+ccdata <- ccdata %>%
   validate_and_pad_schema(c("Institution", "Title", "Location", "Posted_Date", "Link"), "hedata.xlsx") %>%
-  select(Institution, Title, Location, Posted_Date, Link) %>%
+  mutate(`Posted Pay` = format_posted_pay(Pay_Min, Pay_Max, Pay_Unit)) %>%
+  select(Institution, Title, Location, `Posted Pay`, Posted_Date, Link) %>%
   arrange(Institution, Title) %>%
   mutate(
     Appointment = classify_he_appointment(Title),
@@ -537,7 +543,7 @@ he_salary_lookup <- mapdata2_he %>%
 
 ccdata <- ccdata %>%
   left_join(he_salary_lookup, by = c("Institution" = "Name")) %>%
-  select(Institution, Title, Location, Appointment, `Avg Faculty Salary`, `Posted / listed`, Link)
+  select(Institution, Title, Location, Appointment, `Posted Pay`, `Avg Faculty Salary`, `Posted / listed`, Link)
 
 hesum_he <- read.csv("allsum_he.csv") %>%
   validate_and_pad_schema(c("Category", "Archive_Date", "Institution", "Job_Type", "sum"), "allsum_he.csv") %>%
@@ -1723,7 +1729,7 @@ ui <- dashboardPage(
           ),
           uiOutput("he_filter_status")
         ),
-        p(class = "help-block", style = "margin-bottom: 8px;", "Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
+        p(class = "help-block", style = "margin-bottom: 8px;", "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."),
         DTOutput("he_jobs")
       ),
       tabItem(
