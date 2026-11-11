@@ -202,7 +202,7 @@ build_implausible_pay_report_markdown <- function(bad, date = Sys.Date(), max_ro
     paste0("### Posted pay blanked as implausible (", date, ")"),
     "",
     paste("These amounts were read from the postings but fall outside PAY_PLAUSIBLE_RANGE",
-          "(k12_he_classification.R) for their unit, so the dashboard shows no posted pay for them.",
+          "(edjobs, R/k12_he_classification.R) for their unit, so the dashboard shows no posted pay for them.",
           "The raw archive keeps them. A misread needs an extractor fix; a real figure needs the range widened."),
     "",
     sprintf("- **%s** (%s) \"%s\": %s per %s -- \"%s\"",
@@ -1155,7 +1155,7 @@ lint_title_shape <- function(title, max_chars = 200) {
 # Titles that state pay ("Secretary - $14 per hour", "Substitute Teachers
 # $150/day") on postings whose Posted Pay is blank: no scraper reads pay from
 # the title, so the posting's own pay isn't shown. Uses extract_posted_pay()
-# (k12_he_classification.R), which ignores amounts that aren't pay ("$10,000
+# (edjobs), which ignores amounts that aren't pay ("$10,000
 # Hiring Incentive").
 title_pay_unrecorded <- function(title, pay_min) {
   t <- as.character(title)
