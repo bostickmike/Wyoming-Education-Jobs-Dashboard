@@ -153,7 +153,12 @@ for (i in seq_len(nrow(eligible))) {
   cat("Created #", number, " for ", row$name, "\n", sep = "")
 
   if (engine == "none") next
-  if (engine == "claude") {
+  # Copilot only edits this repo. A scraper whose fetch function lives in the
+  # edjobs package goes to the Claude workflow, which checks out edjobs and
+  # opens its fix PR there (package migration phase 3, 2026-11-11).
+  in_edjobs <- !is.null(call) && isTRUE(call$fn %in% getNamespaceExports("edjobs"))
+  if (engine == "claude" || in_edjobs) {
+    if (engine != "claude") cat("  Scraper lives in edjobs: Claude instead of Copilot\n")
     dispatch_claude(number)
     next
   }
