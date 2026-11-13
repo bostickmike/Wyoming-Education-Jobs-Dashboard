@@ -10,8 +10,6 @@ on:
     # 13:17 UTC = 6:17 MST; GitHub often starts hours late, still the same
     # Mountain-time day.
     - cron: '17 13 * * *'
-  push:
-    branches: [presence-check]   # TEMPORARY test trigger
   workflow_dispatch:
     inputs:
       dry_run:
@@ -23,9 +21,7 @@ jobs:
   presence:
     permissions:
       contents: write
-    uses: bostickmike/edjobs/.github/workflows/presence.yml@presence-check
+    uses: bostickmike/edjobs/.github/workflows/presence.yml@v0.13.0
     with:
       platforms: Applitrack,SchoolSpring,TedK12
       dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
-      edjobs_ref: presence-check   # TEMPORARY
-      branch: presence-test        # TEMPORARY
