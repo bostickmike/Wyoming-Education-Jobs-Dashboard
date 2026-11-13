@@ -634,7 +634,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   4 failed (one test whose needle dropped argument names; fixed, reran green); full rehearsal passed every step,
   rebuild parity 9/9 (`claude-notes/2026-11-12_rehearsal-wy-edjobs-0.11.0.log`): 97 NEOGOV rows, 97 exact posted
   dates, 0 relative, 5 closing dates, posted pay on 74. Three `run_expectations.csv` rows for the 11-13 run.
-  PR checks pass once edjobs v0.11.0 is tagged.
+  Review fixes before release (edjobs 579d632, `claude-notes/2026-11-12_review-edjobs-0.11.0.md`): NEOGOV cards'
+  Location and date read per card, a warning when a board returns no Locations, and a JSON-LD reader that takes
+  schema.org's text forms and catches errors per page. Re-rehearsed: every step passed, parity 9/9, suite
+  1,379/0 (`claude-notes/2026-11-12_rehearsal-wy-edjobs-0.11.0-fixes.log`); NEOGOV rows Casper 6, CWC 12,
+  Gillette 20, LCCC 59. PR checks pass once edjobs v0.11.0 is tagged.
 - [ ] Weston County SD 7 (decision needed): 36 students per teacher on the dashboard. CCD's enrollment grew from
   222 (2020) to 859 (2024), almost all at Upton Elementary (96 -> 574 with 7 teachers), no school flagged virtual:
   likely an online or home-based program counted under Upton's schools (found by `tools/reference_audit.R`, 11-09).
