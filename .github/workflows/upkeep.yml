@@ -8,10 +8,6 @@ on:
     # Wednesdays 15:00 UTC: no weekly run that day, now or on the planned
     # twice-weekly days (WY Tue + Fri, MT Mon + Thu).
     - cron: '0 15 * * 3'
-  # TEMPORARY test trigger (removed before merge): a new workflow can't be
-  # dispatched until it is on main.
-  push:
-    branches: [upkeep-workflow]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -25,9 +21,8 @@ jobs:
       actions: write
       issues: write
       contents: read
-    uses: bostickmike/edjobs/.github/workflows/upkeep.yml@upkeep-workflow
+    uses: bostickmike/edjobs/.github/workflows/upkeep.yml@v0.12.1
     with:
-      dry_run: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
-      warn_days: 30
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
     secrets:
       pat: ${{ secrets.COPILOT_TOKEN }}
