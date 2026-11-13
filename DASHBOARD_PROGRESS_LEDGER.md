@@ -668,6 +668,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   still up (both pages closed: relistings). The 15-60 guess predates K-12 archives carrying AppliTrack per-posting
   links (from 10-30: checkable K-12 links ~45 -> ~370); dropped checkable postings per week were 16-48 before, 48 and
   75 since. Evaluated on the 11-13 file: passes.
+- [x] HE salarymap.csv keeps its enrollment-trend and Pell columns when their fetches fail (2026-11-13). The IPEDS
+  salary chunk rewrote salarymap.csv with only its static columns, and the later chunks add theirs back only on a
+  successful fetch: in the first 0.12.0 rehearsal both got HTTP 524 from Urban Institute, so Enrollment_Change_Pct,
+  Pell_Recipient_Share and Pell_Year were lost and the schema check stopped the run. Now the chunk keeps every
+  column and replaces only its own (as MT). Simulated on the committed file (salary fetch ok, the rest failing):
+  25 columns, values identical. Re-rehearsal on 0.12.0: all steps passed
+  (`claude-notes/2026-11-13_rehearsal-wy-edjobs-0.12.0.log`; the failed one is `...-run1.log`).
 - [ ] Real posting dates, what's left (`claude-notes/2026-11-03_posting-dates-plan.md`): optional daily presence check
   for day-precision ends (spells, coverage calendar and page-confirmed closings are done): plan written 2026-11-09
   (`claude-notes/2026-11-09_daily-presence-check-plan.md`; all 38 districts, 85% of postings; WSBA left out), waiting
