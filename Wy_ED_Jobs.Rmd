@@ -8,6 +8,12 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# Every message and warning goes to the run log, even in chunks marked
+# message=FALSE/warning=FALSE (those settings only kept them out of the HTML,
+# which nobody reads). GitHub timestamps each log line, so the log shows how
+# long each step took (2026-11-13: a WY run stalled with nothing to go on).
+knitr::opts_hooks$set(message = function(o) { o$message <- NA; o },
+                      warning = function(o) { o$warning <- NA; o })
 source("state_config.R")   # edjobs::state_config(): this state, as data
 source("k12_he_classification.R")
 ```
