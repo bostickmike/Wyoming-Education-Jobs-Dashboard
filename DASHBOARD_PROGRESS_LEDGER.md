@@ -662,6 +662,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   FRL_Year). They were documented before any run wrote them, and the blocking pre-run suite would have stopped that
   run (found by the MT rehearsal, 2026-11-09). Done 2026-11-13: run 43462550744 (a4801fa) wrote all four;
   `pending` is now empty; test file passes (56).
+- [x] `posting_status_checked` run expectation widened 15-60 -> 20-120 (2026-11-13). The 11-13 run checked 75 pages
+  (64 postings dropped since 11-06 + 11 WSBA rows; 71 closed, 4 unknown: Gillette 3, LCCC 1, NEOGOV pages with no
+  closing date). Not a bug: same NEOGOV link format in both archives, and only 2 of the 64 have a same-titled listing
+  still up (both pages closed: relistings). The 15-60 guess predates K-12 archives carrying AppliTrack per-posting
+  links (from 10-30: checkable K-12 links ~45 -> ~370); dropped checkable postings per week were 16-48 before, 48 and
+  75 since. Evaluated on the 11-13 file: passes.
 - [ ] Real posting dates, what's left (`claude-notes/2026-11-03_posting-dates-plan.md`): optional daily presence check
   for day-precision ends (spells, coverage calendar and page-confirmed closings are done): plan written 2026-11-09
   (`claude-notes/2026-11-09_daily-presence-check-plan.md`; all 38 districts, 85% of postings; WSBA left out), waiting
