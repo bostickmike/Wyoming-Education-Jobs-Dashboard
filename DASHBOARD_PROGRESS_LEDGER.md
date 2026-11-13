@@ -657,10 +657,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   222 (2020) to 859 (2024), almost all at Upton Elementary (96 -> 574 with 7 teachers), no school flagged virtual:
   likely an online or home-based program counted under Upton's schools (found by `tools/reference_audit.R`, 11-09).
   Options: a footnote on its row/popup, hide its students-per-teacher figure, or leave it.
-- [ ] After the 2026-11-13 run writes them: remove `pending`'s salarymap2.csv entries in
+- [x] After the 2026-11-13 run writes them: remove `pending`'s salarymap2.csv entries in
   `tests/testthat/test-data-dictionary.R` (Child_Poverty_Basis, Free_Reduced_Lunch_Share, FRL_Schools_Reporting,
   FRL_Year). They were documented before any run wrote them, and the blocking pre-run suite would have stopped that
-  run (found by the MT rehearsal, 2026-11-09).
+  run (found by the MT rehearsal, 2026-11-09). Done 2026-11-13: run 43462550744 (a4801fa) wrote all four;
+  `pending` is now empty; test file passes (56).
 - [ ] Real posting dates, what's left (`claude-notes/2026-11-03_posting-dates-plan.md`): optional daily presence check
   for day-precision ends (spells, coverage calendar and page-confirmed closings are done): plan written 2026-11-09
   (`claude-notes/2026-11-09_daily-presence-check-plan.md`; all 38 districts, 85% of postings; WSBA left out), waiting
