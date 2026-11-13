@@ -27,7 +27,7 @@ jobs:
       contents: read
     uses: bostickmike/edjobs/.github/workflows/upkeep.yml@upkeep-workflow
     with:
-      dry_run: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
-      warn_days: ${{ github.event_name == 'push' && 400 || 30 }}
+      dry_run: ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+      warn_days: 30
     secrets:
       pat: ${{ secrets.COPILOT_TOKEN }}
