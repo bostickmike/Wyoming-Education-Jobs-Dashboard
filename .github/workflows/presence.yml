@@ -1,0 +1,27 @@
+name: Daily presence check
+
+# Reads every AppliTrack, SchoolSpring and TedK12 board once a day (list pages
+# only) and commits presence_checks.csv / presence_sightings.csv to the
+# `presence` branch, never main. Phase 0 (shadow): nothing reads them yet.
+# Red Rover joins after phase 0 (it needs headless Chrome). The logic lives in
+# edjobs (.github/workflows/presence.yml, edjobs::refresh_presence()).
+on:
+  schedule:
+    # 13:17 UTC = 6:17 MST; GitHub often starts hours late, still the same
+    # Mountain-time day.
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run the check but commit nothing
+        type: boolean
+        default: false
+
+jobs:
+  presence:
+    permissions:
+      contents: write
+    uses: bostickmike/edjobs/.github/workflows/presence.yml@v0.13.0
+    with:
+      platforms: Applitrack,SchoolSpring,TedK12
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
