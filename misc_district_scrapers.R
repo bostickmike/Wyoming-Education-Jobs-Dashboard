@@ -243,12 +243,12 @@ empty_misc_result <- function() {
 # against both districts' real pages (Weston 1 has 3 separate files
 # blocks: "Open Positions", an application-forms block, and a salary-
 # schedule block; only the first is real postings).
-fetch_edlio_postings <- function(url) {
+fetch_wy_edlio_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_edlio_postings(resp_body_string(resp))
+  parse_wy_edlio_postings(resp_body_string(resp))
 }
 
-parse_edlio_postings <- function(html_text) {
+parse_wy_edlio_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   file_blocks <- rvest::html_elements(soup, ".page-block-files")
@@ -471,12 +471,12 @@ parse_smartsites_postings <- function(html_text) {
 # text), this scopes to every heading that comes AFTER the "Current Open
 # Positions" section heading in document order -- robust to new
 # categories, still excludes the non-category intro content.
-fetch_wordpress_postings <- function(url) {
+fetch_wy_wordpress_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_wordpress_postings(resp_body_string(resp))
+  parse_wy_wordpress_postings(resp_body_string(resp))
 }
 
-parse_wordpress_postings <- function(html_text) {
+parse_wy_wordpress_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   heading_nodes <- rvest::html_elements(soup, ".elementor-widget-heading")
@@ -810,7 +810,7 @@ parse_wy_apptegy_postings <- function(rendered_text) {
 # between the page's own "Open Positions" and "Application Process"
 # section headings, so this doesn't also pick up the page's marketing
 # headings ("Why Work With Us", "Mission-Driven Work", etc.) -- same
-# section-scoping technique parse_wordpress_postings() already uses via
+# section-scoping technique parse_wy_wordpress_postings() already uses via
 # its own "Current Open Positions" heading, just needing a browser here
 # since this page never puts that text in server-rendered HTML at all.
 fetch_prairieview_postings <- function(chromote_session, url) {
@@ -961,10 +961,10 @@ misc_district_coverage_tiers <- function() {
 # argument entirely.
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
   switch(platform,
-    wordpress = fetch_wordpress_postings(url),
+    wordpress = fetch_wy_wordpress_postings(url),
     smartsites = fetch_smartsites_postings(url),
     schoolblocks = fetch_schoolblocks_postings(url),
-    edlio = fetch_edlio_postings(url),
+    edlio = fetch_wy_edlio_postings(url),
     googlesites = fetch_wy_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
     apptegy = fetch_wy_apptegy_postings(chromote_session, url),

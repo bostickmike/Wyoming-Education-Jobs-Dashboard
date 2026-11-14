@@ -28,11 +28,11 @@ The most common win: a district's own "Employment" page is just a link out to on
 |---|---|---|
 | **Apptegy** (Thrillshare) | `apptegy.net`, `thrillshare`, `5il.co`, `aptg.co`, `/o/<code>/page/` URLs | JS-rendered: parse chromote `innerText`, and there may be an embedded JSON payload (`decode_apptegy_pagebuilder_nodes()` in MT). Assets must load from `*.apptegy.net` / `5il.co`. MT: `APPTEGY_DISTRICT_SCRAPERS`; WY: `apptegy` misc platform. |
 | Finalsite | `finalsite`, `fs-` class prefixes, `resources.finalsite.net` | Often confused with Apptegy, so check the footer. |
-| Edlio | `edlio`, `edliocdn` | WY has `parse_edlio_postings`. |
+| Edlio | `edlio`, `edliocdn` | WY has `parse_wy_edlio_postings`. |
 | SchoolBlocks | `schoolblocks` | WY `parse_schoolblocks_postings(widget_title=…)`. |
 | SmartSites | `smartsites`, `/\d+_\d+` page paths | WY `parse_smartsites_postings`. |
 | Educational Networks | `educationalnetworks.net` | WY `parse_educational_networks_postings`. |
-| WordPress | `wp-content`, `wp-json` | WY `parse_wordpress_postings`. Look at the `wp-json` REST API before scraping HTML. |
+| WordPress | `wp-content`, `wp-json` | WY `parse_wy_wordpress_postings`. Look at the `wp-json` REST API before scraping HTML. |
 | Google Sites | `sites.google.com` | JS-rendered, innerText. MT Cut Bank, WY `googlesites`. |
 | Blackboard / SchoolMessenger | `schoolwires`, `blackboard`, `schoolmessenger` | No parser yet in either repo. |
 | SharpSchool, rSchoolToday, Weebly, Wix, Squarespace | name in asset URLs | No parser yet. Judge per page. |

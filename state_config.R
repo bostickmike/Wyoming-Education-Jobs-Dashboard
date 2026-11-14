@@ -27,10 +27,10 @@ WY_K12_SCRAPER_SPECS <- list(
 )
 # `session = TRUE`: the fetch_* takes a chromote session first.
 WY_MISC_SCRAPER_SPECS <- list(
-  wordpress = scraper_spec("fetch_wordpress_postings", "url"),
+  wordpress = scraper_spec("fetch_wy_wordpress_postings", "url"),
   smartsites = scraper_spec("fetch_smartsites_postings", "url"),
   schoolblocks = scraper_spec("fetch_schoolblocks_postings", "url"),
-  edlio = scraper_spec("fetch_edlio_postings", "url"),
+  edlio = scraper_spec("fetch_wy_edlio_postings", "url"),
   googlesites = scraper_spec("fetch_wy_googlesites_postings", "url", session = TRUE),
   educational_networks = scraper_spec("fetch_educational_networks_postings", "url"),
   apptegy = scraper_spec("fetch_wy_apptegy_postings", "url", session = TRUE),

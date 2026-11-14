@@ -13,23 +13,23 @@ read_fixture <- function(name) paste(readLines(fixture_path(name), warn = FALSE,
 # Edlio (Washakie County SD2, Weston County SD1)
 # ---------------------------------------------------------------------------
 
-test_that("parse_edlio_postings extracts prose-with-colon titles (Washakie 2's real page)", {
+test_that("parse_wy_edlio_postings extracts prose-with-colon titles (Washakie 2's real page)", {
   html <- read_fixture("edlio_washakie2.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 2)
   expect_true("K-12 Music Teacher 2026-27 School Year" %in% result$Title)
   expect_true("High School Girls Basketball Coach" %in% result$Title)
 })
 
-test_that("parse_edlio_postings extracts file-list titles scoped to the Open Positions heading only (Weston 1's real page)", {
+test_that("parse_wy_edlio_postings extracts file-list titles scoped to the Open Positions heading only (Weston 1's real page)", {
   # Regression: Weston 1's real page has 3 separate file-list widgets --
   # "Open Positions", an application-forms widget, and a salary-schedule
   # widget. An earlier version pulled titles from all 3, including
   # "WCSD Classified Application" and salary schedule PDFs alongside real
   # postings.
   html <- read_fixture("edlio_weston1.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 16)
   expect_true("Business Manager Position" %in% result$Title)
@@ -37,7 +37,7 @@ test_that("parse_edlio_postings extracts file-list titles scoped to the Open Pos
   expect_false(any(grepl("Application|Salary Schedule|Employee Benefits", result$Title)))
 })
 
-test_that("parse_edlio_postings extracts scrollingTabs br-separated titles across all 3 category tabs (Uinta 4's real page)", {
+test_that("parse_wy_edlio_postings extracts scrollingTabs br-separated titles across all 3 category tabs (Uinta 4's real page)", {
   # Regression: a materially different Edlio page template from the other
   # two districts -- Certified/Classified/Coaching tabs, each a single
   # JSON-embedded HTML string with postings as plain <br>-separated lines
@@ -48,7 +48,7 @@ test_that("parse_edlio_postings extracts scrollingTabs br-separated titles acros
   # Bus Route Driver" (both first-in-tab) are silently dropped while every
   # later line in the same tab extracts fine.
   html <- read_fixture("edlio_uinta4_tabs.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 13)
   expect_true("K-12 Special Education Teacher" %in% result$Title)  # Certified, first line
@@ -57,7 +57,7 @@ test_that("parse_edlio_postings extracts scrollingTabs br-separated titles acros
   expect_true("Bus Assistant" %in% result$Title)  # Classified, last line
 })
 
-test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongside a sibling tab's <br>-based ones", {
+test_that("parse_wy_edlio_postings extracts <li>-based Coaching-tab postings alongside a sibling tab's <br>-based ones", {
   # Regression: found 2026-09-04 re-checking Uinta 4's Partial-tier
   # coverage live -- the Coaching tab on this same fixture has ZERO <br>
   # tags at all (postings are <li> items inside <ul> lists, with
@@ -66,7 +66,7 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   # treated the whole tab -- headers, postings, trailing prose -- as one
   # un-splittable blob that failed the length filter and silently
   # vanished: 8 real coaching postings, missing with no error and no
-  # visible signal (fetch_edlio_postings() still returned a non-empty,
+  # visible signal (fetch_wy_edlio_postings() still returned a non-empty,
   # plausible-looking result from the other two tabs). The Classified
   # tab's OWN "Classified Job Application"/"Bus Driver Job Application"
   # links are ALSO <li> items in a separate <ul> further down that same
@@ -75,7 +75,7 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   # either/or choice of which shape to look for) is what correctly keeps
   # the real Classified <br> titles while dropping those two links.
   html <- read_fixture("edlio_uinta4_tabs.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_true(all(c(
     "HS Varsity Wrestling", "HS Assistant Boys Basketball (Freshman)",
@@ -89,8 +89,8 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   expect_false(any(result$Title %in% c("High School", "Middle School")))
 })
 
-test_that("parse_edlio_postings returns zero rows (not an error) for a page with no matching content", {
-  result <- parse_edlio_postings("<html><body><p>nothing here</p></body></html>")
+test_that("parse_wy_edlio_postings returns zero rows (not an error) for a page with no matching content", {
+  result <- parse_wy_edlio_postings("<html><body><p>nothing here</p></body></html>")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
@@ -190,7 +190,7 @@ test_that("parse_smartsites_postings returns zero rows (not an error) for a page
 # WordPress/Elementor (Lincoln County SD2)
 # ---------------------------------------------------------------------------
 
-test_that("parse_wordpress_postings captures every category after the Open Positions section, not just Classified/Certified", {
+test_that("parse_wy_wordpress_postings captures every category after the Open Positions section, not just Classified/Certified", {
   # Regression: an earlier version whitelisted only "Classified"/
   # "Certified" by name and silently dropped the "Substitutes" and
   # "Coaching" categories entirely -- the exact same completeness gap
@@ -199,7 +199,7 @@ test_that("parse_wordpress_postings captures every category after the Open Posit
   # page (instead of scoping to after "Current Open Positions") pulls in
   # the page's own intro/contact-info text as if it were job titles.
   html <- read_fixture("wordpress_lincoln2.html")
-  result <- parse_wordpress_postings(html)
+  result <- parse_wy_wordpress_postings(html)
 
   expect_equal(nrow(result), 17)
   expect_true("Activity Bus Driver- Star Valley" %in% result$Title)   # Classified
@@ -209,8 +209,8 @@ test_that("parse_wordpress_postings captures every category after the Open Posit
   expect_false(any(grepl("close at 5:00 p.m.|non-discrimination|equal employment", result$Title, ignore.case = TRUE)))
 })
 
-test_that("parse_wordpress_postings returns zero rows (not an error) when there's no Current Open Positions section", {
-  result <- parse_wordpress_postings("<html><body><h3 class='elementor-heading-title'>Something Else</h3></body></html>")
+test_that("parse_wy_wordpress_postings returns zero rows (not an error) when there's no Current Open Positions section", {
+  result <- parse_wy_wordpress_postings("<html><body><h3 class='elementor-heading-title'>Something Else</h3></body></html>")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
