@@ -398,20 +398,17 @@ data_dictionary <- if (file.exists("data_dictionary.csv")) {
              Data_Type = character(0), Primary_Authority = character(0), Definition = character(0))
 }
 
-# Listing-duration ("spells") tabs: the duration KPIs and charts are paused
-# (MT 2026-11-02 audit, claude-notes/2026-11-02_spells-trust-audit.md;
-# paused in WY 2026-11-05 pending its own audit). A spell
-# is a District + title's first-to-last week on our weekly scrapes, and most
-# spell endings and starts come from our own coverage (scrapers added, broken
-# or switched) rather than from hiring, so they can't be read as
-# time-to-fill. The table stays, labeled for what it is.
-spells_paused_note <- function(what) {
-  div(class = "alert alert-warning mb-3", role = "note",
-      tags$strong("Time-to-fill estimates are paused while we rebuild them. "),
-      paste0("This table shows how long each ", what, " stayed listed on the boards we track, from the first to the last ",
-             "week we saw it. That is not the same as time-to-fill: a posting can drop off because it was filled, ",
-             "cancelled, moved to another board, or because our collection missed that week, and many were already ",
-             "listed before we started tracking their board. \u201cNo longer listed\u201d means only that it no longer appears."))
+# Listing-duration ("spells") tabs: the table of each posting's first and
+# last week seen, current every run, with one footnote at the bottom (Mike,
+# 11-14: no "paused" banner). The duration KPI boxes and charts stay out
+# (2026-11-02 audit, claude-notes/2026-11-02_spells-trust-audit.md): their
+# averages read as time-to-fill, which listing spans are not.
+spells_footnote <- function() {
+  p(class = "text-muted small mt-3 mb-0",
+    "Days listed run from the first to the last weekly scrape that showed a posting, plus 7 days. This is how long a ",
+    "posting was listed, not time to fill: a listing ends when it stops appearing, whether it was filled, cancelled, ",
+    "moved to another board or missed by a scrape, and a posting already listed when its board was first scraped ",
+    "starts late. \u201cNo longer listed\u201d means only that it no longer appears.")
 }
 SPELL_STATUS_LABELS <- c("Closed / Filled" = "No longer listed")
 relabel_spell_status <- function(df) {
@@ -1666,7 +1663,6 @@ ui <- page_navbar(
       h3(class = "page-title", tagList(icon("stopwatch"), " K-12 Listing Duration")),
       p(class = "text-muted small",
         "How long each K-12 posting stayed listed on the job boards this dashboard tracks."),
-      spells_paused_note("posting"),
       layout_sidebar(
         fillable = FALSE,
         class = "page-sidebar",
@@ -1697,15 +1693,15 @@ ui <- page_navbar(
                       choices = c("All Districts" = "all"),
                       selected = "all")
         ),
-        # Duration KPI boxes and charts paused (spells_paused_note()); their
-        # server outputs are kept for when the rebuilt spells return.
+        # Duration KPI boxes and charts left out (spells_footnote()); their
+        # server outputs are kept.
         card(
           card_header(
             class = "d-flex justify-content-between align-items-center",
             "Postings and how long they stayed listed",
             info_popover(
               "How days listed is counted",
-              p(class = "mb-0", "Days listed = the span from the first to the last weekly scrape that showed the posting, plus 7 days. It starts when we first saw the posting (often after it was posted) and ends when it stopped appearing, whatever the reason.")
+              p(class = "mb-0", "Days listed = the span from the first to the last weekly scrape that showed the posting, plus 7 days. It starts at the first scrape that showed the posting (often after it was posted) and ends when it stopped appearing, whatever the reason.")
             )
           ),
           card_body(
@@ -1714,7 +1710,8 @@ ui <- page_navbar(
                 withSpinner(DTOutput("k12_spell_table", fill = FALSE)))
           )
         )
-      )
+      ),
+      spells_footnote()
     )
   ),
 
@@ -1892,7 +1889,6 @@ ui <- page_navbar(
       h3(class = "page-title", tagList(icon("stopwatch"), " Higher Ed Listing Duration")),
       p(class = "text-muted small",
         "How long each higher ed posting stayed listed on the job boards this dashboard tracks."),
-      spells_paused_note("posting"),
       layout_sidebar(
         fillable = FALSE,
         class = "page-sidebar",
@@ -1919,14 +1915,14 @@ ui <- page_navbar(
                       choices = c("All Institutions" = "all"),
                       selected = "all")
         ),
-        # Duration KPI boxes and charts paused (spells_paused_note()).
+        # Duration KPI boxes and charts left out (spells_footnote()).
         card(
           card_header(
             class = "d-flex justify-content-between align-items-center",
             "Postings and how long they stayed listed",
             info_popover(
               "How days listed is counted",
-              p(class = "mb-0", "Days listed = the span from the first to the last weekly scrape that showed the posting, plus 7 days. It starts when we first saw the posting (often after it was posted) and ends when it stopped appearing, whatever the reason.")
+              p(class = "mb-0", "Days listed = the span from the first to the last weekly scrape that showed the posting, plus 7 days. It starts at the first scrape that showed the posting (often after it was posted) and ends when it stopped appearing, whatever the reason.")
             )
           ),
           card_body(
@@ -1935,7 +1931,8 @@ ui <- page_navbar(
                 withSpinner(DTOutput("he_spell_table", fill = FALSE)))
           )
         )
-      )
+      ),
+      spells_footnote()
     )
   ),
 

@@ -626,6 +626,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`fetch_cyberschool_postings()`), the first CMS-family routine; MT's Highwood, Power and Vaughn moved to it. No
     WY district runs on CyberSchool, and nothing WY calls changes. Suite on 0.17.0: 1,374 passed, 0 failed
     (`claude-notes/2026-11-14_wy-suite-edjobs-0.17.0.log`). Notes: `claude-notes/2026-11-14_cyberschool-family/README.md`.
+  * [x] Listing Duration tabs: the yellow "Time-to-fill estimates are paused" banner replaced by one footnote at
+    the bottom of each tab (K-12 and HE), no "we"; the "How days listed is counted" popover reworded the same way
+    (2026-11-14, Mike: "either have it or not"; chose: keep the current table, footnote). KPI boxes and charts stay
+    out. App tests passed (both states); screenshots checked: MT K-12 tab, WY higher-ed tab.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
@@ -729,6 +733,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   WSBA's statewide list, edjobs 0.15.0; runs daily once the PR merges): the audit after two weeks, then phase 1 (the
   spells read the sightings).
 - [ ] What the paused Listing Duration tabs show (both states; spells and durations now rebuilt weekly).
+  Update (Mike, 2026-11-14): no "paused" banner: the tabs show the current table with one footnote at the
+  bottom; the duration KPI boxes and charts stay out until the checks below. For when this resumes (Mike): a way to
+  filter out standing postings that are nearly always listed (adjunct pools and the like).
   Decision (Mike, 2026-11-09): the tabs stay paused until we are sure the data is accurate. Proposed checks
   (not yet agreed): (a) about 4 weekly runs after the 11-09/10 pushes (relistings censored, first-seen fallback,
   page-confirmed closings) with no processing change that moves the medians by more than a few days (the OPI
