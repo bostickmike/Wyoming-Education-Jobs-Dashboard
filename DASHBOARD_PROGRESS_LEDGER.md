@@ -598,13 +598,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     were seen. Red Rover's 8 boards, added the same day (Mike: "can't you do MT red rover like WY and add them
     both?"; it is a plain API here, not Chrome): all answered, 78 postings, all keyed, about 1 s. OPI/WSBA
     fingerprints measured for a later step (`claude-notes/2026-11-13_presence-redrover-opi-wsba.md`).
+    Phase 0 (shadow, 2 weeks): nothing reads the files yet. Measured at the end, in a dated claude-notes audit:
+    agreement with the weekly run on its run days, flapping (missing one day, back the next), errors per board,
+    runtime and cron lateness. Then phase 1: the spells read the sightings for day-precision endings.
   * [x] Red Rover fetcher moved to edjobs (2026-11-13; edjobs 0.14.0, same change in MT): `fetch_redrover_postings()`,
     `parse_redrover_json()`, `redrover_org_slug()` and the pay helpers deleted here; MT now reads its Red Rover boards
     through the same API. The shared parser drops standing application forms ("Classified/Certified/Volunteer
     Application"), as MT's did; no WY archive has ever carried one, so WY's output is unchanged.
-    Phase 0 (shadow, 2 weeks): nothing reads the files yet. Measured at the end, in a dated claude-notes audit:
-    agreement with the weekly run on its run days, flapping (missing one day, back the next), errors per board,
-    runtime and cron lateness. Then phase 1: the spells read the sightings for day-precision endings.
+  * [x] WSBA in the daily presence check (2026-11-13; edjobs 0.15.0; Mike: "look a bit harder at OPI and WSBA"):
+    `presence_feeds.R` defines WSBA as a statewide feed, keyed by `edjobs::wsba_vacancy_key()` (district, title,
+    WSBA's posted date; renamed from the plan's `wsba_posting_key()`, which WY already has), with the weekly run's own
+    `fetch_wsba_vacancies()`. Workflow pins v0.15.0 and sources `state_config.R direct_api_scrapers.R
+    k12_he_classification.R misc_district_scrapers.R presence_feeds.R`. Tested on GitHub from a throwaway branch (run
+    43538209249): 39 boards, all ok; WSBA 95 vacancies, all keyed. Not pipeline code: suite only.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
@@ -704,9 +710,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   (`claude-notes/2026-11-13_rehearsal-wy-edjobs-0.12.0.log`; the failed one is `...-run1.log`).
 - [ ] Real posting dates, what's left (`claude-notes/2026-11-03_posting-dates-plan.md`): daily presence check for
   day-precision ends (spells, coverage calendar and page-confirmed closings are done; plan
-  `claude-notes/2026-11-09_daily-presence-check-plan.md`). Phase 0 running from 2026-11-13 (all 38 districts): the
-  audit after two weeks, then phase 1 (the spells read the sightings). WSBA in the daily check, keyed by district +
-  title + WSBA's posted date, is measured and proposed (`claude-notes/2026-11-13_presence-redrover-opi-wsba.md`).
+  `claude-notes/2026-11-09_daily-presence-check-plan.md`). Phase 0 built 2026-11-13 (all 38 districts plus
+  WSBA's statewide list, edjobs 0.15.0; runs daily once the PR merges): the audit after two weeks, then phase 1 (the
+  spells read the sightings).
 - [ ] What the paused Listing Duration tabs show (both states; spells and durations now rebuilt weekly).
   Decision (Mike, 2026-11-09): the tabs stay paused until we are sure the data is accurate. Proposed checks
   (not yet agreed): (a) about 4 weekly runs after the 11-09/10 pushes (relistings censored, first-seen fallback,
