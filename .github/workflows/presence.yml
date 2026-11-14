@@ -1,9 +1,9 @@
 name: Daily presence check
 
-# Reads every AppliTrack, SchoolSpring and TedK12 board once a day (list pages
-# only) and commits presence_checks.csv / presence_sightings.csv to the
-# `presence` branch, never main. Phase 0 (shadow): nothing reads them yet.
-# Red Rover joins after phase 0 (it needs headless Chrome). The logic lives in
+# Reads every AppliTrack, SchoolSpring, TedK12 and Red Rover board once a day
+# (list pages only; all 38 districts) and commits presence_checks.csv /
+# presence_sightings.csv to the `presence` branch, never main. Phase 0
+# (shadow): nothing reads them yet. The logic lives in
 # edjobs (.github/workflows/presence.yml, edjobs::refresh_presence()).
 on:
   schedule:
@@ -21,7 +21,7 @@ jobs:
   presence:
     permissions:
       contents: write
-    uses: bostickmike/edjobs/.github/workflows/presence.yml@v0.13.0
+    uses: bostickmike/edjobs/.github/workflows/presence.yml@v0.14.0
     with:
-      platforms: Applitrack,SchoolSpring,TedK12
+      platforms: Applitrack,SchoolSpring,TedK12,RedRoverK12
       dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}

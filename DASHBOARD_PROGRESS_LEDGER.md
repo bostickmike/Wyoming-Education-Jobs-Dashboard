@@ -589,12 +589,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     window, then a real run (all workflows still `active`, `dynamic/` Copilot workflows skipped).
   * [x] Daily presence check, phase 0 (2026-11-13; same change in MT; edjobs 0.13.0): new
     `.github/workflows/presence.yml` (daily, 13:17 UTC) calls edjobs' reusable `presence.yml`, which reads each
-    AppliTrack, SchoolSpring and TedK12 board once (list pages only, each district's own `resolve_scraper_call()`)
+    AppliTrack, SchoolSpring, TedK12 and Red Rover board once (all 38 districts; list pages only, each district's
+    own `resolve_scraper_call()`)
     and commits `presence_checks.csv` (one row per board per day) and `presence_sightings.csv` (one row per unbroken
-    stretch of sightings, keyed by `k12_link_posting_id()`) to the `presence` branch, never main. Red Rover (8
-    districts, needs Chrome) joins after phase 0; WSBA left out (plan, 11-09). `k12_link_posting_id()` moved to
-    edjobs (deleted here). First live run from the Mac (11-13): 30 boards, all answered, 528 postings, all keyed,
-    43 s; 523 of the 530 keys on these boards in that morning's weekly archive were seen.
+    stretch of sightings, keyed by `k12_link_posting_id()`) to the `presence` branch, never main.
+    `k12_link_posting_id()` moved to edjobs (deleted here). First live run from the Mac (11-13): 30 boards, all
+    answered, 528 postings, all keyed, 43 s; 523 of the 530 keys on these boards in that morning's weekly archive
+    were seen. Red Rover's 8 boards, added the same day (Mike: "can't you do MT red rover like WY and add them
+    both?"; it is a plain API here, not Chrome): all answered, 78 postings, all keyed, about 1 s. OPI/WSBA
+    fingerprints measured for a later step (`claude-notes/2026-11-13_presence-redrover-opi-wsba.md`).
+  * [x] Red Rover fetcher moved to edjobs (2026-11-13; edjobs 0.14.0, same change in MT): `fetch_redrover_postings()`,
+    `parse_redrover_json()`, `redrover_org_slug()` and the pay helpers deleted here; MT now reads its Red Rover boards
+    through the same API. The shared parser drops standing application forms ("Classified/Certified/Volunteer
+    Application"), as MT's did; no WY archive has ever carried one, so WY's output is unchanged.
     Phase 0 (shadow, 2 weeks): nothing reads the files yet. Measured at the end, in a dated claude-notes audit:
     agreement with the weekly run on its run days, flapping (missing one day, back the next), errors per board,
     runtime and cron lateness. Then phase 1: the spells read the sightings for day-precision endings.
@@ -697,8 +704,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   (`claude-notes/2026-11-13_rehearsal-wy-edjobs-0.12.0.log`; the failed one is `...-run1.log`).
 - [ ] Real posting dates, what's left (`claude-notes/2026-11-03_posting-dates-plan.md`): daily presence check for
   day-precision ends (spells, coverage calendar and page-confirmed closings are done; plan
-  `claude-notes/2026-11-09_daily-presence-check-plan.md`). Phase 0 running from 2026-11-13 (30 of 38 districts; Red
-  Rover after phase 0): the audit after two weeks, then phase 1 (the spells read the sightings).
+  `claude-notes/2026-11-09_daily-presence-check-plan.md`). Phase 0 running from 2026-11-13 (all 38 districts): the
+  audit after two weeks, then phase 1 (the spells read the sightings). WSBA in the daily check, keyed by district +
+  title + WSBA's posted date, is measured and proposed (`claude-notes/2026-11-13_presence-redrover-opi-wsba.md`).
 - [ ] What the paused Listing Duration tabs show (both states; spells and durations now rebuilt weekly).
   Decision (Mike, 2026-11-09): the tabs stay paused until we are sure the data is accurate. Proposed checks
   (not yet agreed): (a) about 4 weekly runs after the 11-09/10 pushes (relistings censored, first-seen fallback,
