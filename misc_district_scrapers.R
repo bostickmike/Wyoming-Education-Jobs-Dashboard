@@ -546,7 +546,7 @@ fetch_googlesites_postings <- function(chromote_session, url) {
 parse_googlesites_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
-  # match -- same gotcha parse_apptegy_postings() already documents and
+  # match -- same gotcha parse_wy_apptegy_postings() already documents and
   # handles, confirmed here too: the swim-coach posting's "1-" is followed
   # by two U+00A0 characters, not regular spaces, silently failing every
   # `\s*`/`\s+` in both patterns below without erroring.
@@ -650,7 +650,7 @@ parse_educational_networks_postings <- function(html_text) {
 # staff, with no shared template -- three patterns confirmed across real
 # districts: "Title: description..." (Niobrara 1), "ALL-CAPS TITLE-
 # District Wide" with no description (also Niobrara 1), and "Title
-# $NNN/day" (Platte 2). fetch_apptegy_postings() takes a chromote session
+# $NNN/day" (Platte 2). fetch_wy_apptegy_postings() takes a chromote session
 # so callers can reuse one browser across all four Apptegy districts
 # instead of paying startup cost per district.
 #
@@ -668,15 +668,15 @@ parse_educational_networks_postings <- function(html_text) {
 # comparatively low-value to get perfect anyway since WSBA already covers
 # some of what they post -- treat this specifically as best-effort partial
 # coverage, not a completeness guarantee the way the other 5 platforms are.
-fetch_apptegy_postings <- function(chromote_session, url) {
+fetch_wy_apptegy_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
   Sys.sleep(5)
   text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_apptegy_postings(text)
+  parse_wy_apptegy_postings(text)
 }
 
-parse_apptegy_postings <- function(rendered_text) {
+parse_wy_apptegy_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
   # match -- confirmed this silently dropped "Elementary Teacher" (a real
@@ -967,7 +967,7 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
     edlio = fetch_edlio_postings(url),
     googlesites = fetch_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
-    apptegy = fetch_apptegy_postings(chromote_session, url),
+    apptegy = fetch_wy_apptegy_postings(chromote_session, url),
     prairieview = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )

@@ -224,7 +224,7 @@ test_that("parse_googlesites_postings extracts both numbered-title patterns from
   # itself only ever contains real posting text once JS-rendered (confirmed
   # live 2026-09-04: a plain fetch of this same page has none of the
   # posting text below at all), so parse_googlesites_postings() takes
-  # already-rendered text the same way parse_apptegy_postings()/
+  # already-rendered text the same way parse_wy_apptegy_postings()/
   # parse_prairieview_postings() do, not HTML it parses itself.
   rendered <- read_fixture("googlesites_uinta6_rendered.txt")
   result <- parse_googlesites_postings(rendered)
@@ -250,7 +250,7 @@ test_that("parse_googlesites_postings returns zero rows (not an error) when no n
 # Weston County SD7)
 # ---------------------------------------------------------------------------
 
-test_that("parse_apptegy_postings extracts both posting formats and excludes contact info (Niobrara 1's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts both posting formats and excludes contact info (Niobrara 1's real rendered page)", {
   # Regression x3, all against this one real fixture:
   # 1. A non-breaking space (U+00A0) immediately after "Elementary
   #    Teacher:" is not matched by PCRE's non-Unicode \s, silently
@@ -265,7 +265,7 @@ test_that("parse_apptegy_postings extracts both posting formats and excludes con
   #    repeated the classified/substitute-postings gap already found in
   #    WSBA.
   text <- read_fixture("apptegy_niobrara_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 8)
   expect_true("Elementary Teacher" %in% result$Title)
@@ -274,20 +274,20 @@ test_that("parse_apptegy_postings extracts both posting formats and excludes con
   expect_false(any(grepl("Business Manager", result$Title)))
 })
 
-test_that("parse_apptegy_postings extracts the dollar-rate posting format (Platte 2's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts the dollar-rate posting format (Platte 2's real rendered page)", {
   # Regression: a third real Apptegy posting format found by checking all
   # 4 Apptegy districts' actual current pages (not just Niobrara 1) --
   # "Title $NNN/day" with neither a colon nor a dash, which the first two
   # patterns silently miss entirely.
   text <- read_fixture("apptegy_platte2_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 2)
   expect_true("Substitute Certified Teachers" %in% result$Title)
   expect_true("Substitute Paraeducator" %in% result$Title)
 })
 
-test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (Weston 7's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts the lead-in-plus-flat-list format (Weston 7's real rendered page)", {
   # Regression: a fourth real Apptegy posting format, found 2026-09-04 while
   # A/B-verifying this district's page was live-checked as "0 rows" and
   # turned out to have 6 real postings the first 3 patterns above all miss:
@@ -303,7 +303,7 @@ test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (We
   # since it would just duplicate the first block's titles under messier
   # phrasing, not surface anything new.
   text <- read_fixture("apptegy_weston7_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 6)
   expect_setequal(result$Title, c(
@@ -313,17 +313,17 @@ test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (We
   ))
 })
 
-test_that("parse_apptegy_postings extracts bare titles after a block of form links (Sheridan 3's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts bare titles after a block of form links (Sheridan 3's real rendered page)", {
   # Regression, 2026-11-07: Sheridan 3's page lists its openings as bare lines
   # right after its Application/Salary links, matching none of the four
   # shapes above, so the scrape returned 0 while WSBA listed its postings.
   text <- read_fixture("apptegy_sheridan3_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
   expect_setequal(result$Title, c("JH Assistant Basketball Coaches", "Substitute Custodial Positions"))
 })
 
-test_that("parse_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {
-  result <- parse_apptegy_postings("Just some regular page text with no postings.")
+test_that("parse_wy_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {
+  result <- parse_wy_apptegy_postings("Just some regular page text with no postings.")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })

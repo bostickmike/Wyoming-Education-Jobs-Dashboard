@@ -33,7 +33,7 @@ WY_MISC_SCRAPER_SPECS <- list(
   edlio = scraper_spec("fetch_edlio_postings", "url"),
   googlesites = scraper_spec("fetch_googlesites_postings", "url", session = TRUE),
   educational_networks = scraper_spec("fetch_educational_networks_postings", "url"),
-  apptegy = scraper_spec("fetch_apptegy_postings", "url", session = TRUE),
+  apptegy = scraper_spec("fetch_wy_apptegy_postings", "url", session = TRUE),
   prairieview = scraper_spec("fetch_prairieview_postings", "url", session = TRUE)
 )
 # `url`: the page a person would visit (the drift check's corroboration
