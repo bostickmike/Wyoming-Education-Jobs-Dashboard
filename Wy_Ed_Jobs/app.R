@@ -134,7 +134,7 @@ first_seen_date <- function(district, title, url, segment, lookup = first_seen_t
 POSTED_LISTED_NOTE <- paste0(
   "Posted / listed is the date the posting gives. Where the job board gives none, it shows the first week this ",
   "dashboard found the posting (\"First seen\"), or \"On the board since at least\" when the posting was already up ",
-  "the first time we checked that board. \"About <date>\" and \"Before <date>\" are dates worked out from a board ",
+  "the first time this dashboard checked that board. \"About <date>\" and \"Before <date>\" are dates worked out from a board ",
   "that says \"Posted 3 weeks ago\" or \"more than 30 days ago\". ")
 
 # Pay as the posting itself states it (Pay_* from extract_posted_pay() in the
@@ -1954,7 +1954,7 @@ ui <- page_navbar(
                       "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies.",
                       "download_history_k12", "Historical K-12 (CSV)"),
         download_tile("stopwatch", "K-12 Listing Duration",
-                      "Each posting's first and last week on the boards we track, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the caveats on the Listing Duration tab.",
+                      "Each posting's first and last week on the boards this dashboard tracks, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the note on the Listing Duration tab.",
                       "download_spells", "Listing Duration (CSV)"),
         download_tile("school", "District Benchmarks",
                       "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent.",
@@ -1966,7 +1966,7 @@ ui <- page_navbar(
                       "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records).",
                       "download_history_he", "Higher Ed Archive (CSV)"),
         download_tile("stopwatch", "Higher Ed Listing Duration",
-                      "Each faculty/staff posting's first and last week on the boards we track, days listed, and discipline flags. Not a time-to-fill measure: see the caveats on the Listing Duration tab.",
+                      "Each faculty/staff posting's first and last week on the boards this dashboard tracks, days listed, and discipline flags. Not a time-to-fill measure: see the note on the Listing Duration tab.",
                       "download_he_spells", "Higher Ed Listing Duration (CSV)"),
         download_tile("graduation-cap", "Higher Ed Profiles",
                       "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares.",
