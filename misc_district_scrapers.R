@@ -535,15 +535,15 @@ parse_wordpress_postings <- function(html_text) {
 #    comes immediately after the number, not the title -- confirmed this
 #    silently dropped 4 of the page's 5 real postings (only the swim coach
 #    posting used pattern 1's order).
-fetch_googlesites_postings <- function(chromote_session, url) {
+fetch_wy_googlesites_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
   Sys.sleep(5)
   text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_googlesites_postings(text)
+  parse_wy_googlesites_postings(text)
 }
 
-parse_googlesites_postings <- function(rendered_text) {
+parse_wy_googlesites_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
   # match -- same gotcha parse_wy_apptegy_postings() already documents and
@@ -965,7 +965,7 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL)
     smartsites = fetch_smartsites_postings(url),
     schoolblocks = fetch_schoolblocks_postings(url),
     edlio = fetch_edlio_postings(url),
-    googlesites = fetch_googlesites_postings(chromote_session, url),
+    googlesites = fetch_wy_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
     apptegy = fetch_wy_apptegy_postings(chromote_session, url),
     prairieview = fetch_prairieview_postings(chromote_session, url),

@@ -219,15 +219,15 @@ test_that("parse_wordpress_postings returns zero rows (not an error) when there'
 # Google Sites (Uinta County SD6)
 # ---------------------------------------------------------------------------
 
-test_that("parse_googlesites_postings extracts both numbered-title patterns from a real rendered page", {
+test_that("parse_wy_googlesites_postings extracts both numbered-title patterns from a real rendered page", {
   # Plain rendered text (document.body.innerText), not raw HTML -- the page
   # itself only ever contains real posting text once JS-rendered (confirmed
   # live 2026-09-04: a plain fetch of this same page has none of the
-  # posting text below at all), so parse_googlesites_postings() takes
+  # posting text below at all), so parse_wy_googlesites_postings() takes
   # already-rendered text the same way parse_wy_apptegy_postings()/
   # parse_prairieview_postings() do, not HTML it parses itself.
   rendered <- read_fixture("googlesites_uinta6_rendered.txt")
-  result <- parse_googlesites_postings(rendered)
+  result <- parse_wy_googlesites_postings(rendered)
 
   expect_equal(nrow(result), 5)
   expect_setequal(result$Title, c(
@@ -239,8 +239,8 @@ test_that("parse_googlesites_postings extracts both numbered-title patterns from
   ))
 })
 
-test_that("parse_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
-  result <- parse_googlesites_postings("Contact us for openings.")
+test_that("parse_wy_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
+  result <- parse_wy_googlesites_postings("Contact us for openings.")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
