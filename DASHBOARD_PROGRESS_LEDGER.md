@@ -633,6 +633,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     code. Rehearsal passed every step (`claude-notes/2026-11-14_rehearsal-wy-edjobs-0.18.0.log`; suites 1,374 /
     1,373, 0 failed). Moving WY's three Apptegy districts onto the family routine is a separate decision for Mike
     (measured: identical on Niobrara 1 and Platte 2, Weston 7 gains two postings; `claude-notes/2026-11-14_apptegy-family/README.md`).
+  * [x] WY's Apptegy and Edlio districts on the edjobs family routines (2026-11-14; edjobs 0.24.0, waits on the MT
+    stack; Mike: "continue working through all of the scraper families"). Niobrara 1, Sheridan 3, Weston 7 ->
+    `fetch_apptegy_postings()`; Washakie 2, Weston 1 -> `fetch_edlio_postings()` with registry list rules. WY's
+    Apptegy parser (KNOWN INCOMPLETE) deleted. Uinta 4 (tab widgets, platform `edlio_tabs`) and Uinta 6 (titles in
+    sentences) keep WY's parsers. Weston 7 gains 2 real postings and its substitute lines; the others match their
+    old output (cleaner titles at Weston 1). Suite 1,344 passed, 0 failed; live run of the step ok for every source.
+    Notes: `claude-notes/2026-11-14_wy-families/README.md`.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
