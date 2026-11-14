@@ -760,6 +760,11 @@ misc_district_registry <- data.frame(
   list_start = c(NA, NA, NA, NA, NA, NA, NA, NA, "^Open Positions$", NA, NA, NA, NA),
   list_stop = c(NA, NA, NA, NA, NA, NA, NA, "Equal Opportunity Employer", "Student Teaching Opportunities",
                 NA, NA, NA, NA),
+  # Apptegy only: a section whose lines are skipped up to the next header.
+  # Weston 7's "Subs Needed" block repeats its substitute list in prose
+  # (the same pool, once more), so it's skipped; a posting below it still reads.
+  list_skip = c(NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                "^(Subs Needed|WCSD #7 is currently accepting applications for:)$", NA, NA, NA),
   stringsAsFactors = FALSE
 )
 
@@ -823,7 +828,8 @@ misc_district_coverage_tiers <- function() {
 # tests can stand in for them), with the registry row's list rules;
 # `edlio_tabs` is Uinta 4's own reader (its postings are inside Edlio tab
 # widgets, which the family's page text doesn't open).
-fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA) {
+fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA,
+                                         skip = NA) {
   switch(platform,
     wordpress = fetch_wy_wordpress_postings(url),
     smartsites = fetch_smartsites_postings(url),
@@ -832,7 +838,7 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL,
     edlio_tabs = fetch_wy_edlio_postings(url),
     googlesites = fetch_wy_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
-    apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop),
+    apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop, skip),
     prairieview = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )
@@ -887,7 +893,8 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
       district,
       scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session,
                                                           misc_district_registry$list_start[i],
-                                                          misc_district_registry$list_stop[i]),
+                                                          misc_district_registry$list_stop[i],
+                                                          misc_district_registry$list_skip[i]),
       expected_cols = c("Title", "Location", "Posted_Date", "Link")
     )
     own_postings <- dedupe_against_wsba(own_postings, wsba, district)

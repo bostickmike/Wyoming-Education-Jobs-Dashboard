@@ -26,7 +26,7 @@ WY_K12_SCRAPER_SPECS <- list(
                               list(function(row) as.character(row$Org_ID), function(row) redrover_org_slug(row$Job_Link)))
 )
 # `session = TRUE`: the fetch_* takes a chromote session first.
-# A misc-registry row's list rule (NA when none): the family routines' start/stop.
+# A misc-registry row's list rule (NA when none): the family routines' start/stop (and Apptegy's skip).
 wy_list_rule <- function(col) function(row) {
   v <- row[[col]]
   if (is.null(v) || length(v) == 0 || is.na(v[1]) || !nzchar(v[1])) NA_character_ else as.character(v[1])
@@ -41,7 +41,8 @@ WY_MISC_SCRAPER_SPECS <- list(
   googlesites = scraper_spec("fetch_wy_googlesites_postings", "url", session = TRUE),
   educational_networks = scraper_spec("fetch_educational_networks_postings", "url"),
   apptegy = scraper_spec("fetch_apptegy_postings", list("url", function(row) NA_character_, function(row) "text",
-                                                       wy_list_rule("list_start"), wy_list_rule("list_stop")),
+                                                       wy_list_rule("list_start"), wy_list_rule("list_stop"),
+                                                       wy_list_rule("list_skip")),
                          session = TRUE),
   prairieview = scraper_spec("fetch_prairieview_postings", "url", session = TRUE)
 )

@@ -640,6 +640,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     sentences) keep WY's parsers. Weston 7 gains 2 real postings and its substitute lines; the others match their
     old output (cleaner titles at Weston 1). Suite 1,344 passed, 0 failed; live run of the step ok for every source.
     Notes: `claude-notes/2026-11-14_wy-families/README.md`.
+  * [x] Full rehearsal of `wy-families` on edjobs 0.24.0 (2026-11-14): every step passed, rebuild parity 9/9, post-run
+    suite 1,367 passed, 0 failed (`claude-notes/2026-11-14_rehearsal-wy-families-0.24.0.log`). It showed Weston 7 at 12
+    own-page rows (5 on 11-13): the 2 new postings, plus the page's "Subs Needed" block read as 5 more lines (its
+    heading and the same substitute pool again in prose). Fixed: misc registry column `list_skip` (Apptegy's
+    `skip_section`), set for Weston 7; the family test now expects the block skipped, and the fixture's posting below
+    it still reads. Live run of the three Apptegy districts: Niobrara 1 5, Sheridan 3 2 (both also on WSBA, kept
+    once), Weston 7 7. Suite 1,347 passed, 0 failed. Left for Mike: Weston 7's "School Maintenance Technician" says
+    applications close 2026-10-29, so a candidate can't apply; the family has no deadline check (the old parser missed
+    the posting outright).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11

@@ -252,7 +252,11 @@ test_that("parse_wy_googlesites_postings returns zero rows (not an error) when n
 # another real Apptegy page (Platte 2 is not in the registry)
 # ---------------------------------------------------------------------------
 
-family_apptegy <- function(fixture) parse_apptegy_postings(read_fixture(fixture), "https://example.org", NA_character_)$Title
+family_apptegy <- function(fixture, district = NA) {
+  rule <- function(col) if (is.na(district)) NA else misc_rule(district, col)
+  parse_apptegy_postings(read_fixture(fixture), "https://example.org", NA_character_, "text",
+                         rule("list_start"), rule("list_stop"), rule("list_skip"))$Title
+}
 
 test_that("the Apptegy family reads Niobrara 1: colon and dash formats, contacts left out", {
   # WY's old parser's regressions, still covered: a non-breaking space after
@@ -267,15 +271,17 @@ test_that("the Apptegy family reads Platte 2's 'Title $NNN/day' lines", {
   expect_equal(family_apptegy("apptegy_platte2_rendered.txt"), c("Substitute Certified Teachers", "Substitute Paraeducator"))
 })
 
-test_that("the Apptegy family reads Weston 7's flat lists and its substitute lines", {
-  # The family also keeps the "Subs Needed" block's substitute lines (as for MT's
-  # districts: Mike's 11-13 decision), which WY's old parser left out.
-  expect_equal(family_apptegy("apptegy_weston7_rendered.txt"), c(
+test_that("the Apptegy family reads Weston 7's flat lists, skipping the repeated 'Subs Needed' block", {
+  # The substitute list is kept (Mike's 11-13 rule). The "Subs Needed" block
+  # below it is the same substitute pool again in prose, plus its own heading:
+  # read, it counted the pool twice (5 extra rows in the 11-14 rehearsal). The
+  # registry's list_skip drops that block; the posting below it still reads.
+  expect_equal(family_apptegy("apptegy_weston7_rendered.txt", "Weston County School District 7"), c(
     "Substitute Teacher", "Substitute Paraprofessional", "Substitute Custodian",
-    "Substitute Bus Driver (CDL preferred but willing to train)", "Substitute Lunchroom Cook", "Subs Needed",
-    "Substitute employees in all areas", "Substitute teachers",
-    "Substitute paraprofessional, food service & custodial staff", "Substitute bus drivers",
+    "Substitute Bus Driver (CDL preferred but willing to train)", "Substitute Lunchroom Cook",
     "Paraprofessional - Technology Aide"))
+  # Without the rule the block's lines come through (what list_skip guards).
+  expect_true("Subs Needed" %in% family_apptegy("apptegy_weston7_rendered.txt"))
 })
 
 test_that("the Apptegy family reads Sheridan 3's bare titles after its form links", {
