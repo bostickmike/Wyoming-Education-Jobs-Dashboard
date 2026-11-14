@@ -243,12 +243,12 @@ empty_misc_result <- function() {
 # against both districts' real pages (Weston 1 has 3 separate files
 # blocks: "Open Positions", an application-forms block, and a salary-
 # schedule block; only the first is real postings).
-fetch_edlio_postings <- function(url) {
+fetch_wy_edlio_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_edlio_postings(resp_body_string(resp))
+  parse_wy_edlio_postings(resp_body_string(resp))
 }
 
-parse_edlio_postings <- function(html_text) {
+parse_wy_edlio_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   file_blocks <- rvest::html_elements(soup, ".page-block-files")
@@ -471,12 +471,12 @@ parse_smartsites_postings <- function(html_text) {
 # text), this scopes to every heading that comes AFTER the "Current Open
 # Positions" section heading in document order -- robust to new
 # categories, still excludes the non-category intro content.
-fetch_wordpress_postings <- function(url) {
+fetch_wy_wordpress_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_wordpress_postings(resp_body_string(resp))
+  parse_wy_wordpress_postings(resp_body_string(resp))
 }
 
-parse_wordpress_postings <- function(html_text) {
+parse_wy_wordpress_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   heading_nodes <- rvest::html_elements(soup, ".elementor-widget-heading")
@@ -535,18 +535,18 @@ parse_wordpress_postings <- function(html_text) {
 #    comes immediately after the number, not the title -- confirmed this
 #    silently dropped 4 of the page's 5 real postings (only the swim coach
 #    posting used pattern 1's order).
-fetch_googlesites_postings <- function(chromote_session, url) {
+fetch_wy_googlesites_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
   Sys.sleep(5)
   text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_googlesites_postings(text)
+  parse_wy_googlesites_postings(text)
 }
 
-parse_googlesites_postings <- function(rendered_text) {
+parse_wy_googlesites_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
-  # match -- same gotcha parse_apptegy_postings() already documents and
+  # match -- same gotcha parse_wy_apptegy_postings() already documents and
   # handles, confirmed here too: the swim-coach posting's "1-" is followed
   # by two U+00A0 characters, not regular spaces, silently failing every
   # `\s*`/`\s+` in both patterns below without erroring.
@@ -650,7 +650,7 @@ parse_educational_networks_postings <- function(html_text) {
 # staff, with no shared template -- three patterns confirmed across real
 # districts: "Title: description..." (Niobrara 1), "ALL-CAPS TITLE-
 # District Wide" with no description (also Niobrara 1), and "Title
-# $NNN/day" (Platte 2). fetch_apptegy_postings() takes a chromote session
+# $NNN/day" (Platte 2). fetch_wy_apptegy_postings() takes a chromote session
 # so callers can reuse one browser across all four Apptegy districts
 # instead of paying startup cost per district.
 #
@@ -668,15 +668,15 @@ parse_educational_networks_postings <- function(html_text) {
 # comparatively low-value to get perfect anyway since WSBA already covers
 # some of what they post -- treat this specifically as best-effort partial
 # coverage, not a completeness guarantee the way the other 5 platforms are.
-fetch_apptegy_postings <- function(chromote_session, url) {
+fetch_wy_apptegy_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
   Sys.sleep(5)
   text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_apptegy_postings(text)
+  parse_wy_apptegy_postings(text)
 }
 
-parse_apptegy_postings <- function(rendered_text) {
+parse_wy_apptegy_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
   # match -- confirmed this silently dropped "Elementary Teacher" (a real
@@ -810,7 +810,7 @@ parse_apptegy_postings <- function(rendered_text) {
 # between the page's own "Open Positions" and "Application Process"
 # section headings, so this doesn't also pick up the page's marketing
 # headings ("Why Work With Us", "Mission-Driven Work", etc.) -- same
-# section-scoping technique parse_wordpress_postings() already uses via
+# section-scoping technique parse_wy_wordpress_postings() already uses via
 # its own "Current Open Positions" heading, just needing a browser here
 # since this page never puts that text in server-rendered HTML at all.
 fetch_prairieview_postings <- function(chromote_session, url) {
@@ -961,13 +961,13 @@ misc_district_coverage_tiers <- function() {
 # argument entirely.
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
   switch(platform,
-    wordpress = fetch_wordpress_postings(url),
+    wordpress = fetch_wy_wordpress_postings(url),
     smartsites = fetch_smartsites_postings(url),
     schoolblocks = fetch_schoolblocks_postings(url),
-    edlio = fetch_edlio_postings(url),
-    googlesites = fetch_googlesites_postings(chromote_session, url),
+    edlio = fetch_wy_edlio_postings(url),
+    googlesites = fetch_wy_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
-    apptegy = fetch_apptegy_postings(chromote_session, url),
+    apptegy = fetch_wy_apptegy_postings(chromote_session, url),
     prairieview = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )
