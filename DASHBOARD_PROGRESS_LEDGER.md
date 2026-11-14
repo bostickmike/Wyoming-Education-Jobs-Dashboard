@@ -626,6 +626,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`fetch_cyberschool_postings()`), the first CMS-family routine; MT's Highwood, Power and Vaughn moved to it. No
     WY district runs on CyberSchool, and nothing WY calls changes. Suite on 0.17.0: 1,374 passed, 0 failed
     (`claude-notes/2026-11-14_wy-suite-edjobs-0.17.0.log`). Notes: `claude-notes/2026-11-14_cyberschool-family/README.md`.
+  * [x] edjobs 0.18.0 (2026-11-14; waits on edjobs PR 17): the package adds MT's Apptegy family routine, whose
+    exported `fetch/parse_apptegy_postings()` share names with WY's own Apptegy parser (and its next release,
+    `fetch/parse_googlesites_postings()`). WY's are renamed `fetch/parse_wy_apptegy_postings()` and
+    `fetch/parse_wy_googlesites_postings()`: no output change, and the auto-fix no longer mistakes them for edjobs
+    code. Rehearsal passed every step (`claude-notes/2026-11-14_rehearsal-wy-edjobs-0.18.0.log`; suites 1,374 /
+    1,373, 0 failed). Moving WY's three Apptegy districts onto the family routine is a separate decision for Mike
+    (measured: identical on Niobrara 1 and Platte 2, Weston 7 gains two postings; `claude-notes/2026-11-14_apptegy-family/README.md`).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
