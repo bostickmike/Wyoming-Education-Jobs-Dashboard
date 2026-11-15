@@ -48,6 +48,33 @@ test_that("parse_wsba_vacancies extracts real entries and direct URLs from the c
   expect_equal(nrow(weston1), 6)
 })
 
+test_that("parse_wsba_vacancies reads listings typed with en or em dashes, not only hyphens", {
+  # Lines from WSBA's page as the Internet Archive saved it on 2024-03-01
+  # (web.archive.org/web/20240301152452/https://www.wsba-wy.org/vacancies),
+  # where many listings used en dashes. A hyphen-only pattern skipped them
+  # silently: 71 of that page's 245 listings.
+  html <- paste0(
+    "<html><body>",
+    "<p>Elementary Principal - Albany County School District No. 1 - Laramie, Wyoming</p><p>Posted 1/18/2024</p>",
+    "<p>Special Education Director – Hot Springs County School District No. 1 – Thermopolis, Wyoming</p>",
+    "<p>Posted 1/23/2024</p>",
+    "<p>Assistant Director of Instruction – Laramie County School District No. 1 – Cheyenne, Wyoming</p>",
+    "<p>School Counselor — Snowy Range Academy — Laramie, Wyoming</p>",
+    "<p>K-12 Band Teacher – Niobrara County School District No. 1 – Lusk, Wyoming</p>",
+    "</body></html>"
+  )
+  result <- parse_wsba_vacancies(html)
+
+  expect_equal(nrow(result), 5)
+  expect_equal(result$Title, c("Elementary Principal", "Special Education Director", "Assistant Director of Instruction",
+                               "School Counselor", "K-12 Band Teacher"))
+  expect_equal(result$District, c("Albany County School District 1", "Hot Springs County School District 1",
+                                  "Laramie County School District 1", "Snowy Range Academy",
+                                  "Niobrara County School District 1"))
+  expect_equal(result$Location, c("Laramie", "Thermopolis", "Cheyenne", "Laramie", "Lusk"))
+  expect_equal(result$Posted_Date[1:2], c("2024-01-18", "2024-01-23"))
+})
+
 test_that("parse_wsba_vacancies returns zero rows (not an error) when no entries match the expected pattern", {
   result <- parse_wsba_vacancies("<html><body><p>No vacancies</p></body></html>")
   expect_equal(nrow(result), 0)

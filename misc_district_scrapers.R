@@ -84,8 +84,16 @@ canonicalize_wsba_district <- function(district) {
 
 parse_wsba_vacancies <- function(html_text) {
   soup <- rvest::read_html(html_text)
-  delim <- "(?:\\s+-\\s*|\\s*-\\s+)"
-  entry_pattern <- paste0("^(.+?)", delim, "(.+? School District(?: (?:No\\.|#) \\d+)?|[^-]+?)", delim, "([^,]+),\\s*Wyoming$")
+  # Hyphen, en dash or em dash between title, district and town: in Mar-Jun
+  # 2024 WSBA typed many listings with en dashes ("Special Education Director
+  # – Hot Springs County School District No. 1 – Thermopolis, Wyoming"), and a
+  # hyphen-only pattern skipped them without an error (71 of 245 listings on
+  # the 2024-03-01 Internet Archive copy). The live page used hyphens only on
+  # 2026-10-26, but its editor can switch back at any time.
+  dash <- "[-\u2013\u2014]"
+  delim <- paste0("(?:\\s+", dash, "\\s*|\\s*", dash, "\\s+)")
+  entry_pattern <- paste0("^(.+?)", delim, "(.+? School District(?: (?:No\\.|#) \\d+)?|[^-\u2013\u2014]+?)", delim,
+                          "([^,]+),\\s*Wyoming$")
   date_pattern <- "^Posted (\\d{1,2}/\\d{1,2}/\\d{4})$"
 
   ps <- rvest::html_elements(soup, "p")
