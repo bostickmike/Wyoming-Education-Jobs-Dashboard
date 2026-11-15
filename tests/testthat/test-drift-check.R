@@ -122,10 +122,10 @@ test_that("build_autofix_issue_body round-trips its source marker and lists the 
 
 test_that("scraper_reads_inner_text tells innerText chromote scrapers from HTTP/JSON ones", {
   lines <- unlist(lapply(here::here(SCRAPER_FILES), readLines, warn = FALSE))
-  expect_true(scraper_reads_inner_text("fetch_apptegy_postings", lines))
-  expect_true(scraper_reads_inner_text("fetch_googlesites_postings", lines))
+  expect_true(scraper_reads_inner_text("fetch_wy_apptegy_postings", lines))
+  expect_true(scraper_reads_inner_text("fetch_wy_googlesites_postings", lines))
   expect_false(scraper_reads_inner_text("fetch_prairieview_postings", lines))  # reads headings JSON
-  expect_false(scraper_reads_inner_text("fetch_edlio_postings", lines))
+  expect_false(scraper_reads_inner_text("fetch_wy_edlio_postings", lines))
   expect_false(scraper_reads_inner_text(NA_character_, lines))
 })
 
@@ -167,7 +167,7 @@ test_that("an innerText scraper's issue hands the agent the CI capture and a sam
   expect_match(body, "Full page text captured in CI", fixed = TRUE)
   expect_match(body, "1. Save the **Full page text captured in CI**", fixed = TRUE)
   expect_match(body, "misc_districts/apptegy_<district>_rendered_2026-09-30.txt", fixed = TRUE)
-  expect_match(body, "Other districts' fixtures for the same `fetch_apptegy_postings()` parser", fixed = TRUE)
+  expect_match(body, "Other districts' fixtures for the same `fetch_wy_apptegy_postings()` parser", fixed = TRUE)
   expect_match(body, "rendered this page in CI", fixed = TRUE)
   expect_match(body, 'scripts/repro_scraper.R "Niobrara County School District 1"', fixed = TRUE)
   expect_equal(parse_autofix_expected_titles(body), c("Music/Band Teacher", "SPED Paraprofessional"))

@@ -13,23 +13,23 @@ read_fixture <- function(name) paste(readLines(fixture_path(name), warn = FALSE,
 # Edlio (Washakie County SD2, Weston County SD1)
 # ---------------------------------------------------------------------------
 
-test_that("parse_edlio_postings extracts prose-with-colon titles (Washakie 2's real page)", {
+test_that("parse_wy_edlio_postings extracts prose-with-colon titles (Washakie 2's real page)", {
   html <- read_fixture("edlio_washakie2.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 2)
   expect_true("K-12 Music Teacher 2026-27 School Year" %in% result$Title)
   expect_true("High School Girls Basketball Coach" %in% result$Title)
 })
 
-test_that("parse_edlio_postings extracts file-list titles scoped to the Open Positions heading only (Weston 1's real page)", {
+test_that("parse_wy_edlio_postings extracts file-list titles scoped to the Open Positions heading only (Weston 1's real page)", {
   # Regression: Weston 1's real page has 3 separate file-list widgets --
   # "Open Positions", an application-forms widget, and a salary-schedule
   # widget. An earlier version pulled titles from all 3, including
   # "WCSD Classified Application" and salary schedule PDFs alongside real
   # postings.
   html <- read_fixture("edlio_weston1.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 16)
   expect_true("Business Manager Position" %in% result$Title)
@@ -37,7 +37,7 @@ test_that("parse_edlio_postings extracts file-list titles scoped to the Open Pos
   expect_false(any(grepl("Application|Salary Schedule|Employee Benefits", result$Title)))
 })
 
-test_that("parse_edlio_postings extracts scrollingTabs br-separated titles across all 3 category tabs (Uinta 4's real page)", {
+test_that("parse_wy_edlio_postings extracts scrollingTabs br-separated titles across all 3 category tabs (Uinta 4's real page)", {
   # Regression: a materially different Edlio page template from the other
   # two districts -- Certified/Classified/Coaching tabs, each a single
   # JSON-embedded HTML string with postings as plain <br>-separated lines
@@ -48,7 +48,7 @@ test_that("parse_edlio_postings extracts scrollingTabs br-separated titles acros
   # Bus Route Driver" (both first-in-tab) are silently dropped while every
   # later line in the same tab extracts fine.
   html <- read_fixture("edlio_uinta4_tabs.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_equal(nrow(result), 13)
   expect_true("K-12 Special Education Teacher" %in% result$Title)  # Certified, first line
@@ -57,7 +57,7 @@ test_that("parse_edlio_postings extracts scrollingTabs br-separated titles acros
   expect_true("Bus Assistant" %in% result$Title)  # Classified, last line
 })
 
-test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongside a sibling tab's <br>-based ones", {
+test_that("parse_wy_edlio_postings extracts <li>-based Coaching-tab postings alongside a sibling tab's <br>-based ones", {
   # Regression: found 2026-09-04 re-checking Uinta 4's Partial-tier
   # coverage live -- the Coaching tab on this same fixture has ZERO <br>
   # tags at all (postings are <li> items inside <ul> lists, with
@@ -66,7 +66,7 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   # treated the whole tab -- headers, postings, trailing prose -- as one
   # un-splittable blob that failed the length filter and silently
   # vanished: 8 real coaching postings, missing with no error and no
-  # visible signal (fetch_edlio_postings() still returned a non-empty,
+  # visible signal (fetch_wy_edlio_postings() still returned a non-empty,
   # plausible-looking result from the other two tabs). The Classified
   # tab's OWN "Classified Job Application"/"Bus Driver Job Application"
   # links are ALSO <li> items in a separate <ul> further down that same
@@ -75,7 +75,7 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   # either/or choice of which shape to look for) is what correctly keeps
   # the real Classified <br> titles while dropping those two links.
   html <- read_fixture("edlio_uinta4_tabs.html")
-  result <- parse_edlio_postings(html)
+  result <- parse_wy_edlio_postings(html)
 
   expect_true(all(c(
     "HS Varsity Wrestling", "HS Assistant Boys Basketball (Freshman)",
@@ -89,8 +89,8 @@ test_that("parse_edlio_postings extracts <li>-based Coaching-tab postings alongs
   expect_false(any(result$Title %in% c("High School", "Middle School")))
 })
 
-test_that("parse_edlio_postings returns zero rows (not an error) for a page with no matching content", {
-  result <- parse_edlio_postings("<html><body><p>nothing here</p></body></html>")
+test_that("parse_wy_edlio_postings returns zero rows (not an error) for a page with no matching content", {
+  result <- parse_wy_edlio_postings("<html><body><p>nothing here</p></body></html>")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
@@ -190,7 +190,7 @@ test_that("parse_smartsites_postings returns zero rows (not an error) for a page
 # WordPress/Elementor (Lincoln County SD2)
 # ---------------------------------------------------------------------------
 
-test_that("parse_wordpress_postings captures every category after the Open Positions section, not just Classified/Certified", {
+test_that("parse_wy_wordpress_postings captures every category after the Open Positions section, not just Classified/Certified", {
   # Regression: an earlier version whitelisted only "Classified"/
   # "Certified" by name and silently dropped the "Substitutes" and
   # "Coaching" categories entirely -- the exact same completeness gap
@@ -199,7 +199,7 @@ test_that("parse_wordpress_postings captures every category after the Open Posit
   # page (instead of scoping to after "Current Open Positions") pulls in
   # the page's own intro/contact-info text as if it were job titles.
   html <- read_fixture("wordpress_lincoln2.html")
-  result <- parse_wordpress_postings(html)
+  result <- parse_wy_wordpress_postings(html)
 
   expect_equal(nrow(result), 17)
   expect_true("Activity Bus Driver- Star Valley" %in% result$Title)   # Classified
@@ -209,8 +209,8 @@ test_that("parse_wordpress_postings captures every category after the Open Posit
   expect_false(any(grepl("close at 5:00 p.m.|non-discrimination|equal employment", result$Title, ignore.case = TRUE)))
 })
 
-test_that("parse_wordpress_postings returns zero rows (not an error) when there's no Current Open Positions section", {
-  result <- parse_wordpress_postings("<html><body><h3 class='elementor-heading-title'>Something Else</h3></body></html>")
+test_that("parse_wy_wordpress_postings returns zero rows (not an error) when there's no Current Open Positions section", {
+  result <- parse_wy_wordpress_postings("<html><body><h3 class='elementor-heading-title'>Something Else</h3></body></html>")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
@@ -219,15 +219,15 @@ test_that("parse_wordpress_postings returns zero rows (not an error) when there'
 # Google Sites (Uinta County SD6)
 # ---------------------------------------------------------------------------
 
-test_that("parse_googlesites_postings extracts both numbered-title patterns from a real rendered page", {
+test_that("parse_wy_googlesites_postings extracts both numbered-title patterns from a real rendered page", {
   # Plain rendered text (document.body.innerText), not raw HTML -- the page
   # itself only ever contains real posting text once JS-rendered (confirmed
   # live 2026-09-04: a plain fetch of this same page has none of the
-  # posting text below at all), so parse_googlesites_postings() takes
-  # already-rendered text the same way parse_apptegy_postings()/
+  # posting text below at all), so parse_wy_googlesites_postings() takes
+  # already-rendered text the same way parse_wy_apptegy_postings()/
   # parse_prairieview_postings() do, not HTML it parses itself.
   rendered <- read_fixture("googlesites_uinta6_rendered.txt")
-  result <- parse_googlesites_postings(rendered)
+  result <- parse_wy_googlesites_postings(rendered)
 
   expect_equal(nrow(result), 5)
   expect_setequal(result$Title, c(
@@ -239,8 +239,8 @@ test_that("parse_googlesites_postings extracts both numbered-title patterns from
   ))
 })
 
-test_that("parse_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
-  result <- parse_googlesites_postings("Contact us for openings.")
+test_that("parse_wy_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
+  result <- parse_wy_googlesites_postings("Contact us for openings.")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
@@ -250,7 +250,7 @@ test_that("parse_googlesites_postings returns zero rows (not an error) when no n
 # Weston County SD7)
 # ---------------------------------------------------------------------------
 
-test_that("parse_apptegy_postings extracts both posting formats and excludes contact info (Niobrara 1's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts both posting formats and excludes contact info (Niobrara 1's real rendered page)", {
   # Regression x3, all against this one real fixture:
   # 1. A non-breaking space (U+00A0) immediately after "Elementary
   #    Teacher:" is not matched by PCRE's non-Unicode \s, silently
@@ -265,7 +265,7 @@ test_that("parse_apptegy_postings extracts both posting formats and excludes con
   #    repeated the classified/substitute-postings gap already found in
   #    WSBA.
   text <- read_fixture("apptegy_niobrara_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 8)
   expect_true("Elementary Teacher" %in% result$Title)
@@ -274,20 +274,20 @@ test_that("parse_apptegy_postings extracts both posting formats and excludes con
   expect_false(any(grepl("Business Manager", result$Title)))
 })
 
-test_that("parse_apptegy_postings extracts the dollar-rate posting format (Platte 2's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts the dollar-rate posting format (Platte 2's real rendered page)", {
   # Regression: a third real Apptegy posting format found by checking all
   # 4 Apptegy districts' actual current pages (not just Niobrara 1) --
   # "Title $NNN/day" with neither a colon nor a dash, which the first two
   # patterns silently miss entirely.
   text <- read_fixture("apptegy_platte2_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 2)
   expect_true("Substitute Certified Teachers" %in% result$Title)
   expect_true("Substitute Paraeducator" %in% result$Title)
 })
 
-test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (Weston 7's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts the lead-in-plus-flat-list format (Weston 7's real rendered page)", {
   # Regression: a fourth real Apptegy posting format, found 2026-09-04 while
   # A/B-verifying this district's page was live-checked as "0 rows" and
   # turned out to have 6 real postings the first 3 patterns above all miss:
@@ -303,7 +303,7 @@ test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (We
   # since it would just duplicate the first block's titles under messier
   # phrasing, not surface anything new.
   text <- read_fixture("apptegy_weston7_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
 
   expect_equal(nrow(result), 6)
   expect_setequal(result$Title, c(
@@ -313,17 +313,17 @@ test_that("parse_apptegy_postings extracts the lead-in-plus-flat-list format (We
   ))
 })
 
-test_that("parse_apptegy_postings extracts bare titles after a block of form links (Sheridan 3's real rendered page)", {
+test_that("parse_wy_apptegy_postings extracts bare titles after a block of form links (Sheridan 3's real rendered page)", {
   # Regression, 2026-11-07: Sheridan 3's page lists its openings as bare lines
   # right after its Application/Salary links, matching none of the four
   # shapes above, so the scrape returned 0 while WSBA listed its postings.
   text <- read_fixture("apptegy_sheridan3_rendered.txt")
-  result <- parse_apptegy_postings(text)
+  result <- parse_wy_apptegy_postings(text)
   expect_setequal(result$Title, c("JH Assistant Basketball Coaches", "Substitute Custodial Positions"))
 })
 
-test_that("parse_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {
-  result <- parse_apptegy_postings("Just some regular page text with no postings.")
+test_that("parse_wy_apptegy_postings returns zero rows (not an error) for rendered text with no matching pattern", {
+  result <- parse_wy_apptegy_postings("Just some regular page text with no postings.")
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
 })
