@@ -188,6 +188,7 @@ K12_PLATFORM_SOURCE_LABELS <- c(
   paylocity = "Paylocity (direct board)",
   wordpress = "WordPress district site (direct board)", smartsites = "SmartSites district site (direct board)",
   schoolblocks = "SchoolBlocks district site (direct board)", edlio = "Edlio district site (direct board)",
+  edlio_tabs = "Edlio district site (direct board)",
   googlesites = "Google Sites district site (direct board)",
   educational_networks = "Educational Networks district site (direct board)",
   apptegy = "Apptegy district site (direct board)", prairieview = "Prairie View district site (direct board)"
