@@ -6,10 +6,14 @@
 # originals via testthat's own teardown hook, same lifecycle
 # local_mocked_bindings() would give inside a package.
 mock_globals <- function(bindings) {
-  originals <- mget(names(bindings), envir = globalenv())
+  # Package functions (edjobs's family routines) aren't in the global
+  # environment: a stand-in there masks them, and is removed afterwards.
+  had <- vapply(names(bindings), exists, logical(1), envir = globalenv(), inherits = FALSE)
+  originals <- mget(names(bindings)[had], envir = globalenv())
   for (name in names(bindings)) assign(name, bindings[[name]], envir = globalenv())
   withr::defer({
     for (name in names(originals)) assign(name, originals[[name]], envir = globalenv())
+    rm(list = names(bindings)[!had], envir = globalenv())
   }, envir = parent.frame())
 }
 
@@ -21,7 +25,9 @@ test_that("misc_district_registry has exactly the 13 confirmed districts/schools
   # schools belong here too, not just LEAs.
   expect_equal(nrow(misc_district_registry), 13)
   expect_true(all(misc_district_registry$platform %in%
-    c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "googlesites", "educational_networks", "prairieview")))
+    c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "edlio_tabs", "googlesites", "educational_networks",
+      "prairieview")))
+  expect_true(all(c("list_start", "list_stop", "list_skip") %in% names(misc_district_registry)))
   expect_equal(length(unique(misc_district_registry$District)), 13)
 })
 
@@ -39,10 +45,26 @@ test_that("fetch_misc_district_postings dispatches to the right platform functio
   # confirms routing, not the extractors themselves (already covered in
   # test-misc-district-platform-extractors.R).
   mock_globals(list(
-    fetch_wordpress_postings = function(url) data.frame(Title = "wp-hit", Location = NA, Posted_Date = NA, Link = NA)
+    fetch_wy_wordpress_postings = function(url) data.frame(Title = "wp-hit", Location = NA, Posted_Date = NA, Link = NA)
   ))
   result <- fetch_misc_district_postings("wordpress", "http://example.com")
   expect_equal(result$Title, "wp-hit")
+})
+
+test_that("fetch_misc_district_postings hands the family routines the registry row's list rules", {
+  seen <- NULL
+  mock_globals(list(
+    fetch_edlio_postings = function(url, location, start, stop) { seen <<- c(start, stop); data.frame(Title = "e") },
+    fetch_wy_edlio_postings = function(url) data.frame(Title = "tabs")
+  ))
+  expect_equal(fetch_misc_district_postings("edlio", "u", NULL, "^Open Positions$", "Student")$Title, "e")
+  expect_equal(seen, c("^Open Positions$", "Student"))
+  expect_equal(fetch_misc_district_postings("edlio_tabs", "u")$Title, "tabs")
+  expect_equal(misc_district_registry$platform[misc_district_registry$District == "Uinta County School District 4"], "edlio_tabs")
+  mock_globals(list(fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) {
+    seen <<- c(mode, start, stop, skip); data.frame(Title = "a") }))
+  expect_equal(fetch_misc_district_postings("apptegy", "u", NULL, NA, NA, "^Subs Needed$")$Title, "a")
+  expect_equal(seen, c("text", NA, NA, "^Subs Needed$"))
 })
 
 test_that("fetch_misc_district_postings errors clearly on an unknown platform", {
@@ -51,8 +73,8 @@ test_that("fetch_misc_district_postings errors clearly on an unknown platform", 
 
 test_that("fetch_all_misc_district_postings combines WSBA and district-own postings, deduplicated, with no chromote available", {
   # No chromote_session_factory passed -> browser_session stays NULL ->
-  # fetch_apptegy_postings(NULL, url)/fetch_googlesites_postings(NULL, url)
-  # are called for the 4 Apptegy districts and Uinta County SD6 and
+  # fetch_apptegy_postings(NULL, ...)/fetch_wy_googlesites_postings(NULL, url)
+  # are called for the 3 Apptegy districts and Uinta County SD6 and
   # (mocked here) return a fixed result regardless of the NULL session,
   # standing in for what a real browser fetch would return.
   mock_globals(list(
@@ -65,14 +87,15 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
       Url = c("https://example.com/1", "https://example.com/2", "https://example.com/3", "https://example.com/4"),
       stringsAsFactors = FALSE
     ),
-    fetch_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_smartsites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_edlio_postings = function(url, location, start, stop) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_apptegy_postings = function(session, url) data.frame(
+    fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) data.frame(
       Title = c("K-6 Elementary Teacher", "SPED Paraprofessional"),  # first is a WSBA duplicate, second is new
       Location = NA_character_, Posted_Date = NA_character_, Link = NA_character_
     )
@@ -114,14 +137,15 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
 test_that("fetch_all_misc_district_postings returns the right empty schema when every source is empty", {
   mock_globals(list(
     fetch_wsba_vacancies = function(url) data.frame(Title = character(0), District = character(0), Location = character(0), Posted_Date = character(0), Url = character(0)),
-    fetch_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_smartsites_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_edlio_postings = function(url, location, start, stop) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_wy_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_apptegy_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0))
+    fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0))
   ))
 
   result <- fetch_all_misc_district_postings()

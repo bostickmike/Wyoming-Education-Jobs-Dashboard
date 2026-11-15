@@ -251,12 +251,12 @@ empty_misc_result <- function() {
 # against both districts' real pages (Weston 1 has 3 separate files
 # blocks: "Open Positions", an application-forms block, and a salary-
 # schedule block; only the first is real postings).
-fetch_edlio_postings <- function(url) {
+fetch_wy_edlio_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_edlio_postings(resp_body_string(resp))
+  parse_wy_edlio_postings(resp_body_string(resp))
 }
 
-parse_edlio_postings <- function(html_text) {
+parse_wy_edlio_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   file_blocks <- rvest::html_elements(soup, ".page-block-files")
@@ -479,12 +479,12 @@ parse_smartsites_postings <- function(html_text) {
 # text), this scopes to every heading that comes AFTER the "Current Open
 # Positions" section heading in document order -- robust to new
 # categories, still excludes the non-category intro content.
-fetch_wordpress_postings <- function(url) {
+fetch_wy_wordpress_postings <- function(url) {
   resp <- request(url) %>% perform_with_retry()
-  parse_wordpress_postings(resp_body_string(resp))
+  parse_wy_wordpress_postings(resp_body_string(resp))
 }
 
-parse_wordpress_postings <- function(html_text) {
+parse_wy_wordpress_postings <- function(html_text) {
   soup <- rvest::read_html(html_text)
 
   heading_nodes <- rvest::html_elements(soup, ".elementor-widget-heading")
@@ -543,19 +543,18 @@ parse_wordpress_postings <- function(html_text) {
 #    comes immediately after the number, not the title -- confirmed this
 #    silently dropped 4 of the page's 5 real postings (only the swim coach
 #    posting used pattern 1's order).
-fetch_googlesites_postings <- function(chromote_session, url) {
+fetch_wy_googlesites_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
   Sys.sleep(5)
   text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_googlesites_postings(text)
+  parse_wy_googlesites_postings(text)
 }
 
-parse_googlesites_postings <- function(rendered_text) {
+parse_wy_googlesites_postings <- function(rendered_text) {
   # document.body.innerText preserves non-breaking spaces (U+00A0) from the
   # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
-  # match -- same gotcha parse_apptegy_postings() already documents and
-  # handles, confirmed here too: the swim-coach posting's "1-" is followed
+  # match -- the same gotcha WY's old Apptegy parser had, confirmed here too: the swim-coach posting's "1-" is followed
   # by two U+00A0 characters, not regular spaces, silently failing every
   # `\s*`/`\s+` in both patterns below without erroring.
   rendered_text <- gsub("\u00a0", " ", rendered_text)
@@ -647,160 +646,15 @@ parse_educational_networks_postings <- function(html_text) {
 }
 
 # ---------------------------------------------------------------------------
-# Apptegy (Niobrara County SD1, Platte County SD2, Sheridan County SD3,
-# Weston County SD7) -- the one platform family that genuinely needs a
-# browser
+# Apptegy (Niobrara County SD1, Sheridan County SD3, Weston County SD7)
 # ---------------------------------------------------------------------------
 
-# Apptegy content pages are a client-side-rendered Nuxt app; the raw HTML
-# has no posting text at all (confirmed directly -- a plain fetch returns
-# an empty shell). Postings are free prose written by each district's own
-# staff, with no shared template -- three patterns confirmed across real
-# districts: "Title: description..." (Niobrara 1), "ALL-CAPS TITLE-
-# District Wide" with no description (also Niobrara 1), and "Title
-# $NNN/day" (Platte 2). fetch_apptegy_postings() takes a chromote session
-# so callers can reuse one browser across all four Apptegy districts
-# instead of paying startup cost per district.
-#
-# KNOWN INCOMPLETE, more so than every other platform here: checked all 4
-# Apptegy districts' real current pages directly (not just Niobrara 1) and
-# found postings these three patterns still don't catch -- Sheridan 3 has
-# bare title-only lines with no punctuation marker at all ("Bus Drivers"),
-# and Weston 7 mixes several different free-prose phrasings on the same
-# page, including a title embedded mid-sentence ("...is currently
-# accepting applications for the Middle School Football Coach starting
-# with..."). Adding a bare-short-line pattern to catch Sheridan 3's style
-# would false-positive heavily on Apptegy's own generic nav/footer text
-# ("MENU", "SIGN IN", "Find Us", "Stay Connected", all short Title-Case-or-
-# caps lines); not attempted for that reason. Apptegy districts are
-# comparatively low-value to get perfect anyway since WSBA already covers
-# some of what they post -- treat this specifically as best-effort partial
-# coverage, not a completeness guarantee the way the other 5 platforms are.
-fetch_apptegy_postings <- function(chromote_session, url) {
-  chromote_session$Page$navigate(url)
-  chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
-  Sys.sleep(5)
-  text <- chromote_session$Runtime$evaluate("document.body.innerText")$result$value
-  parse_apptegy_postings(text)
-}
-
-parse_apptegy_postings <- function(rendered_text) {
-  # document.body.innerText preserves non-breaking spaces (U+00A0) from the
-  # page's own styling, which R's \s (PCRE, non-Unicode mode) does not
-  # match -- confirmed this silently dropped "Elementary Teacher" (a real
-  # posting immediately followed by a non-breaking space after its colon)
-  # from every regex below without erroring.
-  rendered_text <- gsub("\u00a0", " ", rendered_text)
-  lines <- strsplit(rendered_text, "\n")[[1]]
-
-  # Two independent posting formats seen on real pages, both need to be
-  # matched:
-  #
-  # 1. "Title: District Name in City, WY is accepting/seeking
-  #    applications..." -- most postings. A naive colon-line match also
-  #    catches the page's own "ADDITIONAL INFO" contact block ("Business
-  #    Manager: Michelle Neuenschwander" is a person's name, not a job),
-  #    which happens to be long enough to pass a bare length check -- real
-  #    postings are distinguished by the description actually being about
-  #    a posting (mentions the district applying/accepting/seeking), not
-  #    just being long.
-  colon_lines <- grep("^[A-Za-z][A-Za-z0-9/ '&-]+:\\s", lines, value = TRUE, perl = TRUE)
-  colon_lines <- colon_lines[grepl(
-    ":\\s+.*(accepting applications|is seeking|is looking for|School District)",
-    colon_lines, ignore.case = TRUE
-  )]
-  colon_titles <- str_trim(sub("^([A-Za-z][A-Za-z0-9/ '&-]+):.*$", "\\1", colon_lines))
-
-  # 2. "ALL-CAPS TITLE- District Wide" (or similar short location) --
-  #    confirmed on Niobrara 1's real page for substitute-pool postings
-  #    ("BUS DRIVER SUBSTITUTES- District Wide"), which have no
-  #    description at all and would be silently missed by the colon
-  #    pattern above. Restricted to ALL-CAPS titles specifically so this
-  #    doesn't also match ordinary section headings, which never contain
-  #    a dash.
-  dash_lines <- grep("^[A-Z][A-Z /]+-\\s*.+$", lines, value = TRUE, perl = TRUE)
-  dash_titles <- str_trim(sub("^([A-Z][A-Z /]+?)-\\s*.+$", "\\1", dash_lines))
-
-  # 3. "Title Case Title $NNN/day" -- confirmed on Platte County SD2's real
-  #    page ("Substitute Certified Teachers $160/day"); no colon, no dash,
-  #    just a title followed directly by a pay rate.
-  rate_lines <- grep("^[A-Z][A-Za-z /]+\\$\\d", lines, value = TRUE, perl = TRUE)
-  rate_titles <- str_trim(sub("^([A-Z][A-Za-z /]+?)\\s*\\$\\d.*$", "\\1", rate_lines))
-
-  # 4. A lead-in sentence ending in a colon ("...is currently accepting
-  #    applications for the following [N] position[s] for the ... school
-  #    year:") followed by a flat list of bare title lines, one per real
-  #    posting -- confirmed on Weston 7's real page (5 substitute titles
-  #    with no per-title punctuation marker at all -- not caught by any of
-  #    the 3 patterns above -- plus a second, single-posting instance of
-  #    the same lead-in shape further down the same page). Works on the
-  #    full text rather than per-line, since innerText wraps the lead-in
-  #    sentence itself across multiple lines/blank-line paragraph breaks
-  #    (confirmed: "...for the 26/27" and "school year:" land on two
-  #    separate paragraphs). Scoped tightly to avoid the false-positive
-  #    risk the header comment above already flagged for a bare
-  #    short-line pattern: requires the specific "accepting applications
-  #    for the following" phrase (not just any colon), and stops
-  #    consuming candidate titles at the first paragraph that's either
-  #    long (a real prose sentence, e.g. the district's own follow-up
-  #    boilerplate about how to apply) or itself contains an embedded
-  #    line break, rather than a fixed count -- so it degrades to
-  #    "however many short lines follow" instead of overreaching into
-  #    nav/footer text the way an unscoped version would.
-  leadin_starts <- gregexpr("accepting applications for the following", rendered_text, ignore.case = TRUE)[[1]]
-  leadin_titles <- character(0)
-  if (leadin_starts[1] != -1) {
-    for (start in leadin_starts) {
-      remainder <- substring(rendered_text, start)
-      colon_pos <- regexpr(":", remainder, fixed = TRUE)
-      if (colon_pos == -1) next
-      after_colon <- substring(remainder, colon_pos + 1)
-      paragraphs <- str_trim(strsplit(after_colon, "\n\\s*\n")[[1]])
-      for (para in paragraphs) {
-        if (!nzchar(para)) next
-        if (nchar(para) > 70 || grepl("\n", para, fixed = TRUE)) break
-        leadin_titles <- c(leadin_titles, para)
-      }
-    }
-  }
-
-  # 5. Bare title lines right after a block of form links ("Certified
-  #    Application", "Classified Application", "Coaching Application",
-  #    "Classified Salary", "Certified Salary"), up to the page's first prose
-  #    paragraph -- confirmed on Sheridan 3's real page (2026-11-07: "JH
-  #    Assistant Basketball Coaches", "Substitute Custodial Positions"), which
-  #    has no colon, dash, rate or lead-in sentence. Only after two or more
-  #    consecutive form-link lines, and only short lines without sentence
-  #    punctuation, so ordinary page text isn't picked up.
-  trimmed <- str_trim(lines)
-  trimmed <- trimmed[nzchar(trimmed)]
-  is_form <- grepl("^[A-Za-z /&-]{0,40}(Application|Salary|Salary Schedule)s?$", trimmed, ignore.case = TRUE)
-  form_block_titles <- character(0)
-  runs <- rle(is_form)
-  ends <- cumsum(runs$lengths)
-  for (r in which(runs$values & runs$lengths >= 2)) {
-    i <- ends[r] + 1
-    while (i <= length(trimmed)) {
-      line <- trimmed[i]
-      if (nchar(line) > 70 || grepl("[.:!?]$", line) || line %in% c("Find Us", "Stay Connected")) break
-      # More form links, section headings and the district's own name
-      # (Weston 7: "APPLICATION FOR EMPLOYMENT General Classified", "Job
-      # Openings", "WESTON COUNTY SCHOOL DISTRICT #7") aren't postings.
-      skip <- grepl("application|school district|^(job |current )?(openings?|vacancies|positions)$|^employment$|^human resources$",
-                    line, ignore.case = TRUE)
-      if (!skip) form_block_titles <- c(form_block_titles, line)
-      i <- i + 1
-    }
-  }
-
-  titles <- unique(c(colon_titles, dash_titles, rate_titles, leadin_titles, form_block_titles))
-  titles <- titles[nzchar(titles)]
-
-  if (length(titles) == 0) return(empty_misc_result())
-
-  data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
-             Link = NA_character_, stringsAsFactors = FALSE)
-}
+# Since edjobs 0.24.0 these districts use the package's Apptegy family routine,
+# edjobs::fetch_apptegy_postings() (text mode, a shared chromote session), the
+# same one 44 MT districts use; WY's own parser (marked KNOWN INCOMPLETE: it
+# missed Weston 7's paraprofessional and maintenance postings and its
+# substitute lines) was deleted. Comparison:
+# claude-notes/2026-11-14_wy-families/README.md.
 
 # ---------------------------------------------------------------------------
 # Prairie View Community School -- the second platform family that
@@ -818,7 +672,7 @@ parse_apptegy_postings <- function(rendered_text) {
 # between the page's own "Open Positions" and "Application Process"
 # section headings, so this doesn't also pick up the page's marketing
 # headings ("Why Work With Us", "Mission-Driven Work", etc.) -- same
-# section-scoping technique parse_wordpress_postings() already uses via
+# section-scoping technique parse_wy_wordpress_postings() already uses via
 # its own "Current Open Positions" heading, just needing a browser here
 # since this page never puts that text in server-rendered HTML at all.
 fetch_prairieview_postings <- function(chromote_session, url) {
@@ -884,7 +738,7 @@ misc_district_registry <- data.frame(
     "smartsites",
     "apptegy",
     "schoolblocks",
-    "edlio",
+    "edlio_tabs",
     "googlesites",
     "edlio",
     "edlio",
@@ -908,6 +762,17 @@ misc_district_registry <- data.frame(
     "https://www.wyoclassical.org/employment",
     "https://prairieviewschool.org/employment"
   ),
+  # Per-district rules for the edjobs family routines (regexes on the page's
+  # text lines; NA = none): where the posting list starts and stops. The same
+  # rules MT keeps in k12_list_rules.csv.
+  list_start = c(NA, NA, NA, NA, NA, NA, NA, NA, "^Open Positions$", NA, NA, NA, NA),
+  list_stop = c(NA, NA, NA, NA, NA, NA, NA, "Equal Opportunity Employer", "Student Teaching Opportunities",
+                NA, NA, NA, NA),
+  # Apptegy only: a section whose lines are skipped up to the next header.
+  # Weston 7's "Subs Needed" block repeats its substitute list in prose
+  # (the same pool, once more), so it's skipped; a posting below it still reads.
+  list_skip = c(NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                "^(Subs Needed|WCSD #7 is currently accepting applications for:)$", NA, NA, NA),
   stringsAsFactors = FALSE
 )
 
@@ -967,15 +832,21 @@ misc_district_coverage_tiers <- function() {
 # share a single browser instance instead of paying startup cost per
 # district); every other platform is plain HTTP and ignores the session
 # argument entirely.
-fetch_misc_district_postings <- function(platform, url, chromote_session = NULL) {
+# `edlio` and `apptegy` are the edjobs family routines (called unqualified, so
+# tests can stand in for them), with the registry row's list rules;
+# `edlio_tabs` is Uinta 4's own reader (its postings are inside Edlio tab
+# widgets, which the family's page text doesn't open).
+fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA,
+                                         skip = NA) {
   switch(platform,
-    wordpress = fetch_wordpress_postings(url),
+    wordpress = fetch_wy_wordpress_postings(url),
     smartsites = fetch_smartsites_postings(url),
     schoolblocks = fetch_schoolblocks_postings(url),
-    edlio = fetch_edlio_postings(url),
-    googlesites = fetch_googlesites_postings(chromote_session, url),
+    edlio = fetch_edlio_postings(url, NA_character_, start, stop),
+    edlio_tabs = fetch_wy_edlio_postings(url),
+    googlesites = fetch_wy_googlesites_postings(chromote_session, url),
     educational_networks = fetch_educational_networks_postings(url),
-    apptegy = fetch_apptegy_postings(chromote_session, url),
+    apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop, skip),
     prairieview = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )
@@ -1028,7 +899,10 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
     own_postings <- safe_scrape(
       district,
-      scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session),
+      scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session,
+                                                          misc_district_registry$list_start[i],
+                                                          misc_district_registry$list_stop[i],
+                                                          misc_district_registry$list_skip[i]),
       expected_cols = c("Title", "Location", "Posted_Date", "Link")
     )
     own_postings <- dedupe_against_wsba(own_postings, wsba, district)

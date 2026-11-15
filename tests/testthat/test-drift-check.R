@@ -122,10 +122,10 @@ test_that("build_autofix_issue_body round-trips its source marker and lists the 
 
 test_that("scraper_reads_inner_text tells innerText chromote scrapers from HTTP/JSON ones", {
   lines <- unlist(lapply(here::here(SCRAPER_FILES), readLines, warn = FALSE))
-  expect_true(scraper_reads_inner_text("fetch_apptegy_postings", lines))
-  expect_true(scraper_reads_inner_text("fetch_googlesites_postings", lines))
+  expect_true(scraper_reads_inner_text("fetch_apptegy_postings", lines))  # an edjobs routine: its body is read
+  expect_true(scraper_reads_inner_text("fetch_wy_googlesites_postings", lines))
   expect_false(scraper_reads_inner_text("fetch_prairieview_postings", lines))  # reads headings JSON
-  expect_false(scraper_reads_inner_text("fetch_edlio_postings", lines))
+  expect_false(scraper_reads_inner_text("fetch_wy_edlio_postings", lines))
   expect_false(scraper_reads_inner_text(NA_character_, lines))
 })
 

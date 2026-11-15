@@ -630,6 +630,29 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     the bottom of each tab (K-12 and HE), no "we"; the "How days listed is counted" popover reworded the same way
     (2026-11-14, Mike: "either have it or not"; chose: keep the current table, footnote). KPI boxes and charts stay
     out. App tests passed (both states); screenshots checked: MT K-12 tab, WY higher-ed tab.
+  * [x] edjobs 0.18.0 (2026-11-14; waits on edjobs PR 17): the package adds MT's Apptegy family routine, whose
+    exported `fetch/parse_apptegy_postings()` share names with WY's own Apptegy parser (and its next release,
+    `fetch/parse_googlesites_postings()`). WY's are renamed `fetch/parse_wy_apptegy_postings()` and
+    `fetch/parse_wy_googlesites_postings()`: no output change, and the auto-fix no longer mistakes them for edjobs
+    code. Rehearsal passed every step (`claude-notes/2026-11-14_rehearsal-wy-edjobs-0.18.0.log`; suites 1,374 /
+    1,373, 0 failed). Moving WY's three Apptegy districts onto the family routine is a separate decision for Mike
+    (measured: identical on Niobrara 1 and Platte 2, Weston 7 gains two postings; `claude-notes/2026-11-14_apptegy-family/README.md`).
+  * [x] WY's Apptegy and Edlio districts on the edjobs family routines (2026-11-14; edjobs 0.24.0, waits on the MT
+    stack; Mike: "continue working through all of the scraper families"). Niobrara 1, Sheridan 3, Weston 7 ->
+    `fetch_apptegy_postings()`; Washakie 2, Weston 1 -> `fetch_edlio_postings()` with registry list rules. WY's
+    Apptegy parser (KNOWN INCOMPLETE) deleted. Uinta 4 (tab widgets, platform `edlio_tabs`) and Uinta 6 (titles in
+    sentences) keep WY's parsers. Weston 7 gains 2 real postings and its substitute lines; the others match their
+    old output (cleaner titles at Weston 1). Suite 1,344 passed, 0 failed; live run of the step ok for every source.
+    Notes: `claude-notes/2026-11-14_wy-families/README.md`.
+  * [x] Full rehearsal of `wy-families` on edjobs 0.24.0 (2026-11-14): every step passed, rebuild parity 9/9, post-run
+    suite 1,367 passed, 0 failed (`claude-notes/2026-11-14_rehearsal-wy-families-0.24.0.log`). It showed Weston 7 at 12
+    own-page rows (5 on 11-13): the 2 new postings, plus the page's "Subs Needed" block read as 5 more lines (its
+    heading and the same substitute pool again in prose). Fixed: misc registry column `list_skip` (Apptegy's
+    `skip_section`), set for Weston 7; the family test now expects the block skipped, and the fixture's posting below
+    it still reads. Live run of the three Apptegy districts: Niobrara 1 5, Sheridan 3 2 (both also on WSBA, kept
+    once), Weston 7 7. Suite 1,347 passed, 0 failed. Left for Mike: Weston 7's "School Maintenance Technician" says
+    applications close 2026-10-29, so a candidate can't apply; the family has no deadline check (the old parser missed
+    the posting outright).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
@@ -756,7 +779,7 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   Teacher" with "Teacher Assistant"); Park #16 "K-12 School Guidance Counselor" / "School Guidance Counselor" (subset).
   Not duplicates: Platte #1's WSBA substitute rows (Glendo and Wheatland).
 
-- [x] WSBA parser reads en and em dashes (2026-11-14; 349b3ad). `parse_wsba_vacancies()` matched only a hyphen
+- [x] WSBA parser reads en and em dashes (2026-11-14; 9b63a53). `parse_wsba_vacancies()` matched only a hyphen
   between title, district and town; in Mar-Jun 2024 WSBA typed many listings with en dashes, and those were skipped
   silently (71 of 245 on the 2024-03-01 Internet Archive copy; found while parsing WSBA's archived pages,
   `claude-notes/2026-11-14_wy-history/README.md`). Live page 2026-11-14: 95 rows before and after, identical. Archived
