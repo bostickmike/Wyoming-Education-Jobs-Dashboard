@@ -317,7 +317,7 @@ test_that("Students_Per_Teacher is computed for both K-12 districts (vs. Teacher
   # fetched from CCD alongside Teachers_Total_FTE but never surfaced
   # anywhere -- Students_Per_Teacher is Enrollment / Teachers_Total_FTE,
   # zero additional scraping. HE gained its own real IPEDS fall-enrollment
-  # pull 2026-08-06 (ipeds_enrollment_scraper.R), so both sides should now
+  # pull 2026-08-06 (edjobs::fetch_ipeds_he_enrollment()), so both sides should now
   # have real, non-NA values (not just present-but-NA columns).
   env <- load_app()
   expect_true(all(c("Enrollment", "Students_Per_Teacher") %in% names(env$combined_map_data)))
@@ -351,7 +351,7 @@ test_that("Enrollment_Change_Pct is a real institution-level 5-year trend for HE
   # Regression for the IPEDS enrollment-trend addition (2026-08-06):
   # distinct from Population_Change_Pct (county-level, real for K-12 via
   # the Census join, NA for HE) -- this is the institution-level mirror,
-  # real for HE via ipeds_enrollment_scraper.R, NA for K-12 (no district-
+  # real for HE via edjobs::fetch_ipeds_he_enrollment(), NA for K-12 (no district-
   # level enrollment-trend pull exists). Both columns should coexist
   # without colliding.
   env <- load_app()

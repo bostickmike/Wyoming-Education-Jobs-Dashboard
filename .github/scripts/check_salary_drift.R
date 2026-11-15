@@ -7,7 +7,7 @@
 # continue-on-error on this step).
 
 source("drift_check.R")
-source("ipeds_salary_scraper.R")
+source("ipeds_unitids.R")   # IPEDS_UNITID_MAP and the Sheridan/Gillette split watch
 
 k12 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), stringsAsFactors = FALSE)
 he <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), stringsAsFactors = FALSE)
@@ -20,7 +20,7 @@ he <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), stringsAsFactors = FALS
 # than that means the PDF layout changed, not that a district's salary
 # happens to be unreported this year.
 #
-# IPEDS's 9 WY institutions are hardcoded in ipeds_salary_scraper.R's
+# IPEDS's 9 WY institutions are hardcoded in ipeds_unitids.R's
 # IPEDS_UNITID_MAP, so salarymap.csv always has 9 rows regardless of
 # whether the API actually matched real salary data -- the meaningful
 # signal there is coverage of the headline Faculty_Avg_Salary field, which
@@ -29,12 +29,12 @@ he <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), stringsAsFactors = FALS
 flags <- rbind(
   check_salary_coverage("K-12 teacher base salary (WSBA)", nrow(k12), expected = 48L),
   check_salary_coverage("HE avg faculty salary (IPEDS)", sum(!is.na(he$Faculty_Avg_Salary)), expected = 9L, min_ok = 8L),
-  # Added 2026-08-06 alongside ipeds_enrollment_scraper.R -- same known-
+  # Added 2026-08-06 alongside the IPEDS enrollment fetch (now edjobs) -- same known-
   # fixed-universe reasoning as the salary check above, just for IPEDS's
   # fall-enrollment (FTE) survey instead of its instructional-staff survey.
   check_salary_coverage("HE fall enrollment FTE (IPEDS)", sum(!is.na(he$Enrollment)), expected = 9L, min_ok = 8L),
   check_salary_coverage("HE 5-year enrollment trend (IPEDS)", sum(!is.na(he$Enrollment_Change_Pct)), expected = 9L, min_ok = 8L),
-  # Added 2026-08-06 alongside fsa_pell_scraper.R -- same known-fixed-
+  # Added 2026-08-06 alongside the FSA Pell fetch (now edjobs) -- same known-fixed-
   # universe reasoning, for the FSA Pell Grant recipient data instead of
   # IPEDS's own surveys.
   check_salary_coverage("HE Pell Grant recipient share (FSA)", sum(!is.na(he$Pell_Recipient_Share)), expected = 9L, min_ok = 8L)
@@ -119,7 +119,7 @@ plausibility_lines <- if (length(plausibility_flags) == 0) {
 # from their shared parent entity -- app.R shows both a shared JOINT
 # Vacancy_Rate (combined postings / the one shared IPEDS faculty count,
 # flagged via Vacancy_Rate_Shared) until IPEDS starts reporting them
-# separately (see ipeds_salary_scraper.R's "Sheridan/Gillette split watch"
+# separately (see ipeds_unitids.R's "Sheridan/Gillette split watch"
 # section). This is a real live network check (unlike the coverage check
 # above, which only reads the already-rendered CSVs), so a transient API
 # failure here should surface as "couldn't check" rather than silently
@@ -140,7 +140,7 @@ split_lines <- if (is.null(split_result)) {
     "",
     paste0("- unitid ", split_result$unitid, ": ", split_result$inst_name),
     "",
-    "If this is real, update IPEDS_UNITID_MAP in ipeds_salary_scraper.R to the new unitid(s). That's the only change needed: parse_ipeds_he_salaries()'s Salary_Note only fires for unitid == 240666, so it (and everything downstream keyed off it -- Wy_Ed_Jobs/app.R's Vacancy_Rate_Shared in map_he) will automatically go back to each institution having its own real, independent Faculty_Count and vacancy rate once neither institution maps to 240666 anymore.",
+    "If this is real, update IPEDS_UNITID_MAP in ipeds_unitids.R to the new unitid(s). That's the only change needed: the Salary_Note there is set only for unitid == 240666, so it (and everything downstream keyed off it -- Wy_Ed_Jobs/app.R's Vacancy_Rate_Shared in map_he) will automatically go back to each institution having its own real, independent Faculty_Count and vacancy rate once neither institution maps to 240666 anymore.",
     ""
   )
 } else {

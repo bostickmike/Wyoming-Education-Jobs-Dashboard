@@ -204,7 +204,7 @@ parse_wsba_superintendent_salary_page <- function(page_data) {
 # checked the actual source page directly (2026-08-05), it only ever shows
 # the current year's PDF, old ones aren't kept anywhere public. So unlike
 # IPEDS (queryable by year indefinitely, see
-# ipeds_salary_scraper.R::fetch_ipeds_he_salary_trend()), the only way to
+# edjobs::fetch_ipeds_he_salary_trend()), the only way to
 # build a multi-year K-12 salary trend is to start capturing our own
 # snapshot now and let it accumulate as WSBA republishes each year. This
 # only appends a new row when Salary_Year actually changes (not every
