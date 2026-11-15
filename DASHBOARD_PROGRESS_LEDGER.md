@@ -749,3 +749,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   Teacher" with "Teacher Assistant"); Park #16 "K-12 School Guidance Counselor" / "School Guidance Counselor" (subset).
   Not duplicates: Platte #1's WSBA substitute rows (Glendo and Wheatland).
 
+- [x] WSBA parser reads en and em dashes (2026-11-14; 349b3ad). `parse_wsba_vacancies()` matched only a hyphen
+  between title, district and town; in Mar-Jun 2024 WSBA typed many listings with en dashes, and those were skipped
+  silently (71 of 245 on the 2024-03-01 Internet Archive copy; found while parsing WSBA's archived pages,
+  `claude-notes/2026-11-14_wy-history/README.md`). Live page 2026-11-14: 95 rows before and after, identical. Archived
+  2024-26 copies: 5,059 -> 5,605 rows (2024-03-01 141 -> 245). New test from real 2024 lines; suite 1,355 passed,
+  0 failed (edjobs 0.17.0).
