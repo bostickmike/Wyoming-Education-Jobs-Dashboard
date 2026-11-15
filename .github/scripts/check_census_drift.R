@@ -30,7 +30,7 @@ he_counties_covered <- length(unique(he$County[!is.na(he$Median_Household_Income
 # SAIPE is K-12-district-level with no HE equivalent (child poverty rate
 # doesn't map onto a mostly-adult college student body) -- Fremont County
 # School District 38 (Arapahoe Charter High School) is a confirmed real
-# gap in SAIPE's own coverage (see census_saipe_scraper.R's header), so
+# gap in SAIPE's own coverage (see edjobs R/saipe.R), so
 # 47/48 is the expected full-health count here, not 48/48.
 k12_saipe_covered <- sum(!is.na(k12$Child_Poverty_Rate))
 
