@@ -653,6 +653,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     once), Weston 7 7. Suite 1,347 passed, 0 failed. Left for Mike: Weston 7's "School Maintenance Technician" says
     applications close 2026-10-29, so a candidate can't apply; the family has no deadline check (the old parser missed
     the posting outright).
+  * [x] Package phase 5, slice 1: IPEDS faculty salaries, enrollment, Pell share and ACS county context from edjobs
+    0.25.0 (2026-11-15; branch `phase5-ipeds-acs`, 43bc6d9; edjobs branch `phase5-ipeds-acs`, 74b9c6f + c4695a4, not
+    tagged). `ipeds_salary_scraper.R`, `ipeds_enrollment_scraper.R`, `fsa_pell_scraper.R`, `census_acs_scraper.R`, their
+    tests and fixtures deleted (tests moved to the package); the map is in `ipeds_unitids.R` (with `Salary_Note`; the Sheridan/Gillette split watch stays there, still joint); FIPS from
+    `state_config()`. Package output identical to the old functions on every fixture; live fetch identical to the
+    committed files. Full rehearsal on 0.25.0: every step passed; federal steps ok (IPEDS salaries 9, trend 27, enrollment 9, trend 9, Pell 9, ACS 23 + 23); `salarymap.csv` (9 rows) and
+    `salarymap2.csv` (57 rows) federal columns identical to the committed files; rebuild parity 9/9 (combinedclean
+    725); post-run suite 1,296 passed, 0 failed (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.25.0.log`). Notes:
+    `claude-notes/2026-11-15_phase5-federal/README.md`.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
