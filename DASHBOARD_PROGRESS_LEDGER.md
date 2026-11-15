@@ -662,6 +662,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     `salarymap2.csv` (57 rows) federal columns identical to the committed files; rebuild parity 9/9 (combinedclean
     725); post-run suite 1,296 passed, 0 failed (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.25.0.log`). Notes:
     `claude-notes/2026-11-15_phase5-federal/README.md`.
+  * [x] Package phase 5, slice 2: CCD staffing and SAIPE child poverty from edjobs 0.26.0, by NCES id (2026-11-15;
+    branch `phase5-ccd-saipe`, 33a9615, on slice 1; edjobs branch `phase5-ccd-saipe`). `ccd_staff_scraper.R`,
+    `census_saipe_scraper.R`, their tests and fixtures deleted (the CCD and SAIPE name rewrites go); ids from
+    `salarymap2.csv`'s NCES_LEAID; the surrounding-district stand-ins read SAIPE by id with its counts. Rehearsal on
+    0.26.0: every step passed; `salarymap2.csv` 57 rows, every column identical except Northeast Wyoming BOCES gaining a
+    SAIPE_Year with no rate, fixed in edjobs (d8b258b: no year without a rate; live check after the fix: committed
+    values back); parity 9/9 (combinedclean 725); post-run suite 1,238 passed, 0 failed
+    (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.26.0.log`).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
