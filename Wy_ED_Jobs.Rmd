@@ -782,7 +782,7 @@ he_frames <- lapply(seq_len(nrow(he_registry)), function(i) {
   )
   raw %>%
     mutate(Institution = row$Institution) %>%
-    select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
+    select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date", "Page_Places")))
 })
 names(he_frames) <- he_registry$Institution
 print(vapply(he_frames, nrow, integer(1)))
