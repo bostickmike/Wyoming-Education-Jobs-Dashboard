@@ -912,7 +912,7 @@ this_week_he_cat <- hedata %>%
 this_week_facultydata <- this_week_he_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title)) %>%
-  select(-all_of(POSTED_PAY_COLUMNS), -any_of(c("Est_Pay", "Est_Pay_Unit", "Est_Occupation", "Est_Area", "Est_Year", "Est_Source", "Close_Date"), -any_of(HE_PLACE_COLUMNS))
+  select(-all_of(POSTED_PAY_COLUMNS), -any_of(c("Est_Pay", "Est_Pay_Unit", "Est_Occupation", "Est_Area", "Est_Year", "Est_Source", "Close_Date")), -any_of(HE_PLACE_COLUMNS))
 
 #--------------------------------------------------------------------------
 # Append this week's newly classified rows onto the existing accumulated
