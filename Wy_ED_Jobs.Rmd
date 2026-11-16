@@ -812,7 +812,7 @@ hedata <- unname(he_frames) %>%
     ensure_posted_pay_columns(df)
   }) %>%
   bind_rows() %>%
-  select(Title, Location, Posted_Date, Institution, Link, Close_Date, all_of(POSTED_PAY_COLUMNS))
+  select(Title, Location, Posted_Date, Institution, Link, Close_Date, all_of(POSTED_PAY_COLUMNS), any_of("Page_Places"))
 
 hedata$Posted_Date<- as.character(hedata$Posted_Date)
 
@@ -820,11 +820,15 @@ hedata <- hedata %>%
   mutate(Archive_Date = Sys.Date())
 
 # Where each posting goes on the map (edjobs place_he_postings(), 2026-11-16):
-# a posting is placed at another WY town only when its Location writes that
-# town ("Jackson", "Laramie, WY (Laramie Campus)", "Libby"), using places.csv
-# (every Census place in the state, its point and county). Anything else (the
-# main campus town, a department, "United States", several sites, another
-# state) stays at the main campus; Place_Basis says which, for the map's note.
+# a posting is placed at another WY town only when the posting itself names
+# that town: its Location ("Jackson", "Laramie, WY (Laramie Campus)"), a title
+# marker ("(Rock Springs Campus)"), or an explicit sentence on its PeopleAdmin
+# page (Page_Places, edjobs 0.34.0: "This position is located in Wright, WY",
+# "at the Green River Center"; the four PeopleAdmin colleges' Location is a
+# fixed campus label). Towns come from places.csv (every Census place in the
+# state, its point and county). Anything else (the main campus town, a
+# department, "United States", several towns, another state) stays at the main
+# campus; Place_Basis says which, for the map's note. Page_Places is dropped there.
 hedata <- place_he_postings(hedata, he_registry, read_state_places("places.csv"), "WY")
 
 # Save data with a time stamp
