@@ -670,7 +670,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     SAIPE_Year with no rate, fixed in edjobs (d8b258b: no year without a rate; live check after the fix: committed
     values back); parity 9/9 (combinedclean 725); post-run suite 1,238 passed, 0 failed
     (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.26.0.log`).
+  * [x] Sources footer and required notices on every page (2026-11-15; branch `phase5-ccd-saipe`, after slice 2).
+    Mike 11-15: add the Census API notice and Urban's ODC-By citation, and check every source. Audit of every
+    outside source's terms: `claude-notes/2026-11-15_citations-audit.md`. `page_navbar(footer = data_sources_footer)`
+    lists the sources and carries the Census Data API notice and the BLS API disclaimer, both verbatim from their
+    terms; Urban cited in its short ODC-By form. Esri basemaps now show each service's own credit (the bundled
+    leaflet-providers strings were out of date and left out OpenStreetMap contributors).
+    Checked live in a headless browser (footer text and all three basemaps' credits read back); app boot smoke and
+    app reactives tests pass; `sibling_sync.R` OK.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
+  Esri's terms summary says use without Esri software needs an ArcGIS Online subscription (the default and
+  Topographic basemaps); BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights
+  reserved" with no reuse terms.
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
   (run expectations; edjobs 0.0.1). Phase 1 merged 11-11 (edjobs v0.2.0: scrape helpers, posting status, coverage
