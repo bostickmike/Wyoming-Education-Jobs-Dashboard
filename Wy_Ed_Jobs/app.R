@@ -1325,12 +1325,40 @@ app_theme <- bs_theme(
 )
 
 # Titled card, the bslib stand-in for shinydashboard::box().
-dash_card <- function(title = NULL, ..., full_screen = FALSE, class = NULL) {
+dash_card <- function(title = NULL, ..., full_screen = FALSE, class = NULL, info = NULL) {
   card(
     full_screen = full_screen,
     class = class,
-    if (!is.null(title)) card_header(title),
+    if (!is.null(title)) card_header(class = "d-flex justify-content-between align-items-center gap-2",
+                                     title, if (!is.null(info)) info),
     card_body(..., fillable = FALSE)
+  )
+}
+
+# A (?) beside a chart, table or download that says what it shows and where
+# the numbers come from (Mike, 2026-11-16: so nobody has to dig through the
+# data dictionary). `source` is the plain-language source line.
+help_popover <- function(title, ..., source = NULL) {
+  popover(
+    tags$a(href = "#", class = "help-pop", role = "button", `aria-label` = paste0("About: ", title),
+           onclick = "return false;", icon("circle-question")),
+    ...,
+    if (!is.null(source)) p(class = "mb-0", tags$strong("Source: "), source),
+    title = title,
+    placement = "auto",
+    options = list(customClass = "info-popover help-popover")
+  )
+}
+
+# The columns of a public file with their definitions, from data_dictionary.csv,
+# for a download tile's (?).
+dictionary_columns_help <- function(file_name) {
+  d <- data_dictionary[data_dictionary$File_Name == file_name, , drop = FALSE]
+  if (nrow(d) == 0) return(NULL)
+  tagList(
+    p(class = "mb-1", tags$strong(nrow(d), " columns:")),
+    tags$dl(class = "help-columns mb-0",
+            lapply(seq_len(nrow(d)), function(i) tagList(tags$dt(tags$code(d$Column_Name[i])), tags$dd(d$Definition[i]))))
   )
 }
 
@@ -1348,10 +1376,11 @@ info_popover <- function(label, ..., placement = "auto") {
 }
 
 # One download tile on the Data page.
-download_tile <- function(icon_name, heading, text, output_id, label) {
+download_tile <- function(icon_name, heading, text, output_id, label, info = NULL) {
   div(
     class = "download-tile",
-    h4(icon(icon_name), " ", heading),
+    h4(class = "d-flex justify-content-between align-items-start gap-2",
+       tags$span(icon(icon_name), " ", heading), if (!is.null(info)) info),
     p(text),
     downloadButton(output_id, label, class = "btn-outline-primary btn-sm w-100")
   )
@@ -1502,6 +1531,11 @@ ui <- page_navbar(
     #map_filter_count .badge { white-space: normal; text-align: left; line-height: 1.4; }
     .info-pop { font-size: 0.85rem; font-weight: 500; text-decoration: none; white-space: nowrap; }
     .info-popover { --bs-popover-max-width: 420px; font-size: 0.85rem; }
+    .help-popover .popover-body { max-height: 60vh; overflow-y: auto; }
+    .help-pop { color: var(--bs-secondary-color); font-size: 0.95rem; text-decoration: none; }
+    .help-pop:hover, .help-pop:focus { color: var(--bs-primary); }
+    .help-columns dt { font-weight: 600; margin-top: 4px; }
+    .help-columns dd { margin: 0 0 2px; }
     .map-chips { margin-top: -8px; font-size: 12px; color: #64748b; line-height: 1.9; }
     .map-chips a { margin-right: 8px; font-weight: 500; }
     .bslib-sidebar-layout > .sidebar .form-group { margin-bottom: 0.75rem; }
@@ -1543,17 +1577,30 @@ ui <- page_navbar(
     layout_columns(
       col_widths = c(6, 6),
       dash_card("Top K-12 Hiring Districts This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_k12_districts"))),
+                div(style = "overflow-x: auto;", tableOutput("top_k12_districts")),
+                info = help_popover("Top K-12 hiring districts",
+                  p("The five districts with the most postings in this week's scrape, all job types (teachers, aides, coaches, drivers and so on). Last 12 Weeks: the district's postings in each of its last 12 weekly scrapes. Click a district to see its jobs."),
+                  source = "each district's own job board, read weekly, or the Wyoming School Boards Association vacancies list for districts without one.")),
       dash_card("Top Higher Ed Hiring Institutions This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_he_institutions")))
+                div(style = "overflow-x: auto;", tableOutput("top_he_institutions")),
+                info = help_popover("Top higher ed hiring institutions",
+                  p("The five colleges with the most postings in this week's scrape, faculty and staff. Last 12 Weeks: the college's postings in each of its last 12 weekly scrapes. Click a college to see its jobs."),
+                  source = "each college's own job board, read weekly."))
     ),
     layout_columns(
       col_widths = c(6, 6),
       dash_card("Highest Teacher Vacancy Rate",
                 withSpinner(plotlyOutput("k12_vacancy_leaderboard", height = 320)),
+                info = help_popover("Teacher vacancy rate",
+                  p("Current teacher postings divided by the district's full-time-equivalent (FTE) teachers. Hover a bar for both numbers. Only districts with at least ", VACANCY_RATE_MIN_FTE, " teacher FTE are shown."),
+                  p("A posting is not always one open job (one pool posting can fill several), so read this as a rough measure."),
+                  source = "teacher postings from the job boards; teacher FTE from the NCES Common Core of Data, via the Urban Institute's Education Data Portal."),
                 helpText("Districts with at least", VACANCY_RATE_MIN_FTE, "full-time teachers (FTE).")),
       dash_card("Highest Faculty Vacancy Rate",
                 withSpinner(plotlyOutput("he_vacancy_leaderboard", height = 320)),
+                info = help_popover("Faculty vacancy rate",
+                  p("Current full-time faculty postings divided by the college's full-time instructional staff. Adjunct and part-time postings are left out, to match the staff count. Only colleges with at least ", VACANCY_RATE_MIN_FTE, " full-time faculty are shown."),
+                  source = "postings from the job boards; full-time instructional staff from IPEDS, via the Urban Institute's Education Data Portal."),
                 helpText("Institutions with at least", VACANCY_RATE_MIN_FTE, "full-time faculty.",
                           "* Sheridan College and Gillette College are reported jointly by IPEDS and share one combined rate."))
     ),
@@ -1687,7 +1734,13 @@ ui <- page_navbar(
         nav_panel(
           title = tagList(icon("table-list"), " District Directory"),
           value = "k12_summary_dir",
-          h4("One row per district -- current openings, teacher vacancy rate, and salary data"),
+          h4("One row per district -- current openings, teacher vacancy rate, and salary data ",
+             help_popover("District directory",
+               p(tags$strong("Openings: "), "postings in this week's scrape (all job types) and those new since last week. Posting Data says whether the count is complete (the district's own board) or a floor (only the WSBA statewide list)."),
+               p(tags$strong("Teacher vacancy rate and students per teacher: "), "current teacher postings, and enrollment, divided by teacher FTE (NCES Common Core of Data)."),
+               p(tags$strong("Salaries: "), "starting base for a bachelor's-degree teacher at step 1 and the superintendent's salary (WSBA salary settlements); average teacher pay (WDE602)."),
+               p(tags$strong("County and poverty: "), "county median household income, median rent, mining/energy share of jobs and 5-year population change (Census American Community Survey 5-year estimates, with 90% margins of error); school-age children in poverty for the district (Census SAIPE), with its approximate 90% range."),
+               source = "see each group above; full definitions in the District Benchmarks download's (?) on the Data tab.")),
           DTOutput("k12_summary_table", fill = FALSE),
           uiOutput("k12_summary_footnote")
         ),
@@ -1721,17 +1774,29 @@ ui <- page_navbar(
           layout_columns(
             col_widths = c(4, 4, 4),
             dash_card("Starting Base & Average Salary",
-                      withSpinner(plotlyOutput("k12_compare_salary_plot", height = "360px"))),
+                      withSpinner(plotlyOutput("k12_compare_salary_plot", height = "360px")),
+                      info = help_popover("Teacher salaries",
+                        p(tags$strong("Base Starting Salary: "), "the district's published starting salary for a teacher with a bachelor's degree, step 1."),
+                        p(tags$strong("Average Salary (WDE): "), "the average total pay of the district's teachers."),
+                        source = "Wyoming School Boards Association salary settlements (starting base); Wyoming Department of Education, Staff Member Collection, WDE602 (average).")),
             dash_card("Student Enrollment",
-                      withSpinner(plotlyOutput("k12_compare_enrollment_plot", height = "360px"))),
+                      withSpinner(plotlyOutput("k12_compare_enrollment_plot", height = "360px")),
+                      info = help_popover("Student enrollment",
+                        p("Pre-K through grade 12 fall enrollment. Districts are in the same order in all three charts, largest enrollment first."),
+                        source = "NCES Common Core of Data, via the Urban Institute's Education Data Portal.")),
             # Two bar charts, not one dual-axis chart (Mike 2026-11-16): a line
             # across districts implied a trend, and the two axes' scales made the
             # bars-vs-line comparison arbitrary. Same district order in both.
             dash_card("Active Openings",
-                      withSpinner(plotlyOutput("k12_compare_openings_plot", height = "360px")))
+                      withSpinner(plotlyOutput("k12_compare_openings_plot", height = "360px")),
+                      info = help_popover("Active openings",
+                        p("Postings in this week's scrape, all job types (teachers, aides, coaches, drivers and so on)."),
+                        source = "each district's own job board, or the Wyoming School Boards Association vacancies list."))
           ),
           dash_card("Active Openings in Selected Districts",
-                    DTOutput("k12_compare_jobs_table", fill = FALSE))
+                    DTOutput("k12_compare_jobs_table", fill = FALSE),
+                    info = help_popover("Openings in the selected districts",
+                      p("Every current posting from the districts chosen above, with the same columns as the K-12 Jobs tab: see \"About the pay columns\" there.")))
         )
       )
     ),
@@ -1743,7 +1808,10 @@ ui <- page_navbar(
           title = tagList(icon("chart-column"), " Current Trends"),
           value = "k12_trends_current",
           p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Current subject distribution across active K-12 postings with 12-week vacancy sparklines."),
+            "Current subject distribution across active K-12 postings with 12-week vacancy sparklines. ",
+            help_popover("Current K-12 trends",
+              p("Teacher postings in this week's scrape by subject, with each subject's postings over its last 12 weekly scrapes. The subject is read from the job title (\"Major subject groups\" combines subjects, e.g. all STEM). Non-teaching jobs are not counted here."),
+              source = "the districts' job boards, scraped weekly; subjects by this dashboard's title classifier.")),
           layout_sidebar(
             fillable = FALSE,
             sidebar = sidebar(
@@ -1767,7 +1835,10 @@ ui <- page_navbar(
           title = tagList(icon("chart-line"), " Multi-Year Trends"),
           value = "k12_trends_historical",
           p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Multi-year vacancy volume time series tracking hiring trends across weekly snapshots."),
+            "Multi-year vacancy volume time series tracking hiring trends across weekly snapshots. ",
+            help_popover("Multi-year K-12 trends",
+              p("Teacher postings counted in each weekly scrape, by subject (read from the job title). A count is how many postings were up that week, not how many were new."),
+              source = "the districts' job boards, scraped weekly and kept in the K-12 History Archive (Data tab).")),
           layout_sidebar(
             fillable = FALSE,
             sidebar = sidebar(
@@ -1912,7 +1983,14 @@ ui <- page_navbar(
         nav_panel(
           title = tagList(icon("building-columns"), " Institution Directory"),
           value = "he_summary_dir",
-          h4("One row per institution -- current openings, faculty vacancy rate, and salary data"),
+          h4("One row per institution -- current openings, faculty vacancy rate, and salary data ",
+             help_popover("Institution directory",
+               p(tags$strong("Openings: "), "postings in this week's scrape, split into full-time and adjunct/part-time faculty by the job title, and those new since last week."),
+               p(tags$strong("Faculty vacancy rate, faculty count and students per faculty: "), "full-time faculty postings, and enrollment, divided by full-time instructional staff (IPEDS)."),
+               p(tags$strong("Salaries: "), "IPEDS average instructional staff salary, all ranks combined, for the latest three years, and the professor-rank average."),
+               p(tags$strong("Students: "), "5-year enrollment trend (IPEDS) and the share of students receiving Pell Grants (Federal Student Aid)."),
+               p(tags$strong("County: "), "the college's county's median income and rent (Census American Community Survey 5-year estimates)."),
+               source = "IPEDS and Federal Student Aid data via the Urban Institute's Education Data Portal; Census ACS; the colleges' job boards.")),
           DTOutput("he_summary_table", fill = FALSE),
           uiOutput("he_summary_footnote")
         ),
@@ -1944,12 +2022,17 @@ ui <- page_navbar(
           uiOutput("he_compare_cards"),
           layout_columns(
             col_widths = c(6, 6),
-            dash_card("Faculty Average Salary (IPEDS)",
+            dash_card("Faculty Average Salary (IPEDS)", info = help_popover("Faculty average salary",
+                        p("The average instructional staff salary across all academic ranks, for the latest IPEDS year and the year before."),
+                        source = "IPEDS, via the Urban Institute's Education Data Portal."),
                       withSpinner(plotlyOutput("he_compare_salary_plot", height = "360px"))),
-            dash_card("Openings by Appointment Type",
+            dash_card("Openings by Appointment Type", info = help_popover("Openings by appointment type",
+                        p("This week's postings, sorted by the job title: adjunct or part-time faculty (titles with \"adjunct\" or \"part-time\"), full-time faculty or instructor (titles such as instructor, professor, lecturer, librarian), or other (staff)."),
+                        source = "each college's own job board."),
                       withSpinner(plotlyOutput("he_compare_openings_plot", height = "360px")))
           ),
-          dash_card("Active Openings in Selected Institutions",
+          dash_card("Active Openings in Selected Institutions", info = help_popover("Openings in the selected institutions",
+                      p("Every current posting from the colleges chosen above, with the same columns as the Higher Ed Jobs tab.")),
                     DTOutput("he_compare_jobs_table", fill = FALSE))
         )
       )
@@ -1962,7 +2045,10 @@ ui <- page_navbar(
           title = tagList(icon("chart-column"), " Current Trends"),
           value = "he_trends_current",
           p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Current institution and discipline breakdown across active higher education postings with 12-week sparklines."),
+            "Current institution and discipline breakdown across active higher education postings with 12-week sparklines. ",
+            help_popover("Current higher ed trends",
+              p("Faculty postings in this week's scrape by discipline, with each discipline's postings over its last 12 weekly scrapes. The discipline is read from the job title. Staff postings are not counted here; the Appointment buttons split full-time from adjunct/part-time."),
+              source = "each college's own job board, scraped weekly; disciplines by this dashboard's title classifier.")),
           layout_sidebar(
             fillable = FALSE,
             sidebar = sidebar(
@@ -1988,7 +2074,10 @@ ui <- page_navbar(
           title = tagList(icon("chart-line"), " Multi-Year Trends"),
           value = "he_trends_historical",
           p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Multi-year vacancy volume time series tracking higher education hiring trends across weekly snapshots."),
+            "Multi-year vacancy volume time series tracking higher education hiring trends across weekly snapshots. ",
+            help_popover("Multi-year higher ed trends",
+              p("Faculty postings counted in each weekly scrape, by discipline (read from the job title). A count is how many postings were up that week, not how many were new."),
+              source = "each college's own job board, scraped weekly and kept in the Higher Ed Archive (Data tab).")),
           layout_sidebar(
             fillable = FALSE,
             sidebar = sidebar(
@@ -2098,34 +2187,54 @@ ui <- page_navbar(
         width = "230px", fill = FALSE,
         download_tile("briefcase", "Active K-12 Jobs",
                       "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks.",
-                      "download_active_k12", "Active Jobs (CSV)"),
+                      "download_active_k12", "Active Jobs (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "each district's own job board, or the Wyoming School Boards Association vacancies list; Typical pay: BLS Occupational Employment and Wage Statistics; Teacher Starting Base: WSBA salary settlements; Role Avg Salary: WDE602."),
+                                          dictionary_columns_help("combinedclean.csv"))),
         download_tile("clock-rotate-left", "K-12 History Archive",
                       "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies.",
-                      "download_history_k12", "Historical K-12 (CSV)"),
+                      "download_history_k12", "Historical K-12 (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the districts' job boards, one row per teacher posting per weekly scrape; subjects by this dashboard's title classifier."),
+                                          dictionary_columns_help("k12jobanalysis.csv"))),
         download_tile("stopwatch", "K-12 Listing Duration",
                       "Each posting's first and last week on the boards this dashboard tracks, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the note on the Listing Duration tab.",
-                      "download_spells", "Listing Duration (CSV)"),
+                      "download_spells", "Listing Duration (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
+                                          dictionary_columns_help("job_duration_spells.csv"))),
         download_tile("school", "District Benchmarks",
                       "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent.",
-                      "download_district_benchmarks", "District Profiles (CSV)"),
+                      "download_district_benchmarks", "District Profiles (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "WSBA salary settlements; WDE602; NCES Common Core of Data (via the Urban Institute); Census American Community Survey 5-year estimates and SAIPE."),
+                                          dictionary_columns_help("salarymap2.csv"))),
         download_tile("users", "WDE602 Staff Matrix",
                       "Wyoming Dept of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories.",
-                      "download_wde_staff", "WDE602 Matrix (CSV)"),
+                      "download_wde_staff", "WDE602 Matrix (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "Wyoming Department of Education, Staff Member Collection (WDE602)."),
+                                          dictionary_columns_help("wde602_district_staff_salaries.csv"))),
         download_tile("building-columns", "Higher Ed Archive",
                       "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records).",
-                      "download_history_he", "Higher Ed Archive (CSV)"),
+                      "download_history_he", "Higher Ed Archive (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "each college's own job board, one row per posting per weekly scrape; categories by this dashboard's title classifier."),
+                                          dictionary_columns_help("facultydata.csv"))),
         download_tile("stopwatch", "Higher Ed Listing Duration",
                       "Each faculty/staff posting's first and last week on the boards this dashboard tracks, days listed, and discipline flags. Not a time-to-fill measure: see the note on the Listing Duration tab.",
-                      "download_he_spells", "Higher Ed Listing Duration (CSV)"),
+                      "download_he_spells", "Higher Ed Listing Duration (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
+                                          dictionary_columns_help("he_job_duration_spells.csv"))),
         download_tile("graduation-cap", "Higher Ed Profiles",
                       "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares.",
-                      "download_he_benchmarks", "Higher Ed Profiles (CSV)"),
+                      "download_he_benchmarks", "Higher Ed Profiles (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "IPEDS and Federal Student Aid data (via the Urban Institute's Education Data Portal); Census American Community Survey 5-year estimates."),
+                                          dictionary_columns_help("salarymap.csv"))),
         download_tile("chart-line", "K-12 Weekly Vacancies",
                       "Weekly longitudinal vacancy totals across Wyoming school districts. Ideal for seasonal hiring cycles and supply/demand modeling.",
-                      "download_weekly_totals", "K-12 Weekly Totals (CSV)"),
+                      "download_weekly_totals", "K-12 Weekly Totals (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each district's postings in each week."),
+                                          dictionary_columns_help("k12_district_weekly_totals.csv"))),
         download_tile("chart-line", "Higher Ed Weekly Vacancies",
                       "Weekly longitudinal vacancy totals across Wyoming community colleges and UW. Ideal for tracking higher ed hiring seasonality.",
-                      "download_he_weekly_totals", "Higher Ed Weekly Totals (CSV)"),
+                      "download_he_weekly_totals", "Higher Ed Weekly Totals (CSV)",
+                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each college's postings in each week."),
+                                          dictionary_columns_help("he_institution_weekly_totals.csv"))),
         download_tile("book", "Data Dictionary",
                       "Comprehensive machine-readable codebook documenting variable names, data types, definitions, and source authorities across all datasets.",
                       "download_dictionary", "Codebook (CSV)")
