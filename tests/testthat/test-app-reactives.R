@@ -409,9 +409,11 @@ test_that("county-level Census context is present for both K-12 and HE, and K-12
   he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
   skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
   expect_true(any(!is.na(he$Median_Household_Income)))
-  # No two HE institutions share a county, so no two HE rows should share
-  # an identical (County, Median_Household_Income) figure by coincidence.
-  he_with_income <- he[!is.na(he$Median_Household_Income), ]
+  # No two HE institutions share a county, so no two main-campus HE rows
+  # should share an identical (County, Median_Household_Income) figure by
+  # coincidence. Campus dots (Campus_Of set) sit in other institutions'
+  # counties and carry that county's figures, so they're left out here.
+  he_with_income <- he[!is.na(he$Median_Household_Income) & is.na(he$Campus_Of), ]
   expect_equal(length(unique(he_with_income$County)), nrow(he_with_income))
 
   k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
