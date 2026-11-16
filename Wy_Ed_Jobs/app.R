@@ -141,6 +141,13 @@ POSTED_LISTED_NOTE <- paste0(
 # pipeline): "$21.46–$22.81/hr", "$46,500–$71,803/yr", "$3,691 stipend".
 # Units are never converted -- an hourly wage isn't turned into an annual
 # figure, since hours per year aren't known.
+# Census's approximate 90% range for a SAIPE child poverty estimate
+# (Child_Poverty_Low / _High, edjobs::add_saipe_range()): "about 0%–32%".
+format_poverty_range <- function(low, high) {
+  ifelse(is.na(low) | is.na(high), NA_character_,
+         paste0("about ", scales::percent(low, accuracy = 1), "\u2013", scales::percent(high, accuracy = 1)))
+}
+
 format_posted_pay <- function(pay_min, pay_max, pay_unit) {
   fmt <- function(x) ifelse(x >= 1000, scales::dollar(x, accuracy = 1), scales::dollar(x, accuracy = 0.01))
   amount <- ifelse(is.na(pay_min), NA_character_,
@@ -251,7 +258,8 @@ mapdata2_k12 <- read.csv("salarymap2.csv", fileEncoding = "UTF-8")
 # Optional columns (absent before the first run that writes them, 2026-11-09):
 # padded here rather than in validate_and_pad_schema(), which would flag their
 # absence as a data problem on the Home tab.
-for (col in c("Child_Poverty_Basis", "Free_Reduced_Lunch_Share", "FRL_Year")) {
+# Child_Poverty_Low / _High: Census's approximate 90% range (edjobs 0.27.0, first written by the run after 2026-11-15).
+for (col in c("Child_Poverty_Basis", "Free_Reduced_Lunch_Share", "FRL_Year", "Child_Poverty_Low", "Child_Poverty_High")) {
   if (!col %in% names(mapdata2_k12)) mapdata2_k12[[col]] <- NA
 }
 mapdata2_k12 <- mapdata2_k12 %>%
@@ -1043,7 +1051,7 @@ map_k12 <- mapdata2_k12 %>%
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
          Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct, Pell_Recipient_Share, Pell_Year,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
-         Child_Poverty_Rate, SAIPE_Year, Child_Poverty_Basis, Free_Reduced_Lunch_Share, FRL_Year)
+         Child_Poverty_Rate, Child_Poverty_Low, Child_Poverty_High, SAIPE_Year, Child_Poverty_Basis, Free_Reduced_Lunch_Share, FRL_Year)
 
 he_current_counts <- ccdata %>% count(Institution, name = "CurrentCount")
 he_sample_titles <- ccdata %>%
@@ -1137,7 +1145,7 @@ map_he <- mapdata2_he %>%
     # analogue: share of students who are low-income, from a different
     # federal program (FSA, not SAIPE) since SAIPE itself has no HE
     # equivalent.
-    Child_Poverty_Rate = NA_real_, SAIPE_Year = NA_integer_,
+    Child_Poverty_Rate = NA_real_, Child_Poverty_Low = NA_real_, Child_Poverty_High = NA_real_, SAIPE_Year = NA_integer_,
     Child_Poverty_Basis = NA_character_, Free_Reduced_Lunch_Share = NA_real_, FRL_Year = NA_character_
   ) %>%
   select(Name, Longitude, Latitude, Type, CurrentCount, WeeklyNew, SampleTitles,
@@ -1149,7 +1157,7 @@ map_he <- mapdata2_he %>%
          Vacancy_Rate, Vacancy_Numerator, Vacancy_Denominator, Vacancy_Rate_Shared, Salary_Source, County,
          Data_Coverage, Enrollment, Students_Per_Teacher, Enrollment_Change_Pct, Pell_Recipient_Share, Pell_Year,
          Median_Household_Income, Median_Gross_Rent, Mining_Employment_Share, Population_Change_Pct, ACS_Year,
-         Child_Poverty_Rate, SAIPE_Year, Child_Poverty_Basis, Free_Reduced_Lunch_Share, FRL_Year)
+         Child_Poverty_Rate, Child_Poverty_Low, Child_Poverty_High, SAIPE_Year, Child_Poverty_Basis, Free_Reduced_Lunch_Share, FRL_Year)
 
 combined_map_data <- bind_rows(map_k12, map_he)
 
@@ -2493,6 +2501,7 @@ server <- function(input, output, session) {
         # stand-in (a school with no SAIPE geography of its own) the next
         # column says so.
         `School-Age Children in Poverty (Census est.)` = Child_Poverty_Rate,
+        `Approx. 90% Range` = format_poverty_range(Child_Poverty_Low, Child_Poverty_High),
         `Poverty Estimate Basis` = ifelse(is.na(Child_Poverty_Rate), NA_character_,
                                       ifelse(is.na(Child_Poverty_Basis), "District", "Surrounding district")),
         # School-based count beside the Census estimate (CCD school directory):
@@ -2571,6 +2580,10 @@ server <- function(input, output, session) {
           "Census's estimate of related children 5-17 in families in poverty, divided by all children 5-17 in the district.",
           "Census notes this is not a true poverty rate: foster children, other children not related to the householder and",
           "children in group quarters are counted in the second figure only.",
+          # "Quantifying Relative Error in the School District Estimates" (census.gov, revised 2025-12-17).
+          "The range beside each estimate is Census's approximate 90% range for a district of that size: Census publishes",
+          "no margin of error for one district, only median relative errors by district size, which it calls an approximate",
+          "upper bound. Under 2,500 people an estimate can be off by about 110% of itself; at 65,000 or more, by about 25%.",
           "A charter school or early-childhood center has no Census poverty estimate of its own; it shows its surrounding district's estimate (marked \"Surrounding district\")."
         )
       }
@@ -2631,6 +2644,8 @@ server <- function(input, output, session) {
       rent <- if (!is.na(row$Median_Gross_Rent[1])) paste0(scales::dollar(row$Median_Gross_Rent[1]), "/mo") else "N/A"
       poverty <- if (!is.na(row$Child_Poverty_Rate[1])) scales::percent(row$Child_Poverty_Rate[1], accuracy = 0.1) else "N/A"
       if (!is.na(row$Child_Poverty_Rate[1]) && !is.na(row$Child_Poverty_Basis[1])) poverty <- paste(poverty, "(surrounding district)")
+      poverty_range <- format_poverty_range(row$Child_Poverty_Low[1], row$Child_Poverty_High[1])
+      if (!is.na(row$Child_Poverty_Rate[1]) && !is.na(poverty_range)) poverty <- paste0(poverty, " (", poverty_range, ")")
       frl <- if (!is.na(row$Free_Reduced_Lunch_Share[1])) paste0(scales::percent(row$Free_Reduced_Lunch_Share[1], accuracy = 1), " (", row$FRL_Year[1], ")") else "N/A"
       if (!is.na(row$Free_Reduced_Lunch_Share[1]) && row$Free_Reduced_Lunch_Share[1] >= 0.995) frl <- paste(frl, "-- every student counted (likely free meals for all)")
 
@@ -3106,7 +3121,9 @@ server <- function(input, output, session) {
       ifelse(!is.na(Child_Poverty_Rate),
              paste0("<div style='font-size:0.85em;color:#666;'>",
                     ifelse(is.na(Child_Poverty_Basis), "District: ", ""),
-                    scales::percent(Child_Poverty_Rate, accuracy = 0.1), " of school-age children in poverty (Census est.)",
+                    scales::percent(Child_Poverty_Rate, accuracy = 0.1), " of school-age children in poverty (Census est.",
+                    ifelse(is.na(Child_Poverty_Low) | is.na(Child_Poverty_High), "",
+                           paste0("; ", format_poverty_range(Child_Poverty_Low, Child_Poverty_High))), ")",
                     ifelse(is.na(Child_Poverty_Basis), "", paste0(" (", sub("^Surrounding", "surrounding", Child_Poverty_Basis), ")")),
                     "</div>"),
              ""),

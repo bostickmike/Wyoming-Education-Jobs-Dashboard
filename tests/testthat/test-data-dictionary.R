@@ -29,7 +29,9 @@ test_that("every column in every public research CSV is documented in data_dicti
   # (e.g. salarymap2's FRL columns, 2026-11-09 to the 11-13 run): absent from the committed file until then, so this suite (the
   # weekly run's first, blocking step) would stop that very run. Remove each
   # entry once a weekly run has written the column.
-  pending <- list()
+  # Written by the first run on edjobs 0.27.0 (SAIPE range, 2026-11-15): empty this
+  # once that run's salarymap2.csv has the columns (run_expectations.csv "saipe_range_salarymap2").
+  pending <- list("salarymap2.csv" = c("SAIPE_Population", "Child_Poverty_Low", "Child_Poverty_High"))
 
   for (f in documented_files) {
     file_path <- file.path(app_dir, f)

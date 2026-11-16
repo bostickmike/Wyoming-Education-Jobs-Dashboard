@@ -713,7 +713,8 @@ if (nrow(child_poverty) > 0) {
   # (fetch_census_saipe_child_poverty()).
   prev_poverty <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
   salarymap2 <- prev_poverty %>%
-    select(-any_of(c("Child_Poverty_Rate", "SAIPE_Year", "Child_Poverty_Basis"))) %>%
+    select(-any_of(c("Child_Poverty_Rate", "SAIPE_Year", "Child_Poverty_Basis", "SAIPE_Population",
+                     "Child_Poverty_Low", "Child_Poverty_High"))) %>%
     left_join(child_poverty, by = "District", relationship = "many-to-one")
   # A charter or early-childhood center has no SAIPE geography of its own: the
   # district(s) it sits in stand in (surrounding_district_poverty(),
@@ -730,10 +731,11 @@ if (nrow(child_poverty) > 0) {
       salarymap2$Child_Poverty_Rate[i] <- p$rate
       salarymap2$SAIPE_Year[i] <- p$year
       salarymap2$Child_Poverty_Basis[i] <- p$basis
+      salarymap2$SAIPE_Population[i] <- p$population
     } else if (p$status == "failed") {
       geo_failed <- c(geo_failed, salarymap2$District[i])
       k <- match(salarymap2$District[i], prev_poverty$District)
-      for (col in intersect(c("Child_Poverty_Rate", "SAIPE_Year", "Child_Poverty_Basis"), names(prev_poverty))) {
+      for (col in intersect(c("Child_Poverty_Rate", "SAIPE_Year", "Child_Poverty_Basis", "SAIPE_Population"), names(prev_poverty))) {
         if (!is.na(k)) salarymap2[[col]][i] <- prev_poverty[[col]][k]
       }
     }
@@ -742,6 +744,8 @@ if (nrow(child_poverty) > 0) {
                     status = if (length(geo_failed)) "error" else "ok",
                     n_rows = sum(!is.na(salarymap2$Child_Poverty_Basis)),
                     error_message = if (length(geo_failed)) paste("geocoder failed for:", paste(geo_failed, collapse = "; ")) else NA_character_)
+  # Census's approximate 90% range beside each estimate (edjobs::add_saipe_range(); Mike, 2026-11-15).
+  salarymap2 <- add_saipe_range(salarymap2)
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 } else {
   message("Census SAIPE child poverty fetch failed -- leaving salarymap2.csv untouched this run.")
