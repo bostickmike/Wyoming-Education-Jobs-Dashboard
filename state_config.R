@@ -82,6 +82,21 @@ WY_HE_SCRAPER_SPECS <- list(
 )
 # The colleges' pages by name.
 he_institution_urls <- local({ he <- read_he_registry(); stats::setNames(he$Job_Link, he$Institution) })
+# salarymap.csv's fixed columns from he_institution_registry.csv each run
+# (2026-11-16, as MT): County, Latitude, Longitude, and the map's Link = the
+# registry's Job_Link (the page postings are read from). Rows and every other
+# column are left as they are; a college missing from either file stops the run.
+refresh_he_static_columns <- function(salarymap, registry = read_he_registry()) {
+  i <- match(salarymap$Name, registry$Institution)
+  if (anyNA(i) || length(setdiff(registry$Institution, salarymap$Name)) > 0)
+    stop("salarymap.csv and he_institution_registry.csv list different colleges: ",
+         paste(c(salarymap$Name[is.na(i)], setdiff(registry$Institution, salarymap$Name)), collapse = ", "))
+  salarymap$County <- registry$County[i]
+  salarymap$Latitude <- registry$Latitude[i]
+  salarymap$Longitude <- registry$Longitude[i]
+  salarymap$Link <- registry$Job_Link[i]
+  salarymap
+}
 
 set_state_config(state_config(
   state = "Wyoming", fips = "56", app_dir = "Wy_Ed_Jobs",

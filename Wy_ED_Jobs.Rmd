@@ -1009,8 +1009,10 @@ uw_book_path <- file.path("Wy_Ed_Jobs", "uw_salary_book.csv")
 tryCatch(refresh_uw_salary_book(uw_book_path),
          error = function(e) log_reference_result(uw_book_path, "error", conditionMessage(e)))
 
-# Static geo/link fields (Longitude, Latitude, Link, County) stay hand-
-# maintained -- only the salary figures get refreshed from IPEDS each run.
+# Static geo/link fields (Longitude, Latitude, Link, County) come from
+# he_institution_registry.csv each run (refresh_he_static_columns(),
+# state_config.R; 2026-11-16, before that hand-maintained here) -- only the
+# salary figures get refreshed from IPEDS.
 # County (added 2026-08-06) is the join key the census county context
 # chunk below needs; kept here in this early select() so it survives
 # untouched through this chunk the same way Longitude/Latitude/Link do.
@@ -1023,7 +1025,10 @@ tryCatch(refresh_uw_salary_book(uw_book_path),
 # (rehearsal 2026-11-13: both got HTTP 524; the schema check stopped the run).
 HE_SALARY_COLUMNS <- c("Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor", "Faculty_Count",
                        "Salary_Year", "Salary_Note", "Salary_Source")
-salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8")
+salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+  refresh_he_static_columns()
+# Written every run, so a failed IPEDS fetch below doesn't hold back a registry change.
+write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 
 if (nrow(he_salary) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA chunk above.

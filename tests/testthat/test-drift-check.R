@@ -220,3 +220,15 @@ test_that("the drift report's feed (state_config.R) is the WSBA feed the rest of
   expect_equal(feed$url, WSBA_VACANCIES_URL)
   expect_equal(edjobs::current_state_config()$drift_baseline_from, as.Date("2026-08-03"))
 })
+
+test_that("refresh_he_static_columns takes salarymap.csv's place and link columns from the HE registry", {
+  sm <- read.csv(here::here("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8")
+  he <- read_he_registry()
+  out <- refresh_he_static_columns(sm)
+  i <- match(out$Name, he$Institution)
+  expect_equal(out$Link, he$Job_Link[i])
+  expect_equal(out$Latitude, he$Latitude[i])
+  keep <- setdiff(names(sm), c("County", "Latitude", "Longitude", "Link"))
+  expect_equal(out[, keep], sm[, keep])
+  expect_error(refresh_he_static_columns(sm[-1, ]), "list different colleges")
+})
