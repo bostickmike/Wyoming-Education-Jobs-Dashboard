@@ -397,6 +397,7 @@ jobs:
             Wy_Ed_Jobs/job_duration_spells.csv \
             Wy_Ed_Jobs/he_job_duration_spells.csv \
             Wy_Ed_Jobs/k12_salary_history.csv \
+            Wy_Ed_Jobs/source_retrieved_dates.csv \
             Wy_Ed_Jobs/manifest.json \
             Archived_HE_Data/*.xlsx \
             Archivek12_Data/*.csv

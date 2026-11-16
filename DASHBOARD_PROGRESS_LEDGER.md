@@ -726,6 +726,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     button stays the GitHub issue-form link. manifest.json lists feedback.R; the manifest check now requires curl and
     jsonlite. `test-feedback.R` 28 passed; full suite 1,267 passed, 0 failed; checked in a headless browser (form opens,
     too-fast submit dropped, short text gets a message, a valid report reaches GitHub and a refused post says so).
+  * [x] A retrieval date for every outside data source in the footer (2026-11-16; branch `source-dates`, edjobs
+    0.29.0). Mike: BLS option A (`claude-notes/2026-11-15_citations-audit.md`, open item 2), and a date for the
+    other sources too. The pipeline records a source in `source_retrieved_dates.csv` (app folder; REQUIRED_SCHEMAS
+    entry; committed by the weekly run) only when its fetch succeeded and the data was kept (`retrieved_source` on
+    safe_scrape() / write_reference_file(); OEWS only when a new year is downloaded). Each footer line shows
+    "(retrieved YYYY-MM-DD)", or a range when one line's parts were fetched on different days.  last download) and WDE602 2026-10-27 (git: file added):uw_salary_book.R records the UW book only when a new book is downloaded. Seeded from
+    git: BLS OEWS 2026-10-31, UW salary book 2026-11-06 (git; the weekly sources get their first dates from the next run (the committed scrape_log.csv's
+    context rows are months old). Rehearsal (`claude-notes/2026-11-16_rehearsal-wy-source-dates-0.29.0.log`):
+    every step passed; data quality 132 passed; parity 9/9; suites pre 1,267 / post 1,269 passed, 0 failed; every
+    source dated (OEWS kept 2026-10-31: BLS has no newer year).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
   BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse

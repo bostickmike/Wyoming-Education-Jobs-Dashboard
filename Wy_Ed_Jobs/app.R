@@ -1310,16 +1310,32 @@ USGS_TILE_CREDIT <- paste('<a href="https://www.usgs.gov/programs/national-geosp
                           'target="_blank" rel="noopener">USGS The National Map</a>: map services and data available',
                           "from U.S. Geological Survey, National Geospatial Program")
 
+# When each outside source was last retrieved (source_retrieved_dates.csv, written by the pipeline only when a fetch
+# succeeds and its data is kept; hand-kept files carry the date they were added). BLS asks for the access date
+# (Mike, 2026-11-16: give one for every source). Missing file or source: the line shows no date.
+source_dates <- tryCatch(read.csv("source_retrieved_dates.csv", stringsAsFactors = FALSE, colClasses = "character"),
+                         error = function(e) data.frame(Source = character(0), Retrieved = character(0)))
+footer_retrieved <- function(sources) {
+  x <- sort(unique(source_dates$Retrieved[source_dates$Source %in% sources & nzchar(source_dates$Retrieved)]))
+  if (length(x) == 0) "" else if (length(x) == 1) paste0(" (retrieved ", x, ")") else paste0(" (retrieved ", x[1], " to ", x[length(x)], ")")
+}
+
 data_sources_footer <- tags$footer(
   class = "data-sources-footer",
   tags$p(tags$strong("Data sources."), "Job postings: each employer's own job board (every posting links to it) and the Wyoming School Boards Association vacancies list."),
   tags$p(
-    "U.S. Census Bureau: American Community Survey 5-Year Estimates; Small Area Income and Poverty Estimates; Census Geocoder.",
-    "U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics and Quarterly Census of Employment and Wages.",
-    HTML(paste("NCES Common Core of Data, IPEDS and Federal Student Aid Title IV data, via Education Data Portal, Urban Institute,",
-               "under <a href=\"https://opendatacommons.org/licenses/by/1-0/\" target=\"_blank\" rel=\"noopener\">ODC Attribution License</a>."))
+    paste0("U.S. Census Bureau: American Community Survey 5-Year Estimates", footer_retrieved("Census ACS"),
+           "; Small Area Income and Poverty Estimates", footer_retrieved("Census SAIPE"),
+           "; Census Geocoder", footer_retrieved("Census Geocoder"), "."),
+    paste0("U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics", footer_retrieved("BLS OEWS"),
+           " and Quarterly Census of Employment and Wages", footer_retrieved("BLS QCEW"), "."),
+    HTML(paste0("NCES Common Core of Data", footer_retrieved("Urban CCD"), ", IPEDS", footer_retrieved("Urban IPEDS"),
+                " and Federal Student Aid Title IV data", footer_retrieved("Urban FSA"), ", via Education Data Portal, Urban Institute, ",
+                "under <a href=\"https://opendatacommons.org/licenses/by/1-0/\" target=\"_blank\" rel=\"noopener\">ODC Attribution License</a>."))
   ),
-  tags$p("Wyoming School Boards Association (salary settlements); Wyoming Department of Education, Staff Member Collection (WDE602); University of Wyoming salary book."),
+  tags$p(paste0("Wyoming School Boards Association, salary settlements", footer_retrieved("WSBA salaries"),
+                "; Wyoming Department of Education, Staff Member Collection, WDE602", footer_retrieved("WDE602"),
+                "; University of Wyoming salary book", footer_retrieved("UW salary book"), ".")),
   tags$p(
     "This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.",
     "BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov."

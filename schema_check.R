@@ -58,6 +58,8 @@ REQUIRED_SCHEMAS <- list(
   "job_duration_spells.csv" = c("District", "Title", "Category", "Broad_Category", "Position", "First_Seen_Date", "Last_Seen_Date", "Weeks_Observed", "Estimated_Days_Open", "Status"),
   "he_job_duration_spells.csv" = c("Institution", "Title", "Category", "Job_Type", "First_Seen_Date", "Last_Seen_Date", "Weeks_Observed", "Estimated_Days_Open", "Status"),
   "qcew_county_school_pay.csv" = c("County", "Avg_Annual_Pay", "Year"),
+  # When each outside source was last retrieved (edjobs record_source_retrieved(), 0.29.0); the footer reads it.
+  "source_retrieved_dates.csv" = c("Source", "Retrieved"),
   # Reference tables the pipeline reads to build the Est_* columns (kept
   # between runs, refreshed through write_reference_file()).
   "oews_role_wages.csv" = c("Area_Code", "Area_Name", "SOC", "Occupation", "Annual_Median", "Hourly_Median", "Year"),

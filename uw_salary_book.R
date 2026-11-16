@@ -86,7 +86,7 @@ refresh_uw_salary_book <- function(path) {
   book <- parse_uw_salary_book(pdftools::pdf_text(pdf))
   if (nrow(book) < 1000) stop("UW salary book: only ", nrow(book), " rows parsed from ", url)
   book$Source_URL <- url
-  if (!write_reference_file(book, path)) return(invisible(existing))
+  if (!write_reference_file(book, path, retrieved_source = "UW salary book")) return(invisible(existing))
   message("UW salary book: wrote ", book$Fiscal_Year[1], " (", nrow(book), " rows)")
   invisible(book)
 }
