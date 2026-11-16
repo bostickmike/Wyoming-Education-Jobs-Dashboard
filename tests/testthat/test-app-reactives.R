@@ -505,14 +505,21 @@ test_that("K-12 and HE comparator reactives and presets execute cleanly", {
     session$setInputs(k12_compare_districts = c("Laramie County School District 1", "Natrona School District 1"))
     expect_no_error(output$k12_compare_cards)
     expect_no_error(output$k12_compare_salary_plot)
-    expect_no_error(output$k12_compare_metrics_plot)
+    expect_no_error(output$k12_compare_enrollment_plot)
+    expect_no_error(output$k12_compare_openings_plot)
     expect_no_error(output$k12_compare_jobs_table)
+    # renderPlotly() shows an error in the page rather than raising it, so build the charts themselves.
+    enrollment <- plotly::plotly_build(k12_compare_bar_plot("Enrollment", "Students enrolled", "#34495e", ""))
+    openings <- plotly::plotly_build(k12_compare_bar_plot("CurrentCount", "Active openings", "#e74c3c", ""))
+    expect_equal(length(enrollment$x$data[[1]]$y), 2)
+    expect_equal(as.character(enrollment$x$data[[1]]$x), as.character(openings$x$data[[1]]$x))
 
     # Empty state handling
     session$setInputs(k12_compare_districts = character(0))
     expect_no_error(output$k12_compare_cards)
     expect_no_error(output$k12_compare_salary_plot)
-    expect_no_error(output$k12_compare_metrics_plot)
+    expect_no_error(output$k12_compare_enrollment_plot)
+    expect_no_error(output$k12_compare_openings_plot)
     expect_no_error(output$k12_compare_jobs_table)
 
     # Preset button triggers

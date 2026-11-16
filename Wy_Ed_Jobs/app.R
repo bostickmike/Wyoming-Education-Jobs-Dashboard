@@ -1719,11 +1719,16 @@ ui <- page_navbar(
           ),
           uiOutput("k12_compare_cards"),
           layout_columns(
-            col_widths = c(6, 6),
+            col_widths = c(4, 4, 4),
             dash_card("Starting Base & Average Salary",
                       withSpinner(plotlyOutput("k12_compare_salary_plot", height = "360px"))),
-            dash_card("Student Enrollment & Active Openings",
-                      withSpinner(plotlyOutput("k12_compare_metrics_plot", height = "360px")))
+            dash_card("Student Enrollment",
+                      withSpinner(plotlyOutput("k12_compare_enrollment_plot", height = "360px"))),
+            # Two bar charts, not one dual-axis chart (Mike 2026-11-16): a line
+            # across districts implied a trend, and the two axes' scales made the
+            # bars-vs-line comparison arbitrary. Same district order in both.
+            dash_card("Active Openings",
+                      withSpinner(plotlyOutput("k12_compare_openings_plot", height = "360px")))
           ),
           dash_card("Active Openings in Selected Districts",
                     DTOutput("k12_compare_jobs_table", fill = FALSE))
@@ -2799,7 +2804,10 @@ server <- function(input, output, session) {
     }
     df <- combined_map_data %>%
       filter(Type == "K-12 District", Name %in% selected) %>%
-      select(Name, Teacher_Base_Salary, Teacher_Avg_Salary)
+      select(Name, Enrollment, Teacher_Base_Salary, Teacher_Avg_Salary) %>%
+      # Same district order as the enrollment and openings charts.
+      arrange(desc(coalesce(Enrollment, -1)), Name) %>%
+      mutate(Name = factor(Name, levels = Name))
     
     plot_ly(df, x = ~Name) %>%
       add_bars(y = ~Teacher_Base_Salary, name = "Base Starting Salary", marker = list(color = "#4a90e2")) %>%
@@ -2813,31 +2821,37 @@ server <- function(input, output, session) {
       )
   })
 
-  output$k12_compare_metrics_plot <- renderPlotly({
+  # One bar per selected district, largest enrollment first in both charts so
+  # a district sits in the same place in each; value labels on the bars.
+  k12_compare_bar_plot <- function(value_col, axis_title, color, empty_text, tick = ",.0f") {
     selected <- input$k12_compare_districts
     if (is.null(selected) || length(selected) == 0) {
       return(plot_ly(type = "scatter", mode = "none") %>% layout(
-        annotations = list(list(text = "Select one or more districts to display staffing metrics",
-                                showarrow = FALSE, font = list(size = 14, color = "#666"))),
+        annotations = list(list(text = empty_text, showarrow = FALSE, font = list(size = 14, color = "#666"))),
         xaxis = list(visible = FALSE), yaxis = list(visible = FALSE)
       ))
     }
     df <- combined_map_data %>%
       filter(Type == "K-12 District", Name %in% selected) %>%
-      select(Name, Enrollment, CurrentCount)
-    
-    plot_ly(df, x = ~Name) %>%
-      add_bars(y = ~Enrollment, name = "Enrollment", yaxis = "y1", marker = list(color = "#34495e")) %>%
-      add_lines(y = ~CurrentCount, name = "Active Openings", yaxis = "y2",
-                line = list(color = "#e74c3c", width = 3), marker = list(size = 8, color = "#e74c3c")) %>%
+      mutate(Value = .data[[value_col]]) %>%
+      select(Name, Enrollment, Value) %>%
+      arrange(desc(coalesce(Enrollment, -1)), Name) %>%
+      mutate(Name = factor(Name, levels = Name),
+             Label = ifelse(is.na(Value), "n/a", format(Value, big.mark = ",", trim = TRUE)))
+    plot_ly(df, x = ~Name, y = ~Value, type = "bar", marker = list(color = color),
+            text = ~Label, textposition = "outside", cliponaxis = FALSE,
+            hovertemplate = paste0("%{x}<br>", axis_title, ": %{text}<extra></extra>")) %>%
       layout(
         xaxis = list(title = "", tickangle = -15),
-        yaxis = list(title = "Student Enrollment", tickformat = ",.0f"),
-        yaxis2 = list(title = "Active Openings", overlaying = "y", side = "right", showgrid = FALSE),
-        legend = list(orientation = "h", x = 0, y = 1.15),
-        margin = list(b = 60, l = 60, r = 50, t = 40)
+        yaxis = list(title = axis_title, tickformat = tick, rangemode = "tozero"),
+        showlegend = FALSE,
+        margin = list(b = 60, l = 60, r = 20, t = 30)
       )
-  })
+  }
+  output$k12_compare_enrollment_plot <- renderPlotly(
+    k12_compare_bar_plot("Enrollment", "Students enrolled", "#34495e", "Select one or more districts to compare enrollment"))
+  output$k12_compare_openings_plot <- renderPlotly(
+    k12_compare_bar_plot("CurrentCount", "Active openings", "#e74c3c", "Select one or more districts to compare openings", tick = ",d"))
 
   output$k12_compare_jobs_table <- renderDT({
     selected <- input$k12_compare_districts
