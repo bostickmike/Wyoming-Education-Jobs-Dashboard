@@ -156,6 +156,21 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
+      # scrape_log.csv (per-source ok/empty/error + row count, written by
+      # safe_scrape()) is .gitignore'd on purpose: committing it would mean a
+      # diff on every run. Without this it's thrown away with the job's
+      # workspace, so "which sources errored 3 weeks running" was only
+      # answerable from a local run. `if: always()` keeps it when a later step
+      # fails the job. Same step as MT's.
+      - name: Upload this run's scrape_log.csv
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-log-${{ github.run_id }}
+          path: scrape_log.csv
+          retention-days: 90
+          if-no-files-found: warn
+
       - name: Refresh K-12 and Higher Ed vacancy duration spells
         run: |
           Rscript scripts/generate_job_duration_spells.R
