@@ -746,6 +746,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     opened issue #42 with the data-quality and user-report labels (closed). Token added to `.github/token-expiry.csv`
     (the upkeep run opens an issue 30 days before; renewal steps in the file).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
+  report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
+  separate address, recommended; (B) an optional field whose address the app emails to Mike privately via a mail
+  service (new account and secret; the form then needs a note on how the address is used); (C) the address
+  encrypted in the issue (ruled out: clumsy).
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
   BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse
   terms. (Esri basemaps: done, replaced 11-15.)
