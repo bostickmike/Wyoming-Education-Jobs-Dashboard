@@ -3,12 +3,12 @@
 # Census Data API's SAIPE School District time series.
 # https://www.census.gov/programs-surveys/saipe/data/datasets.html
 #
-# Requires the same free CENSUS_API_KEY census_acs_scraper.R uses (see that
+# Requires the same free CENSUS_API_KEY edjobs::census_api_key() uses (see that
 # file's header for why every Census Data API endpoint needs one) -- read
 # from the same environment variable, not a separate one, since it's the
 # same Census API account either way.
 #
-# Unlike census_acs_scraper.R's county-level join, this is real DISTRICT-
+# Unlike edjobs' ACS county fetch's county-level join, this is real DISTRICT-
 # level data (SAIPE's own SD_NAME field, not a county name) -- the closest
 # free proxy to free/reduced-lunch eligibility at the actual district a
 # posting is in, not just its county. No separate NCES LEAID crosswalk was
@@ -53,7 +53,7 @@ canonicalize_saipe_district_name <- function(name) {
 }
 
 # Pure transformation: SAIPE's array-of-arrays JSON shape has different
-# column names than census_acs_scraper.R's ACS responses (SD_NAME instead
+# column names than the ACS responses (SD_NAME instead
 # of NAME, plus a district-code geography column), so this doesn't reuse
 # parse_acs_json() -- reusing it would have silently tried to coerce
 # SD_NAME (real district name text) to numeric via that function's
@@ -81,7 +81,7 @@ fetch_census_saipe_child_poverty <- function(year = NULL, api_key = census_api_k
       req_url_query(
         get = paste(c("SD_NAME", "SAEPOVRAT5_17RV_PT"), collapse = ","),
         `for` = paste0("school district (", geocat, ")"),
-        `in` = paste0("state:", WY_STATE_FIPS),
+        `in` = paste0("state:", state_fips()),
         time = year,
         key = api_key
       ) %>%
@@ -118,7 +118,7 @@ latest_saipe_year <- function(start_year = as.integer(format(Sys.Date(), "%Y")),
     result <- tryCatch({
       resp <- request(SAIPE_SCHDIST_ENDPOINT) %>%
         req_url_query(get = "SD_NAME", `for` = "school district (unified)",
-                      `in` = paste0("state:", WY_STATE_FIPS), time = year, key = api_key) %>%
+                      `in` = paste0("state:", state_fips()), time = year, key = api_key) %>%
         perform_with_retry()
       parse_saipe_json(resp_body_string(resp))
     }, error = function(e) data.frame())

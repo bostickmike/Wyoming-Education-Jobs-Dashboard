@@ -1,6 +1,6 @@
 # Wyoming K-12 teacher FTE (staff headcount, not job postings) from NCES's
 # Common Core of Data (CCD), via the same Urban Institute Education Data
-# Portal API used for HE salaries in ipeds_salary_scraper.R -- the district
+# Portal API used for HE salaries in edjobs R/ipeds_he.R -- the district
 # directory endpoint already reports teachers_total_fte directly, so no
 # separate staff survey/endpoint is needed.
 # https://educationdata.urban.org/documentation/

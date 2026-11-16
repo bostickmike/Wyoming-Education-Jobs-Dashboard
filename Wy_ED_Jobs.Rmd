@@ -645,10 +645,9 @@ write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FAL
 ```{r census county context data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("census_acs_scraper.R")
 
 # CENSUS_API_KEY must be set (a GitHub Actions secret in CI, .Renviron
-# locally) -- see census_acs_scraper.R's header for why this can't run
+# locally) -- see edjobs::census_api_key() for why this can't run
 # without one. safe_scrape() catches a missing/invalid key the same way it
 # catches any other fetch failure: logs it, leaves salarymap2.csv
 # untouched this run, rather than crashing the whole pipeline.
@@ -686,7 +685,6 @@ if (nrow(county_context) > 0) {
 ```{r census saipe child poverty data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("census_acs_scraper.R")  # census_saipe_scraper.R reuses census_api_key()/clean_acs_value()/WY_STATE_FIPS from here
 source("census_saipe_scraper.R")
 
 child_poverty <- safe_scrape(
@@ -1145,11 +1143,11 @@ write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names 
 ```{r ipeds he salary data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("ipeds_salary_scraper.R")
+source("ipeds_unitids.R")   # IPEDS_UNITID_MAP; the fetchers are in edjobs
 
 he_salary <- safe_scrape(
   "IPEDS instructional staff salaries (WY)",
-  scrape_fn = fetch_ipeds_he_salaries,
+  scrape_fn = function() fetch_ipeds_he_salaries(IPEDS_UNITID_MAP),
   expected_cols = c("Name", "Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor",
                      "Faculty_Count", "Salary_Year", "Salary_Note")
 )
@@ -1207,7 +1205,7 @@ if (nrow(he_salary) > 0) {
   # year labels from Salary_Year - 1, Salary_Year - 2.
   salary_trend <- safe_scrape(
     "IPEDS instructional staff salary 3-year trend (WY)",
-    scrape_fn = function() fetch_ipeds_he_salary_trend(n_years = 3),
+    scrape_fn = function() fetch_ipeds_he_salary_trend(IPEDS_UNITID_MAP, n_years = 3),
     expected_cols = c("Name", "Year", "Faculty_Avg_Salary")
   )
   if (nrow(salary_trend) > 0) {
@@ -1238,12 +1236,11 @@ if (nrow(he_salary) > 0) {
 ```{r ipeds he enrollment data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("ipeds_salary_scraper.R")  # ipeds_enrollment_scraper.R reuses fetch_ipeds_paginated()/IPEDS_UNITID_MAP from here
-source("ipeds_enrollment_scraper.R")
+source("ipeds_unitids.R")
 
 he_enrollment <- safe_scrape(
   "IPEDS fall enrollment FTE (WY)",
-  scrape_fn = fetch_ipeds_he_enrollment,
+  scrape_fn = function() fetch_ipeds_he_enrollment(IPEDS_UNITID_MAP),
   expected_cols = c("Name", "Enrollment", "Enrollment_Year")
 )
 
@@ -1256,7 +1253,7 @@ he_enrollment <- safe_scrape(
 # figure from updating.
 he_enrollment_trend <- safe_scrape(
   "IPEDS fall enrollment 5-year trend (WY)",
-  scrape_fn = fetch_ipeds_he_enrollment_trend,
+  scrape_fn = function() fetch_ipeds_he_enrollment_trend(IPEDS_UNITID_MAP),
   expected_cols = c("Name", "Enrollment_Change_Pct")
 )
 
@@ -1296,13 +1293,11 @@ if (nrow(he_enrollment_trend) > 0) {
 ```{r fsa he pell share data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("ipeds_salary_scraper.R")     # fsa_pell_scraper.R reuses fetch_ipeds_directory_paginated()/IPEDS_UNITID_MAP from here
-source("ipeds_enrollment_scraper.R") # ...and fetch_ipeds_wy_enrollment_for_year()/parse_ipeds_he_enrollment() from here
-source("fsa_pell_scraper.R")
+source("ipeds_unitids.R")
 
 he_pell_share <- safe_scrape(
   "FSA Pell Grant recipient share (WY)",
-  scrape_fn = fetch_ipeds_he_pell_share,
+  scrape_fn = function() fetch_ipeds_he_pell_share(IPEDS_UNITID_MAP),
   expected_cols = c("Name", "Pell_Recipient_Share", "Pell_Year")
 )
 
@@ -1324,7 +1319,6 @@ if (nrow(he_pell_share) > 0) {
 ```{r census county context data he, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("census_acs_scraper.R")
 
 # Reuses the exact same fetch_census_county_context() pipeline as the K-12
 # chunk earlier in this file -- salarymap.csv's County column (hand-

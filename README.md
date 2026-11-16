@@ -48,8 +48,8 @@ A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regene
 - `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself.
 - `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — the scraping, classification, and monitoring logic the pipeline sources.
 - `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
-- `census_acs_scraper.R` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
-- `census_saipe_scraper.R` — district-level child poverty rate from the Census Bureau's SAIPE program, joined directly onto each K-12 district (not county-level like `census_acs_scraper.R`).
+- edjobs `fetch_census_county_context()` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
+- `census_saipe_scraper.R` — district-level child poverty rate from the Census Bureau's SAIPE program, joined directly onto each K-12 district (not county-level like the ACS fetch).
 - `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
 - `scripts/repair_uw_pagination_duplicates.R` — narrow, fail-closed repair for the historical UW Oracle pagination incident. Run `Rscript scripts/repair_uw_pagination_duplicates.R --dry-run`, review the report, then run it with `--apply` to repair verified repeated Oracle IDs and rebuild affected current/historical HE datasets.
 - `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.

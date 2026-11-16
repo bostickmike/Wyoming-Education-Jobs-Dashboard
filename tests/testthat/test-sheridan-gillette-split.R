@@ -41,3 +41,11 @@ test_that("check_sheridan_gillette_still_joint returns an empty, correctly-shape
   expect_equal(nrow(result), 0)
   expect_equal(names(result), c("unitid", "inst_name"))
 })
+
+test_that("IPEDS_UNITID_MAP gives Sheridan and Gillette the shared unitid and the note, and no one else the note", {
+  shared <- IPEDS_UNITID_MAP[IPEDS_UNITID_MAP$unitid == 240666L, ]
+  expect_setequal(shared$Name, c("Sheridan College", "Gillette College"))
+  expect_true(all(grepl("Northern Wyoming Community College District", shared$Salary_Note)))
+  expect_true(all(is.na(IPEDS_UNITID_MAP$Salary_Note[IPEDS_UNITID_MAP$unitid != 240666L])))
+  expect_equal(nrow(IPEDS_UNITID_MAP), 9)
+})
