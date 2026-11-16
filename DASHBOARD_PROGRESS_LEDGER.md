@@ -662,7 +662,44 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     `salarymap2.csv` (57 rows) federal columns identical to the committed files; rebuild parity 9/9 (combinedclean
     725); post-run suite 1,296 passed, 0 failed (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.25.0.log`). Notes:
     `claude-notes/2026-11-15_phase5-federal/README.md`.
+  * [x] Package phase 5, slice 2: CCD staffing and SAIPE child poverty from edjobs 0.26.0, by NCES id (2026-11-15;
+    branch `phase5-ccd-saipe`, 33a9615, on slice 1; edjobs branch `phase5-ccd-saipe`). `ccd_staff_scraper.R`,
+    `census_saipe_scraper.R`, their tests and fixtures deleted (the CCD and SAIPE name rewrites go); ids from
+    `salarymap2.csv`'s NCES_LEAID; the surrounding-district stand-ins read SAIPE by id with its counts. Rehearsal on
+    0.26.0: every step passed; `salarymap2.csv` 57 rows, every column identical except Northeast Wyoming BOCES gaining a
+    SAIPE_Year with no rate, fixed in edjobs (d8b258b: no year without a rate; live check after the fix: committed
+    values back); parity 9/9 (combinedclean 725); post-run suite 1,238 passed, 0 failed
+    (`claude-notes/2026-11-15_rehearsal-wy-phase5-0.26.0.log`).
+  * [x] Sources footer and required notices on every page (2026-11-15; branch `phase5-ccd-saipe`, after slice 2).
+    Mike 11-15: add the Census API notice and Urban's ODC-By citation, and check every source. Audit of every
+    outside source's terms: `claude-notes/2026-11-15_citations-audit.md`. `page_navbar(footer = data_sources_footer)`
+    lists the sources and carries the Census Data API notice and the BLS API disclaimer, both verbatim from their
+    terms; Urban cited in its short ODC-By form. Esri basemaps now show each service's own credit (the bundled
+    leaflet-providers strings were out of date and left out OpenStreetMap contributors).
+    Checked live in a headless browser (footer text and all three basemaps' credits read back); app boot smoke and
+    app reactives tests pass; `sibling_sync.R` OK.
+  * [x] Basemaps with open terms, no Esri (2026-11-15; branch `phase5-ccd-saipe`). Esri's ArcGIS Online FAQ: without
+    Esri software "you must purchase an ArcGIS Online subscription"; the free Location Platform key would need
+    new endpoints, "Powered by Esri", a visitor terms-of-use page and pay-as-you-go billing past 2M tiles.
+    **Mike's choice 11-15:** OpenStreetMap (default; policy URL tile.openstreetmap.org), USGS National Map
+    (USGSTopo; public domain, USGS's requested acknowledgment as the credit), Shaded Relief (USGS relief + hydro).
+    Options and quotes: `claude-notes/2026-11-15_basemap-options.md`. Checked live in both apps: opens on OSM, all
+    three layers draw with their credits; app boot smoke and reactives pass; `sibling_sync.R` OK.
+  * [x] Child poverty relabeled (2026-11-15; branch `phase5-ccd-saipe`). Census: "A true poverty \"rate\" for children
+    cannot be determined from these figures, because the numerator and denominator refer to slightly different
+    universes" (SAIPE school district overview, revised 2026-01-12). **Mike's choice 11-15 (option A):** labels only,
+    numbers and the `Child_Poverty_Rate` column unchanged. Table column "School-Age Children in Poverty (Census est.)"
+    (+ "Poverty Estimate Basis"), map popup, comparator card, About text; the footnote and the data dictionary (md +
+    csv) explain the two counts. Read back live in both apps; app boot smoke, reactives, data dictionary and schema
+    tests pass. Notes: `claude-notes/2026-11-15_census-reporting-lit-review/README.md` (Q2).
+  * [x] About-tab wording for the county mining share (2026-11-15; branch `phase5-ccd-saipe`): it said "civilian labor
+    force" (MT also "agriculture/resource extraction"); ACS S2403's denominator is the civilian employed population
+    16 and over and line 4 is mining, quarrying, and oil and gas extraction only (Census API labels, read 2026-11-15).
+    Now matches the data dictionary. Text only.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
+  BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse
+  terms. (Esri basemaps: done, replaced 11-15.)
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
   (run expectations; edjobs 0.0.1). Phase 1 merged 11-11 (edjobs v0.2.0: scrape helpers, posting status, coverage

@@ -553,15 +553,18 @@ write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FAL
 ```{r ccd teacher fte data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("ccd_staff_scraper.R")
+
+# Matched by NCES id (salarymap2.csv's NCES_LEAID; edjobs, package phase 5,
+# 2026-11-15; before, by CCD's "X #1" names rewritten to "X 1" -- same figures).
+salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
+district_ids <- setNames(as.list(as.character(salarymap2$NCES_LEAID)), salarymap2$District)
+district_ids <- district_ids[!vapply(district_ids, function(x) is.na(x) || x %in% c("", "NA"), logical(1))]
 
 teacher_fte <- safe_scrape(
   "CCD district teacher FTE (WY)",
-  scrape_fn = fetch_ccd_teacher_fte,
+  scrape_fn = function() fetch_ccd_teacher_fte(district_ids),
   expected_cols = c("District", "Teachers_Total_FTE", "Enrollment", "CCD_Year")
 )
-
-salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
 
 if (nrow(teacher_fte) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA/IPEDS salary
@@ -626,7 +629,7 @@ if (nrow(charter_staff) > 0) {
 }
 
 # Free/reduced-price lunch share beside SAIPE's child poverty rate
-# (fetch_ccd_frl_share(), ccd_staff_scraper.R); each entity's newest
+# (edjobs::fetch_ccd_frl_share()); each entity's newest
 # reporting year, kept from last run when the fetch fails.
 frl <- safe_scrape(
   "CCD free/reduced-price lunch share (WY)",
@@ -685,13 +688,22 @@ if (nrow(county_context) > 0) {
 ```{r census saipe child poverty data, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
-source("census_saipe_scraper.R")
 
-child_poverty <- safe_scrape(
-  "Census SAIPE district child poverty rate (WY)",
-  scrape_fn = fetch_census_saipe_child_poverty,
-  expected_cols = c("District", "Child_Poverty_Rate", "SAIPE_Year")
+# By NCES id (edjobs, package phase 5, 2026-11-15; before, by SAIPE's names
+# with Big Horn / Natrona rewritten -- same rates). All three SAIPE
+# geographies; Wyoming has no secondary districts (the API answers empty).
+saipe_by_id <- safe_scrape(
+  "Census SAIPE child poverty by NCES id (WY)",
+  scrape_fn = fetch_saipe_by_leaid,
+  expected_cols = c("LEAID", "Child_Poverty_Rate", "SAIPE_Poor_5_17", "SAIPE_Children_5_17", "SAIPE_Year")
 )
+poverty_map <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
+poverty_ids <- setNames(as.list(as.character(poverty_map$NCES_LEAID)), poverty_map$District)
+poverty_ids <- poverty_ids[!vapply(poverty_ids, function(x) is.na(x) || x %in% c("", "NA"), logical(1))]
+child_poverty <- if (nrow(saipe_by_id) > 0) parse_census_saipe_child_poverty(saipe_by_id, poverty_ids) else saipe_by_id[0, ]
+log_scrape_result("Census SAIPE district child poverty rate (WY)", status = if (nrow(child_poverty) > 0) "ok" else "error",
+                  n_rows = sum(!is.na(child_poverty$Child_Poverty_Rate)),
+                  error_message = if (nrow(child_poverty) > 0) NA_character_ else "no SAIPE rows by NCES id")
 
 if (nrow(child_poverty) > 0) {
   # Joins on District, not County -- real district-level data (the closest
@@ -705,13 +717,11 @@ if (nrow(child_poverty) > 0) {
     left_join(child_poverty, by = "District", relationship = "many-to-one")
   # A charter or early-childhood center has no SAIPE geography of its own: the
   # district(s) it sits in stand in (surrounding_district_poverty(),
-  # ccd_staff_scraper.R; a split town's rates averaged), named in
+  # edjobs; a split town's districts pooled by their counts), named in
   # Child_Poverty_Basis so the dashboard says "surrounding district". A
   # geocoder failure keeps last run's value and is logged (2026-11-09 review).
   salarymap2$Child_Poverty_Basis <- NA_character_
-  district_rates <- data.frame(LEAID = as.character(salarymap2$NCES_LEAID), Child_Poverty_Rate = salarymap2$Child_Poverty_Rate,
-                               SAIPE_Year = salarymap2$SAIPE_Year, stringsAsFactors = FALSE)
-  district_rates <- district_rates[!is.na(district_rates$LEAID) & district_rates$LEAID != "NA", , drop = FALSE]
+  district_rates <- saipe_by_id[saipe_by_id$LEAID %in% as.character(salarymap2$NCES_LEAID), , drop = FALSE]
   district_names <- setNames(salarymap2$District, as.character(salarymap2$NCES_LEAID))
   geo_failed <- character(0)
   for (i in which(salarymap2$District %in% WY_SURROUNDING_POVERTY & is.na(salarymap2$Child_Poverty_Rate))) {

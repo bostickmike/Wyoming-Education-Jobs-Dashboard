@@ -66,8 +66,8 @@ fetch_wsba_vacancies <- function(url = "https://www.wsba-wy.org/vacancies") {
 #
 # Big Horn and Natrona are this project's one canonical-naming exception:
 # every other district keeps "County", but these two drop it (see
-# canonicalize_ccd_district_name() in ccd_staff_scraper.R, the SAIPE
-# district-name fix in census_saipe_scraper.R, and
+# the old CCD name rewrite (CCD now matches by NCES id in edjobs), the old SAIPE
+# district-name fix, and
 # canonicalize_wsba_district_name() in salary_scrapers.R, which already
 # apply the same fix for their own sources). Without this, a WSBA vacancy
 # for either district lands under "<...> County School District <N>" -- a

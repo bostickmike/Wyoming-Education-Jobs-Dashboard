@@ -10,9 +10,9 @@ test_that("canonicalize_wsba_district leaves non-matching org names unchanged ra
 
 test_that("canonicalize_wsba_district drops 'County' for the Big Horn/Natrona naming exception", {
   # Every other district keeps "County" (see the test above), but these two
-  # don't -- matching canonicalize_ccd_district_name() (ccd_staff_scraper.R),
+  # don't -- matching the old CCD name rewrite (now NCES ids, edjobs),
   # canonicalize_wsba_district_name() (salary_scrapers.R), and the SAIPE
-  # district-name fix (census_saipe_scraper.R). A WSBA vacancy for either
+  # district-name fix (now NCES ids, edjobs). A WSBA vacancy for either
   # district previously landed under "<...> County School District <N>",
   # silently splitting it from the real district everywhere else in the
   # pipeline canonicalizes it without "County".
