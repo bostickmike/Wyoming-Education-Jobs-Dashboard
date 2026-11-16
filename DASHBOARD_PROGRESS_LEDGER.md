@@ -705,6 +705,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Rehearsal (`claude-notes/2026-11-15_rehearsal-wy-saipe-range-0.27.0.log`): every step passed; salarymap2 57 rows,
     55 rates, all with a range (7 of them surrounding-district stand-ins); no other value changed; parity 9/9;
     suites pre 1,239 / post 1,239 passed, 0 failed.
+  * [x] ACS county figures: Census's 90% margins of error (2026-11-16; branch `acs-moe`, edjobs 0.28.0). **Mike's
+    choice 11-16 (option B; `claude-notes/2026-11-16_acs-moe-reliability-decision.md`):** show the MOE, no CV tiers.
+    New columns Median_Household_Income_MOE, Median_Gross_Rent_MOE, Mining_Employment_Share_MOE (salarymap2,
+    salarymap; data dictionary; `pending` until the first run writes them; run_expectations `acs_moe_salarymap2`). Map popup
+    income/rent +/- (mining +/- where shown, >= 5%), comparator rent, HE table, K-12 column "County Figures: 90%
+    Margin of Error", footnotes (population trend has no MOE: controlled totals). A share whose MOE is at least the
+    share is marked "not distinguishable from 0" (Census's CV > 0.61 line); none in WY.
+    Rehearsal (`claude-notes/2026-11-16_rehearsal-wy-acs-moe-0.28.0.log`): every step passed; every county figure has
+    its MOE (salarymap2 57 of 57, salarymap 9 of 9); data quality 132 passed; parity 9/9; suites pre 1,239 / post
+    1,243 passed, 0 failed. Read back live in the rehearsed app (Laramie County SD 1: income +/-$3,160; rent +/-$39;
+    mining +/-0.4 pts).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
   BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse

@@ -676,7 +676,8 @@ if (nrow(county_context) > 0) {
   # every other salary/staffing chunk in this pipeline.
   salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
     select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
-                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct"))) %>%
+                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct",
+                      "Median_Household_Income_MOE", "Median_Gross_Rent_MOE", "Mining_Employment_Share_MOE"))) %>%
     left_join(county_context, by = "County")
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 } else {
@@ -1358,7 +1359,8 @@ if (nrow(county_context_he) > 0) {
   # the K-12 census chunk uses.
   salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
     select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
-                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct"))) %>%
+                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct",
+                      "Median_Household_Income_MOE", "Median_Gross_Rent_MOE", "Mining_Employment_Share_MOE"))) %>%
     left_join(county_context_he, by = "County")
   write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 } else {

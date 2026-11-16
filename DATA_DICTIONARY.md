@@ -136,10 +136,13 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `CCD_Year` | Integer | NCES CCD | Reporting school year for federal Common Core of Data staffing and enrollment counts. |
 | `CCD_Source` | String | NCES CCD | Federal source citation for NCES CCD public school district universe data. |
 | `Median_Household_Income` | Currency ($) | US Census ACS 5-Year | County median annual household income in inflation-adjusted dollars. |
+| `Median_Household_Income_MOE` | Currency ($) | US Census ACS 5-Year | Census's 90% margin of error for Median_Household_Income (B19013_001M). Shown as ± on the dashboard. |
 | `Median_Gross_Rent` | Currency ($) | US Census ACS 5-Year | County median monthly gross rent including estimated utilities. |
+| `Median_Gross_Rent_MOE` | Currency ($) | US Census ACS 5-Year | Census's 90% margin of error for Median_Gross_Rent (B25064_001M). |
 | `Population` | Integer | US Census ACS 5-Year | Total estimated resident population of the county. |
 | `ACS_Year` | Integer | US Census ACS 5-Year | Data release year for US Census American Community Survey 5-year estimates. |
 | `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Share of the county's employed civilians (16 and over) who work in mining, quarrying, and oil and gas extraction (ACS table S2403). |
+| `Mining_Employment_Share_MOE` | Proportion (0-1) | US Census ACS 5-Year (derived) | 90% margin of error for Mining_Employment_Share, from Census's formula for a derived proportion (ACS handbook 2020, ch. 8, formula 6) using the S2403 MOEs. When it is at least the share itself, the share is not distinguishable from zero (Census's CV > 0.61 line) and the dashboard says so. Census's CV-based reliability rules are unstable for shares under 5% (National Research Council 2007, p. 67), so no reliability tier is given. |
 | `Population_Change_Pct` | Proportion | US Census ACS 5-Year | County 5-year percentage change in total resident population. |
 | `Child_Poverty_Rate` | Proportion (0-1) | US Census SAIPE | Estimated proportion of school-age children (ages 5-17) living in families below the federal poverty line. Not a true poverty rate (Census): the first count includes only children related to the householder, in families in poverty; the second, all children 5-17 (foster children, other unrelated children and children in group quarters are in the second only). The dashboards label it "School-age children in poverty (Census est.)". |
 | `SAIPE_Population` | Number | US Census SAIPE | Total population of the SAIPE district behind the child poverty estimate (SAEPOVALL_PT); for a charter or early-childhood center, its surrounding district's. It sets the estimate's error band. |
@@ -236,10 +239,13 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Pell_Recipient_Share` | Proportion (0-1) | US Dept of Education FSA | Share of undergraduate degree-seeking students awarded federal need-based Pell Grants. |
 | `Pell_Year` | Integer | US Dept of Education FSA | Award year for Federal Student Aid (FSA) Pell Grant recipient figures. |
 | `Median_Household_Income` | Currency ($) | US Census ACS 5-Year | County median annual household income in inflation-adjusted dollars. |
+| `Median_Household_Income_MOE` | Currency ($) | US Census ACS 5-Year | Census's 90% margin of error for Median_Household_Income (B19013_001M). Shown as ± on the dashboard. |
 | `Median_Gross_Rent` | Currency ($) | US Census ACS 5-Year | County median monthly gross rent including estimated utilities. |
+| `Median_Gross_Rent_MOE` | Currency ($) | US Census ACS 5-Year | Census's 90% margin of error for Median_Gross_Rent (B25064_001M). |
 | `Population` | Integer | US Census ACS 5-Year | Total estimated resident population of the county in which the campus is located. |
 | `ACS_Year` | Integer | US Census ACS 5-Year | Data release year for US Census American Community Survey 5-year estimates. |
 | `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Share of the county's employed civilians (16 and over) who work in mining, quarrying, and oil and gas extraction (ACS table S2403). |
+| `Mining_Employment_Share_MOE` | Proportion (0-1) | US Census ACS 5-Year (derived) | 90% margin of error for Mining_Employment_Share, from Census's formula for a derived proportion (ACS handbook 2020, ch. 8, formula 6) using the S2403 MOEs. When it is at least the share itself, the share is not distinguishable from zero (Census's CV > 0.61 line) and the dashboard says so. Census's CV-based reliability rules are unstable for shares under 5% (National Research Council 2007, p. 67), so no reliability tier is given. |
 | `Population_Change_Pct` | Proportion | US Census ACS 5-Year | County 5-year percentage change in total resident population. |
 
 ---
