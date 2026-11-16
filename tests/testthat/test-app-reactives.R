@@ -409,9 +409,11 @@ test_that("county-level Census context is present for both K-12 and HE, and K-12
   he <- env$combined_map_data[env$combined_map_data$Type == "Higher Ed Institution", ]
   skip_if(nrow(he) == 0, "no HE rows in committed data -- skipping")
   expect_true(any(!is.na(he$Median_Household_Income)))
-  # No two HE institutions share a county, so no two HE rows should share
-  # an identical (County, Median_Household_Income) figure by coincidence.
-  he_with_income <- he[!is.na(he$Median_Household_Income), ]
+  # No two HE institutions share a county, so no two main-campus HE rows
+  # should share an identical (County, Median_Household_Income) figure by
+  # coincidence. Campus dots (Campus_Of set) sit in other institutions'
+  # counties and carry that county's figures, so they're left out here.
+  he_with_income <- he[!is.na(he$Median_Household_Income) & is.na(he$Campus_Of), ]
   expect_equal(length(unique(he_with_income$County)), nrow(he_with_income))
 
   k12 <- env$combined_map_data[env$combined_map_data$Type == "K-12 District", ]
@@ -713,4 +715,38 @@ test_that("weekly-totals downloads keep only the latest snapshot in each week", 
   out <- env$latest_snapshot_per_week(weekly)
   expect_equal(out$Archive_Date, c("2026-08-07", "2026-08-07", "2026-08-11"))
   expect_equal(out$n, c(6, 3, 7))
+})
+
+test_that("a college posting placed at another town gets its own map dot, and the counts still add up", {
+  # Campus dots (edjobs place_he_postings(), 2026-11-16): one posting moved to a made-up town in a real county.
+  inst <- NULL
+  env <- load_app_with_corrupted_file("hedata.xlsx", function(path) {
+    h <- as.data.frame(readxl::read_excel(path))
+    inst <<- h$Institution[1]
+    h$Campus_Town <- NA_character_; h$Campus_County <- NA_character_
+    h$Campus_Latitude <- NA_real_; h$Campus_Longitude <- NA_real_; h$Place_Basis <- "main"
+    h$Campus_Town[1] <- "Testville"; h$Place_Basis[1] <- "other_town"
+    h$Campus_County[1] <- utils::read.csv(file.path(dirname(path), "salarymap.csv"))$County[1]
+    h$Campus_Latitude[1] <- 45; h$Campus_Longitude[1] <- -107
+    h$Place_Basis[2] <- "no_town"
+    writexl::write_xlsx(h, path)
+  })
+  m <- env$combined_map_data
+  he <- m[m$Type == "Higher Ed Institution", ]
+  campus <- he[he$Name == paste0(inst, " (Testville)"), ]
+  expect_equal(nrow(campus), 1)
+  expect_equal(campus$CurrentCount, 1L)
+  expect_equal(campus$Campus_Of, inst)
+  expect_true(is.na(campus$Vacancy_Rate))
+  expect_false(is.na(campus$Median_Household_Income))
+  expect_equal(sum(he$CurrentCount), nrow(env$ccdata))
+  expect_equal(he$CurrentCount[he$Name == inst], sum(env$ccdata$Institution == inst) - 1L)
+  expect_match(he$Campus_Note[he$Name == inst], "Plus 1 opening at other campuses")
+  expect_false(anyDuplicated(m$Name) > 0)
+  expect_match(env$he_place_note, paste0("^College postings .* 1 of ", nrow(env$ccdata), " current"))
+
+  shiny::testServer(env$server, {
+    session$setInputs(map_popup_view_jobs = list(entity = campus$Name, query = "", band = ""))
+    expect_equal(selected_institution(), campus$Name)
+  })
 })

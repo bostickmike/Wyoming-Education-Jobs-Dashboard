@@ -819,6 +819,14 @@ hedata$Posted_Date<- as.character(hedata$Posted_Date)
 hedata <- hedata %>%
   mutate(Archive_Date = Sys.Date())
 
+# Where each posting goes on the map (edjobs place_he_postings(), 2026-11-16):
+# a posting is placed at another WY town only when its Location writes that
+# town ("Jackson", "Laramie, WY (Laramie Campus)", "Libby"), using places.csv
+# (every Census place in the state, its point and county). Anything else (the
+# main campus town, a department, "United States", several sites, another
+# state) stays at the main campus; Place_Basis says which, for the map's note.
+hedata <- place_he_postings(hedata, he_registry, read_state_places("places.csv"), "WY")
+
 # Save data with a time stamp
 file_name <- paste0("hedata_", Sys.Date(), ".xlsx")
 
@@ -899,12 +907,12 @@ hedata <- hedata %>%
 this_week_he_cat <- hedata %>%
   mutate(Job_Type = classify_he_job_type(Title))
 
-# Pay_*, Est_* and Close_Date are left out of facultydata.csv: its accumulated history predates
+# Pay_*, Est_*, Close_Date and the map-place columns (HE_PLACE_COLUMNS) are left out of facultydata.csv: its accumulated history predates
 # pay capture, and append_weekly_rows() refuses a changed column set.
 this_week_facultydata <- this_week_he_cat %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Category = classify_he_faculty_category(Title)) %>%
-  select(-all_of(POSTED_PAY_COLUMNS), -any_of(c("Est_Pay", "Est_Pay_Unit", "Est_Occupation", "Est_Area", "Est_Year", "Est_Source", "Close_Date")))
+  select(-all_of(POSTED_PAY_COLUMNS), -any_of(c("Est_Pay", "Est_Pay_Unit", "Est_Occupation", "Est_Area", "Est_Year", "Est_Source", "Close_Date")), -any_of(HE_PLACE_COLUMNS))
 
 #--------------------------------------------------------------------------
 # Append this week's newly classified rows onto the existing accumulated
