@@ -10,6 +10,8 @@ library(scales)
 library(stringr)
 library(readxl)
 library(shinycssloaders)
+source("feedback.R")  # public Feedback form: no GitHub login (2026-11-16)
+FEEDBACK_REPO_DEFAULT <- "bostickmike/Wyoming-Education-Jobs-Dashboard"
 
 #--------------------------------------------------
 # Schema guard -- if a pipeline chunk ever silently drops or renames a
@@ -2122,20 +2124,13 @@ ui <- page_navbar(
         tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard", target = "_blank", "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard")
       ),
       p(style = "margin-bottom: 0; font-size: 12px; color: #777;",
-        "To report discrepancies, missing districts, or data issues, please submit an issue on the ",
+        "To report discrepancies, missing districts, or data issues, use the Feedback button at the top right (no account needed), or open an issue on the ",
         tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues", target = "_blank", "GitHub Issue Tracker"), ".")
     )
   ),
 
   nav_spacer(),
-  nav_item(
-    tags$a(
-      class = "nav-link",
-      href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues/new?template=data_issue.yml",
-      target = "_blank", rel = "noopener",
-      icon("flag"), " Feedback"
-    )
-  )
+  feedback_nav_item(FEEDBACK_REPO_DEFAULT)
 )
 
 
@@ -2143,6 +2138,7 @@ ui <- page_navbar(
 # Server
 #--------------------------------------------------
 server <- function(input, output, session) {
+  feedback_server(input, output, session, repo = FEEDBACK_REPO_DEFAULT, state_name = "Wyoming")
 
   # Set by clicking a marker on the combined map; cleared by the "Show
   # All" button on each Jobs Table tab.
