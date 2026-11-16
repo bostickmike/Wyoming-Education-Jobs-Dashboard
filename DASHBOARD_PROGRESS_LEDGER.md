@@ -678,11 +678,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     leaflet-providers strings were out of date and left out OpenStreetMap contributors).
     Checked live in a headless browser (footer text and all three basemaps' credits read back); app boot smoke and
     app reactives tests pass; `sibling_sync.R` OK.
+  * [x] Basemaps with open terms, no Esri (2026-11-15; branch `phase5-ccd-saipe`). Esri's ArcGIS Online FAQ: without
+    Esri software "you must purchase an ArcGIS Online subscription"; the free Location Platform key would need
+    new endpoints, "Powered by Esri", a visitor terms-of-use page and pay-as-you-go billing past 2M tiles.
+    **Mike's choice 11-15:** OpenStreetMap (default; policy URL tile.openstreetmap.org), USGS National Map
+    (USGSTopo; public domain, USGS's requested acknowledgment as the credit), Shaded Relief (USGS relief + hydro).
+    Options and quotes: `claude-notes/2026-11-15_basemap-options.md`. Checked live in both apps: opens on OSM, all
+    three layers draw with their credits; app boot smoke and reactives pass; `sibling_sync.R` OK.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
-  Esri's terms summary says use without Esri software needs an ArcGIS Online subscription (the default and
-  Topographic basemaps); BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights
-  reserved" with no reuse terms.
+  BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse
+  terms. (Esri basemaps: done, replaced 11-15.)
 - [ ] **R package migration (current focus, Mike 2026-11-10):** shared code moves to `bostickmike/edjobs`, pinned in
   `EDJOBS_VERSION` (plan and status: `claude-notes/2026-11-10_r-package-migration-plan.md`). Phase 0 merged 11-11
   (run expectations; edjobs 0.0.1). Phase 1 merged 11-11 (edjobs v0.2.0: scrape helpers, posting status, coverage
