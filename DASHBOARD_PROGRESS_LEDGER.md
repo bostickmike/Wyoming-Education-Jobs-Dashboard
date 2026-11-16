@@ -731,12 +731,26 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     other sources too. The pipeline records a source in `source_retrieved_dates.csv` (app folder; REQUIRED_SCHEMAS
     entry; committed by the weekly run) only when its fetch succeeded and the data was kept (`retrieved_source` on
     safe_scrape() / write_reference_file(); OEWS only when a new year is downloaded). Each footer line shows
-    "(retrieved YYYY-MM-DD)", or a range when one line's parts were fetched on different days.  last download) and WDE602 2026-10-27 (git: file added):uw_salary_book.R records the UW book only when a new book is downloaded. Seeded from
-    git: BLS OEWS 2026-10-31, UW salary book 2026-11-06 (git; the weekly sources get their first dates from the next run (the committed scrape_log.csv's
-    context rows are months old). Rehearsal (`claude-notes/2026-11-16_rehearsal-wy-source-dates-0.29.0.log`):
+    "(retrieved YYYY-MM-DD)", or a range when one line's parts were fetched on different days. uw_salary_book.R
+    records the UW book only when a new book is downloaded. Seeded from git: BLS OEWS 2026-10-31 (last download),
+    WDE602 2026-10-27 (file added), UW salary book 2026-11-06; the weekly sources get their first dates from the next
+    run (scrape_log.csv is not committed, and the local copy's context rows are months old). Rehearsal (`claude-notes/2026-11-16_rehearsal-wy-source-dates-0.29.0.log`):
     every step passed; data quality 132 passed; parity 9/9; suites pre 1,267 / post 1,269 passed, 0 failed; every
     source dated (OEWS kept 2026-10-31: BLS has no newer year).
+  * [x] The weekly run keeps its scrape_log.csv (2026-11-16; branch `upload-scrape-log`). The log (per source:
+    ok/empty/error, rows) is gitignored on purpose, and WY saved it only inside the failed-run bundle, so a
+    successful run's log was lost with the job's workspace. New step "Upload this run's scrape_log.csv" (`if:
+    always()`, 90-day artifact `scrape-log-<run id>`), the same step MT has. Workflow only.
+  * [x] Feedback form live (2026-11-16): `GITHUB_FEEDBACK_TOKEN` (fine-grained PAT, this repo only, Issues
+    read/write, expires 2027-11-16) set as a Connect Cloud secret and the app republished by Mike; his test report
+    opened issue #42 with the data-quality and user-report labels (closed). Token added to `.github/token-expiry.csv`
+    (the upkeep run opens an issue 30 days before; renewal steps in the file).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
+  report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
+  separate address, recommended; (B) an optional field whose address the app emails to Mike privately via a mail
+  service (new account and secret; the form then needs a note on how the address is used); (C) the address
+  encrypted in the issue (ruled out: clumsy).
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
   BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse
   terms. (Esri basemaps: done, replaced 11-15.)
