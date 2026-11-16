@@ -29,9 +29,13 @@ library(edjobs)
 source("direct_api_scrapers.R")
 
 # k12_district_registry.csv is the single source of truth for every K-12
-# district scraped from a real structured platform (Applitrack, TedK12,
-# SchoolSpring, RedRoverK12) -- District/Platform/Job_Link, plus Org_ID for
-# RedRoverK12's numeric org ID (not derivable from its URL slug alone).
+# scrape target (one registry schema, 2026-11-16: the same columns as
+# Montana's). This loop takes the districts on a real structured platform
+# (AppliTrack, TedK12, SchoolSpring, RedRoverK12: read_direct_board_registry(),
+# state_config.R) -- District/Platform/Job_Link, plus Platform_Key for
+# RedRoverK12's numeric org ID (not derivable from its URL slug alone). The
+# district sites are misc_district_scrapers.R's; Laramie Montessori's
+# Paylocity board is below.
 # Replaces three separate, independently-maintained link CSVs
 # (Frontline_job_links.csv, tedk12_job_links.csv, springer_job_links.csv)
 # that used to carry the SAME district under three different spellings in
@@ -54,7 +58,7 @@ source("direct_api_scrapers.R")
 # Applitrack tenants genuinely return HTTP 500 from Applitrack's own
 # servers, independent of this scraper -- confirmed 2026-08-02) doesn't
 # block the rest of the registry.
-registry <- read.csv("k12_district_registry.csv", stringsAsFactors = FALSE)
+registry <- read_direct_board_registry()
 
 all_direct_data <- list()
 
@@ -62,7 +66,7 @@ for (i in seq_len(nrow(registry))) {
   row <- registry[i, ]
 
   district_jobs <- switch(row$Platform,
-    Applitrack = {
+    AppliTrack = {
       tenant_path <- applitrack_tenant_path(row$Job_Link)
       df <- safe_scrape(
         row$District,
@@ -141,7 +145,7 @@ for (i in seq_len(nrow(registry))) {
       org_slug <- redrover_org_slug(row$Job_Link)
       df <- safe_scrape(
         row$District,
-        scrape_fn = function() fetch_redrover_postings(as.character(row$Org_ID), org_slug),
+        scrape_fn = function() fetch_redrover_postings(as.character(row$Platform_Key), org_slug),
         expected_cols = c("Title", "Location", "Posted_Date", "Posting_ID", "Link")
       )
       if (nrow(df) > 0) {
@@ -216,9 +220,11 @@ other <- safe_scrape(
 # direct_api_scrapers.R::fetch_paylocity_jobs(). Snowy Range Academy, the
 # other real charter school found, already surfaces via WSBA with no
 # extra code needed since WSBA already treats it as a standalone org.
+# Its registry row: Platform_Key = Paylocity company id, the slug is the end of Job_Link.
+montessori_row <- read_k12_registry() %>% filter(District == "Laramie Montessori Charter School")
 laramie_montessori <- safe_scrape(
   "Laramie Montessori Charter School",
-  scrape_fn = function() fetch_paylocity_jobs("70f7d03b-6c9f-4106-8e70-9d781a8bbcba", "Laramie-Montessori-School-Inc"),
+  scrape_fn = function() fetch_paylocity_jobs(montessori_row$Platform_Key, basename(montessori_row$Job_Link)),
   expected_cols = c("Title", "Location", "Posted_Date", "Link")
 )
 if (nrow(laramie_montessori) > 0) {
@@ -229,7 +235,7 @@ if (nrow(laramie_montessori) > 0) {
     location = laramie_montessori$Location,
     url = laramie_montessori$Link,
     District = "Laramie Montessori Charter School",
-    Posting_Source = k12_posting_source_label("paylocity"),
+    Posting_Source = k12_posting_source_label("Paylocity"),
     stringsAsFactors = FALSE
   )
   other <- dplyr::bind_rows(other, laramie_montessori)
@@ -512,14 +518,18 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
   message("WSBA salary fetch failed for one or both documents -- leaving salarymap2.csv untouched this run.")
 }
 
-# District-level data-completeness classification (misc_district_scrapers.R)
-# -- refreshed unconditionally every run, not gated on the salary fetch
+# The map's fixed columns (NCES_LEAID, County, Latitude, Longitude, Job_Link)
+# come from k12_district_registry.csv and k12_feed_only_entities.csv
+# (refresh_k12_static_columns(), misc_district_scrapers.R; 2026-11-16), and
+# district-level data-completeness classification
+# -- both refreshed unconditionally every run, not gated on the salary fetch
 # above, since it's a static structural fact about which platform each
 # district is scraped from, not something that can itself fail to fetch.
 # Every district not in misc_district_coverage_tiers() is scraped from a
 # genuine structured job-board platform, hence the coalesce to "Full".
 source("misc_district_scrapers.R")
 salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
+  refresh_k12_static_columns() %>%
   select(-any_of("Data_Coverage")) %>%
   left_join(misc_district_coverage_tiers(), by = "District") %>%
   mutate(Data_Coverage = coalesce(Data_Coverage, "Full"))
@@ -733,214 +743,49 @@ if (!length(geo_failed)) record_source_retrieved("Census Geocoder", "Wy_Ed_Jobs"
 
 
 ## Time to scrape Wyoming Higher Education Data
-### This chunk scrapes LCCC's data
-```{r Get Jobs from LCCC, message=FALSE, warning=FALSE, echo=TRUE}
+### Each college in he_institution_registry.csv
+```{r higher ed scrapes, message=FALSE, warning=FALSE, echo=TRUE}
 library(dplyr)
 library(edjobs)
 source("direct_api_scrapers.R")
 
-# LCCC is on the same NEOGOV platform as Casper/Central/Gillette (edjobs
-# fetch_neogov_postings(), the classic careers page; NEOGOV redirects the
-# agency slug to its own domain, governmentjobs.com here). Each posting's
-# page gives its exact posted date and closing date (Close_Date). Replaces
-# the old RSelenium scraper with direct HTTP calls.
-lccc_raw <- safe_scrape(
-  "Laramie County Community College",
-  scrape_fn = function() fetch_neogov_postings("lcccwy"),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-lccc <- lccc_raw %>%
-  mutate(Institution = "Laramie County Community College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(lccc)
-
-```
-
-### This pulls data from Casper College
-```{r casper college, message=FALSE, warning=FALSE, echo=TRUE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-casper_raw <- safe_scrape(
-  "Casper College",
-  scrape_fn = function() fetch_neogov_postings("caspercollege"),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-casper <- casper_raw %>%
-  mutate(Institution = "Casper College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(casper)
-
-```
-
-
-### This pulls jobs data from Western Wyoming
-```{r western wyoming, echo=TRUE, message=FALSE, warning=FALSE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-# Western is on the same PeopleAdmin platform as Eastern/Sheridan/
-# Northwest, not NEOGOV -- a prior investigation mistyped the domain as
-# "wwccwy.peopleadmin.com" (double-c), got NXDOMAIN, and wrongly concluded
-# Western had migrated to schooljobs.com/careers/westernwyoming (a real
-# NEOGOV agency slug that happens to return a valid "0 jobs found" page,
-# not Western's actual career site). The real domain is
-# "wwcwy.peopleadmin.com" (single-c) -- confirmed live with 46 real open
-# postings, silently missed by the NEOGOV version for an unknown period.
-western_raw <- safe_scrape(
-  "Western Wyoming Community College",
-  scrape_fn = function() fetch_peopleadmin_atom("https://wwcwy.peopleadmin.com/postings/all_jobs", "Western Wyoming Campus", location_from_author = FALSE),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-western <- western_raw %>%
-  mutate(Institution = "Western Wyoming Community College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(western)
-
-```
-
-
-### This pulls data from Central Wyoming college
-```{r central wyoming, message=FALSE, echo=TRUE, warning=FALSE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-central_raw <- safe_scrape(
-  "Central Wyoming College",
-  scrape_fn = function() fetch_neogov_postings("cwc"),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-central <- central_raw %>%
-  mutate(Institution = "Central Wyoming College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(central)
-
-```
-
-### This pulls jobs data from Eastern Wyoming college
-```{r Eastern, message=FALSE, warning=FALSE, echo=TRUE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-# Eastern's own published Atom feed replaces the old RSelenium scraper
-# entirely -- see direct_api_scrapers.R::fetch_peopleadmin_atom(). No
-# browser, no pagination, no CSS selectors to drift.
-eastern_raw <- safe_scrape(
-  "Eastern Wyoming Community College",
-  scrape_fn = function() fetch_peopleadmin_atom("https://ewc.peopleadmin.com/postings/all_jobs", "Eastern Wyoming Campus", location_from_author = FALSE),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-eastern <- eastern_raw %>%
-  mutate(Institution = "Eastern Wyoming Community College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(eastern)
-
-```
-
-### This pulls data Gillette college
-```{r gillette, message=FALSE, echo=TRUE, warning=FALSE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-gillette_raw <- safe_scrape(
-  "Gillette College",
-  scrape_fn = function() fetch_neogov_postings("gillettecollege"),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-gillette <- gillette_raw %>%
-  mutate(Institution = "Gillette College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(gillette)
-
-```
-### This pulls data from Sheridan College
-```{r sheridan, echo=TRUE, message=FALSE, warning=FALSE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-# Sheridan is on the same PeopleAdmin platform as Eastern Wyoming --
-# confirmed by matching asset hashes/scripts -- so the same Atom feed
-# approach applies. Replaces the old RSelenium scraper (which navigated to
-# every individual job's detail page just to read its posting date).
-sheridan_raw <- safe_scrape(
-  "Sheridan College",
-  scrape_fn = function() fetch_peopleadmin_atom("https://jobs.sheridan.edu/postings/all_jobs", "Sheridan College Campus", location_from_author = FALSE),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-sheridan <- sheridan_raw %>%
-  mutate(Institution = "Sheridan College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(sheridan)
-
-```
-
-### This pulls data from Northwest College
-```{r Northwest, message=FALSE, warning=FALSE, echo=TRUE}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-# Northwest is also on the same PeopleAdmin platform, white-labeled under
-# the simplehire.com domain -- confirmed by matching asset hashes/scripts
-# despite the different-looking hostname and previously different
-# selectors. Same Atom feed approach as Eastern/Sheridan.
-northwest_raw <- safe_scrape(
-  "Northwest College",
-  scrape_fn = function() fetch_peopleadmin_atom("https://northwestcollege.simplehire.com/postings/all_jobs", "Northwest College Campus", location_from_author = FALSE),
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-northwest <- northwest_raw %>%
-  mutate(Institution = "Northwest College") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(northwest)
-
-```
-
-
-
-### This pulls data from the University of Wyoming
-```{r university of Wyoming}
-library(dplyr)
-library(edjobs)
-source("direct_api_scrapers.R")
-
-# UW's Oracle Cloud HCM recruiting platform exposes a public JSON REST API
-# (see direct_api_scrapers.R::fetch_uw_postings()) that fully replaces the
-# old RSelenium scraper -- no infinite-scroll simulation, no
-# findElements()-based text scraping, no waiting on JS to render.
-UW_raw <- safe_scrape(
-  "University of Wyoming",
-  scrape_fn = fetch_uw_postings,
-  expected_cols = c("Title", "Location", "Posted_Date", "Link")
-)
-
-UW <- UW_raw %>%
-  mutate(Institution = "University of Wyoming") %>%
-  select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
-
-print(UW)
+# One row per college in he_institution_registry.csv (one registry schema,
+# 2026-11-16; before that nine chunks with the calls written out), scraped in
+# file order so hedata keeps its row order. Each is logged on its own by
+# safe_scrape(), so one college's outage doesn't block the rest.
+#   - Neogov (LCCC, Casper, Central, Gillette): edjobs fetch_neogov_postings(),
+#     the classic careers page for the agency slug in Feed_URL; NEOGOV redirects
+#     the slug to its own domain. Each posting's page gives its exact posted
+#     date and closing date (Close_Date).
+#   - PeopleAdmin (Western, Eastern, Sheridan, Northwest): the board's own Atom
+#     feed (edjobs fetch_peopleadmin_atom()), with WY's campus name
+#     (Location_Label) as each posting's location. Western's domain is
+#     "wwcwy.peopleadmin.com" (single c): a past check mistyped it, got
+#     NXDOMAIN, and moved Western to a real but wrong NEOGOV agency that
+#     returned "0 jobs found". Sheridan's and Northwest's boards
+#     (simplehire.com) were matched to PeopleAdmin by their asset hashes.
+#   - UWHeuristic: UW's Oracle Cloud HCM JSON API (fetch_uw_postings(),
+#     direct_api_scrapers.R).
+# These replaced the old RSelenium scrapers.
+he_registry <- read.csv("he_institution_registry.csv", stringsAsFactors = FALSE)
+he_frames <- lapply(seq_len(nrow(he_registry)), function(i) {
+  row <- he_registry[i, ]
+  raw <- safe_scrape(
+    row$Institution,
+    scrape_fn = switch(row$Platform,
+      Neogov = function() fetch_neogov_postings(row$Feed_URL),
+      PeopleAdmin = function() fetch_peopleadmin_atom(row$Feed_URL, row$Location_Label, location_from_author = FALSE),
+      UWHeuristic = fetch_uw_postings,
+      stop("Unknown Platform in he_institution_registry.csv: ", row$Platform)
+    ),
+    expected_cols = c("Title", "Location", "Posted_Date", "Link")
+  )
+  raw %>%
+    mutate(Institution = row$Institution) %>%
+    select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date")))
+})
+names(he_frames) <- he_registry$Institution
+print(vapply(he_frames, nrow, integer(1)))
 
 ```
 
@@ -957,7 +802,7 @@ library(readxl)
 # Eastern, Sheridan, Northwest) and UW carry it (NA where a posting states
 # none). It's kept in hedata.xlsx and the raw archive, but not in the
 # accumulated facultydata.csv below.
-hedata <- list(lccc, casper, western, central, eastern, gillette, sheridan, northwest, UW) %>%
+hedata <- unname(he_frames) %>%
   lapply(function(df) {
     # bind_rows() won't mix a Date Posted_Date with a character one.
     df$Posted_Date <- as.character(df$Posted_Date)
@@ -1164,8 +1009,10 @@ uw_book_path <- file.path("Wy_Ed_Jobs", "uw_salary_book.csv")
 tryCatch(refresh_uw_salary_book(uw_book_path),
          error = function(e) log_reference_result(uw_book_path, "error", conditionMessage(e)))
 
-# Static geo/link fields (Longitude, Latitude, Link, County) stay hand-
-# maintained -- only the salary figures get refreshed from IPEDS each run.
+# Static geo/link fields (Longitude, Latitude, Link, County) come from
+# he_institution_registry.csv each run (refresh_he_static_columns(),
+# state_config.R; 2026-11-16, before that hand-maintained here) -- only the
+# salary figures get refreshed from IPEDS.
 # County (added 2026-08-06) is the join key the census county context
 # chunk below needs; kept here in this early select() so it survives
 # untouched through this chunk the same way Longitude/Latitude/Link do.
@@ -1178,7 +1025,10 @@ tryCatch(refresh_uw_salary_book(uw_book_path),
 # (rehearsal 2026-11-13: both got HTTP 524; the schema check stopped the run).
 HE_SALARY_COLUMNS <- c("Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor", "Faculty_Count",
                        "Salary_Year", "Salary_Note", "Salary_Source")
-salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8")
+salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
+  refresh_he_static_columns()
+# Written every run, so a failed IPEDS fetch below doesn't hold back a registry change.
+write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 
 if (nrow(he_salary) > 0) {
   # No "last updated" timestamp -- same reasoning as the WSBA chunk above.

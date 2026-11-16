@@ -209,17 +209,10 @@ test_that("the newest week's k12jobanalysis.csv / facultydata.csv have no byte-i
 
 test_that("every district in salarymap2.csv is a known WY K-12 entity", {
   # salarymap2 districts must join to a real scraped entity. WY keeps K-12
-  # identity in four places: the platform registry, the heuristic misc
-  # registry, WSBA-only orgs, and the Rmd's standalone charter-school block.
-  skip_if_not(file.exists(here::here("misc_district_scrapers.R")))
+  # identity in two places since 2026-11-16: k12_district_registry.csv (every
+  # scrape target) and WSBA-only orgs (WSBA_ONLY_ORGS, sourced by helper-setup.R).
   reg <- utils::read.csv(here::here("k12_district_registry.csv"), stringsAsFactors = FALSE)
-  # misc_district_registry + WSBA_ONLY_ORGS are sourced by helper-setup.R
-  known <- unique(c(
-    reg$District,
-    get0("misc_district_registry", ifnotfound = data.frame(District = character()))$District,
-    get0("WSBA_ONLY_ORGS", ifnotfound = character()),
-    "Laramie Montessori Charter School"  # Rmd charter-school block, own Paylocity source
-  ))
+  known <- unique(c(reg$District, get0("WSBA_ONLY_ORGS", ifnotfound = character())))
   orphans <- setdiff(unique(read_wy("salarymap2.csv")$District), known)
   expect_equal(length(orphans), 0,
                info = paste("salarymap2 districts not in any registry:",

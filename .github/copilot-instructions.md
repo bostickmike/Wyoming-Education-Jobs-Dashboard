@@ -32,12 +32,12 @@ The fixture tests only show that the parser handles the fixture. The PR's live c
 - The site is returning errors (HTTP 429/5xx) rather than changed markup.
 
 ## Never touch
-- `k12_district_registry.csv`, or `misc_district_registry` / `WSBA_ONLY_ORGS` in `misc_district_scrapers.R`
+- `k12_district_registry.csv`, `he_institution_registry.csv`, or `WSBA_ONLY_ORGS` in `misc_district_scrapers.R`
 - Anything under `Wy_Ed_Jobs/` (accumulated data the dashboard ships), `Archivek12_Data/`, `Archived_HE_Data/`
 - `.github/workflows/*`, or the `REQUIRED_SCHEMAS` in `schema_check.R`
 
 ## Useful context
-- Where a source's scraper is configured: `k12_district_registry.csv` (Applitrack, TedK12, SchoolSpring, RedRoverK12 districts), `misc_district_registry` in `misc_district_scrapers.R` (districts' own pages, dispatched by `fetch_misc_district_postings()`), or a hardcoded call in `Wy_ED_Jobs.Rmd` (higher ed, the charter school). `edjobs::resolve_scraper_call(name)` maps a source name to its call, from the three groups listed in `state_config.R` (`scraper_sources`).
+- Where a source's scraper is configured: `k12_district_registry.csv` (every K-12 target: the AppliTrack, TedK12, SchoolSpring and RedRoverK12 boards; the districts' own pages, dispatched on `Platform` by `fetch_misc_district_postings()`; Laramie Montessori's Paylocity board) or `he_institution_registry.csv` (the colleges). `edjobs::resolve_scraper_call(name)` maps a source name to its call, from the two registries listed in `state_config.R` (`scraper_sources`).
 - Scraper files: `direct_api_scrapers.R` (real ATS APIs) and `misc_district_scrapers.R` (heuristic HTML/chromote scrapers, plus the WSBA statewide vacancy feed).
-- Column case varies: Applitrack and TedK12 return `title`, the others `Title`.
+- Column case varies: AppliTrack and TedK12 return `title`, the others `Title`.
 - HTTP goes through `perform_with_retry()` (from the shared `edjobs` package; don't redefine it here), not bare `req_perform()`.

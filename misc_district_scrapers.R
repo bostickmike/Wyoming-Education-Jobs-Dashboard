@@ -709,72 +709,25 @@ parse_prairieview_postings <- function(headings_json) {
 
 # One row per district or standalone charter school (the same broadening
 # WSBA_ONLY_ORGS already established for Snowy Range Academy -- these two
-# aren't LEAs either, just orgs with their own real, scrapable job page):
-# canonical name (matching the rest of the K-12 pipeline's naming), which
-# platform its own page is on, and that page's URL. Everything except
-# Apptegy's `platform` needs no extra per-district config;
-# schoolblocks_widget_title exists because a different district on that
-# same platform might title its equivalent widget differently than
-# Sublette 1's "Current Job Announcements".
-misc_district_registry <- data.frame(
-  District = c(
-    "Niobrara County School District 1",
-    "Park County School District 16",
-    "Platte County School District 1",
-    "Sheridan County School District 3",
-    "Sublette County School District 1",
-    "Uinta County School District 4",
-    "Uinta County School District 6",
-    "Washakie County School District 2",
-    "Weston County School District 1",
-    "Weston County School District 7",
-    "Cheyenne Classical Academy",
-    "Wyoming Classical Academy",
-    "Prairie View Community School"
-  ),
-  platform = c(
-    "apptegy",
-    "smartsites",
-    "smartsites",
-    "apptegy",
-    "schoolblocks",
-    "edlio_tabs",
-    "googlesites",
-    "edlio",
-    "edlio",
-    "apptegy",
-    "educational_networks",
-    "educational_networks",
-    "prairieview"
-  ),
-  url = c(
-    "https://www.growingluskleaders.org/page/human-resources",
-    "https://pcsd16.com/271372_2",
-    "https://www.platte1.org/89574_1",
-    "https://www.sheridan3.com/page/hr-and-career-opportunities",
-    "https://www.sub1.org/en-US/employment-and-human-resources-f26202d3",
-    "https://www.uinta4.com/departments/business_office/job_opportunities/current_openings",
-    "https://sites.google.com/lymanschools.org/ucsd6/home/job-openings",
-    "https://www.wsh2.k12.wy.us/apps/pages/index.jsp?uREC_ID=440610&type=d&pREC_ID=1008214",
-    "https://www.wcsd1.org/apps/pages/Career_Opportunities",
-    "https://www.weston7.org/o/wcsd/page/employment",
-    "https://www.cheyenneclassical.org/employment",
-    "https://www.wyoclassical.org/employment",
-    "https://prairieviewschool.org/employment"
-  ),
-  # Per-district rules for the edjobs family routines (regexes on the page's
-  # text lines; NA = none): where the posting list starts and stops. The same
-  # rules MT keeps in k12_list_rules.csv.
-  list_start = c(NA, NA, NA, NA, NA, NA, NA, NA, "^Open Positions$", NA, NA, NA, NA),
-  list_stop = c(NA, NA, NA, NA, NA, NA, NA, "Equal Opportunity Employer", "Student Teaching Opportunities",
-                NA, NA, NA, NA),
-  # Apptegy only: a section whose lines are skipped up to the next header.
-  # Weston 7's "Subs Needed" block repeats its substitute list in prose
-  # (the same pool, once more), so it's skipped; a posting below it still reads.
-  list_skip = c(NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                "^(Subs Needed|WCSD #7 is currently accepting applications for:)$", NA, NA, NA),
-  stringsAsFactors = FALSE
-)
+# aren't LEAs either, just orgs with their own real, scrapable job page),
+# read from k12_district_registry.csv (one registry schema, 2026-11-16; before
+# that a data frame here): the rows whose Platform is a district-site reader
+# below. Columns used: District, Platform, Job_Link (the page) and the family
+# routines' per-district rules List_Start / List_Stop (where the posting list
+# starts and stops) and List_Skip (Apptegy only: a section skipped up to the
+# next header; Weston 7's "Subs Needed" block repeats its substitute list in
+# prose, so it's skipped and a posting below it still reads).
+MISC_DISTRICT_PLATFORMS <- c("WordPressBespoke", "SmartSites", "SchoolBlocks", "Edlio", "EdlioTabs",
+                             "GoogleSitesBespoke", "EducationalNetworks", "Apptegy", "PrairieViewHeuristic")
+# Platforms whose reader needs a chromote session.
+MISC_BROWSER_PLATFORMS <- c("Apptegy", "PrairieViewHeuristic", "GoogleSitesBespoke")
+misc_district_registry <- local({
+  path <- if (file.exists("k12_district_registry.csv")) "k12_district_registry.csv" else here::here("k12_district_registry.csv")
+  r <- utils::read.csv(path, stringsAsFactors = FALSE, na.strings = "", colClasses = "character")
+  r <- r[r$Platform %in% MISC_DISTRICT_PLATFORMS, c("District", "Platform", "Job_Link", "List_Start", "List_Stop", "List_Skip")]
+  rownames(r) <- NULL
+  r
+})
 
 # Standalone orgs WSBA covers as their own "District" entry (see
 # parse_wsba_vacancies()'s comment on WSBA's "<...> - <org> - <location>,
@@ -791,13 +744,43 @@ misc_district_registry <- data.frame(
 # so Snowy Range's postings were silently dropped entirely -- confirmed
 # absent from every committed combinedclean.csv to date. This constant and
 # the loop below are the actual fix.
-WSBA_ONLY_ORGS <- c(
-  "Snowy Range Academy",
-  "Northeast Wyoming BOCES",
-  "STRIDE Learning Center",
-  "Sweetwater County Child Developmental Center",
-  "Wyoming Boys School"
-)
+# The orgs are the rows of k12_feed_only_entities.csv (since 2026-11-16; a
+# vector here before), which also holds their map position and page: they
+# aren't scrape targets, so they aren't in k12_district_registry.csv.
+read_feed_only_entities <- function() {
+  path <- if (file.exists("k12_feed_only_entities.csv")) "k12_feed_only_entities.csv" else here::here("k12_feed_only_entities.csv")
+  utils::read.csv(path, stringsAsFactors = FALSE)
+}
+WSBA_ONLY_ORGS <- read_feed_only_entities()$District
+
+# The map's fixed columns for every K-12 entity in salarymap2.csv: from
+# k12_district_registry.csv for the scrape targets (one registry schema,
+# 2026-11-16; MT's salarymap2 has always taken them from its registry) and
+# from k12_feed_only_entities.csv for the WSBA-only orgs. Until 2026-11-16
+# they were typed into salarymap2.csv, and 10 districts' Job_Link had fallen
+# behind the board they're scraped from.
+K12_STATIC_COLUMNS <- c("NCES_LEAID", "County", "Latitude", "Longitude", "Job_Link")
+k12_static_columns <- function(registry = read_k12_registry(), feed_only = read_feed_only_entities()) {
+  cols <- c("District", K12_STATIC_COLUMNS)
+  out <- rbind(registry[, cols], feed_only[, cols])
+  stopifnot(!anyDuplicated(out$District))
+  # A 7-digit NCES id, numeric as salarymap2.csv has always stored it (blank = NA).
+  out$NCES_LEAID <- suppressWarnings(as.integer(out$NCES_LEAID))
+  out
+}
+# Overwrites salarymap2's fixed columns from `static`, keeping its rows' order
+# and every other column; an entity in `static` with no salarymap2 row yet is
+# added (its data columns NA until their steps fill them), and a salarymap2
+# row with no entity is dropped (as MT's right join does).
+refresh_k12_static_columns <- function(salarymap2, static = k12_static_columns()) {
+  salarymap2 <- salarymap2[salarymap2$District %in% static$District, , drop = FALSE]
+  new <- setdiff(static$District, salarymap2$District)
+  if (length(new) > 0) salarymap2 <- dplyr::bind_rows(salarymap2, data.frame(District = new, stringsAsFactors = FALSE))
+  i <- match(salarymap2$District, static$District)
+  for (col in K12_STATIC_COLUMNS) salarymap2[[col]] <- static[[col]][i]
+  rownames(salarymap2) <- NULL
+  salarymap2
+}
 
 # District-level data-completeness classification -- used by app.R to show
 # a real, visible badge on any district whose current-openings count is
@@ -832,22 +815,22 @@ misc_district_coverage_tiers <- function() {
 # share a single browser instance instead of paying startup cost per
 # district); every other platform is plain HTTP and ignores the session
 # argument entirely.
-# `edlio` and `apptegy` are the edjobs family routines (called unqualified, so
+# `Edlio` and `Apptegy` are the edjobs family routines (called unqualified, so
 # tests can stand in for them), with the registry row's list rules;
-# `edlio_tabs` is Uinta 4's own reader (its postings are inside Edlio tab
+# `EdlioTabs` is Uinta 4's own reader (its postings are inside Edlio tab
 # widgets, which the family's page text doesn't open).
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA,
                                          skip = NA) {
   switch(platform,
-    wordpress = fetch_wy_wordpress_postings(url),
-    smartsites = fetch_smartsites_postings(url),
-    schoolblocks = fetch_schoolblocks_postings(url),
-    edlio = fetch_edlio_postings(url, NA_character_, start, stop),
-    edlio_tabs = fetch_wy_edlio_postings(url),
-    googlesites = fetch_wy_googlesites_postings(chromote_session, url),
-    educational_networks = fetch_educational_networks_postings(url),
-    apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop, skip),
-    prairieview = fetch_prairieview_postings(chromote_session, url),
+    WordPressBespoke = fetch_wy_wordpress_postings(url),
+    SmartSites = fetch_smartsites_postings(url),
+    SchoolBlocks = fetch_schoolblocks_postings(url),
+    Edlio = fetch_edlio_postings(url, NA_character_, start, stop),
+    EdlioTabs = fetch_wy_edlio_postings(url),
+    GoogleSitesBespoke = fetch_wy_googlesites_postings(chromote_session, url),
+    EducationalNetworks = fetch_educational_networks_postings(url),
+    Apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop, skip),
+    PrairieViewHeuristic = fetch_prairieview_postings(chromote_session, url),
     stop("fetch_misc_district_postings: unknown platform '", platform, "'")
   )
 }
@@ -883,7 +866,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     expected_cols = c("Title", "District", "Location", "Posted_Date", "Url")
   )
 
-  needs_browser <- any(misc_district_registry$platform %in% c("apptegy", "prairieview", "googlesites"))
+  needs_browser <- any(misc_district_registry$Platform %in% MISC_BROWSER_PLATFORMS)
   browser_session <- if (needs_browser && !is.null(chromote_session_factory)) {
     chromote_session_factory()
   } else {
@@ -894,15 +877,15 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
   for (i in seq_len(nrow(misc_district_registry))) {
     district <- misc_district_registry$District[i]
-    platform <- misc_district_registry$platform[i]
-    url <- misc_district_registry$url[i]
+    platform <- misc_district_registry$Platform[i]
+    url <- misc_district_registry$Job_Link[i]
 
     own_postings <- safe_scrape(
       district,
       scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session,
-                                                          misc_district_registry$list_start[i],
-                                                          misc_district_registry$list_stop[i],
-                                                          misc_district_registry$list_skip[i]),
+                                                          misc_district_registry$List_Start[i],
+                                                          misc_district_registry$List_Stop[i],
+                                                          misc_district_registry$List_Skip[i]),
       expected_cols = c("Title", "Location", "Posted_Date", "Link")
     )
     own_postings <- dedupe_against_wsba(own_postings, wsba, district)

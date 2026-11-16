@@ -26,9 +26,9 @@ expect_all_covered <- function(hosts) {
                info = "add these to .github/copilot-allowlist.txt AND the repo's Copilot firewall settings")
 }
 
-test_that("every registry, misc-district and HE page host is on the Copilot allowlist", {
-  k12 <- read.csv(here::here("k12_district_registry.csv"), stringsAsFactors = FALSE)
-  expect_all_covered(url_hosts(c(k12$Job_Link, misc_district_registry$url, he_institution_urls)))
+test_that("every K-12 and HE registry page host is on the Copilot allowlist", {
+  he <- read_he_registry()
+  expect_all_covered(url_hosts(c(read_k12_registry()$Job_Link, he$Job_Link, he$Feed_URL[grepl("^https?://", he$Feed_URL)])))
 })
 
 test_that("every URL hardcoded in a scraper file or the pipeline Rmd is on the Copilot allowlist", {
@@ -44,10 +44,10 @@ test_that("every URL hardcoded in a scraper file or the pipeline Rmd is on the C
 # them -- but blocking them leaves the agent a page with no postings. The
 # Apptegy pair came from the firewall's blocked-host report on the Montana
 # dashboard's first auto-fix session.
-RENDER_ASSET_HOSTS <- list(apptegy = c("apptegy.net", "5il.co"))
+RENDER_ASSET_HOSTS <- list(Apptegy = c("apptegy.net", "5il.co"))
 
 test_that("every chromote platform's render-time asset hosts are on the Copilot allowlist", {
-  platforms <- intersect(names(RENDER_ASSET_HOSTS), misc_district_registry$platform)
+  platforms <- intersect(names(RENDER_ASSET_HOSTS), misc_district_registry$Platform)
   expect_all_covered(unlist(RENDER_ASSET_HOSTS[platforms], use.names = FALSE))
 })
 

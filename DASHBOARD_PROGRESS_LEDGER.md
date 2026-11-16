@@ -753,6 +753,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     WY's committed files); `needs_k12_salary_archive_update()` retired. Rehearsal
     (`claude-notes/2026-11-16_rehearsal-wy-phase5-closeout-0.30.0.log`): every step passed; salary history
     unchanged; parity 9/9; suites pre 1,255 / post 1,258 passed, 0 failed.
+  * [x] One registry schema for both states (2026-11-16; branch `registry-schema`, edjobs 0.31.0; Mike 11-16).
+    `k12_district_registry.csv` holds every K-12 scrape target in MT's columns (District, NCES_LEAID, City, County,
+    Latitude, Longitude, Platform, Platform_Key, Job_Link, List_Start, List_Stop, List_Skip): the direct boards
+    (Applitrack -> AppliTrack, Org_ID -> Platform_Key), the 13 district-site rows (were the `misc_district_registry`
+    data frame; CamelCase platforms, fixtures keep their names via edjobs `fixture_prefix`) and Laramie Montessori
+    (Paylocity). New `he_institution_registry.csv` (the 9 colleges; one loop in the Rmd, file order) and
+    `k12_feed_only_entities.csv` (the 5 WSBA-only orgs). Every source resolves to the same call (61 of 61; Laramie
+    Montessori gains its page URL); the drift check still counts only the direct boards as registered. **Map columns
+    from the registries (Mike: option A):** salarymap2's NCES_LEAID/County/Latitude/Longitude/Job_Link and
+    salarymap's County/Latitude/Longitude/Link refreshed each run; values identical except links: 10 K-12 (Fremont
+    24/25/38, Laramie 2, Lincoln 1/2, Platte 2, Sublette 9 had old boards or district pages, Mike: registry's for all;
+    Platte 1 another page, Uinta 6 a URL suffix) and 8 colleges (Casper had Taleo, LCCC iCIMS). Rehearsal
+    (`claude-notes/2026-11-16_rehearsal-wy-registry-schema-0.31.0.log`): every step passed; parity 9/9; suites pre
+    1,362 / post 1,365 passed, 0 failed; combinedclean 726 rows, every Posting_Source labeled; all 9 colleges scraped;
+    coverage calendar 63 entities (as last run).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
