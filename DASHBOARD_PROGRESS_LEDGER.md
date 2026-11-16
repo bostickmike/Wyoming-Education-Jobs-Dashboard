@@ -745,6 +745,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     read/write, expires 2027-11-16) set as a Connect Cloud secret and the app republished by Mike; his test report
     opened issue #42 with the data-quality and user-report labels (closed). Token added to `.github/token-expiry.csv`
     (the upkeep run opens an issue 30 days before; renewal steps in the file).
+  * [x] Package phase 5 close-out (2026-11-16; branch `phase5-closeout`, edjobs 0.30.0). The last pipeline helpers
+    both states defined moved to edjobs: `standardize_date()` (same code in both Rmds) and the K-12 salary history,
+    `archive_k12_salary_snapshot(salarymap2, history_path, columns)` with this state's
+    `WY_K12_SALARY_HISTORY_COLUMNS` (`salary_scrapers.R`; a test checks them against the committed history). The
+    archive appends any district/year pair the file lacks (MT's rule; WY's appended only a new year: 0 rows differ on
+    WY's committed files); `needs_k12_salary_archive_update()` retired. Rehearsal
+    (`claude-notes/2026-11-16_rehearsal-wy-phase5-closeout-0.30.0.log`): every step passed; salary history
+    unchanged; parity 9/9; suites pre 1,255 / post 1,258 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
