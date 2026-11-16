@@ -2071,7 +2071,7 @@ ui <- page_navbar(
               tags$td(strong("County Economic Context")),
               tags$td("US Census Bureau (ACS 5-Year Estimates)"),
               tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("County median household income, median gross rent, share of civilian labor force in mining/energy extraction, and 5-year population trajectory.")
+              tags$td("County median household income, median gross rent, share of employed residents 16 and over working in mining, quarrying, and oil and gas extraction (ACS S2403), and 5-year population trajectory.")
             ),
             tags$tr(
               tags$td(strong("Student Need Context")),

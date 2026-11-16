@@ -692,6 +692,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (+ "Poverty Estimate Basis"), map popup, comparator card, About text; the footnote and the data dictionary (md +
     csv) explain the two counts. Read back live in both apps; app boot smoke, reactives, data dictionary and schema
     tests pass. Notes: `claude-notes/2026-11-15_census-reporting-lit-review/README.md` (Q2).
+  * [x] About-tab wording for the county mining share (2026-11-15; branch `phase5-ccd-saipe`): it said "civilian labor
+    force" (MT also "agriculture/resource extraction"); ACS S2403's denominator is the civilian employed population
+    16 and over and line 4 is mining, quarrying, and oil and gas extraction only (Census API labels, read 2026-11-15).
+    Now matches the data dictionary. Text only.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Citations audit follow-ups (2026-11-15; `claude-notes/2026-11-15_citations-audit.md`), decisions for Mike:**
   BLS asks for the access date (apps don't know it yet); WSBA/WDE pages say "All rights reserved" with no reuse
