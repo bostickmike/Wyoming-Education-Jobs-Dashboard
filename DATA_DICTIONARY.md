@@ -141,7 +141,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `ACS_Year` | Integer | US Census ACS 5-Year | Data release year for US Census American Community Survey 5-year estimates. |
 | `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-Year | Share of the county's employed civilians (16 and over) who work in mining, quarrying, and oil and gas extraction (ACS table S2403). |
 | `Population_Change_Pct` | Proportion | US Census ACS 5-Year | County 5-year percentage change in total resident population. |
-| `Child_Poverty_Rate` | Proportion (0-1) | US Census SAIPE | Estimated proportion of school-age children (ages 5-17) living in families below the federal poverty line. |
+| `Child_Poverty_Rate` | Proportion (0-1) | US Census SAIPE | Estimated proportion of school-age children (ages 5-17) living in families below the federal poverty line. Not a true poverty rate (Census): the first count includes only children related to the householder, in families in poverty; the second, all children 5-17 (foster children, other unrelated children and children in group quarters are in the second only). The dashboards label it "School-age children in poverty (Census est.)". |
 | `SAIPE_Year` | Integer | US Census SAIPE | Release year of federal Small Area Income and Poverty Estimates (SAIPE) data. |
 | `Teacher_Avg_Salary` | Currency ($) | WDE602 Staff Collection | Actual average total compensation paid across all employed certified classroom teachers in the district. |
 | `Teacher_Avg_Base_Salary` | Currency ($) | WDE602 Staff Collection | Actual average base contract salary paid across all employed certified classroom teachers in the district. |
