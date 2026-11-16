@@ -769,7 +769,7 @@ mapdata2_he <- mapdata2_he %>%
 he_salary_lookup <- mapdata2_he %>%
   select(Name, Faculty_Avg_Salary) %>%
   mutate(
-    `Avg Faculty Salary` = ifelse(
+    `Avg. Salary, Full-Time Instructional Staff (IPEDS)` = ifelse(
       is.na(Faculty_Avg_Salary),
       "—",
       scales::dollar(Faculty_Avg_Salary, accuracy = 1)
@@ -809,7 +809,7 @@ ccdata <- ccdata %>%
     .Pay_Value = posting_pay_value(Pay_Min, Pay_Max, Pay_Unit, .fallback_value, .fallback_unit)$value,
     .Pay_Unit = posting_pay_value(Pay_Min, Pay_Max, Pay_Unit, .fallback_value, .fallback_unit)$unit
   ) %>%
-  select(Institution, Title, Location, Appointment, `Posted Pay`, `Typical pay (est.)`, `Avg Faculty Salary`,
+  select(Institution, Title, Location, Appointment, `Posted Pay`, `Typical pay (est.)`, `Avg. Salary, Full-Time Instructional Staff (IPEDS)`,
          `Posted / listed`, Link, .Pay_Value, .Pay_Unit, .Map_Name)
 
 hesum_he <- read.csv("allsum_he.csv") %>%
@@ -1973,7 +1973,7 @@ ui <- page_navbar(
       p(class = "text-muted small mb-2",
         "Posted Pay is what the posting itself states; the other pay columns are labeled estimates, not this job's offer. ",
         info_popover("About the pay columns",
-          p(class = "mb-0", POSTED_LISTED_NOTE, "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Typical pay (est.) fills in for salaried staff postings that state none, not this job's offer: for the University of Wyoming, the median salary of UW staff with the same title in UW's published salary book; for the other colleges, the college's average pay for its full-time staff in that job category (IPEDS). Hover for the source. Hourly and student jobs get no estimate. Avg Faculty Salary reflects full-time instructional staff compensation from IPEDS via Urban Institute."))),
+          p(class = "mb-0", POSTED_LISTED_NOTE, "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Typical pay (est.) fills in for salaried staff postings that state none, not this job's offer: for the University of Wyoming, the median salary of UW staff with the same title in UW's published salary book; for the other colleges, the college's average pay for its full-time staff in that job category (IPEDS). Hover for the source. Hourly and student jobs get no estimate. Avg. Salary, Full-Time Instructional Staff is the college's IPEDS average for full-time instructional staff on 9- to 12-month contracts, all ranks (via the Urban Institute), not this job's offer."))),
       DTOutput("he_jobs", fill = FALSE)
     ),
     nav_panel(
@@ -1987,7 +1987,7 @@ ui <- page_navbar(
              help_popover("Institution directory",
                p(tags$strong("Openings: "), "postings in this week's scrape, split into full-time and adjunct/part-time faculty by the job title, and those new since last week."),
                p(tags$strong("Faculty vacancy rate, faculty count and students per faculty: "), "full-time faculty postings, and enrollment, divided by full-time instructional staff (IPEDS)."),
-               p(tags$strong("Salaries: "), "IPEDS average instructional staff salary, all ranks combined, for the latest three years, and the professor-rank average."),
+               p(tags$strong("Salaries: "), "IPEDS average salary of full-time instructional staff on 9- to 12-month contracts, all ranks, for the latest three years, and the professor-rank average."),
                p(tags$strong("Students: "), "5-year enrollment trend (IPEDS) and the share of students receiving Pell Grants (Federal Student Aid)."),
                p(tags$strong("County: "), "the college's county's median income and rent (Census American Community Survey 5-year estimates)."),
                source = "IPEDS and Federal Student Aid data via the Urban Institute's Education Data Portal; Census ACS; the colleges' job boards.")),
@@ -2022,8 +2022,8 @@ ui <- page_navbar(
           uiOutput("he_compare_cards"),
           layout_columns(
             col_widths = c(6, 6),
-            dash_card("Faculty Average Salary (IPEDS)", info = help_popover("Faculty average salary",
-                        p("The average instructional staff salary across all academic ranks, for the latest IPEDS year and the year before."),
+            dash_card("Avg. Salary, Full-Time Instructional Staff (IPEDS)", info = help_popover("Faculty average salary",
+                        p("The average salary of full-time instructional staff on 9- to 12-month contracts, all academic ranks, for the latest IPEDS year and the year before. IPEDS collects no salaries for part-time staff, or for full-time staff on contracts under 9 months."),
                         source = "IPEDS, via the Urban Institute's Education Data Portal."),
                       withSpinner(plotlyOutput("he_compare_salary_plot", height = "360px"))),
             dash_card("Openings by Appointment Type", info = help_popover("Openings by appointment type",
@@ -2289,7 +2289,7 @@ ui <- page_navbar(
               tags$td(strong("Higher Ed Faculty Compensation")),
               tags$td("NCES IPEDS Instructional Staff Salary Survey"),
               tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Average full-time instructional faculty salaries (all combined and full professor rank) for Wyoming's 7 community colleges, Gillette College, and the University of Wyoming.")
+              tags$td("Average salaries of full-time instructional staff on 9- to 12-month contracts (all ranks and full professor rank) for Wyoming's 7 community colleges, Gillette College, and the University of Wyoming.")
             ),
             tags$tr(
               tags$td(strong("County Economic Context")),
@@ -3308,25 +3308,11 @@ server <- function(input, output, session) {
              paste0("<div>Superintendent salary: ", scales::dollar(Superintendent_Salary), "</div>"),
              ""),
       ifelse(!is.na(Faculty_Avg_Salary),
-             paste0("<div>Avg. faculty salary: ", scales::dollar(Faculty_Avg_Salary),
+             paste0("<div>Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts): ", scales::dollar(Faculty_Avg_Salary),
                     ifelse(!is.na(Faculty_Avg_Salary_Professor),
                            paste0(" (Professor rank: ", scales::dollar(Faculty_Avg_Salary_Professor), ")"),
                            ""),
-                    " &middot; ", Salary_Year, "</div>",
-                    # IPEDS's "all combined" figure blends every reported
-                    # contract length -- full-time 9-12 month faculty
-                    # alongside lower-paid part-time/adjunct instructional
-                    # staff -- into one average. No reliable full-time-only
-                    # breakout is available from this source (IPEDS's
-                    # contract-length codes aren't consistently documented
-                    # enough to split this safely), so this is a disclosure
-                    # rather than a fix. Ported from Montana's copy of this
-                    # same fix, motivated by a real Montana example
-                    # (Blackfeet Community College's $25,621 reflecting a
-                    # $54,317 full-time cohort blended with lower-paid
-                    # part-time staff) but the underlying IPEDS blending
-                    # issue applies equally to Wyoming's own HE salary data.
-                    "<div style='font-size:0.8em;color:#666;'>Blends full-time and part-time/adjunct instructional staff pay into one average.</div>"),
+                    " &middot; ", Salary_Year, "</div>"),
              ""),
       ifelse(!is.na(Salary_Note),
              paste0("<div style='font-size:0.85em;color:#666;'>", Salary_Note, "</div>"),
@@ -3663,9 +3649,9 @@ server <- function(input, output, session) {
         # here as well (see Vacancy_Rate_Shared), not just salary.
         Note = ifelse(is.na(Salary_Note), "", "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette")
       )
-    names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg Faculty Salary (", year_label, ")")
-    names(df)[names(df) == "AvgFacultySalaryY1"] <- paste0("Avg Faculty Salary (", y1_label, ")")
-    names(df)[names(df) == "AvgFacultySalaryY2"] <- paste0("Avg Faculty Salary (", y2_label, ")")
+    names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", year_label)
+    names(df)[names(df) == "AvgFacultySalaryY1"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", y1_label)
+    names(df)[names(df) == "AvgFacultySalaryY2"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", y2_label)
     names(df)[names(df) == "ProfessorAvgSalary"] <- paste0("Professor Avg Salary (", year_label, ")")
 
     datatable(df, filter = "top", extensions = "Buttons",
@@ -3685,9 +3671,7 @@ server <- function(input, output, session) {
       helpText(
         "Salary data:", source[1], paste0("(", year[1], " data)"), "—",
         tags$a(href = IPEDS_SALARY_SOURCE_URL, target = "_blank", "educationdata.urban.org"),
-        ". Blends full-time and part-time/adjunct instructional staff pay into one average",
-        "— a small institution leaning heavily on adjuncts can report a much lower blended",
-        "figure than its own full-time faculty actually earn."
+        ". Average salary of full-time instructional staff on 9- to 12-month contracts, all ranks: IPEDS collects no salaries for part-time staff, or for full-time staff on contracts under 9 months."
       ),
       if (length(acs_year) > 0) {
         helpText(
@@ -3779,7 +3763,7 @@ server <- function(input, output, session) {
             tags$hr(style = "margin: 12px 0;"),
             tags$table(
               style = "width: 100%; font-size: 13px; line-height: 1.8;",
-              tags$tr(tags$td(class = "text-muted", "Avg Faculty Salary:"), tags$td(style = "text-align: right; font-weight: 600;", avg_sal)),
+              tags$tr(tags$td(class = "text-muted", "Avg. salary, full-time instructional staff:"), tags$td(style = "text-align: right; font-weight: 600;", avg_sal)),
               tags$tr(tags$td(class = "text-muted", "Full Professor Avg:"), tags$td(style = "text-align: right; font-weight: 600;", prof_sal)),
               tags$tr(tags$td(class = "text-muted", "FTE Enrollment:"), tags$td(style = "text-align: right; font-weight: 600;", enroll)),
               tags$tr(tags$td(class = "text-muted", "Students / Faculty:"), tags$td(style = "text-align: right; font-weight: 600;", spf)),
@@ -3807,8 +3791,8 @@ server <- function(input, output, session) {
       select(Name, Faculty_Avg_Salary, Faculty_Avg_Salary_Y1Ago)
     
     plot_ly(df, x = ~Name) %>%
-      add_bars(y = ~Faculty_Avg_Salary, name = "Current Avg Faculty Salary", marker = list(color = "#2b5876")) %>%
-      add_bars(y = ~Faculty_Avg_Salary_Y1Ago, name = "Prior Year Avg Faculty Salary", marker = list(color = "#4e4376")) %>%
+      add_bars(y = ~Faculty_Avg_Salary, name = "Latest IPEDS year", marker = list(color = "#2b5876")) %>%
+      add_bars(y = ~Faculty_Avg_Salary_Y1Ago, name = "Year before", marker = list(color = "#4e4376")) %>%
       layout(
         barmode = "group",
         xaxis = list(title = "", tickangle = -15),
