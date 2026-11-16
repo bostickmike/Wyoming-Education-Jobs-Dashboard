@@ -151,7 +151,7 @@ Not an archive — one current row per of Wyoming's 48 school districts. `Distri
 
 ### `k12_salary_history.csv` — multi-year K-12 salary archive
 
-WSBA publishes no historical archive of its own (checked directly, confirmed no public archive exists) — this is this project's own accumulating record, one snapshot appended per new `Salary_Year` WSBA publishes (not one row per weekly run; `needs_k12_salary_archive_update()` guards against duplicate-year appends). Not currently read by `app.R` — it exists to grow into a real multi-year trend as more `Salary_Year`s accumulate, the same way `salarymap.csv`'s `Faculty_Avg_Salary_Y1Ago`/`Y2Ago` already work on the HE side via IPEDS's deeper history.
+WSBA publishes no historical archive of its own (checked directly, confirmed no public archive exists) — this is this project's own accumulating record, one row per district and `Salary_Year` (not one row per weekly run). `edjobs::archive_k12_salary_snapshot()` (since 2026-11-16) appends any district/year pair the file lacks, so a new year is added and a partly written year is completed; repeating a complete snapshot is a no-op. Not currently read by `app.R` — it exists to grow into a real multi-year trend as more `Salary_Year`s accumulate, the same way `salarymap.csv`'s `Faculty_Avg_Salary_Y1Ago`/`Y2Ago` already work on the HE side via IPEDS's deeper history.
 
 | Column | Type | Notes |
 |---|---|---|
