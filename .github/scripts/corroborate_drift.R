@@ -40,7 +40,9 @@ if (!"scrape_error" %in% names(flagged)) flagged$scrape_error <- NA_character_
 if (!"safety_net_vacancies" %in% names(flagged)) flagged$safety_net_vacancies <- NA_integer_
 
 combined_raw <- if (file.exists("Wy_Ed_Jobs/combinedclean.csv")) read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE) else NULL
-registry <- if (file.exists("k12_district_registry.csv")) read.csv("k12_district_registry.csv", stringsAsFactors = FALSE) else NULL
+# The direct-board districts (state_config.R): the drift check's "registered
+# districts" for the WSBA section, as before the registry also held the district sites.
+registry <- if (file.exists("k12_district_registry.csv")) read_direct_board_registry() else NULL
 scrape_log <- if (file.exists("scrape_log.csv")) read.csv("scrape_log.csv", stringsAsFactors = FALSE) else NULL
 # This run's titles per source, so the LLM step counts only titles the scraper
 # missed (edjobs 0.16.0; WY's Sublette 1 read "Substitutes", which the scraper

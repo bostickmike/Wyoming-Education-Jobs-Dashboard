@@ -23,11 +23,10 @@ test_that("misc_district_registry has exactly the 13 confirmed districts/schools
   # View Community School on its own bespoke platform -- all found
   # 2026-08-06) -- see the registry's own comment for why standalone
   # schools belong here too, not just LEAs.
+  # Since 2026-11-16 they are k12_district_registry.csv's district-site rows.
   expect_equal(nrow(misc_district_registry), 13)
-  expect_true(all(misc_district_registry$platform %in%
-    c("wordpress", "apptegy", "smartsites", "schoolblocks", "edlio", "edlio_tabs", "googlesites", "educational_networks",
-      "prairieview")))
-  expect_true(all(c("list_start", "list_stop", "list_skip") %in% names(misc_district_registry)))
+  expect_true(all(misc_district_registry$Platform %in% MISC_DISTRICT_PLATFORMS))
+  expect_true(all(c("Job_Link", "List_Start", "List_Stop", "List_Skip") %in% names(misc_district_registry)))
   expect_equal(length(unique(misc_district_registry$District)), 13)
 })
 
@@ -47,7 +46,7 @@ test_that("fetch_misc_district_postings dispatches to the right platform functio
   mock_globals(list(
     fetch_wy_wordpress_postings = function(url) data.frame(Title = "wp-hit", Location = NA, Posted_Date = NA, Link = NA)
   ))
-  result <- fetch_misc_district_postings("wordpress", "http://example.com")
+  result <- fetch_misc_district_postings("WordPressBespoke", "http://example.com")
   expect_equal(result$Title, "wp-hit")
 })
 
@@ -57,13 +56,13 @@ test_that("fetch_misc_district_postings hands the family routines the registry r
     fetch_edlio_postings = function(url, location, start, stop) { seen <<- c(start, stop); data.frame(Title = "e") },
     fetch_wy_edlio_postings = function(url) data.frame(Title = "tabs")
   ))
-  expect_equal(fetch_misc_district_postings("edlio", "u", NULL, "^Open Positions$", "Student")$Title, "e")
+  expect_equal(fetch_misc_district_postings("Edlio", "u", NULL, "^Open Positions$", "Student")$Title, "e")
   expect_equal(seen, c("^Open Positions$", "Student"))
-  expect_equal(fetch_misc_district_postings("edlio_tabs", "u")$Title, "tabs")
-  expect_equal(misc_district_registry$platform[misc_district_registry$District == "Uinta County School District 4"], "edlio_tabs")
+  expect_equal(fetch_misc_district_postings("EdlioTabs", "u")$Title, "tabs")
+  expect_equal(misc_district_registry$Platform[misc_district_registry$District == "Uinta County School District 4"], "EdlioTabs")
   mock_globals(list(fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) {
     seen <<- c(mode, start, stop, skip); data.frame(Title = "a") }))
-  expect_equal(fetch_misc_district_postings("apptegy", "u", NULL, NA, NA, "^Subs Needed$")$Title, "a")
+  expect_equal(fetch_misc_district_postings("Apptegy", "u", NULL, NA, NA, "^Subs Needed$")$Title, "a")
   expect_equal(seen, c("text", NA, NA, "^Subs Needed$"))
 })
 
@@ -224,8 +223,8 @@ test_that("direct_also_on_wsba flags the direct postings WSBA also lists, by key
 test_that("every registry and misc platform has a Posting_Source label, and WSBA's is the feed label", {
   k12 <- read.csv(here::here("k12_district_registry.csv"), stringsAsFactors = FALSE)
   expect_false(anyNA(k12_posting_source_label(unique(k12$Platform))))
-  expect_false(anyNA(k12_posting_source_label(unique(misc_district_registry$platform))))
-  expect_warning(lab <- k12_posting_source_label(c("Applitrack", "NoSuchPlatform")), "No Posting_Source label")
+  expect_false(anyNA(k12_posting_source_label(unique(misc_district_registry$Platform))))
+  expect_warning(lab <- k12_posting_source_label(c("AppliTrack", "NoSuchPlatform")), "No Posting_Source label")
   expect_equal(lab, c("AppliTrack (direct district board)", "NoSuchPlatform (direct board)"))
   expect_equal(WSBA_POSTING_SOURCE, edjobs::current_state_config()$feed$label)
   expect_equal(WSBA_FEED_LABEL, WSBA_POSTING_SOURCE)
@@ -310,4 +309,27 @@ test_that("generate_wsba_discrepancy_report categorizes ghosts, unmatched jobs, 
   expect_equal(nrow(read_back), 3)
   expect_equal(nrow(deduped), 4) # 1 duplicate dropped, 4 survived (including STRIDE)
   unlink(tmp)
+})
+
+test_that("refresh_k12_static_columns takes the map's fixed columns from the registries, nothing else", {
+  # The committed salarymap2: every other column is left as it is.
+  sm <- read.csv(here::here("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8")
+  out <- refresh_k12_static_columns(sm)
+  expect_equal(out$District, sm$District)
+  expect_equal(out[, setdiff(names(sm), K12_STATIC_COLUMNS)], sm[, setdiff(names(sm), K12_STATIC_COLUMNS)])
+  static <- k12_static_columns()
+  expect_equal(out$Job_Link, static$Job_Link[match(out$District, static$District)])
+  expect_true(is.integer(static$NCES_LEAID))
+  # Every salarymap2 entity is a scrape target or a WSBA-only org, and the orgs match the feed-only file.
+  expect_setequal(sm$District, static$District)
+  expect_equal(WSBA_ONLY_ORGS, read_feed_only_entities()$District)
+  # A new entity gets a row; a row with no entity is dropped.
+  toy <- data.frame(District = c("A", "Gone"), NCES_LEAID = c(1L, 2L), County = "x", Latitude = 0, Longitude = 0,
+                    Job_Link = "old", Teacher_Base_Salary = c(50000, 1), stringsAsFactors = FALSE)
+  st <- data.frame(District = c("A", "New"), NCES_LEAID = c(1L, NA), County = c("Albany County, Wyoming", "y"),
+                   Latitude = c(41.3, 42), Longitude = c(-105.6, -106), Job_Link = c("new", "n"), stringsAsFactors = FALSE)
+  r <- refresh_k12_static_columns(toy, st)
+  expect_equal(r$District, c("A", "New"))
+  expect_equal(r$Job_Link, c("new", "n"))
+  expect_equal(r$Teacher_Base_Salary, c(50000, NA))
 })

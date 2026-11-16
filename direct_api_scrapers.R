@@ -170,7 +170,7 @@ parse_uw_requisitions <- function(reqs_df, ui_base) {
 # ---------------------------------------------------------------------------
 # RedRoverK12: fetch_redrover_postings(org_id, org_slug), parse_redrover_json()
 # and redrover_org_slug() are in edjobs since 0.14.0 (Montana reads its Red
-# Rover boards through the same API). The registry's Org_ID is the numeric
+# Rover boards through the same API). The registry's Platform_Key is the numeric
 # organization ID the API takes.
 # ---------------------------------------------------------------------------
 
@@ -182,16 +182,18 @@ parse_uw_requisitions <- function(reqs_df, ui_base) {
 # stack: "<platform> (direct district board)" for a registry platform,
 # "<platform> district site (direct board)" for a district's own page, and
 # the statewide feed's label (state_config.R) for a WSBA row.
+# Keyed by k12_district_registry.csv's Platform (renamed 2026-11-16, one
+# registry schema; the labels, which are written into the data, unchanged).
 K12_PLATFORM_SOURCE_LABELS <- c(
-  Applitrack = "AppliTrack (direct district board)", TedK12 = "TedK12 (direct district board)",
+  AppliTrack = "AppliTrack (direct district board)", TedK12 = "TedK12 (direct district board)",
   SchoolSpring = "SchoolSpring (direct district board)", RedRoverK12 = "Red Rover (direct district board)",
-  paylocity = "Paylocity (direct board)",
-  wordpress = "WordPress district site (direct board)", smartsites = "SmartSites district site (direct board)",
-  schoolblocks = "SchoolBlocks district site (direct board)", edlio = "Edlio district site (direct board)",
-  edlio_tabs = "Edlio district site (direct board)",
-  googlesites = "Google Sites district site (direct board)",
-  educational_networks = "Educational Networks district site (direct board)",
-  apptegy = "Apptegy district site (direct board)", prairieview = "Prairie View district site (direct board)"
+  Paylocity = "Paylocity (direct board)",
+  WordPressBespoke = "WordPress district site (direct board)", SmartSites = "SmartSites district site (direct board)",
+  SchoolBlocks = "SchoolBlocks district site (direct board)", Edlio = "Edlio district site (direct board)",
+  EdlioTabs = "Edlio district site (direct board)",
+  GoogleSitesBespoke = "Google Sites district site (direct board)",
+  EducationalNetworks = "Educational Networks district site (direct board)",
+  Apptegy = "Apptegy district site (direct board)", PrairieViewHeuristic = "Prairie View district site (direct board)"
 )
 WSBA_POSTING_SOURCE <- "WSBA statewide vacancies"
 # A platform with no label yet gets "<platform> (direct board)" and a warning,

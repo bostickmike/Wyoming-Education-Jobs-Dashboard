@@ -55,7 +55,9 @@ he_baseline <- build_historical_counts(he_snapshots, "name", failed = failed_wee
 # the two sides of the comparison can never fall out of sync if that ever
 # changes (canonicalize_k12_district() is idempotent).
 combined_raw <- read.csv("Wy_Ed_Jobs/combinedclean.csv", stringsAsFactors = FALSE)
-registry <- if (file.exists("k12_district_registry.csv")) read.csv("k12_district_registry.csv", stringsAsFactors = FALSE) else NULL
+# The direct-board districts (state_config.R): the drift check's "registered
+# districts" for the WSBA section, as before the registry also held the district sites.
+registry <- if (file.exists("k12_district_registry.csv")) read_direct_board_registry() else NULL
 
 current_k12 <- as.data.frame(table(canonicalize_k12_district(combined_raw$District)))
 names(current_k12) <- c("name", "count")

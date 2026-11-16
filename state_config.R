@@ -7,73 +7,81 @@ library(edjobs)
 
 # Where a Wyoming source name comes from, and how each is scraped
 # (edjobs::resolve_scraper_call(), for the PR live check,
-# scripts/repro_scraper.R and the auto-fix issue). Three groups:
-#   - k12_district_registry.csv: one fetch_* per Platform, with arguments
-#     derived from Job_Link/Org_ID by the same helpers Wy_ED_Jobs.Rmd uses
-#     (applitrack_tenant_path() etc. in direct_api_scrapers.R);
-#   - misc_district_registry (misc_district_scrapers.R): platform -> the
-#     fetch_* that fetch_misc_district_postings() dispatches to;
-#   - higher ed and the one charter school: hardcoded calls in the Rmd,
-#     mirrored in EXTRA_SCRAPER_CALLS. test-drift-check.R asserts each one
-#     still appears verbatim in Wy_ED_Jobs.Rmd, so the two can't drift.
+# scripts/repro_scraper.R and the auto-fix issue). Two registries, the same
+# schema as Montana's (one registry schema, 2026-11-16):
+#   - k12_district_registry.csv: every K-12 scrape target, one row each
+#     (District, NCES_LEAID, City, County, Latitude, Longitude, Platform,
+#     Platform_Key, Job_Link, List_Start, List_Stop, List_Skip): the direct
+#     boards, the district sites (fetch_misc_district_postings()) and
+#     Laramie Montessori's Paylocity board;
+#   - he_institution_registry.csv: every college (Institution, County,
+#     Latitude, Longitude, Platform, Feed_URL, Job_Link, Location_Pattern,
+#     Location_Label).
 # WSBA-only orgs (WSBA_ONLY_ORGS) have no scraper of their own and resolve
 # to NULL, as does anything else not listed.
-WY_K12_SCRAPER_SPECS <- list(
-  Applitrack   = scraper_spec("fetch_applitrack_postings", list(function(row) applitrack_tenant_path(row$Job_Link))),
-  TedK12       = scraper_spec("fetch_tedk12_postings", "Job_Link"),
-  SchoolSpring = scraper_spec("fetch_schoolspring_postings", list(function(row) schoolspring_domain(row$Job_Link))),
-  RedRoverK12  = scraper_spec("fetch_redrover_postings",
-                              list(function(row) as.character(row$Org_ID), function(row) redrover_org_slug(row$Job_Link)))
-)
-# `session = TRUE`: the fetch_* takes a chromote session first.
-# A misc-registry row's list rule (NA when none): the family routines' start/stop (and Apptegy's skip).
+# The registries sit at the repository root; tests run from tests/testthat.
+wy_registry_path <- function(file) if (file.exists(file)) file else here::here(file)
+read_k12_registry <- function() utils::read.csv(wy_registry_path("k12_district_registry.csv"), stringsAsFactors = FALSE,
+                                                 colClasses = c(NCES_LEAID = "character", Platform_Key = "character"))
+read_he_registry <- function() utils::read.csv(wy_registry_path("he_institution_registry.csv"), stringsAsFactors = FALSE)
+
+# A registry row's list rule (NA when none): the family routines' start/stop (and Apptegy's skip).
 wy_list_rule <- function(col) function(row) {
   v <- row[[col]]
   if (is.null(v) || length(v) == 0 || is.na(v[1]) || !nzchar(v[1])) NA_character_ else as.character(v[1])
 }
+# The direct district boards: scraped in Wy_ED_Jobs.Rmd's registry loop.
+WY_K12_SCRAPER_SPECS <- list(
+  AppliTrack   = scraper_spec("fetch_applitrack_postings", list(function(row) applitrack_tenant_path(row$Job_Link))),
+  TedK12       = scraper_spec("fetch_tedk12_postings", "Job_Link"),
+  SchoolSpring = scraper_spec("fetch_schoolspring_postings", list(function(row) schoolspring_domain(row$Job_Link))),
+  RedRoverK12  = scraper_spec("fetch_redrover_postings",
+                              list(function(row) as.character(row$Platform_Key), function(row) redrover_org_slug(row$Job_Link)))
+)
+WY_DIRECT_BOARD_PLATFORMS <- names(WY_K12_SCRAPER_SPECS)
+# The direct-board rows only: what the Rmd's registry loop scrapes, and the
+# "registered districts" the drift check's WSBA section counts.
+read_direct_board_registry <- function() {
+  r <- read_k12_registry()
+  r[r$Platform %in% WY_DIRECT_BOARD_PLATFORMS, , drop = FALSE]
+}
+# District sites (fetch_misc_district_postings() dispatches on Platform).
+# `session = TRUE`: the fetch_* takes a chromote session first.
+# `fixture_prefix`: the fixtures' file-name prefix where it isn't the lower-cased platform.
 WY_MISC_SCRAPER_SPECS <- list(
-  wordpress = scraper_spec("fetch_wy_wordpress_postings", "url"),
-  smartsites = scraper_spec("fetch_smartsites_postings", "url"),
-  schoolblocks = scraper_spec("fetch_schoolblocks_postings", "url"),
-  edlio = scraper_spec("fetch_edlio_postings", list("url", function(row) NA_character_, wy_list_rule("list_start"),
-                                                   wy_list_rule("list_stop"))),
-  edlio_tabs = scraper_spec("fetch_wy_edlio_postings", "url"),
-  googlesites = scraper_spec("fetch_wy_googlesites_postings", "url", session = TRUE),
-  educational_networks = scraper_spec("fetch_educational_networks_postings", "url"),
-  apptegy = scraper_spec("fetch_apptegy_postings", list("url", function(row) NA_character_, function(row) "text",
-                                                       wy_list_rule("list_start"), wy_list_rule("list_stop"),
-                                                       wy_list_rule("list_skip")),
+  WordPressBespoke = scraper_spec("fetch_wy_wordpress_postings", "Job_Link", fixture_prefix = "wordpress"),
+  SmartSites = scraper_spec("fetch_smartsites_postings", "Job_Link"),
+  SchoolBlocks = scraper_spec("fetch_schoolblocks_postings", "Job_Link"),
+  Edlio = scraper_spec("fetch_edlio_postings", list("Job_Link", function(row) NA_character_, wy_list_rule("List_Start"),
+                                                   wy_list_rule("List_Stop"))),
+  EdlioTabs = scraper_spec("fetch_wy_edlio_postings", "Job_Link", fixture_prefix = "edlio"),
+  GoogleSitesBespoke = scraper_spec("fetch_wy_googlesites_postings", "Job_Link", session = TRUE,
+                                    fixture_prefix = "googlesites"),
+  EducationalNetworks = scraper_spec("fetch_educational_networks_postings", "Job_Link",
+                                     fixture_prefix = "educational_networks"),
+  Apptegy = scraper_spec("fetch_apptegy_postings", list("Job_Link", function(row) NA_character_, function(row) "text",
+                                                       wy_list_rule("List_Start"), wy_list_rule("List_Stop"),
+                                                       wy_list_rule("List_Skip")),
                          session = TRUE),
-  prairieview = scraper_spec("fetch_prairieview_postings", "url", session = TRUE)
+  PrairieViewHeuristic = scraper_spec("fetch_prairieview_postings", "Job_Link", session = TRUE, fixture_prefix = "prairieview")
 )
-# `url`: the page a person would visit (the drift check's corroboration
-# step), not necessarily the endpoint the scraper reads. Western was once
-# listed at schooljobs.com/careers/westernwyoming, a real but wrong NEOGOV
-# agency that returned a plausible "0 jobs found" page; it is on PeopleAdmin
-# (see Wy_ED_Jobs.Rmd's "western wyoming" chunk).
-EXTRA_SCRAPER_CALLS <- list(
-  "Laramie County Community College"  = list(fn = "fetch_neogov_postings", args = list("lcccwy"),
-                                             url = "https://www.governmentjobs.com/careers/lcccwy"),
-  "Casper College"                    = list(fn = "fetch_neogov_postings", args = list("caspercollege"),
-                                             url = "https://www.schooljobs.com/careers/caspercollege"),
-  "Western Wyoming Community College" = list(fn = "fetch_peopleadmin_atom", args = list("https://wwcwy.peopleadmin.com/postings/all_jobs", "Western Wyoming Campus", location_from_author = FALSE),
-                                             url = "https://wwcwy.peopleadmin.com/postings/all_jobs"),
-  "Central Wyoming College"           = list(fn = "fetch_neogov_postings", args = list("cwc"),
-                                             url = "https://www.schooljobs.com/careers/cwc"),
-  "Eastern Wyoming Community College" = list(fn = "fetch_peopleadmin_atom", args = list("https://ewc.peopleadmin.com/postings/all_jobs", "Eastern Wyoming Campus", location_from_author = FALSE),
-                                             url = "https://ewc.peopleadmin.com/postings/all_jobs"),
-  "Gillette College"                  = list(fn = "fetch_neogov_postings", args = list("gillettecollege"),
-                                             url = "https://www.schooljobs.com/careers/gillettecollege"),
-  "Sheridan College"                  = list(fn = "fetch_peopleadmin_atom", args = list("https://jobs.sheridan.edu/postings/all_jobs", "Sheridan College Campus", location_from_author = FALSE),
-                                             url = "https://jobs.sheridan.edu/postings/all_jobs"),
-  "Northwest College"                 = list(fn = "fetch_peopleadmin_atom", args = list("https://northwestcollege.simplehire.com/postings/all_jobs", "Northwest College Campus", location_from_author = FALSE),
-                                             url = "https://northwestcollege.simplehire.com/postings/all_jobs"),
-  "University of Wyoming"             = list(fn = "fetch_uw_postings", args = list(),
-                                             url = "https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1"),
-  "Laramie Montessori Charter School" = list(fn = "fetch_paylocity_jobs", args = list("70f7d03b-6c9f-4106-8e70-9d781a8bbcba", "Laramie-Montessori-School-Inc"))
+WY_OTHER_K12_SCRAPER_SPECS <- list(
+  Paylocity = scraper_spec("fetch_paylocity_jobs", list("Platform_Key", function(row) basename(row$Job_Link)))
 )
-# The colleges' pages by name (the entries above that carry a url).
-he_institution_urls <- unlist(lapply(EXTRA_SCRAPER_CALLS, `[[`, "url"))
+# Colleges. `Job_Link`: the page a person would visit (the drift check's
+# corroboration step), not necessarily the endpoint the scraper reads.
+# Western was once listed at schooljobs.com/careers/westernwyoming, a real
+# but wrong NEOGOV agency that returned a plausible "0 jobs found" page; it is
+# on PeopleAdmin. PeopleAdmin: WY keeps its campus names (Location_Label)
+# rather than the feed's authors (location_from_author = FALSE).
+WY_HE_SCRAPER_SPECS <- list(
+  Neogov = scraper_spec("fetch_neogov_postings", "Feed_URL"),
+  PeopleAdmin = scraper_spec("fetch_peopleadmin_atom", list("Feed_URL", "Location_Label",
+                                                            location_from_author = function(row) FALSE)),
+  UWHeuristic = scraper_spec("fetch_uw_postings")
+)
+# The colleges' pages by name.
+he_institution_urls <- local({ he <- read_he_registry(); stats::setNames(he$Job_Link, he$Institution) })
 
 set_state_config(state_config(
   state = "Wyoming", fips = "56", app_dir = "Wy_Ed_Jobs",
@@ -84,12 +92,9 @@ set_state_config(state_config(
   drift_baseline_from = "2026-08-03",
   scraper_sources = list(
     # The registry sits at the repository root; tests run from tests/testthat.
-    scraper_registry(function() utils::read.csv(if (file.exists("k12_district_registry.csv")) "k12_district_registry.csv"
-                                                else here::here("k12_district_registry.csv"), stringsAsFactors = FALSE),
-                     "District", "k12_district_registry.csv", specs = WY_K12_SCRAPER_SPECS),
-    scraper_registry(function() misc_district_registry, "District", "misc_district_registry (misc_district_scrapers.R)",
-                     specs = WY_MISC_SCRAPER_SPECS, platform_col = "platform", url_col = "url"),
-    scraper_calls(EXTRA_SCRAPER_CALLS, where = "a hardcoded call in Wy_ED_Jobs.Rmd")
+    scraper_registry(read_k12_registry, "District", "k12_district_registry.csv",
+                     specs = c(WY_K12_SCRAPER_SPECS, WY_MISC_SCRAPER_SPECS, WY_OTHER_K12_SCRAPER_SPECS)),
+    scraper_registry(read_he_registry, "Institution", "he_institution_registry.csv", specs = WY_HE_SCRAPER_SPECS)
   ),
   # The auto-fix issue: scraper files read as text; fixtures are named
   # <platform>_<district>..., and several districts share one parser.

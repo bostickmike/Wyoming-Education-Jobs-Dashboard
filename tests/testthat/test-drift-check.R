@@ -21,10 +21,10 @@ resolve_wy <- function(name) resolve_scraper_call(name)
 
 test_that("build_source_url_lookup covers the k12 registry, the misc districts, the colleges and WSBA", {
   lookup <- build_source_url_lookup()
-  k12 <- read.csv(here::here("k12_district_registry.csv"), stringsAsFactors = FALSE)
+  k12 <- read_k12_registry()
   expect_true(all(k12$District %in% names(lookup)))
-  # A district in both registries takes the misc registry's page (later groups win).
-  expect_equal(unname(lookup[misc_district_registry$District]), misc_district_registry$url)
+  # Every K-12 target's page is its registry Job_Link (the district sites' too, since 2026-11-16).
+  expect_equal(unname(lookup[k12$District]), k12$Job_Link)
   expect_equal(lookup[names(he_institution_urls)], he_institution_urls)
   expect_length(he_institution_urls, 9)
   expect_equal(unname(lookup[WSBA_STATEWIDE_SOURCE]), WSBA_VACANCIES_URL)
@@ -33,14 +33,24 @@ test_that("build_source_url_lookup covers the k12 registry, the misc districts, 
 
 # ---- Tier 3: per-source auto-fix issues ------------------------------------
 # The dispatch logic is tested in edjobs (test-scraper-dispatch.R). These
-# check Wyoming's data: state_config.R's three groups of sources. The "every ... resolves" tests are what
+# check Wyoming's data: state_config.R's two registries. The "every ... resolves" tests are what
 # catch a wrong call spec -- the live check and repro script depend on it.
 
-wy_k12_registry <- function() read.csv(here::here("k12_district_registry.csv"), stringsAsFactors = FALSE)
+wy_k12_registry <- function() read_k12_registry()
 
 test_that("every k12_district_registry.csv district resolves to a real scraper function", {
   k12 <- wy_k12_registry()
   for (name in k12$District) {
+    call <- resolve_scraper_call(name)
+    expect_false(is.null(call), info = name)
+    expect_true(exists(call$fn, mode = "function"), info = call$fn)
+  }
+})
+
+test_that("each direct-board and Paylocity row's call fills the fetch_*'s required arguments", {
+  # (The district sites' calls are checked against their dispatcher below.)
+  k12 <- wy_k12_registry()
+  for (name in k12$District[!k12$Platform %in% MISC_DISTRICT_PLATFORMS]) {
     call <- resolve_scraper_call(name)
     expect_false(is.null(call), info = name)
     expect_true(exists(call$fn, mode = "function"), info = call$fn)
@@ -50,11 +60,11 @@ test_that("every k12_district_registry.csv district resolves to a real scraper f
 
 test_that("registry-backed calls derive their arguments with the Rmd's own helpers", {
   k12 <- wy_k12_registry()
-  a <- k12[k12$Platform == "Applitrack", ][1, ]
+  a <- k12[k12$Platform == "AppliTrack", ][1, ]
   expect_equal(resolve_scraper_call(a$District)$args, list(applitrack_tenant_path(a$Job_Link)))
   r <- k12[k12$Platform == "RedRoverK12", ][1, ]
   expect_equal(resolve_scraper_call(r$District)$args,
-               list(as.character(r$Org_ID), redrover_org_slug(r$Job_Link)))
+               list(as.character(r$Platform_Key), redrover_org_slug(r$Job_Link)))
   rmd <- paste(readLines(here::here("Wy_ED_Jobs.Rmd"), warn = FALSE), collapse = "\n")
   for (helper in c("applitrack_tenant_path(row$Job_Link)", "schoolspring_domain(row$Job_Link)", "redrover_org_slug(row$Job_Link)")) {
     expect_true(grepl(helper, rmd, fixed = TRUE), info = helper)
@@ -69,24 +79,26 @@ test_that("every misc_district_registry district resolves to the fetch_* its dis
     call <- resolve_scraper_call(row$District)
     expect_false(is.null(call), info = row$District)
     expect_true(exists(call$fn, mode = "function"), info = call$fn)
-    expect_true(grepl(sprintf("%s = %s(", row$platform, call$fn), dispatch, fixed = TRUE), info = row$platform)
+    expect_true(grepl(sprintf("%s = %s(", row$Platform, call$fn), dispatch, fixed = TRUE), info = row$Platform)
     # session iff the scraper's first argument is a chromote session
     expect_equal(call$session, names(formals(get(call$fn)))[1] == "chromote_session", info = call$fn)
   }
 })
 
-test_that("every EXTRA_SCRAPER_CALLS entry appears verbatim in Wy_ED_Jobs.Rmd", {
+test_that("every he_institution_registry.csv college resolves, with the call the Rmd's loop makes", {
+  he <- read_he_registry()
+  expect_equal(nrow(he), 9)
   rmd <- paste(readLines(here::here("Wy_ED_Jobs.Rmd"), warn = FALSE), collapse = "\n")
-  for (name in names(EXTRA_SCRAPER_CALLS)) {
-    spec <- EXTRA_SCRAPER_CALLS[[name]]
-    expect_true(exists(spec$fn, mode = "function"), info = spec$fn)
-    # Named arguments are written as the pipeline writes them (location_from_author = FALSE).
-    shown <- vapply(spec$args, deparse, "")
-    nm <- names(spec$args); if (!is.null(nm)) shown <- ifelse(nzchar(nm), paste0(nm, " = ", shown), shown)
-    needle <- if (length(spec$args) == 0) spec$fn else
-      sprintf("%s(%s)", spec$fn, paste(shown, collapse = ", "))
-    expect_true(grepl(needle, rmd, fixed = TRUE), info = needle)
-  }
+  # The loop's branch for each platform (the call written as the spec builds it).
+  needles <- c(Neogov = "Neogov = function() fetch_neogov_postings(row$Feed_URL)",
+               PeopleAdmin = "PeopleAdmin = function() fetch_peopleadmin_atom(row$Feed_URL, row$Location_Label, location_from_author = FALSE)",
+               UWHeuristic = "UWHeuristic = fetch_uw_postings")
+  expect_setequal(unique(he$Platform), names(needles))
+  for (n in needles) expect_true(grepl(n, rmd, fixed = TRUE), info = n)
+  w <- he[he$Platform == "PeopleAdmin", ][1, ]
+  expect_equal(resolve_scraper_call(w$Institution)$args,
+               list(w$Feed_URL, w$Location_Label, location_from_author = FALSE))
+  expect_equal(resolve_scraper_call("Casper College")$args, list("caspercollege"))
 })
 
 test_that("every higher-ed drift source has a scraper call", {
@@ -113,7 +125,7 @@ test_that("build_autofix_issue_body round-trips its source marker and lists the 
   expect_equal(parse_autofix_marker(body), "Casper College")
   expect_match(body, "- Custodian", fixed = TRUE)
   expect_match(body, "`fetch_neogov_postings()`", fixed = TRUE)
-  expect_match(body, "a hardcoded call in Wy_ED_Jobs.Rmd", fixed = TRUE)
+  expect_match(body, "`Neogov` (from he_institution_registry.csv)", fixed = TRUE)
   expect_match(body, "https://run", fixed = TRUE)
   expect_match(body, "deliberately leaves out", fixed = TRUE)
   # NEOGOV is plain HTTP -- no sandbox-render hint.

@@ -18,7 +18,7 @@ read_fixture <- function(name) paste(readLines(fixture_path(name), warn = FALSE,
 misc_rule <- function(district, col) misc_district_registry[[col]][misc_district_registry$District == district]
 family_edlio <- function(fixture, district) {
   parse_edlio_postings(read_fixture(fixture), "https://example.org", NA_character_,
-                       misc_rule(district, "list_start"), misc_rule(district, "list_stop"))
+                       misc_rule(district, "List_Start"), misc_rule(district, "List_Stop"))
 }
 
 test_that("the Edlio family reads Washakie 2's prose-with-colon titles", {
@@ -255,7 +255,7 @@ test_that("parse_wy_googlesites_postings returns zero rows (not an error) when n
 family_apptegy <- function(fixture, district = NA) {
   rule <- function(col) if (is.na(district)) NA else misc_rule(district, col)
   parse_apptegy_postings(read_fixture(fixture), "https://example.org", NA_character_, "text",
-                         rule("list_start"), rule("list_stop"), rule("list_skip"))$Title
+                         rule("List_Start"), rule("List_Stop"), rule("List_Skip"))$Title
 }
 
 test_that("the Apptegy family reads Niobrara 1: colon and dash formats, contacts left out", {
@@ -275,12 +275,12 @@ test_that("the Apptegy family reads Weston 7's flat lists, skipping the repeated
   # The substitute list is kept (Mike's 11-13 rule). The "Subs Needed" block
   # below it is the same substitute pool again in prose, plus its own heading:
   # read, it counted the pool twice (5 extra rows in the 11-14 rehearsal). The
-  # registry's list_skip drops that block; the posting below it still reads.
+  # registry's List_Skip drops that block; the posting below it still reads.
   expect_equal(family_apptegy("apptegy_weston7_rendered.txt", "Weston County School District 7"), c(
     "Substitute Teacher", "Substitute Paraprofessional", "Substitute Custodian",
     "Substitute Bus Driver (CDL preferred but willing to train)", "Substitute Lunchroom Cook",
     "Paraprofessional - Technology Aide"))
-  # Without the rule the block's lines come through (what list_skip guards).
+  # Without the rule the block's lines come through (what List_Skip guards).
   expect_true("Subs Needed" %in% family_apptegy("apptegy_weston7_rendered.txt"))
 })
 
