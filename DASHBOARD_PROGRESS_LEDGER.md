@@ -768,6 +768,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-16_rehearsal-wy-registry-schema-0.31.0.log`): every step passed; parity 9/9; suites pre
     1,362 / post 1,365 passed, 0 failed; combinedclean 726 rows, every Posting_Source labeled; all 9 colleges scraped;
     coverage calendar 63 entities (as last run).
+  * [x] College postings at branch campuses on the map (2026-11-16; branch `he-campus-places`, edjobs 0.32.0; Mike
+    11-16: "we need the locations to be accurate on the map"). A posting whose Location names another Wyoming town
+    gets its own dot (edjobs `place_he_postings()`); the HE registry gains `Town`, `places.csv` holds every Census
+    place with its county; anything else stays at the main campus, counted in a note under the map;
+    facultydata.csv leaves the new columns out (`HE_PLACE_COLUMNS`; the first rehearsal stopped at its append
+    guard). Plan and measurement: `claude-notes/2026-11-16_college-campus-locations.md`. Rehearsal
+    (`claude-notes/2026-11-16_rehearsal-wy-campus-0.32.0.log`): every step passed except the post-run suite (2 tests
+    not yet aware of campus rows; fixed in 8490dfd and passing on that run's output); suites pre 1,373 / post 1,371
+    passed; hedata 462 postings: 282 main town, 23 other town (UW 17 in 7 towns, LCCC Laramie 4, CWC Jackson and
+    Lander), 157 no town (the four PeopleAdmin colleges' fixed labels, Gillette's buildings, UW "United States";
+    campus rules are stage 2, not built).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
