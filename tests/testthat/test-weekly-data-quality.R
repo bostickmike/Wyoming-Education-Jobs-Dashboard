@@ -130,6 +130,14 @@ test_that("percentage / rate columns are stored as proportions in [0, 1] (not 0-
                                           d2$Child_Poverty_Rate <= d2$Child_Poverty_High & d2$Child_Poverty_High <= 1)
     expect_true(all(ok %in% TRUE), info = "salarymap2 Child_Poverty_Low <= Child_Poverty_Rate <= Child_Poverty_High")
   }
+  # ACS 90% margins of error (edjobs 0.28.0): never negative; the mining share's
+  # can't exceed 1. Skipped until the columns exist.
+  for (col in intersect(c("Median_Household_Income_MOE", "Median_Gross_Rent_MOE", "Mining_Employment_Share_MOE"), names(d2))) {
+    expect_true(all(is.na(d2[[col]]) | d2[[col]] >= 0), info = paste("salarymap2", col, ">= 0"))
+  }
+  if ("Mining_Employment_Share_MOE" %in% names(d2)) {
+    expect_true(all(is.na(d2$Mining_Employment_Share_MOE) | d2$Mining_Employment_Share_MOE <= 1), info = "salarymap2 mining MOE <= 1")
+  }
   # a WY county gaining/losing >50% of its population in 5yr is a data error
   expect_true(all(is.na(d2$Population_Change_Pct) | abs(d2$Population_Change_Pct) <= 0.5),
               info = "salarymap2 Population_Change_Pct")
