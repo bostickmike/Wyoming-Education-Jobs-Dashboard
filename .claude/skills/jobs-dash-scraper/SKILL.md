@@ -1,6 +1,6 @@
 ---
 name: jobs-dash-scraper
-description: Find, build, and repair direct job-posting scrapers for the Montana and Wyoming Education Jobs Dashboards (bostickmike/Montana-Education-Jobs-Dashboard, bostickmike/Wyoming-Education-Jobs-Dashboard). Covers three jobs -- (1) fixing a scraper that went quiet or was flagged likely_broken / scraper-autofix by the drift check, (2) discovering K-12 districts or colleges that aren't directly scraped yet (DISTRICT_BACKLOG.md, the OPI/WSBA statewide lists, HE institutions) and adopting them with a registry row, scraper, real fixture and tests, and (3) re-checking previously declined districts to see if their page now has a scrapeable structure. Use this whenever the user is in either jobs-dash repo and mentions a broken/quiet/zero-posting district or college, a scraper-autofix issue, adding districts, "increase coverage", the backlog, OPI/WSBA gaps, identifying what job platform a school site uses, or when running in GitHub Actions on an auto-fix issue -- even if they don't say "scraper".
+description: Find, build, and repair direct job-posting scrapers for the Montana and Wyoming Education Jobs Dashboards (bostickmike/Montana-Education-Jobs-Dashboard, bostickmike/Wyoming-Education-Jobs-Dashboard). Covers four jobs -- (1) fixing a scraper that went quiet or was flagged likely_broken / scraper-autofix by the drift check, (2) discovering K-12 districts or colleges that aren't directly scraped yet (DISTRICT_BACKLOG.md, the OPI/WSBA statewide lists, HE institutions) and adopting them with a registry row, scraper, real fixture and tests, (3) re-checking previously declined districts to see if their page now has a scrapeable structure, and (4) backfilling past postings from web archives (Wayback Machine, Common Crawl) for boards that existed before we scraped them, e.g. for a new state. Use this whenever the user is in either jobs-dash repo and mentions a broken/quiet/zero-posting district or college, the Wayback Machine or archived job boards, a scraper-autofix issue, adding districts, "increase coverage", the backlog, OPI/WSBA gaps, identifying what job platform a school site uses, or when running in GitHub Actions on an auto-fix issue -- even if they don't say "scraper".
 ---
 
 # Jobs-dash scraper work
@@ -23,6 +23,7 @@ So everything below serves one rule: **nothing gets written into a parser, a fix
 | **Discover** new targets | "find districts we're missing", "work the backlog", "increase coverage", HE gaps | `references/discovery.md`, then adopt |
 | **Adopt** a verified target | a specific district/college with a URL to add | `references/adopt-new-source.md` |
 | **Recheck** declined targets | "recheck the declined ones", backlog Groups 2/3/7 | `references/discovery.md` § Recheck |
+| **Backfill** history from web archives | "Wayback", "Internet Archive", "past postings", "before we started scraping", a new state's history | `references/web-archive-backfill.md` (scripts `wayback_index.sh`, `wayback_pick.sh`, `wayback_fetch.sh`) |
 
 `references/platform-fingerprints.md` maps page signatures to platforms and to the existing scraper for each. You'll need it in every task.
 

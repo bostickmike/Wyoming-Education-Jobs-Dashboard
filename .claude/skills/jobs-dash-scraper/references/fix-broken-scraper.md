@@ -18,11 +18,11 @@ A source "breaks" in one of four ways, and only one of them is a parser fix. Cla
   Rscript scripts/repro_scraper.R "<exact registry District/Institution name>"
   ```
   It prints the resolved `fetch_*`/`parse_*` function, runs that source's fixture tests, runs the scraper live, and for innerText scrapers saves the rendered text (`--save-text PATH`) in exactly the form a fixture takes.
-- If repro_scraper can't resolve the source (Wyoming `misc_district_registry` rows, statewide feeds), find the scraper by grepping the registry name / platform in the scraper files and the `.Rmd`, then call `fetch_*` directly.
+- If repro_scraper can't resolve the source (statewide feeds, WSBA-only orgs), find the scraper by grepping the registry name / platform in the scraper files and the `.Rmd`, then call `fetch_*` directly.
 
 ## 2. Check for a platform migration before touching the parser
 
-Run `scripts/fingerprint_platform.py` on the district's homepage and its employment page. If the district now links to a different ATS (AppliTrack → Tyler Portico / SchoolSpring / Red Rover is the common pattern), the fix is a **registry change** (Platform, Slug/Org_ID, Job_Link) with no parser change. Check that the existing platform scraper returns real postings for the new slug before you commit anything. A dead tenant often still answers 200 with an empty board, so don't take a 200 as proof it works.
+Run `scripts/fingerprint_platform.py` on the district's homepage and its employment page. If the district now links to a different ATS (AppliTrack → Tyler Portico / SchoolSpring / Red Rover is the common pattern), the fix is a **registry change** (Platform, Platform_Key, Job_Link) with no parser change. Check that the existing platform scraper returns real postings for the new slug before you commit anything. A dead tenant often still answers 200 with an empty board, so don't take a 200 as proof it works.
 
 ## 3. Parser fix procedure
 
