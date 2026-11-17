@@ -119,6 +119,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | :--- | :--- | :--- | :--- |
 | `District` | String | Canonical Registry | Canonical public school district or charter school name. |
 | `NCES_LEAID` | String (7-digit) | NCES CCD | Official federal NCES Local Education Agency 7-digit identifier. |
+| `CCD_Link` | URL | NCES CCD | Link to this district's page in the NCES Common Core of Data district search, built from NCES_LEAID (edjobs nces_district_url()). The page shows NCES's newest school year, which can be newer than CCD_Year. Blank when the district has no NCES id. |
 | `County` | String | US Census Bureau | County in which the district central administrative headquarters is located. |
 | `Latitude` | Decimal Degrees | US Census / Geocoding | Geographic latitude coordinate of district central headquarters. |
 | `Longitude` | Decimal Degrees | US Census / Geocoding | Geographic longitude coordinate of district central headquarters. |
@@ -173,6 +174,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Total_FTE` | Numeric | Wyoming Dept of Education | Total full-time-equivalent staff employed in that specific assignment group. |
 | `Average_Base_Salary` | Currency ($) | Wyoming Dept of Education | Average contracted base salary for staff in that assignment group. |
 | `Average_Total_Salary` | Currency ($) | Wyoming Dept of Education | Average total compensation including stipends and benefits for staff in that assignment group. |
+| `Source_Link` | URL | Wyoming Dept of Education | WDE's report "District K12 Staff FTE and Average Salary by Category" (reporting.edu.wyo.gov), where these figures are published. WDE has no page per district: the report covers every district; choose the school year in its form. |
 
 ---
 
@@ -221,6 +223,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | :--- | :--- | :--- | :--- |
 | `Name` | String | IPEDS Directory | Official legal institution name of the public college or university. |
 | `IPEDS_UNITID` | String (6-digit) | NCES IPEDS | Official 6-digit federal NCES Integrated Postsecondary Education Data System Unit ID. |
+| `IPEDS_Link` | URL | NCES IPEDS | Link to this institution's page in NCES College Navigator, built from IPEDS_UNITID (edjobs college_navigator_url()). The page shows NCES's newest year, which can be newer than this file's year columns. Blank when the institution has no IPEDS id. |
 | `Longitude` | Decimal Degrees | IPEDS Directory | Geographic longitude coordinate of main campus centroid. |
 | `Latitude` | Decimal Degrees | IPEDS Directory | Geographic latitude coordinate of main campus centroid. |
 | `Link` | URL | Institutional Directory | Official careers or employment opportunities portal URL for the institution. |
