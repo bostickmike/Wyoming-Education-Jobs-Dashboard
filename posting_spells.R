@@ -34,7 +34,7 @@
 #   (substitute lists, "always accepting", posted over a year before we first
 #   saw them), pools (applicant pools, adjunct and part-time faculty listings),
 #   frozen boards (a source whose whole posting set stayed identical for
-#   FROZEN_MIN_RUNS+ runs with FROZEN_MIN_POSTINGS+ postings: Fremont #38's
+#   FROZEN_MIN_WEEKS+ weeks with FROZEN_MIN_POSTINGS+ postings: Fremont #38's
 #   stale page of 2024-10 to 2025-11), titles shared by several postings in
 #   the district, and left-censored starts.
 #

@@ -13,6 +13,14 @@ concurrency:
   group: weekly-scrape
   cancel-in-progress: false
 
+# One run date for every step, in the boards' own time zone (2026-11-17): R's
+# Sys.Date() (archive file names, Archive_Date, posting status, retrieved dates,
+# the coverage calendar) and the shell's date (guard, commit message) read TZ.
+# GitHub starts the cron hours late, and a UTC date would turn over at 5-6 pm
+# Mountain, mid-run; presence_today() was already Mountain.
+env:
+  TZ: America/Denver
+
 permissions:
   contents: write
   issues: write
@@ -39,7 +47,7 @@ jobs:
       - name: Skip a scheduled run when today's data refresh is already on main
         id: check
         run: |
-          today=$(date -u +%Y-%m-%d)
+          today=$(date +%Y-%m-%d)
           if [ "${{ github.event_name }}" = "schedule" ] && \
              git fetch --depth=50 origin main && \
              git log -n 50 --format=%s FETCH_HEAD | grep -xF "Automated weekly data refresh ($today)" > /dev/null; then
@@ -289,6 +297,30 @@ jobs:
         continue-on-error: true
         run: Rscript .github/scripts/check_run_expectations.R
 
+      # Check 5 (twice-weekly plan, 2026-11-17): is the daily presence check
+      # (presence.yml) still recording? It commits to the `presence` branch at
+      # most once a day, and not at all on a day with no change, so the run
+      # summary always shows the last commit's age and only a gap of more than
+      # 3 days goes in the drift issue. Same non-blocking shape.
+      - name: Check the daily presence check is still recording
+        id: check_presence_age
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          last=$(gh api "repos/$GITHUB_REPOSITORY/commits/presence" --jq '.commit.committer.date')
+          days=$(( ( $(date +%s) - $(date -d "$last" +%s) ) / 86400 ))
+          echo "Daily presence check: last commit to the presence branch $last ($days day(s) ago)." | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$days" -gt 3 ]; then
+            {
+              echo ""
+              echo "---"
+              echo ""
+              echo "**Daily presence check:** the presence branch's last commit is $days days old ($last). The daily check commits whenever a board changes, so a gap this long usually means presence.yml is failing or not being scheduled. See [its runs](${{ github.server_url }}/${{ github.repository }}/actions/workflows/presence.yml)."
+              echo ""
+            } >> /tmp/drift_report.md
+          fi
+
       # Closes the one real gap continue-on-error opens up: a bug that
       # CRASHES one of the three monitoring steps above is indistinguishable
       # from "ran fine, found nothing to report" unless something checks for
@@ -310,6 +342,7 @@ jobs:
           [ "${{ steps.check_frozen_boards.outcome }}" = "failure" ] && FAILED="$FAILED check_frozen_boards.R"
           [ "${{ steps.build_posting_spells.outcome }}" = "failure" ] && FAILED="$FAILED build_posting_spells.R"
           [ "${{ steps.check_run_expectations.outcome }}" = "failure" ] && FAILED="$FAILED check_run_expectations.R"
+          [ "${{ steps.check_presence_age.outcome }}" = "failure" ] && FAILED="$FAILED presence-age check"
 
           if [ -z "$FAILED" ]; then
             echo "All monitoring steps ran without crashing."
@@ -431,6 +464,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No data changes this run -- nothing to commit."
           else
-            git commit -m "Automated weekly data refresh ($(date -u +%Y-%m-%d))"
+            git commit -m "Automated weekly data refresh ($(date +%Y-%m-%d))"
             git push
           fi

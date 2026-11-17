@@ -1,8 +1,8 @@
 # Frozen-board check (WY spells trust audit 2026-11-05, finding 2; functions in
 # edjobs since phase 4). Non-blocking and informational only,
 # like check_drift.R: a board (K-12 district + its board host, or an HE
-# institution) whose whole posting set has been identical for
-# FROZEN_MIN_RUNS+ runs, still frozen this run. check_drift.R can't see it:
+# institution) whose whole posting set has been identical in every run across
+# FROZEN_MIN_WEEKS+ weeks, still frozen this run. check_drift.R can't see it:
 # the count is steady, which is exactly what it looks for.
 # Appends to /tmp/drift_report.md; writes /tmp/frozen_boards.csv either way.
 
@@ -11,8 +11,9 @@ source("k12_he_classification.R")
 source("drift_check.R")
 source("posting_spells.R")
 
-lookback <- FROZEN_MIN_RUNS + 8
-recent <- function(dir, pattern) utils::tail(sort(list.files(dir, pattern = pattern, full.names = TRUE)), lookback)
+# Every run (a stretch is broken by a run without the board) from the last FROZEN_MIN_WEEKS + 8 weeks.
+lookback_days <- 7 * (FROZEN_MIN_WEEKS + 8)
+recent <- function(dir, pattern) recent_archive_files(dir, pattern, days = lookback_days)
 run_of <- function(f) as.Date(sub("^[a-z]+_(\\d{4}-\\d{2}-\\d{2})\\..*$", "\\1", basename(f)))
 
 k12 <- bind_rows(lapply(recent("Archivek12_Data", "^combined_\\d{4}-\\d{2}-\\d{2}\\.csv$"), function(f) {
@@ -31,8 +32,8 @@ he <- he[!is.na(he$title) & !is_placeholder_posting(he$title), , drop = FALSE]
 
 frozen <- bind_rows(mutate(frozen_board_runs(k12), Segment = "K-12"), mutate(frozen_board_runs(he), Segment = "HE"))
 ongoing <- frozen[frozen$Ongoing, , drop = FALSE]
-cat(sprintf("Frozen boards: %d board(s) unchanged for %d+ runs with %d+ postings and still frozen (over the last %d K-12 / %d HE runs).\n",
-            nrow(ongoing), FROZEN_MIN_RUNS, FROZEN_MIN_POSTINGS, length(unique(k12$Run_Date)), length(unique(he$Run_Date))))
+cat(sprintf("Frozen boards: %d board(s) unchanged for %d+ weeks with %d+ postings and still frozen (over the last %d K-12 / %d HE runs).\n",
+            nrow(ongoing), FROZEN_MIN_WEEKS, FROZEN_MIN_POSTINGS, length(unique(k12$Run_Date)), length(unique(he$Run_Date))))
 write.csv(frozen, "/tmp/frozen_boards.csv", row.names = FALSE)
 
 report_lines <- build_frozen_board_report_markdown(frozen)
