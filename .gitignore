@@ -20,3 +20,7 @@ OneDrive_1_8-4-2026/
 all_direct_k12_job_listings.csv
 .claude/worktrees/
 .edjobs/
+
+# testthat failure snapshots (written when a test fails locally)
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds
