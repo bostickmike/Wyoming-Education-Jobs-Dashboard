@@ -7,7 +7,7 @@ The goal is more districts and colleges with a **direct** scrape. The statewide 
 The state reference names where the master list and the decline record live. The general method:
 
 1. Start from the **authoritative universe**: Montana's OPI district dropdown (codes < 4000 are real public K-12 LEAs, and ≥ 4000 are Head Start, co-ops, colleges, and private schools), or Wyoming's 48 districts plus its charters. For higher ed, use IPEDS degree-granting institutions in the state.
-2. Subtract what's already covered (the registry, plus Wyoming's `misc_district_registry` in `misc_district_scrapers.R`, plus Montana's `llm_extract_targets.csv`).
+2. Subtract what's already covered (the K-12 registry, plus Montana's `llm_extract_targets.csv`).
 3. Subtract what's already been investigated and resolved (Montana: every group in `DISTRICT_BACKLOG.md` except "Not yet investigated" and the recheck groups).
 4. **Normalize names before you call anything "new."** Real traps in this project:
    - Montana high-school districts are often named after the *county* ("Fergus H S" is Lewistown, "Flathead H S" is Kalispell, "Custer County H S" is Miles City, not the town of Custer).

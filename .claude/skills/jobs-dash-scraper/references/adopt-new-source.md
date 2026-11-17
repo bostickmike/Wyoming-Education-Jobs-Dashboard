@@ -47,22 +47,22 @@ You only get here once you've seen real current postings on the live page and kn
 
 ## Apptegy (Montana)
 
-Apptegy sites sit behind a Fastly "Client Challenge" that a plain request can't pass, so they ride the pipeline's shared headless-Chrome session (`fetch_apptegy_k12_postings()`). Olney-Bissell (2026-11-09, text blocks) and Savage (accordion panels) are the worked examples.
+Apptegy sites sit behind a Fastly "Client Challenge" that a plain request can't pass, so they ride the pipeline's shared headless-Chrome session (`fetch_apptegy_k12_postings()`). Since edjobs 0.18.0 every Apptegy district reads through one family routine, `edjobs::fetch_apptegy_postings()`: no per-district code. Registry Platform `Apptegy` reads the rendered text (most districts); `ApptegyPageBuilder` reads the page-builder JSON, for pages whose jobs sit in collapsed accordions, buttons or cards (Conrad, Gardiner, Drummond, Deer Lodge, Savage, Olney-Bissell). Optional per-district rules (where the list starts, where it stops, a section to skip; perl regexes) are rows in `k12_list_rules.csv`. A page the shared filter can't read (Shelby: titles inside a sentence) is `ApptegyBespoke`, with its own scraper in `APPTEGY_DISTRICT_SCRAPERS`.
 
 1. **Capture the rendered page** (headless Chrome, as the pipeline renders it; `AIza...` keys redacted; refuses a page without page-builder data):
    ```bash
    Rscript scripts/capture_fixture.R --apptegy --url "<employment page>" --slug "<slug>"
    ```
-   Saves `tests/testthat/fixtures/apptegy_<slug>_pagedata_<today>.html` (about 1.2 MB). Look at the page's structure: `decode_apptegy_pagebuilder_nodes()` + `find_all_apptegy_nodes()` give the content tree. Postings are either the bold (`<strong>`) text of `CONTENT_NODE_TEXT` blocks (Olney-Bissell) or lines inside `CONTENT_NODE_PANEL` accordions headed e.g. "Certified Positions" (Savage).
-2. **Scaffold** (`--cms apptegy` is picked automatically when that fixture exists):
+   Saves `tests/testthat/fixtures/apptegy_<slug>_rendered_<today>.txt` (innerText) and `apptegy_<slug>_pagedata_<today>.html` (about 1.2 MB). Look at the text: if the postings are in it, the page is text mode (delete the `.html`); if they only show up in the page-builder data (`edjobs::decode_apptegy_pagebuilder_nodes()`), it is page-builder mode (delete the `.txt`).
+2. **Scaffold** (`--cms apptegy` is picked automatically when either fixture exists; the text one wins):
    ```bash
    Rscript scripts/scaffold_district.R --district "<exact registry name>" --city "<town>" \
      --county "<County> County" --lat <lat> --lon <lon> --url "<employment page>" \
-     --slug "<slug>" --leaid <NCES id> [--node text|panel] [--panel-match "Positions"]
+     --slug "<slug>" --leaid <NCES id> [--node text|pagebuilder] [--start "<regex>"] [--stop "<regex>"] [--skip "<regex>"]
    ```
-   It writes the registry row (`Platform` `Apptegy`), allowlist host, DLI-unmapped test entry, the name in the Rmd's Apptegy `safe_scrape()` label, `parse_<slug>_postings()`/`fetch_<slug>_postings(chromote_session, url)` before the dispatcher plus the `APPTEGY_DISTRICT_SCRAPERS` entry, unit tests asserting the exact titles the parser returns on the fixture, a `fake_chromote_session()` fetch test, the dispatcher-test fixture/routing/counts, and the README/cookbook counts. It prints the titles: **check them against the live page**; zero titles or wrong ones mean the other `--node`, or a hand-written parser (then fix the tests' expected titles). It warns if an existing routing pattern in the dispatcher test already matches the URL. Rerunning is safe (each step skips what's there).
-3. **Finish by hand:** the TODO comment above the parser (what the page holds, how confirmed), title filters if the page has bold notices the default filter misses, `DISTRICT_BACKLOG.md`, CLAUDE.md's district count, the DLI map if there is one, the repo's Copilot internet-access setting.
-4. Tests (`test-misc-district-scrapers.R`, `test-salary-scrapers.R`, `test-copilot-allowlist.R`), then `scripts/repro_scraper.R "<District>"` for the live run.
+   It writes the registry row (with its list rules when one is given), the allowlist host, the DLI-unmapped test entry, a `test-apptegy-family.R` block asserting the titles the routine returns on the fixture, and the README/cookbook counts. It prints the titles: **check them against the live page**. Wrong or missing titles: try the other `--node`, or a `--start`/`--stop` rule (rerun after deleting the test block it wrote). Rerunning is safe (each step skips what's there).
+3. **Finish by hand:** `DISTRICT_BACKLOG.md`, CLAUDE.md's district count, the DLI map if there is one, the repo's Copilot internet-access setting. Change the shared filter (edjobs `R/apptegy.R`) only for a pattern several districts share, and rerun both states' family tests when you do.
+4. Tests (`test-apptegy-family.R`, `test-salary-scrapers.R`, `test-copilot-allowlist.R`), then `scripts/repro_scraper.R "<District>"` for the live run.
 
 ## Sanity checks that have caught real mistakes
 
