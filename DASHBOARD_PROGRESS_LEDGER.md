@@ -812,6 +812,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     step passed; parity 9/9; suites pre 1,388 / post 1,391 passed, 0 failed; links on 52 / 57 districts (no NCES id:
     Snowy Range Academy, Laramie Montessori, STRIDE, Sweetwater CDC, Wyoming Boys School), 9 / 9 colleges, and all
     1,938 WDE602 rows.
+  * [x] Data dictionary source labels a reader can look up (2026-11-16; branch `dictionary-source-labels`; Mike 11-16:
+    the `Primary_Authority` labels were internal, "Canonical Registry", "Project Pipeline"; option A, Mike: "A is
+    fine"). Every row now names an outside source or "This dashboard: ..." with how the value was made: weekly
+    snapshot, posting tracking, job title classification, district and college list, coverage summary; Salary_Note "This dashboard: method note"; postings
+    are "Job posting (district job board or WSBA vacancy list)" or "Job posting (college job board)"; duplicate source names merged (NCES Common Core
+    of Data (CCD), US Census ACS 5-year, US Dept of Education FSA, Wyoming Dept of Education (WDE602)). Names,
+    coordinates and careers links say "district and college list", not IPEDS or Census geocoding: the cookbook has
+    them hand-maintained. 131 of the CSV's rows and 128 rows of DATA_DICTIONARY.md changed; no other cell changed;
+    the two agree on every label. Suite 1,364 passed, 0 failed. Plan: `claude-notes/2026-11-16_dictionary-source-labels.md`.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
