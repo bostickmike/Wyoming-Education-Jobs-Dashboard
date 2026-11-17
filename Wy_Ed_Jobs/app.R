@@ -34,18 +34,8 @@ FEEDBACK_REPO_DEFAULT <- "bostickmike/Wyoming-Education-Jobs-Dashboard"
 # silent blank field or an opaque stack trace.
 #--------------------------------------------------
 DATA_LOAD_ISSUES <- character(0)
-
-validate_and_pad_schema <- function(df, required_cols, source_name) {
-  missing <- setdiff(required_cols, names(df))
-  if (length(missing) > 0) {
-    DATA_LOAD_ISSUES <<- c(DATA_LOAD_ISSUES, sprintf(
-      "%s is missing expected column(s): %s. That data will show blank until the pipeline is fixed.",
-      source_name, paste(missing, collapse = ", ")
-    ))
-    for (col in missing) df[[col]] <- NA
-  }
-  df
-}
+# validate_and_pad_schema() (edjobs) reports a file's missing columns through this.
+note_load_issue <- function(msg) DATA_LOAD_ISSUES <<- c(DATA_LOAD_ISSUES, msg)
 
 
 first_seen_table <- tryCatch(read.csv("posting_first_seen.csv", colClasses = "character", fileEncoding = "UTF-8"),
@@ -110,11 +100,6 @@ PAY_BANDS <- list(
   year_60_70 = list(unit = "year", lo = 60000, hi = 70000, label = "$60\u201370k/yr"),
   year_70p   = list(unit = "year", lo = 70000, hi = Inf,   label = "$70k+/yr")
 )
-in_pay_band <- function(value, unit, band) {
-  if (is.null(band) || !band %in% names(PAY_BANDS)) return(rep(TRUE, length(value)))
-  b <- PAY_BANDS[[band]]
-  !is.na(value) & !is.na(unit) & unit == b$unit & value >= b$lo & value < b$hi
-}
 
 
 #--------------------------------------------------
@@ -131,7 +116,7 @@ for (col in c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text",
 }
 oews_year <- na.omit(combineddata$Est_Year)[1]
 combineddata <- combineddata %>%
-  validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv") %>%
+  validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv", on_missing = note_load_issue) %>%
   mutate(`Posted Pay` = format_posted_pay(Pay_Min, Pay_Max, Pay_Unit),
          `Typical pay (BLS est.)` = format_bls_estimate(Est_Pay, Est_Pay_Unit, Est_Occupation, Est_Area, !is.na(Pay_Min))) %>%
   select(District, title, position, location, `Posted Pay`, `Typical pay (BLS est.)`, date_posted, url,
@@ -170,7 +155,7 @@ mapdata2_k12 <- mapdata2_k12 %>%
                              "Median_Household_Income", "Median_Gross_Rent", "Mining_Employment_Share",
                              "Population_Change_Pct", "ACS_Year", "Child_Poverty_Rate", "SAIPE_Year",
                              "Teacher_Avg_Salary"),
-                           "salarymap2.csv") %>%
+                           "salarymap2.csv", on_missing = note_load_issue) %>%
   rename(Name = District)
 
 # District salary lookup for the Jobs Table
@@ -293,10 +278,10 @@ if (file.exists(wde_staff_file)) {
 # tables, matching that same all-category count rather than a
 # teacher/faculty-only proxy that wouldn't line up with the number shown.
 k12_district_weekly_totals <- read.csv("k12_district_weekly_totals.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("District", "Archive_Date", "n"), "k12_district_weekly_totals.csv") %>%
+  validate_and_pad_schema(c("District", "Archive_Date", "n"), "k12_district_weekly_totals.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv") %>%
+  validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 
 data_dictionary <- if (file.exists("data_dictionary.csv")) {
@@ -317,14 +302,6 @@ spells_footnote <- function() {
     "posting was listed, not time to fill: a listing ends when it stops appearing, whether it was filled, cancelled, ",
     "moved to another board or missed by a scrape, and a posting already listed when its board was first scraped ",
     "starts late. \u201cNo longer listed\u201d means only that it no longer appears.")
-}
-SPELL_STATUS_LABELS <- c("Closed / Filled" = "No longer listed")
-relabel_spell_status <- function(df) {
-  if (nrow(df) > 0 && "Status" %in% names(df)) {
-    hit <- df$Status %in% names(SPELL_STATUS_LABELS)
-    df$Status[hit] <- SPELL_STATUS_LABELS[df$Status[hit]]
-  }
-  df
 }
 
 job_duration_spells <- if (file.exists("job_duration_spells.csv")) {
@@ -367,7 +344,7 @@ kpi_value_box <- function(value, subtitle, icon = NULL, color = "blue", ...) {
 }
 
 k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("Broad_Category", "Archive_Date", "District", "sum"), "allsum.csv") %>%
+  validate_and_pad_schema(c("Broad_Category", "Archive_Date", "District", "sum"), "allsum.csv", on_missing = note_load_issue) %>%
   mutate(District = str_squish(as.character(District)),
          Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
@@ -392,7 +369,7 @@ k12sum <- k12sum %>%
 
 
 k12nowsum <- read.csv("allnow.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("Broad_Category", "Sum", "District"), "allnow.csv") %>%
+  validate_and_pad_schema(c("Broad_Category", "Sum", "District"), "allnow.csv", on_missing = note_load_issue) %>%
   mutate(Broad_Category = dplyr::recode(Broad_Category,
                                         "English Language Arts Secondary" = "Engl. LA",
                                         "Secondary Social Studies" = "Soc. St.",
@@ -419,7 +396,7 @@ for (col in c("Campus_Latitude", "Campus_Longitude")) ccdata[[col]] <- as.numeri
 he_run_date <- suppressWarnings(max(as.Date(substr(as.character(ccdata$Archive_Date), 1, 10)), na.rm = TRUE))
 if (!is.finite(he_run_date)) he_run_date <- Sys.Date()
 ccdata <- ccdata %>%
-  validate_and_pad_schema(c("Institution", "Title", "Location", "Posted_Date", "Link"), "hedata.xlsx") %>%
+  validate_and_pad_schema(c("Institution", "Title", "Location", "Posted_Date", "Link"), "hedata.xlsx", on_missing = note_load_issue) %>%
   mutate(`Posted Pay` = format_posted_pay(Pay_Min, Pay_Max, Pay_Unit),
          `Typical pay (est.)` = format_he_estimate(Est_Pay, Est_Pay_Unit, Est_Occupation, Est_Area, Est_Year, Est_Source,
                                                    !is.na(Pay_Min))) %>%
@@ -447,7 +424,7 @@ mapdata2_he <- mapdata2_he %>%
                              "County", "Median_Household_Income", "Median_Gross_Rent",
                              "Mining_Employment_Share", "Population_Change_Pct", "ACS_Year",
                              "Enrollment", "Enrollment_Change_Pct", "Pell_Recipient_Share", "Pell_Year"),
-                           "salarymap.csv") %>%
+                           "salarymap.csv", on_missing = note_load_issue) %>%
   mutate(Salary_Year = as.character(Salary_Year), Pell_Year = as.character(Pell_Year))
 
 # Institution faculty salary lookup for the Higher Ed Jobs Table
@@ -491,7 +468,7 @@ ccdata <- ccdata %>%
          `Posted / listed`, Link, .Pay_Value, .Pay_Unit, .Map_Name)
 
 hesum_he <- read.csv("allsum_he.csv") %>%
-  validate_and_pad_schema(c("Category", "Archive_Date", "Institution", "Job_Type", "sum"), "allsum_he.csv") %>%
+  validate_and_pad_schema(c("Category", "Archive_Date", "Institution", "Job_Type", "sum"), "allsum_he.csv", on_missing = note_load_issue) %>%
   filter(Category != "Uncategorized")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
@@ -506,7 +483,7 @@ WINDOW_WEEKS <- 52
 hesum_he$Category<- as.factor(hesum_he$Category)
 
 henowsum_he <- read.csv("allnow_he.csv") %>%
-  validate_and_pad_schema(c("Category", "Job_Type", "Sum", "Institution"), "allnow_he.csv") %>%
+  validate_and_pad_schema(c("Category", "Job_Type", "Sum", "Institution"), "allnow_he.csv", on_missing = note_load_issue) %>%
   filter(Category != "Uncategorized")
 
 last_refreshed_date <- format(max(k12sum$Archive_Date, hesum_he$Archive_Date, na.rm = TRUE), "%B %d, %Y")
@@ -643,7 +620,7 @@ HE_JOB_TYPE_COLORS <- c(
 # are already filtered that way upstream).
 #--------------------------------------------------
 k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("title", "Archive_Date", "location", "District"), "k12jobanalysis.csv") %>%
+  validate_and_pad_schema(c("title", "Archive_Date", "location", "District"), "k12jobanalysis.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date))
 
 k12_new_this_week <- {
@@ -660,7 +637,7 @@ k12_new_this_week <- {
 }
 
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv") %>%
+  validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Appointment = dplyr::recode(
@@ -929,7 +906,7 @@ map_county_choices <- c("All Counties" = "all", setNames(
   sub(", Wyoming$", "", sort(unique(na.omit(combined_map_data$County))))
 ))
 
-# Map marker size/color -- radius scaled by sqrt(CurrentCount), not
+# Map marker size/color -- radius (edjobs map_marker_radius()) scaled by sqrt(CurrentCount), not
 # CurrentCount directly, since a circle's perceived size is its area, not
 # its radius (linear scaling would visually overstate the gap between a
 # 10-opening and a 100-opening district). Color is a single-hue sequential
@@ -938,11 +915,6 @@ map_county_choices <- c("All Counties" = "all", setNames(
 # separate ramps for K-12 vs. HE's different pay scales. Domain is fixed
 # from the full unfiltered dataset so the color scale (and legend) don't
 # shift as the K-12/HE checkbox filter changes what's on screen.
-MAP_MARKER_MIN_RADIUS <- 6
-MAP_MARKER_MAX_RADIUS <- 24
-map_marker_radius <- function(current_count) {
-  pmin(MAP_MARKER_MAX_RADIUS, MAP_MARKER_MIN_RADIUS + 1.2 * sqrt(current_count))
-}
 
 vacancy_rate_domain <- compute_vacancy_rate_domain(combined_map_data$Vacancy_Rate)
 vacancy_rate_palette <- colorNumeric(palette = "YlOrRd", domain = vacancy_rate_domain, na.color = "#9e9e9e")
@@ -988,17 +960,6 @@ help_popover <- function(title, ..., source = NULL) {
   )
 }
 
-# The columns of a public file with their definitions, from data_dictionary.csv,
-# for a download tile's (?).
-dictionary_columns_help <- function(file_name) {
-  d <- data_dictionary[data_dictionary$File_Name == file_name, , drop = FALSE]
-  if (nrow(d) == 0) return(NULL)
-  tagList(
-    p(class = "mb-1", tags$strong(nrow(d), " columns:")),
-    tags$dl(class = "help-columns mb-0",
-            lapply(seq_len(nrow(d)), function(i) tagList(tags$dt(tags$code(d$Column_Name[i])), tags$dd(d$Definition[i]))))
-  )
-}
 
 # An "(i) label" link that opens explanatory text in a popover, so long
 # method notes stay one click away instead of filling the page.
@@ -1044,27 +1005,23 @@ USGS_TILE_CREDIT <- paste('<a href="https://www.usgs.gov/programs/national-geosp
 # (Mike, 2026-11-16: give one for every source). Missing file or source: the line shows no date.
 source_dates <- tryCatch(read.csv("source_retrieved_dates.csv", stringsAsFactors = FALSE, colClasses = "character"),
                          error = function(e) data.frame(Source = character(0), Retrieved = character(0)))
-footer_retrieved <- function(sources) {
-  x <- sort(unique(source_dates$Retrieved[source_dates$Source %in% sources & nzchar(source_dates$Retrieved)]))
-  if (length(x) == 0) "" else if (length(x) == 1) paste0(" (retrieved ", x, ")") else paste0(" (retrieved ", x[1], " to ", x[length(x)], ")")
-}
 
 data_sources_footer <- tags$footer(
   class = "data-sources-footer",
   tags$p(tags$strong("Data sources."), "Job postings: each employer's own job board (every posting links to it) and the Wyoming School Boards Association vacancies list."),
   tags$p(
-    paste0("U.S. Census Bureau: American Community Survey 5-Year Estimates", footer_retrieved("Census ACS"),
-           "; Small Area Income and Poverty Estimates", footer_retrieved("Census SAIPE"),
-           "; Census Geocoder", footer_retrieved("Census Geocoder"), "."),
-    paste0("U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics", footer_retrieved("BLS OEWS"),
-           " and Quarterly Census of Employment and Wages", footer_retrieved("BLS QCEW"), "."),
-    HTML(paste0("NCES Common Core of Data", footer_retrieved("Urban CCD"), ", IPEDS", footer_retrieved("Urban IPEDS"),
-                " and Federal Student Aid Title IV data", footer_retrieved("Urban FSA"), ", via Education Data Portal, Urban Institute, ",
+    paste0("U.S. Census Bureau: American Community Survey 5-Year Estimates", footer_retrieved("Census ACS", source_dates),
+           "; Small Area Income and Poverty Estimates", footer_retrieved("Census SAIPE", source_dates),
+           "; Census Geocoder", footer_retrieved("Census Geocoder", source_dates), "."),
+    paste0("U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics", footer_retrieved("BLS OEWS", source_dates),
+           " and Quarterly Census of Employment and Wages", footer_retrieved("BLS QCEW", source_dates), "."),
+    HTML(paste0("NCES Common Core of Data", footer_retrieved("Urban CCD", source_dates), ", IPEDS", footer_retrieved("Urban IPEDS", source_dates),
+                " and Federal Student Aid Title IV data", footer_retrieved("Urban FSA", source_dates), ", via Education Data Portal, Urban Institute, ",
                 "under <a href=\"https://opendatacommons.org/licenses/by/1-0/\" target=\"_blank\" rel=\"noopener\">ODC Attribution License</a>."))
   ),
-  tags$p(paste0("Wyoming School Boards Association, salary settlements", footer_retrieved("WSBA salaries"),
-                "; Wyoming Department of Education, Staff Member Collection, WDE602", footer_retrieved("WDE602"),
-                "; University of Wyoming salary book", footer_retrieved("UW salary book"), ".")),
+  tags$p(paste0("Wyoming School Boards Association, salary settlements", footer_retrieved("WSBA salaries", source_dates),
+                "; Wyoming Department of Education, Staff Member Collection, WDE602", footer_retrieved("WDE602", source_dates),
+                "; University of Wyoming salary book", footer_retrieved("UW salary book", source_dates), ".")),
   tags$p(
     "This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.",
     "BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov."
@@ -1827,52 +1784,52 @@ ui <- page_navbar(
                       "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks.",
                       "download_active_k12", "Active Jobs (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "each district's own job board, or the Wyoming School Boards Association vacancies list; Typical pay: BLS Occupational Employment and Wage Statistics; Teacher Starting Base: WSBA salary settlements; Role Avg Salary: WDE602."),
-                                          dictionary_columns_help("combinedclean.csv"))),
+                                          dictionary_columns_help("combinedclean.csv", data_dictionary))),
         download_tile("clock-rotate-left", "K-12 History Archive",
                       "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies.",
                       "download_history_k12", "Historical K-12 (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "the districts' job boards, one row per teacher posting per weekly scrape; subjects by this dashboard's title classifier."),
-                                          dictionary_columns_help("k12jobanalysis.csv"))),
+                                          dictionary_columns_help("k12jobanalysis.csv", data_dictionary))),
         download_tile("stopwatch", "K-12 Listing Duration",
                       "Each posting's first and last week on the boards this dashboard tracks, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the note on the Listing Duration tab.",
                       "download_spells", "Listing Duration (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
-                                          dictionary_columns_help("job_duration_spells.csv"))),
+                                          dictionary_columns_help("job_duration_spells.csv", data_dictionary))),
         download_tile("school", "District Benchmarks",
                       "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent.",
                       "download_district_benchmarks", "District Profiles (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "WSBA salary settlements; WDE602; NCES Common Core of Data (via the Urban Institute); Census American Community Survey 5-year estimates and SAIPE."),
-                                          dictionary_columns_help("salarymap2.csv"))),
+                                          dictionary_columns_help("salarymap2.csv", data_dictionary))),
         download_tile("users", "WDE602 Staff Matrix",
                       "Wyoming Dept of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories.",
                       "download_wde_staff", "WDE602 Matrix (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "Wyoming Department of Education, Staff Member Collection (WDE602)."),
-                                          dictionary_columns_help("wde602_district_staff_salaries.csv"))),
+                                          dictionary_columns_help("wde602_district_staff_salaries.csv", data_dictionary))),
         download_tile("building-columns", "Higher Ed Archive",
                       "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records).",
                       "download_history_he", "Higher Ed Archive (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "each college's own job board, one row per posting per weekly scrape; categories by this dashboard's title classifier."),
-                                          dictionary_columns_help("facultydata.csv"))),
+                                          dictionary_columns_help("facultydata.csv", data_dictionary))),
         download_tile("stopwatch", "Higher Ed Listing Duration",
                       "Each faculty/staff posting's first and last week on the boards this dashboard tracks, days listed, and discipline flags. Not a time-to-fill measure: see the note on the Listing Duration tab.",
                       "download_he_spells", "Higher Ed Listing Duration (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
-                                          dictionary_columns_help("he_job_duration_spells.csv"))),
+                                          dictionary_columns_help("he_job_duration_spells.csv", data_dictionary))),
         download_tile("graduation-cap", "Higher Ed Profiles",
                       "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares.",
                       "download_he_benchmarks", "Higher Ed Profiles (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "IPEDS and Federal Student Aid data (via the Urban Institute's Education Data Portal); Census American Community Survey 5-year estimates."),
-                                          dictionary_columns_help("salarymap.csv"))),
+                                          dictionary_columns_help("salarymap.csv", data_dictionary))),
         download_tile("chart-line", "K-12 Weekly Vacancies",
                       "Weekly longitudinal vacancy totals across Wyoming school districts. Ideal for seasonal hiring cycles and supply/demand modeling.",
                       "download_weekly_totals", "K-12 Weekly Totals (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each district's postings in each week."),
-                                          dictionary_columns_help("k12_district_weekly_totals.csv"))),
+                                          dictionary_columns_help("k12_district_weekly_totals.csv", data_dictionary))),
         download_tile("chart-line", "Higher Ed Weekly Vacancies",
                       "Weekly longitudinal vacancy totals across Wyoming community colleges and UW. Ideal for tracking higher ed hiring seasonality.",
                       "download_he_weekly_totals", "Higher Ed Weekly Totals (CSV)",
                       info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each college's postings in each week."),
-                                          dictionary_columns_help("he_institution_weekly_totals.csv"))),
+                                          dictionary_columns_help("he_institution_weekly_totals.csv", data_dictionary))),
         download_tile("book", "Data Dictionary",
                       "Comprehensive machine-readable codebook documenting variable names, data types, definitions, and source authorities across all datasets.",
                       "download_dictionary", "Codebook (CSV)")
@@ -2270,7 +2227,7 @@ server <- function(input, output, session) {
     if (!is.null(selected_k12_query())) {
       df <- df[match_job_query(paste(coalesce(df$Title, ""), coalesce(df$Position, "")), selected_k12_query()), , drop = FALSE]
     }
-    if (!is.null(selected_pay_band())) df <- df[in_pay_band(df$.Pay_Value, df$.Pay_Unit, selected_pay_band()), , drop = FALSE]
+    if (!is.null(selected_pay_band())) df <- df[in_pay_band(df$.Pay_Value, df$.Pay_Unit, selected_pay_band(), PAY_BANDS), , drop = FALSE]
     df <- df %>% select(-any_of(c(".Pay_Value", ".Pay_Unit")))
     if (isTRUE(identical(input$k12_quick_filter, "new"))) {
       new_keys <- paste(k12_new_this_week$title, k12_new_this_week$District, sep = "@@@")
@@ -2696,11 +2653,11 @@ server <- function(input, output, session) {
     if (nzchar(kw) || band_on) {
       searchable_k12 <- paste(coalesce(combineddata$Title, ""), coalesce(combineddata$Position, ""))
       k12_matches <- combineddata[match_job_query(searchable_k12, kw) &
-                                    in_pay_band(combineddata$.Pay_Value, combineddata$.Pay_Unit, if (band_on) band), , drop = FALSE]
+                                    in_pay_band(combineddata$.Pay_Value, combineddata$.Pay_Unit, if (band_on) band, PAY_BANDS), , drop = FALSE]
 
       searchable_he <- paste(coalesce(ccdata$Title, ""), coalesce(ccdata$Appointment, ""))
       he_matches <- ccdata[match_job_query(searchable_he, kw) &
-                             in_pay_band(ccdata$.Pay_Value, ccdata$.Pay_Unit, if (band_on) band), , drop = FALSE]
+                             in_pay_band(ccdata$.Pay_Value, ccdata$.Pay_Unit, if (band_on) band, PAY_BANDS), , drop = FALSE]
 
       k12_counts <- if (nrow(k12_matches) > 0) {
         as.data.frame(table(Name = k12_matches$District), stringsAsFactors = FALSE)
@@ -3182,7 +3139,7 @@ server <- function(input, output, session) {
     if (!is.null(selected_he_query())) {
       df <- df[match_job_query(paste(coalesce(df$Title, ""), coalesce(df$Appointment, "")), selected_he_query()), , drop = FALSE]
     }
-    if (!is.null(selected_pay_band())) df <- df[in_pay_band(df$.Pay_Value, df$.Pay_Unit, selected_pay_band()), , drop = FALSE]
+    if (!is.null(selected_pay_band())) df <- df[in_pay_band(df$.Pay_Value, df$.Pay_Unit, selected_pay_band(), PAY_BANDS), , drop = FALSE]
     df <- df %>% select(-any_of(c(".Pay_Value", ".Pay_Unit", ".Map_Name")))
     if (!identical(input$he_table_appointment, "all")) {
       df <- df %>% filter(Appointment == input$he_table_appointment)
