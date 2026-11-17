@@ -94,6 +94,68 @@
         "Built": "R 4.6.2; x86_64-pc-linux-gnu; 2026-10-29 18:38:51 UTC; unix"
       }
     },
+    "MASS": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "MASS",
+        "Priority": "recommended",
+        "Version": "7.3-65",
+        "Date": "2025-02-19",
+        "Revision": "$Rev: 3681 $",
+        "Depends": "R (>= 4.4.0), grDevices, graphics, stats, utils",
+        "Imports": "methods",
+        "Suggests": "lattice, nlme, nnet, survival",
+        "Authors@R": "c(person(\"Brian\", \"Ripley\", role = c(\"aut\", \"cre\", \"cph\"),\n                    email = \"Brian.Ripley@R-project.org\"),\n\t     person(\"Bill\", \"Venables\", role = c(\"aut\", \"cph\")),\n\t     person(c(\"Douglas\", \"M.\"), \"Bates\", role = \"ctb\"),\n\t     person(\"Kurt\", \"Hornik\", role = \"trl\",\n                     comment = \"partial port ca 1998\"),\n\t     person(\"Albrecht\", \"Gebhardt\", role = \"trl\",\n                     comment = \"partial port ca 1998\"),\n\t     person(\"David\", \"Firth\", role = \"ctb\",\n\t            comment = \"support functions for polr\"))",
+        "Description": "Functions and datasets to support Venables and Ripley,\n  \"Modern Applied Statistics with S\" (4th edition, 2002).",
+        "Title": "Support Functions and Datasets for Venables and Ripley's MASS",
+        "LazyData": "yes",
+        "ByteCompile": "yes",
+        "License": "GPL-2 | GPL-3",
+        "URL": "http://www.stats.ox.ac.uk/pub/MASS4/",
+        "Contact": "<MASS@stats.ox.ac.uk>",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-02-19 08:49:43 UTC; ripley",
+        "Author": "Brian Ripley [aut, cre, cph],\n  Bill Venables [aut, cph],\n  Douglas M. Bates [ctb],\n  Kurt Hornik [trl] (partial port ca 1998),\n  Albrecht Gebhardt [trl] (partial port ca 1998),\n  David Firth [ctb] (support functions for polr)",
+        "Maintainer": "Brian Ripley <Brian.Ripley@R-project.org>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-02-28 17:44:52 UTC",
+        "Built": "R 4.6.1; aarch64-apple-darwin23; 2026-06-25 21:54:07 UTC; unix"
+      }
+    },
+    "Matrix": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "Matrix",
+        "Version": "1.7-5",
+        "VersionNote": "do also bump src/version.h, inst/include/Matrix/version.h",
+        "Date": "2026-03-20",
+        "Priority": "recommended",
+        "Title": "Sparse and Dense Matrix Classes and Methods",
+        "Description": "A rich hierarchy of sparse and dense matrix classes,\n\tincluding general, symmetric, triangular, and diagonal matrices\n\twith numeric, logical, or pattern entries.  Efficient methods for\n\toperating on such matrices, often wrapping the 'BLAS', 'LAPACK',\n\tand 'SuiteSparse' libraries.",
+        "License": "GPL (>= 2) | file LICENCE",
+        "URL": "https://Matrix.R-forge.R-project.org",
+        "BugReports": "https://R-forge.R-project.org/tracker/?atid=294&group_id=61",
+        "Contact": "Matrix-authors@R-project.org",
+        "Authors@R": "\n\tc(person(\"Douglas\", \"Bates\", role = \"aut\",\n\t         comment = c(ORCID = \"0000-0001-8316-9503\")),\n\t  person(\"Martin\", \"Maechler\", role = c(\"aut\", \"cre\"),\n\t         email = \"mmaechler+Matrix@gmail.com\",\n\t         comment = c(ORCID = \"0000-0002-8685-9910\")),\n\t  person(\"Mikael\", \"Jagan\", role = \"aut\",\n\t         comment = c(ORCID = \"0000-0002-3542-2938\")),\n\t  person(\"Timothy A.\", \"Davis\", role = \"ctb\",\n\t         comment = c(ORCID = \"0000-0001-7614-6899\",\n\t                     \"SuiteSparse libraries\",\n\t                     \"collaborators listed in dir(system.file(\\\"doc\\\", \\\"SuiteSparse\\\", package=\\\"Matrix\\\"), pattern=\\\"License\\\", full.names=TRUE, recursive=TRUE)\")),\n\t  person(\"George\", \"Karypis\", role = \"ctb\",\n\t         comment = c(ORCID = \"0000-0003-2753-1437\",\n\t                     \"METIS library\",\n\t                     \"Copyright: Regents of the University of Minnesota\")),\n\t  person(\"Jason\", \"Riedy\", role = \"ctb\",\n\t         comment = c(ORCID = \"0000-0002-4345-4200\",\n\t                     \"GNU Octave's condest() and onenormest()\",\n\t                     \"Copyright: Regents of the University of California\")),\n\t  person(\"Jens\", \"Oehlschlägel\", role = \"ctb\",\n\t         comment = \"initial nearPD()\"),\n\t  person(\"R Core Team\", role = \"ctb\",\n\t         comment = c(ROR = \"02zz1nj61\", \"base R's matrix implementation\")))",
+        "Depends": "R (>= 4.4), methods",
+        "Imports": "grDevices, graphics, grid, lattice, stats, utils",
+        "Suggests": "MASS, datasets, sfsmisc, tools",
+        "Enhances": "SparseM, graph",
+        "LazyData": "no",
+        "LazyDataNote": "not possible, since we use data/*.R and our S4 classes",
+        "BuildResaveData": "no",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "yes",
+        "Packaged": "2026-03-20 19:40:14 UTC; maechler",
+        "Author": "Douglas Bates [aut] (ORCID: <https://orcid.org/0000-0001-8316-9503>),\n  Martin Maechler [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-8685-9910>),\n  Mikael Jagan [aut] (ORCID: <https://orcid.org/0000-0002-3542-2938>),\n  Timothy A. Davis [ctb] (ORCID: <https://orcid.org/0000-0001-7614-6899>,\n    SuiteSparse libraries, collaborators listed in\n    dir(system.file(\"doc\", \"SuiteSparse\", package=\"Matrix\"),\n    pattern=\"License\", full.names=TRUE, recursive=TRUE)),\n  George Karypis [ctb] (ORCID: <https://orcid.org/0000-0003-2753-1437>,\n    METIS library, Copyright: Regents of the University of Minnesota),\n  Jason Riedy [ctb] (ORCID: <https://orcid.org/0000-0002-4345-4200>, GNU\n    Octave's condest() and onenormest(), Copyright: Regents of the\n    University of California),\n  Jens Oehlschlägel [ctb] (initial nearPD()),\n  R Core Team [ctb] (ROR: <https://ror.org/02zz1nj61>, base R's matrix\n    implementation)",
+        "Maintainer": "Martin Maechler <mmaechler+Matrix@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-03-21 14:40:03 UTC",
+        "Built": "R 4.6.1; aarch64-apple-darwin23; 2026-06-25 21:54:11 UTC; unix"
+      }
+    },
     "R6": {
       "Source": "RSPM",
       "Repository": "https://packagemanager.posit.co/cran/latest",
@@ -966,6 +1028,45 @@
         "Built": "R 4.6.0; x86_64-pc-linux-gnu; 2026-08-12 20:25:11 UTC; unix"
       }
     },
+    "edjobs": {
+      "Source": "github",
+      "Repository": null,
+      "description": {
+        "Package": "edjobs",
+        "Title": "Shared Code for the Montana and Wyoming Education Jobs\nDashboards",
+        "Version": "0.36.0",
+        "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
+        "Description": "Code shared by the Montana and Wyoming Education Jobs Dashboards:\n    weekly checks of a run's output against written expectations, and, as the\n    migration proceeds, scraping, classification, posting identity and the\n    data checks both state pipelines use. Each state repository pins a tagged\n    version.",
+        "License": "MIT + file LICENSE",
+        "Depends": "R (>= 4.5.0)",
+        "Encoding": "UTF-8",
+        "Roxygen": "list(markdown = TRUE)",
+        "Imports": "datasets, dplyr, htmltools, httr2, jsonlite, lubridate,\nmagrittr, readxl, rvest, scales, stringr, stats, survival,\ntidyr, utils, xml2",
+        "Suggests": "knitr, rmarkdown, testthat (>= 3.0.0), withr, writexl",
+        "VignetteBuilder": "knitr",
+        "Config/testthat/edition": "3",
+        "Config/testthat/parallel": "true",
+        "URL": "https://github.com/bostickmike/edjobs",
+        "BugReports": "https://github.com/bostickmike/edjobs/issues",
+        "Config/roxygen2/version": "8.1.1",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "edjobs",
+        "RemoteUsername": "bostickmike",
+        "RemotePkgRef": "bostickmike/edjobs@v0.36.0",
+        "RemoteRef": "v0.36.0",
+        "RemoteSha": "299bce3437eb61cd5dbf70a254e0f212b3abc661",
+        "GithubRepo": "edjobs",
+        "GithubUsername": "bostickmike",
+        "GithubRef": "v0.36.0",
+        "GithubSHA1": "299bce3437eb61cd5dbf70a254e0f212b3abc661",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-11-17 05:10:42 UTC; mikebostick",
+        "Author": "Mike Bostick [aut, cre]",
+        "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
+        "Built": "R 4.6.1; ; 2026-11-17 05:10:43 UTC; unix"
+      }
+    },
     "evaluate": {
       "Source": "RSPM",
       "Repository": "https://packagemanager.posit.co/cran/latest",
@@ -1553,6 +1654,37 @@
         "Repository": "RSPM",
         "Date/Publication": "2026-09-01 13:20:02 UTC",
         "Built": "R 4.6.0; ; 2026-09-02 04:00:13 UTC; unix"
+      }
+    },
+    "httr2": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "httr2",
+        "Title": "Perform HTTP Requests and Process the Responses",
+        "Version": "1.3.0",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"Maximilian\", \"Girlich\", role = \"ctb\")\n  )",
+        "Description": "Tools for creating and modifying HTTP requests, then\n    performing them and processing the results. 'httr2' is a modern\n    re-imagining of 'httr' that uses a pipe-based interface and solves\n    more of the problems that API wrapping packages face.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://httr2.r-lib.org, https://github.com/r-lib/httr2",
+        "BugReports": "https://github.com/r-lib/httr2/issues",
+        "Depends": "R (>= 4.1)",
+        "Imports": "cli (>= 3.0.0), curl (>= 6.4.0), glue, lifecycle, magrittr,\nopenssl, R6, rlang (>= 1.3.0), vctrs (>= 0.6.3), withr",
+        "Suggests": "askpass, bench, clipr, covr, digest, docopt, httpuv, jose,\njsonlite, knitr, later (>= 1.4.0), nanonext, otel (>= 0.2.0),\notelsdk (>= 0.2.0), paws.common (>= 0.8.0), promises, rappdirs,\nrmarkdown, testthat (>= 3.1.8), tibble, webfakes (>= 1.4.0),\nxml2",
+        "VignetteBuilder": "knitr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/roxygen2/version": "8.0.0",
+        "Config/testthat/edition": "3",
+        "Config/testthat/parallel": "true",
+        "Config/testthat/start-first": "resp-stream, req-perform",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-07-13 19:55:02 UTC; hadleywickham",
+        "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd],\n  Maximilian Girlich [ctb]",
+        "Maintainer": "Hadley Wickham <hadley@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-07-13 21:50:06 UTC",
+        "Built": "R 4.6.1; ; 2026-07-13 23:43:55 UTC; unix"
       }
     },
     "ids": {
@@ -3102,6 +3234,33 @@
         "Built": "R 4.6.0; ; 2026-08-12 20:26:00 UTC; unix"
       }
     },
+    "survival": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Title": "Survival Analysis",
+        "Priority": "recommended",
+        "Package": "survival",
+        "Version": "3.8-6",
+        "Date": "2026-01-09",
+        "Depends": "R (>= 3.5.0)",
+        "Imports": "graphics, Matrix, methods, splines, stats, utils",
+        "LazyData": "Yes",
+        "LazyDataCompression": "xz",
+        "ByteCompile": "Yes",
+        "Authors@R": "c(person(c(\"Terry\", \"M\"), \"Therneau\",\n                    email=\"therneau.terry@mayo.edu\",\n\t            role=c(\"aut\", \"cre\")),\n               person(\"Thomas\", \"Lumley\", role=c(\"ctb\", \"trl\"),\n\t       comment=\"original S->R port and R maintainer until 2009\"),\n\t       person(\"Atkinson\", \"Elizabeth\", role=\"ctb\"),\n\t       person(\"Crowson\", \"Cynthia\", role=\"ctb\"))",
+        "Description": "Contains the core survival analysis routines, including\n\t     definition of Surv objects, \n\t     Kaplan-Meier and Aalen-Johansen (multi-state) curves, Cox models,\n\t     and parametric accelerated failure time models.",
+        "License": "LGPL (>= 2)",
+        "URL": "https://github.com/therneau/survival",
+        "NeedsCompilation": "yes",
+        "Packaged": "2026-01-13 02:06:39 UTC; therneau",
+        "Author": "Terry M Therneau [aut, cre],\n  Thomas Lumley [ctb, trl] (original S->R port and R maintainer until\n    2009),\n  Atkinson Elizabeth [ctb],\n  Crowson Cynthia [ctb]",
+        "Maintainer": "Terry M Therneau <therneau.terry@mayo.edu>",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-01-16 09:00:02 UTC",
+        "Built": "R 4.6.1; aarch64-apple-darwin23; 2026-06-25 21:54:33 UTC; unix"
+      }
+    },
     "sys": {
       "Source": "RSPM",
       "Repository": "https://packagemanager.posit.co/cran/latest",
@@ -3792,13 +3951,13 @@
       "checksum": "66718f7898d71b8af6374d0441b2c553"
     },
     "app.R": {
-      "checksum": "f1f65b179966436bdddc09ac649ef992"
+      "checksum": "8161e3debaebd507520cbdd91615efd9"
     },
     "combinedclean.csv": {
       "checksum": "d1c9cc226a54b41dad0ab45e5b8219ad"
     },
     "data_dictionary.csv": {
-      "checksum": "60aaec9f7042c00944934cde17cba123"
+      "checksum": "39f54c83987961393281585b44b79e15"
     },
     "facultydata.csv": {
       "checksum": "e2c590388afe055a96a6a0a36209f35e"
@@ -3843,7 +4002,7 @@
       "checksum": "f8dafcb3746df7346c4174d84ef76dc5"
     },
     "salarymap2.csv": {
-      "checksum": "d2cb6a68e3472eaa90bb3fd12390dd47"
+      "checksum": "8f6b51e7d751c050cddab6f7fc5c803e"
     },
     "source_retrieved_dates.csv": {
       "checksum": "e9d463b9a05aef8d50b8d96691b3496f"
@@ -3852,7 +4011,7 @@
       "checksum": "56027ba3824b3367afc2b83495196c86"
     },
     "wde602_district_staff_salaries.csv": {
-      "checksum": "d0a6b647739d6ba0dd872f7a24762195"
+      "checksum": "078e0b483133a8540151801d670ff381"
     }
   },
   "users": null
