@@ -21,6 +21,8 @@ he_pay_counts <- function(df) {
 archive_history <- function(dir, pattern, reader, counter, exclude_date) {
   files <- list.files(dir, pattern = pattern, full.names = TRUE)
   files <- files[!grepl(exclude_date, basename(files), fixed = TRUE)]
+  # One run a week (its last): the averages and min_weeks were measured on weekly runs (edjobs 0.39.0).
+  files <- last_run_each_week(files)
   Filter(Negate(is.null), lapply(files, function(f) counter(reader(f))))
 }
 

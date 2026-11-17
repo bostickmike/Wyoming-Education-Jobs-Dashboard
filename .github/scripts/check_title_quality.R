@@ -16,7 +16,7 @@ source("drift_check.R")
 
 app <- if (dir.exists("Mt_Ed_Jobs")) "Mt_Ed_Jobs" else "Wy_Ed_Jobs"
 montana <- app == "Mt_Ed_Jobs"
-lookback_weeks <- 8
+lookback_weeks <- 8   # each week's last run, over the last 8 weeks
 today <- format(Sys.Date(), "%Y-%m-%d")
 read_csv <- function(f) read.csv(f, stringsAsFactors = FALSE)
 read_xlsx <- function(f) as.data.frame(readxl::read_xlsx(f))
@@ -56,10 +56,10 @@ cat(sprintf("Title lint: %d K-12 and %d HE posting(s) with a title that doesn't 
 write.csv(hits, "/tmp/title_lint.csv", row.names = FALSE)
 
 # ---- 6. per-source Other share against its own recent weeks ----
+# Days and weeks, not files (edjobs 0.39.0): with two runs a week the last 8
+# files would be 4 weeks, and the Other-share thresholds were set on weekly runs.
 recent_archives <- function(dir, pattern) {
-  files <- sort(list.files(dir, pattern = pattern, full.names = TRUE))
-  files <- files[!grepl(today, basename(files), fixed = TRUE)]
-  utils::tail(files, lookback_weeks)
+  last_run_each_week(recent_archive_files(dir, pattern, days = 7 * lookback_weeks, exclude_date = today))
 }
 k12_other <- function(df) {
   src <- k12_sources(df)
