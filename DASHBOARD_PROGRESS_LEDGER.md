@@ -856,6 +856,18 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     manifest.json: main's, with only the edjobs entry from v0.38.0 installed from GitHub (464c49c). Full rehearsal
     (`claude-notes/2026-11-17_rehearsal-wy-pin-0.38.0.log`): every step passed, suites 1,375 / 1,377 passed, 0
     failed; WSBA 96 rows, UW 232; K-12 rows 729 -> 726, college 460 -> 468.
+  * [x] Twice-weekly runs, state side (2026-11-17; branch `twice-weekly`, edjobs 0.39.0 pinned). History checks count
+    weeks, not runs or files: `check_pay_coverage.R` reads each ISO week's last run, `check_title_quality.R` the last
+    56 days, `check_frozen_boards.R` counts ISO weeks (spells column `Frozen_Runs` -> `Frozen_Weeks`).
+    `weekly-scrape.yml` runs in Mountain time (`TZ: America/Denver`; the Mac rehearsals already did), and a new step
+    puts the daily presence check's last-commit age on the run summary, with a drift-issue section only when it is
+    over 3 days old (Mike 11-17). The app rolls weekly totals up to each ISO week's last run; on the committed data
+    only the extra runs of a week drop (05-07, 08-03, 08-04, 08-11). Archive replay
+    (`claude-notes/2026-11-17_twice-weekly-replay/`): spells and frozen boards identical; drift flags 11 -> 9 (the
+    August re-runs no longer count as weeks; Fremont #25 loses 2 flags, Mike 11-17: accepted). Full rehearsal
+    (`claude-notes/2026-11-17_rehearsal-wy-twice-weekly.log`): every step passed, suites 1,375 / 1,377 passed, 0
+    failed; WSBA statewide 101 postings; K-12 rows 729 -> 732, college 460 -> 468. The second weekly cron is a
+    separate change.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
