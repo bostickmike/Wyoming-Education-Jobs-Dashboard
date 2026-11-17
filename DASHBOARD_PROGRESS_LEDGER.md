@@ -786,6 +786,20 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-16_ipeds-salary-live.txt`): MT Blackfeet $25,621 -> $54,317, University of Montana
     $93,938 -> $95,013, the other 19 MT and all 9 WY figures and every professor-rank figure unchanged; Faculty_Count
     unchanged. Findings: `claude-notes/2026-11-16_ipeds-faculty-salary.md`.
+  * [x] College postings at outreach sites and field offices, campus stage 2 (2026-11-16; branch `he-campus-stage2`,
+    edjobs 0.34.0; Mike 11-16: "yes, build it"). WY's four PeopleAdmin colleges give a fixed campus label, not a
+    town, so a posting is now also placed from a title marker ("(Rock Springs Campus)") or an explicit sentence on
+    its PeopleAdmin page ("This position is located in Wright, WY"; "at the Green River Center"); never a bare town
+    name, and a posting naming several towns stays at the main campus. "Main campus" counts only in lowercase (EWC's
+    site banner reads "Eastern Wyoming College Main Campus & Douglas Campus"). Measured on 360 live PeopleAdmin
+    pages: `claude-notes/2026-11-16_college-campus-locations.md`, "Stage 2 measured". The first rehearsal on 0.34.0
+    placed none of WY's 6: the "higher ed scrapes" chunk's per-college select() dropped `Page_Places` (fixed in
+    5c011d0, with a dry-run test that fails on the old chunk; log kept as
+    `claude-notes/2026-11-16_rehearsal-wy-campus2-0.34.0-run2-dropped-page-places.log`). Rehearsal
+    (`claude-notes/2026-11-16_rehearsal-wy-campus2-0.34.0.log`): every step passed; parity 9/9; suites pre 1,388 /
+    post 1,391 passed, 0 failed; combinedclean 726 rows; hedata 465 postings: 300 main town, 29 other town (the
+    measured 6: Western Green River 3, Sheridan Wright and Kaycee, EWC Douglas; UW 17 in 7 towns, LCCC Laramie 4,
+    CWC Jackson and Lander), 136 no town.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
