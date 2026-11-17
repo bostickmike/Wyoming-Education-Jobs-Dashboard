@@ -800,6 +800,18 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     post 1,391 passed, 0 failed; combinedclean 726 rows; hedata 465 postings: 300 main town, 29 other town (the
     measured 6: Western Green River 3, Sheridan Wright and Kaycee, EWC Douglas; UW 17 in 7 towns, LCCC Laramie 4,
     CWC Jackson and Lander), 136 no town.
+  * [x] A link to each district's and college's page at its source (2026-11-16; branch `source-record-links`, edjobs
+    0.35.0; Mike 11-16: "each row in each data set could have a url link to its source whenever possible"; option A,
+    Mike: "yes"). salarymap2.csv gets `CCD_Link` (NCES CCD district page, from `NCES_LEAID`) and salarymap.csv
+    `IPEDS_Link` (College Navigator, from `IPEDS_UNITID`), added by a last Rmd chunk after every chunk that rewrites
+    them; wde602_district_staff_salaries.csv gets `Source_Link`, WDE's "District K12 Staff FTE and Average Salary by
+    Category" report (reporting.edu.wyo.gov), the same on every row: WDE has no page per district, and its
+    edu.wyoming.gov pages are behind a Cloudflare challenge (found via the Wayback copy of 2026-10-15). WSBA, SAIPE
+    and ACS have no page per district (measurement: `claude-notes/2026-11-16_source-links-per-row.md`). Both NCES
+    pages show NCES's newest year. Rehearsal (`claude-notes/2026-11-16_rehearsal-wy-source-links-0.35.0.log`): every
+    step passed; parity 9/9; suites pre 1,388 / post 1,391 passed, 0 failed; links on 52 / 57 districts (no NCES id:
+    Snowy Range Academy, Laramie Montessori, STRIDE, Sweetwater CDC, Wyoming Boys School), 9 / 9 colleges, and all
+    1,938 WDE602 rows.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
