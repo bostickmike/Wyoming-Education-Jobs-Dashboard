@@ -10,6 +10,9 @@ library(scales)
 library(stringr)
 library(readxl)
 library(shinycssloaders)
+# Shared helpers (pay and date text, sparklines, trends, job search, first-seen fill): bostickmike/edjobs at the
+# version in ../EDJOBS_VERSION (package phase 6, 2026-11-16). The deploy manifest records it as a GitHub package.
+library(edjobs)
 source("feedback.R")  # public Feedback form: no GitHub login (2026-11-16)
 FEEDBACK_REPO_DEFAULT <- "bostickmike/Wyoming-Education-Jobs-Dashboard"
 
@@ -44,66 +47,9 @@ validate_and_pad_schema <- function(df, required_cols, source_name) {
   df
 }
 
-# The repository pipeline classifies these same title patterns in
-# k12_he_classification.R. Keep the deployed app self-contained while the
-# dashboard distinguishes appointment type without inferring FTE where a
-# source does not explicitly provide it.
-classify_he_appointment <- function(titles) {
-  titles <- as.character(titles)
-  dplyr::case_when(
-    grepl("Adjunct|Part[- ]?Time", titles, ignore.case = TRUE) ~ "Adjunct/part-time faculty",
-    grepl("Instructor|Instructional|Teacher|Faculty|Professor|Lecturer|Post Doc|Subject Matter Expert|Librarian|Educator",
-          titles, ignore.case = TRUE) ~ "Faculty/instructor (non-adjunct)",
-    TRUE ~ "Other / not faculty"
-  )
-}
 
-summarize_he_faculty_postings <- function(titles) {
-  appointment <- classify_he_appointment(titles)
-  list(
-    faculty_instructor = sum(appointment == "Faculty/instructor (non-adjunct)", na.rm = TRUE),
-    adjunct_part_time = sum(appointment == "Adjunct/part-time faculty", na.rm = TRUE)
-  )
-}
-
-# Sources that keep evergreen pools active may retain an original posting
-# date for years. Make that distinction visible without discarding a still-
-# open opportunity or inventing a newer date the source does not provide.
-format_posted_or_listed_date <- function(dates, stale_after_days = 180) {
-  values <- as.character(dates)
-  parsed <- as.Date(lubridate::parse_date_time(
-    values,
-    orders = c("ymd", "mdy", "dmy", "b d Y h:M p", "B d Y h:M p", "Y-m-d H:M:S"),
-    tz = "UTC",
-    quiet = TRUE
-  ))
-  stale <- !is.na(parsed) & parsed < Sys.Date() - stale_after_days
-  values[stale] <- paste("Listed since", values[stale])
-  values
-}
-
-# "Posted / listed" for a board that gives no posted date: the first weekly
-# run that found the posting (posting_first_seen.csv, written by
-# scripts/build_posting_spells.R; the key must match first_seen_key() in
-# posting_spells.R). "On the board since at least" when the posting was
-# already up the first time that board was scraped. Without the file (a
-# deploy before the weekly run first writes it) the column is as before.
-first_seen_key <- function(district, title, url) {
-  sq <- function(x) tolower(gsub("\\s+", " ", trimws(as.character(x))))
-  paste(sq(district), sq(title), trimws(as.character(url)), sep = " | ")
-}
 first_seen_table <- tryCatch(read.csv("posting_first_seen.csv", colClasses = "character", fileEncoding = "UTF-8"),
                              error = function(e) NULL, warning = function(w) NULL)
-fill_first_seen <- function(posted, district, title, url, segment, lookup = first_seen_table) {
-  posted <- as.character(posted)
-  if (is.null(lookup) || !all(c("Segment", "Key", "First_Seen", "Left_Censored") %in% names(lookup))) return(posted)
-  lookup <- lookup[lookup$Segment == segment, , drop = FALSE]
-  k <- match(first_seen_key(district, title, url), lookup$Key)
-  blank <- is.na(posted) | !nzchar(trimws(posted))
-  seen <- lookup$First_Seen[k]
-  label <- ifelse(lookup$Left_Censored[k] %in% "TRUE", paste("On the board since at least", seen), paste("First seen", seen))
-  ifelse(blank & !is.na(k) & !is.na(seen) & nzchar(seen), label, posted)
-}
 # Some WY college boards (LCCC, Gillette, Central Wyoming, Casper: 114 of 470
 # postings on 2026-11-06) print the posted date relative to the scrape day
 # ("Posted 3 weeks ago", "Posted more than 30 days ago"). Shown as written,
@@ -139,48 +85,6 @@ POSTED_LISTED_NOTE <- paste0(
   "the first time this dashboard checked that board. \"About <date>\" and \"Before <date>\" are dates worked out from a board ",
   "that says \"Posted 3 weeks ago\" or \"more than 30 days ago\". ")
 
-# Pay as the posting itself states it (Pay_* from extract_posted_pay() in the
-# pipeline): "$21.46–$22.81/hr", "$46,500–$71,803/yr", "$3,691 stipend".
-# Units are never converted -- an hourly wage isn't turned into an annual
-# figure, since hours per year aren't known.
-# Census's approximate 90% range for a SAIPE child poverty estimate
-# (Child_Poverty_Low / _High, edjobs::add_saipe_range()): "about 0%–32%".
-format_poverty_range <- function(low, high) {
-  ifelse(is.na(low) | is.na(high), NA_character_,
-         paste0("about ", scales::percent(low, accuracy = 1), "\u2013", scales::percent(high, accuracy = 1)))
-}
-
-# ACS county figures' 90% margins of error (Mike's decision 2026-11-16, option
-# B): "\u00b1$2,190" / "\u00b10.4 pts"; a share whose MOE is at least the share
-# itself is not distinguishable from zero (Census's CV > 0.61 line).
-format_moe_dollars <- function(moe) ifelse(is.na(moe), "", paste0(" \u00b1", scales::dollar(moe)))
-format_moe_points <- function(moe) ifelse(is.na(moe), "", paste0(" \u00b1", formatC(100 * moe, format = "f", digits = 1), " pts"))
-indistinct_from_zero <- function(est, moe) !is.na(est) & !is.na(moe) & moe >= est
-county_moe_summary <- function(income_moe, rent_moe, share, share_moe) {
-  parts <- cbind(ifelse(is.na(income_moe), NA, paste0("income", format_moe_dollars(income_moe))),
-                 ifelse(is.na(rent_moe), NA, paste0("rent", format_moe_dollars(rent_moe))),
-                 ifelse(is.na(share_moe), NA, paste0("mining", format_moe_points(share_moe),
-                                                     ifelse(indistinct_from_zero(share, share_moe), " (not distinguishable from 0)", ""))))
-  out <- apply(parts, 1, function(x) paste(x[!is.na(x)], collapse = "; "))
-  ifelse(nzchar(out), out, NA_character_)
-}
-
-format_posted_pay <- function(pay_min, pay_max, pay_unit) {
-  fmt <- function(x) ifelse(x >= 1000, scales::dollar(x, accuracy = 1), scales::dollar(x, accuracy = 0.01))
-  amount <- ifelse(is.na(pay_min), NA_character_,
-                   ifelse(is.na(pay_max) | pay_min == pay_max, fmt(pay_min), paste0(fmt(pay_min), "\u2013", fmt(pay_max))))
-  suffix <- unname(c(hour = "/hr", day = "/day", month = "/mo", year = "/yr",
-                     "credit hour" = "/credit hr", stipend = " stipend")[pay_unit])
-  ifelse(is.na(amount), "\u2014", paste0(amount, ifelse(is.na(suffix), "", suffix)))
-}
-
-# BLS OEWS regional median for the posting's role (Est_* from
-# attach_oews_estimates() in the pipeline), shown only where the posting
-# states no pay: "$34,750/yr", with the role and area in a hover tooltip
-# ("BLS median for teaching assistants, West Montana nonmetro").
-format_bls_estimate <- function(est_pay, est_unit, occupation, area, has_posted_pay) {
-  format_pay_estimate(est_pay, est_unit, paste0("BLS median for ", tolower(occupation), ", ", area), has_posted_pay)
-}
 
 # Same for higher-ed staff postings: the institution's IPEDS average for the
 # posting's staff category ("IPEDS average for full-time management staff,
@@ -194,14 +98,6 @@ format_he_estimate <- function(est_pay, est_unit, category, institution, year, s
   format_pay_estimate(est_pay, est_unit, tooltip, has_posted_pay)
 }
 
-format_pay_estimate <- function(est_pay, est_unit, tooltip, has_posted_pay) {
-  show <- !has_posted_pay & !is.na(est_pay)
-  tip <- htmltools::htmlEscape(tooltip, attribute = TRUE)
-  ifelse(show,
-         paste0("<span title=\"", tip, "\" style=\"border-bottom: 1px dotted #888; cursor: help;\">",
-                format_posted_pay(est_pay, est_pay, est_unit), "</span>"),
-         "\u2014")
-}
 
 # Map pay bands. Each posting is compared in its own unit -- an hourly wage
 # is never turned into an annual one -- so day rates, stipends and per-credit
@@ -220,20 +116,6 @@ in_pay_band <- function(value, unit, band) {
   !is.na(value) & !is.na(unit) & unit == b$unit & value >= b$lo & value < b$hi
 }
 
-# The figure a posting is filtered on: its posted pay (midpoint of a range)
-# when stated by the hour or year; nothing when stated in another unit (a
-# day rate or stipend is the posting's own figure, so no estimate replaces
-# it); otherwise the fallback the caller supplies (district role figure, then
-# the BLS estimate).
-posting_pay_value <- function(pay_min, pay_max, pay_unit, fallback_value, fallback_unit) {
-  posted <- !is.na(pay_min)
-  filterable <- posted & pay_unit %in% c("hour", "year")
-  data.frame(
-    value = ifelse(filterable, (pay_min + coalesce(pay_max, pay_min)) / 2, ifelse(posted, NA_real_, fallback_value)),
-    unit = ifelse(filterable, pay_unit, ifelse(posted, NA_character_, fallback_unit)),
-    stringsAsFactors = FALSE
-  )
-}
 
 #--------------------------------------------------
 # Load K-12 data
@@ -256,7 +138,7 @@ combineddata <- combineddata %>%
          Pay_Min, Pay_Max, Pay_Unit, Est_Pay, Est_Pay_Unit) %>%
   mutate(District = str_squish(as.character(District))) %>%
   mutate(date_posted = format_posted_or_listed_date(date_posted)) %>%
-  mutate(date_posted = fill_first_seen(date_posted, District, title, url, "K-12")) %>%
+  mutate(date_posted = fill_first_seen(date_posted, District, title, url, "K-12", lookup = first_seen_table)) %>%
   arrange(District, title) %>%
   mutate(url = paste0('<a href="', url, '" target="_blank">', url, '</a>')) %>%
   rename(Title = title, Position = position, Location = location,
@@ -457,203 +339,6 @@ he_job_duration_spells <- if (file.exists("he_job_duration_spells.csv")) {
   data.frame()
 }
 
-# Tiny inline trend chart (no axes/legend, just the shape of a trend) for
-# the Top Hiring tables -- lets "31 openings" read differently depending
-# on whether that's a district climbing steadily or one that just posted a
-# batch this week, without a separate chart. Plain SVG string templating
-# rather than a real ggplot/plotly render, since this needs to be cheap
-# enough to generate per table row.
-make_sparkline_svg <- function(series, accent = "#2a78d6") {
-  series <- series[!is.na(series)]
-  if (length(series) < 2) return("")
-
-  w <- 96; h <- 28; pad <- 3
-  rng <- range(series)
-  span <- diff(rng)
-  if (span == 0) span <- 1
-
-  n <- length(series)
-  step_x <- (w - pad * 2) / (n - 1)
-  xs <- pad + (seq_len(n) - 1) * step_x
-  ys <- pad + (1 - (series - rng[1]) / span) * (h - pad * 2)
-
-  line_path <- paste0(ifelse(seq_along(xs) == 1, "M", "L"), round(xs, 1), ",", round(ys, 1), collapse = " ")
-  area_path <- paste0(line_path, " L", round(xs[n], 1), ",", h - pad, " L", round(xs[1], 1), ",", h - pad, " Z")
-
-  dot_color <- if (series[n] > series[1]) "#1baf7a" else if (series[n] < series[1]) "#e34948" else "#999999"
-
-  sprintf(
-    '<svg width="%d" height="%d" viewBox="0 0 %d %d" style="vertical-align:middle;"><path d="%s" fill="%s22" stroke="none"></path><path d="%s" fill="none" stroke="%s" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="%s" cy="%s" r="2.5" fill="%s"></circle></svg>',
-    w, h, w, h, area_path, accent, line_path, accent, round(xs[n], 1), round(ys[n], 1), dot_color
-  )
-}
-
-# Larger, monochrome-white variant for the KPI tiles' icon slot -- replaces
-# the plain school/university icon with the same last-12-weeks trend
-# shown on the Top Hiring tables, since a colored valueBox background
-# doesn't have room for a second color scheme to read clearly.
-make_sparkline_svg_light <- function(series) {
-  series <- series[!is.na(series)]
-  if (length(series) < 2) return("")
-
-  w <- 160; h <- 80; pad <- 6
-  rng <- range(series)
-  span <- diff(rng)
-  if (span == 0) span <- 1
-
-  n <- length(series)
-  step_x <- (w - pad * 2) / (n - 1)
-  xs <- pad + (seq_len(n) - 1) * step_x
-  ys <- pad + (1 - (series - rng[1]) / span) * (h - pad * 2)
-
-  line_path <- paste0(ifelse(seq_along(xs) == 1, "M", "L"), round(xs, 1), ",", round(ys, 1), collapse = " ")
-  area_path <- paste0(line_path, " L", round(xs[n], 1), ",", h - pad, " L", round(xs[1], 1), ",", h - pad, " Z")
-
-  sprintf(
-    '<svg width="%d" height="%d" viewBox="0 0 %d %d"><path d="%s" fill="rgba(255,255,255,0.18)" stroke="none"></path><path d="%s" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="%s" cy="%s" r="3.5" fill="#ffffff"></circle></svg>',
-    w, h, w, h, area_path, line_path, round(xs[n], 1), round(ys[n], 1)
-  )
-}
-
-# Current Trends table -- replaces what used to be a horizontal bar chart
-# plus a separate sparkline table. Once every bar was already labeled
-# with its exact count and a table below repeated those same numbers,
-# the bar chart wasn't earning its space (user feedback 2026-08-05).
-# One row per category: current count, a 12-week sparkline, and delta
-# vs month/quarter/year ago. Week-over-week is deliberately not included
-# here -- confirmed against real data it's pure noise at the category
-# level (median absolute delta 0), the same finding that shaped
-# find_biggest_mover()'s window above. Month is weak but real signal
-# (median 1); quarter is strong (median 4) but conflates the actual
-# within-year seasonal hiring cycle (e.g. Elementary postings peak in
-# spring, trough in late summer) with real change; year isolates
-# genuine year-over-year movement by comparing two points at the same
-# place in that cycle (confirmed distinct from quarter with real data:
-# Elementary was -31 quarter-over-quarter but only -17 year-over-year
-# for the same "now").
-#
-# history: data.frame(Category, Archive_Date, n) already filtered to
-# one district/institution and already summed across any other
-# dimension (e.g. HE's Job_Type, so this shows category totals, not an
-# FT/PT breakdown -- the FT/PT split isn't lost, just no longer show
-# here since the bar chart carrying it is gone; Jobs Table / New This
-# Week still show individual postings).
-build_current_trends_table <- function(history, accent) {
-  dates <- sort(unique(history$Archive_Date))
-  if (length(dates) == 0) return(NULL)
-  latest <- max(dates)
-
-  nearest_on_or_before <- function(target) {
-    candidates <- dates[dates <= target]
-    if (length(candidates) == 0) return(NA)
-    max(candidates)
-  }
-  month_ago <- nearest_on_or_before(latest - 28)
-  quarter_ago <- nearest_on_or_before(latest - 90)
-  year_ago <- nearest_on_or_before(latest - 365)
-
-  current <- history %>%
-    filter(Archive_Date == latest) %>%
-    group_by(Category) %>%
-    summarize(`Current Postings` = sum(n), .groups = "drop") %>%
-    arrange(desc(`Current Postings`))
-  if (nrow(current) == 0) return(NULL)
-
-  value_at <- function(cat, date) {
-    if (is.na(date)) return(NA_integer_)
-    v <- history$n[history$Category == cat & history$Archive_Date == date]
-    if (length(v) == 0) 0L else sum(v)
-  }
-  fmt_delta <- function(now, then) {
-    if (is.na(then)) return("<span style='color:#999;'>—</span>")
-    d <- now - then
-    color <- if (d > 0) "#1baf7a" else if (d < 0) "#e34948" else "#999999"
-    arrow <- if (d >= 0) "▲" else "▼"
-    sprintf("<span style='color:%s;'>%s %d</span>", color, arrow, abs(d))
-  }
-
-  current$`Last 12 Weeks` <- vapply(current$Category, function(cat) {
-    series <- history %>%
-      filter(Category == cat) %>%
-      group_by(Archive_Date) %>%
-      summarize(n = sum(n), .groups = "drop") %>%
-      arrange(Archive_Date) %>%
-      tail(12) %>%
-      pull(n)
-    make_sparkline_svg(series, accent = accent)
-  }, character(1))
-
-  current$`vs Month Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, month_ago)),
-                                    current$Category, current$`Current Postings`)
-  current$`vs Quarter Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, quarter_ago)),
-                                      current$Category, current$`Current Postings`)
-  current$`vs Year Ago` <- mapply(function(cat, now) fmt_delta(now, value_at(cat, year_ago)),
-                                   current$Category, current$`Current Postings`)
-
-  current
-}
-
-# Statewide week-over-week delta for the KPI tiles -- aggregation smooths
-# individual-entity noise into a real signal (confirmed against real data
-# 2026-08-05: statewide K-12 totals move ~20-50/week, HE climbed steadily
-# 439->487 over 4 weeks, but per-district week-over-week deltas have a
-# median absolute value of 0 -- see find_biggest_mover()'s longer window
-# below for why that metric uses a different timeframe).
-#
-# Uses the same min_days_back-eligible-snapshot pattern as
-# find_biggest_mover() below rather than the literal last two distinct
-# dates -- archive cadence isn't perfectly regular (multiple same-week CI
-# test runs exist historically, see Archivek12_Data's 2026-08-03 entries),
-# and without this guard an extra same-week run would make "vs last week"
-# compare today against a snapshot from hours or a day earlier instead of a
-# real week ago, understating or fabricating the KPI tile's headline delta.
-# The weekly-totals downloads keep one snapshot per week (decided 2026-11-02):
-# a week with an extra run (the August catch-up runs) would otherwise list
-# every district twice. The latest snapshot in each ISO week wins.
-latest_snapshot_per_week <- function(weekly_totals) {
-  d <- as.Date(weekly_totals$Archive_Date)
-  wk <- format(d, "%G-W%V")
-  latest <- tapply(d, wk, max)
-  weekly_totals[!is.na(d) & d == as.Date(latest[wk], origin = "1970-01-01"), , drop = FALSE]
-}
-
-compute_wow_delta <- function(weekly_totals, min_days_back = 5) {
-  totals <- weekly_totals %>% group_by(Archive_Date) %>% summarize(n = sum(n), .groups = "drop") %>% arrange(Archive_Date)
-  if (nrow(totals) < 2) return(NA_integer_)
-  latest <- max(totals$Archive_Date)
-  candidates <- totals$Archive_Date[totals$Archive_Date <= latest - min_days_back]
-  if (length(candidates) == 0) return(NA_integer_)
-  prior <- max(candidates)
-  totals$n[totals$Archive_Date == latest] - totals$n[totals$Archive_Date == prior]
-}
-
-# "Biggest mover" needs a longer window than a week to mean anything --
-# individual districts/institutions are mostly flat week-to-week (median
-# absolute change 0 in real data), but real movement shows up over ~3+
-# weeks (Natrona SD1 +22 postings, University of Wyoming +52, both over
-# a 4-week span). Picks the nearest available snapshot at least
-# min_days_back before the latest date rather than a fixed index, since
-# archive cadence isn't perfectly regular (multiple same-week CI test
-# runs exist historically -- see Archivek12_Data's 2026-08-03 entries).
-find_biggest_mover <- function(weekly_totals, name_col, min_days_back = 21) {
-  dates <- sort(unique(weekly_totals$Archive_Date))
-  if (length(dates) < 2) return(NULL)
-  latest <- max(dates)
-  candidates <- dates[dates <= latest - min_days_back]
-  if (length(candidates) == 0) return(NULL)
-  prior <- max(candidates)
-
-  wide <- weekly_totals %>%
-    filter(Archive_Date %in% c(latest, prior)) %>%
-    tidyr::pivot_wider(names_from = Archive_Date, values_from = n, values_fill = 0)
-  names(wide)[names(wide) == as.character(prior)] <- "Prior"
-  names(wide)[names(wide) == as.character(latest)] <- "Latest"
-  wide$Delta <- wide$Latest - wide$Prior
-
-  top <- wide %>% arrange(desc(abs(Delta))) %>% slice(1)
-  list(name = top[[name_col]], prior = top$Prior, latest = top$Latest, delta = top$Delta,
-       prior_date = prior, latest_date = latest)
-}
 
 render_mover_box <- function(mover, label) {
   if (is.null(mover)) return(NULL)
@@ -745,7 +430,7 @@ ccdata <- ccdata %>%
   mutate(
     Appointment = classify_he_appointment(Title),
     Posted_Date = format_posted_or_listed_date(Posted_Date),
-    Posted_Date = fill_first_seen(Posted_Date, Institution, Title, Link, "HE"),
+    Posted_Date = fill_first_seen(Posted_Date, Institution, Title, Link, "HE", lookup = first_seen_table),
     Posted_Date = relative_posted_label(Posted_Date, he_run_date, first_seen_date(Institution, Title, Link, "HE"))
   ) %>%
   rename(`Posted / listed` = Posted_Date)
@@ -776,13 +461,6 @@ he_salary_lookup <- mapdata2_he %>%
     )
   )
 
-# Branch campuses, outreach centers and field offices (edjobs place_he_postings(),
-# 2026-11-16; Mike: "we need the locations to be accurate on the map"). A
-# posting whose Location names another town in the state has Campus_Town set
-# by the pipeline and gets its own map dot, keyed "<Institution> (<Town>)";
-# every other posting is on the institution's main dot. .Map_Name is that key
-# (hidden in the tables).
-he_map_name <- function(institution, town) ifelse(is.na(town) | !nzchar(town), institution, paste0(institution, " (", town, ")"))
 ccdata$.Map_Name <- he_map_name(ccdata$Institution, ccdata$Campus_Town)
 he_campus_points <- ccdata %>%
   filter(!is.na(Campus_Town), !is.na(Campus_Latitude), !is.na(Campus_Longitude)) %>%
@@ -1265,47 +943,7 @@ MAP_MARKER_MAX_RADIUS <- 24
 map_marker_radius <- function(current_count) {
   pmin(MAP_MARKER_MAX_RADIUS, MAP_MARKER_MIN_RADIUS + 1.2 * sqrt(current_count))
 }
-# Flexible query matching for map and job searches. Supports keywords,
-# abbreviations (e.g. "special ed", "sped", "math", "cte"), and multi-word queries.
-match_job_query <- function(title_vec, query) {
-  if (is.null(query) || !nzchar(trimws(query))) return(rep(TRUE, length(title_vec)))
-  q <- trimws(query)
-  q_lower <- tolower(q)
-  pattern <- if (q_lower %in% c("special ed", "sped", "special education")) {
-    "special[[:space:]]*ed|sped|special[[:space:]]*educ"
-  } else if (q_lower %in% c("math", "mathematics")) {
-    "math"
-  } else if (q_lower %in% c("pe", "phys ed", "physical education")) {
-    "physical[[:space:]]*ed|phys[[:space:]]*ed|\\bpe\\b"
-  } else if (q_lower %in% c("cte", "career and technical", "vocational")) {
-    "cte|career[[:space:]]*and[[:space:]]*tech|vocational|industrial[[:space:]]*arts"
-  } else if (q_lower %in% c("bus driver", "driver", "transportation")) {
-    "driver|transportation"
-  } else {
-    words <- strsplit(q, "[[:space:]]+")[[1]]
-    words <- words[nzchar(words)]
-    if (length(words) > 1) {
-      paste0("(?=.*", words, ")", collapse = "")
-    } else {
-      words
-    }
-  }
-  !is.na(title_vec) & grepl(pattern, title_vec, ignore.case = TRUE, perl = TRUE)
-}
 
-# If every Vacancy_Rate is NA (both the CCD and IPEDS staffing fetches
-# failing the same week, or a fresh checkout before either has ever
-# succeeded once), range(..., na.rm = TRUE) on an all-NA vector returns
-# c(Inf, -Inf) with a warning -- colorNumeric() then gets an invalid
-# domain and the map's color legend breaks for every user, not just the
-# vacancy-rate feature. Falls back to a placeholder 0-1 domain (never
-# actually used to color a marker, since every Vacancy_Rate would be NA
-# too, rendering na.color everywhere) so the legend itself stays valid.
-# Kept as its own function (rather than inlined) so the all-NA branch is
-# unit-testable without constructing a full combined_map_data.
-compute_vacancy_rate_domain <- function(vacancy_rate) {
-  if (all(is.na(vacancy_rate))) c(0, 1) else range(vacancy_rate, na.rm = TRUE)
-}
 vacancy_rate_domain <- compute_vacancy_rate_domain(combined_map_data$Vacancy_Rate)
 vacancy_rate_palette <- colorNumeric(palette = "YlOrRd", domain = vacancy_rate_domain, na.color = "#9e9e9e")
 
@@ -3525,7 +3163,6 @@ server <- function(input, output, session) {
   })
   
 
-  
   output$k12_current_trends_table <- renderTable({
     req(input$k12_detail_level_current)
     hist_src <- if (identical(input$k12_detail_level_current, "detail")) k12sum else k12sum_agg
@@ -3962,8 +3599,6 @@ server <- function(input, output, session) {
 
     ggplotly(p, height = 500, tooltip = "text")
   })
-
-
 
 
   # Sums across Job_Type (FT + PT) per category -- this table shows "how

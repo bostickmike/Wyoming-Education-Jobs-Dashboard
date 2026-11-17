@@ -1,9 +1,10 @@
 # "Posted / listed" falls back to the first run that found a posting when its
 # board gives no date: first_seen_lookup() (posting_spells.R) writes
-# Wy_Ed_Jobs/posting_first_seen.csv, and app.R's fill_first_seen() reads it with its
-# own copy of first_seen_key(), which must stay identical.
+# Wy_Ed_Jobs/posting_first_seen.csv, and app.R reads it with edjobs::fill_first_seen() (the
+# same first_seen_key(); the fill itself is tested in edjobs, test-app-helpers.R).
 source(here::here("posting_spells.R"))
 
+# Evaluates only the named top-level definitions of app.R (WY-only app functions, e.g. relative_posted_label()).
 app_functions <- function(names) {
   env <- new.env()
   for (x in parse(here::here("Wy_Ed_Jobs", "app.R"), keep.source = FALSE)) {
@@ -27,23 +28,6 @@ test_that("first_seen_lookup keys this week's postings and keeps the earliest si
   expect_equal(k$First_Seen[grepl("bus driver", k$Key)], "2026-09-01")
   expect_true(k$Left_Censored[grepl("bus driver", k$Key)])
   expect_true(all(k$Segment == "K-12"))
-})
-
-test_that("the app's first_seen_key() is the pipeline's, and blanks are filled, posted dates kept", {
-  env <- app_functions(c("first_seen_key", "fill_first_seen"))
-  expect_identical(deparse(env$first_seen_key), deparse(first_seen_key))
-  lookup <- data.frame(Segment = c("K-12", "K-12", "HE"),
-                       Key = c(first_seen_key("Frazer Public Schools", "Head Cook", "u1"),
-                               first_seen_key("Frazer Public Schools", "Bus Driver", "u2"),
-                               first_seen_key("Montana Tech", "Lab Aide", "u3")),
-                       First_Seen = c("2026-10-27", "2026-08-18", "2026-09-01"), Left_Censored = c("FALSE", "TRUE", "FALSE"))
-  got <- env$fill_first_seen(c(NA, "", "2026-10-01", NA), c("Frazer Public Schools", " frazer  public schools", "Frazer Public Schools", "X"),
-                              c("Head Cook", "Bus Driver", "Head Cook", "Teacher"), c("u1", "u2", "u1", "u9"), "K-12", lookup)
-  expect_equal(got, c("First seen 2026-10-27", "On the board since at least 2026-08-18", "2026-10-01", NA))
-  # HE rows only match HE keys; no file means the column is unchanged.
-  expect_equal(env$fill_first_seen(NA, "Montana Tech", "Lab Aide", "u3", "K-12", lookup), NA_character_)
-  expect_equal(env$fill_first_seen(NA, "Montana Tech", "Lab Aide", "u3", "HE", lookup), "First seen 2026-09-01")
-  expect_equal(env$fill_first_seen(c(NA, "2026-10-01"), "a", "b", "c", "K-12", NULL), c(NA, "2026-10-01"))
 })
 
 test_that("the committed posting_first_seen.csv has the shape the app reads", {

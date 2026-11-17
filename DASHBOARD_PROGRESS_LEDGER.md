@@ -827,6 +827,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     most a job-board URL). Its row is gone from data_dictionary.csv and DATA_DICTIONARY.md; every other field of the
     CSV is byte-identical. (2) `tests/testthat/testthat-problems.rds` untracked and ignored, as MT. Suite 1,364
     passed, 0 failed; app boot smoke (NOT_CRAN) 24 passed.
+  * [x] Package phase 6, slice 1: app helpers from edjobs 0.36.0 (2026-11-16; branch `phase6-slice1`). 22 functions
+    both states' app.R defined identically (pay/date/MOE text, sparklines, trends and movers, job search, first-seen
+    fill) now come from edjobs; app.R attaches it (`library(edjobs)`) and its copies are gone, with the app's copy of
+    `first_seen_key()`. `fill_first_seen()` now takes `lookup = first_seen_table`. Checks: package vs app copies on
+    both states' data 64/64 identical; app.R from main vs branch: all 78 data objects identical, every tab's 35
+    outputs and the rows shown (7 tables, 122 rows) identical (`claude-notes/2026-11-16_phase6/`). Suite 1,370 passed; the
+    only failures are the new committed-manifest test, which passes once manifest.json is rewritten from edjobs
+    v0.36.0 installed from GitHub (the PR carries that manifest; the weekly run's manifest check now also requires
+    edjobs as a GitHub package at the pinned tag). New test `test-app-no-local-copies.R`: app.R/feedback.R define no
+    edjobs export. The unit tests moved to edjobs.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

@@ -377,13 +377,20 @@ jobs:
         run: |
           Rscript -e '
           m <- jsonlite::fromJSON("Wy_Ed_Jobs/manifest.json", simplifyVector = FALSE)
-          required <- c("shiny", "bslib", "shinyWidgets", "DT", "data.table", "leaflet", "plotly", "scales", "shinycssloaders", "curl", "jsonlite")
+          required <- c("shiny", "bslib", "shinyWidgets", "DT", "data.table", "leaflet", "plotly", "scales", "shinycssloaders", "curl", "jsonlite", "edjobs")
           missing <- setdiff(required, names(m$packages))
           if (length(missing) > 0) {
             stop(sprintf(
               "manifest.json is missing %s -- writeManifest() only captures packages actually installed in this job, so this workflow'\''s own package-install step is now out of sync with app.R. Refusing to push a manifest that would break the Connect Cloud deploy the way it did on 2026-08-03.",
               paste(missing, collapse = ", ")
             ))
+          }
+          # app.R attaches edjobs (phase 6): Connect Cloud installs it from GitHub only if the manifest says where.
+          ej <- m$packages$edjobs$description
+          pinned <- paste0("v", trimws(readLines("EDJOBS_VERSION")))
+          if (!identical(ej$RemoteType, "github") || !identical(ej$RemoteRef, pinned)) {
+            stop(sprintf("manifest.json records edjobs as RemoteType %s, RemoteRef %s; expected github, %s. Refusing to push a manifest Connect Cloud cannot install from.",
+                         format(ej$RemoteType), format(ej$RemoteRef), pinned))
           }
           cat("Manifest includes all", length(required), "app.R packages.\n")
           '
