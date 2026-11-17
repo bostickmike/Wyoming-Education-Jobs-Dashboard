@@ -76,7 +76,7 @@ backfill_k12_posting_source <- function(posting_id, url, archive_date) {
 # NA: WSBA gives no description to read one from.
 wy_k12_combinedclean <- function(rows, oews_wages, district_county) {
   rows$Posting_Identity_Method <- k12_posting_identity_method(rows$posting_id)
-  if (!"Posting_Source" %in% names(rows)) rows$Posting_Source <- NA_character_
+  if (!"Posting_Source" %in% names(rows)) rows$Posting_Source <- rep(NA_character_, nrow(rows))
   rows$Posting_Source <- dplyr::coalesce(as.character(rows$Posting_Source), backfill_k12_posting_source(rows$posting_id, rows$url, rows$Archive_Date))
   rows$Feed_District <- ifelse(rows$Posting_Source %in% WSBA_FEED_LABEL, as.character(rows$District), NA_character_)
   if ("Also_On_Feed" %in% names(rows)) rows$Also_On_Feed <- as.logical(rows$Also_On_Feed)

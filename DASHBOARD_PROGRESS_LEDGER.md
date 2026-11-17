@@ -845,6 +845,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     differences; app.R from main vs branch: every data object identical (75; only the 3 constants gone), every tab's
     35 outputs identical (shinytest2, `parity2-wy.log`, `claude-notes/2026-11-16_phase6/`). Suite 1,350
     passed; the one failure is the EDJOBS_VERSION pin test until the pin moves to 0.37.0. WY's CLAUDE.md line on app.R's own copies now says they come from edjobs.
+  * [x] Pin edjobs 0.38.0 (the 2026-11-17 full review's fixes) and split posting spells at gaps (2026-11-17; branch
+    `pin-0.38.0`). `scripts/build_posting_spells.R` runs `split_posting_gaps()` between `bridge_posting_ids()` and
+    `use_earliest_posted_date()` for K-12 and college (Mike's evidence rule, `claude-notes/2026-11-17_spells-gaps/`):
+    same posted date on both sides of a gap stays one spell; a later posted date splits it and the earlier piece
+    ends; no date splits it and the earlier piece is censored ("censored: back after a gap"); stable IDs never split.
+    On the committed archives: K-12 11,938 -> 12,983 postings, 7,731 -> 7,894 endings in durations, median 26.5 days
+    (unchanged), 887 pieces censored back after a gap; college 3,651 -> 4,212 postings, 2,684 -> 3,150 endings,
+    median 59.5 -> 52.5, 97 censored. `history_accumulator.R`: a zero-row run no longer fails on `Posting_Source`.
+    manifest.json: main's, with only the edjobs entry from v0.38.0 installed from GitHub (464c49c). Full rehearsal
+    (`claude-notes/2026-11-17_rehearsal-wy-pin-0.38.0.log`): every step passed, suites 1,375 / 1,377 passed, 0
+    failed; WSBA 96 rows, UW 232; K-12 rows 729 -> 726, college 460 -> 468.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
