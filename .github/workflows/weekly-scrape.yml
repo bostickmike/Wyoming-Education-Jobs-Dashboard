@@ -76,6 +76,12 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
+      # setup-r writes TZ=UTC to $GITHUB_ENV, which overrides the workflow's
+      # env for every later step (test dispatch 2026-11-17: the guard ran in
+      # Mountain time, the commit date in UTC). Put Mountain time back.
+      - name: Run in Mountain time (setup-r sets UTC)
+        run: echo "TZ=America/Denver" >> "$GITHUB_ENV"
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
