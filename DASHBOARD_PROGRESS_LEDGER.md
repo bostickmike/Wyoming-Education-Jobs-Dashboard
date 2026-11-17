@@ -837,6 +837,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     v0.36.0 installed from GitHub (the PR carries that manifest; the weekly run's manifest check now also requires
     edjobs as a GitHub package at the pinned tag). New test `test-app-no-local-copies.R`: app.R/feedback.R define no
     edjobs export. The unit tests moved to edjobs.
+  * [x] Package phase 6, slice 2: app helpers that read an app global, from edjobs 0.37.0 (2026-11-17; branch
+    `phase6-slice2`). Six functions (`validate_and_pad_schema`, `in_pay_band`, `relabel_spell_status`,
+    `map_marker_radius`, `dictionary_columns_help`, `footer_retrieved`) now come from edjobs, with what they read
+    from app globals passed as arguments (37 calls); app.R's copies and three constants are gone, and
+    `note_load_issue()` collects the schema-guard banner text. Checks: edjobs `equivalence_slice2.R` 148 checks, 0
+    differences; app.R from main vs branch: every data object identical (75; only the 3 constants gone), every tab's
+    35 outputs identical (shinytest2, `parity2-wy.log`, `claude-notes/2026-11-16_phase6/`). Suite 1,350
+    passed; the one failure is the EDJOBS_VERSION pin test until the pin moves to 0.37.0. WY's CLAUDE.md line on app.R's own copies now says they come from edjobs.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
