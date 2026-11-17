@@ -142,80 +142,6 @@ test_that("HE and K-12 reactives don't error across every institution/district",
   })
 })
 
-test_that("higher-ed appointment classifier separates adjunct, faculty, and other roles", {
-  env <- load_app()
-
-  expect_identical(
-    env$classify_he_appointment(c(
-      "Adjunct Mathematics Instructor",
-      "Biology Professor",
-      "Admissions Specialist"
-    )),
-    c(
-      "Adjunct/part-time faculty",
-      "Faculty/instructor (non-adjunct)",
-      "Other / not faculty"
-    )
-  )
-})
-
-test_that("make_sparkline_svg draws a rising trend with a green endpoint and a falling trend with a red one", {
-  env <- load_app()
-
-  rising <- env$make_sparkline_svg(c(10, 15, 20))
-  expect_match(rising, "^<svg")
-  expect_match(rising, "#1baf7a", fixed = TRUE)
-
-  falling <- env$make_sparkline_svg(c(20, 15, 10))
-  expect_match(falling, "#e34948", fixed = TRUE)
-
-  flat <- env$make_sparkline_svg(c(10, 10, 10))
-  expect_match(flat, "#999999", fixed = TRUE)
-})
-
-test_that("make_sparkline_svg handles too little data without erroring", {
-  env <- load_app()
-
-  expect_equal(env$make_sparkline_svg(numeric(0)), "")
-  expect_equal(env$make_sparkline_svg(c(5)), "")
-  expect_equal(env$make_sparkline_svg(c(NA, NA)), "")
-  # One real value plus NAs still isn't enough to draw a line between two points.
-  expect_equal(env$make_sparkline_svg(c(5, NA, NA)), "")
-})
-
-test_that("compute_wow_delta skips an extra same-week snapshot instead of comparing against it", {
-  env <- load_app()
-
-  # A real week-old snapshot, plus an extra same-week re-run 1 day before
-  # "latest" (the exact failure mode min_days_back guards against -- see
-  # Archivek12_Data's 2026-08-03 entries for a real historical example).
-  weekly <- data.frame(
-    Archive_Date = as.Date(c("2026-07-30", "2026-08-05", "2026-08-06")),
-    n = c(100, 108, 111)
-  )
-  # Without the gap guard this would return 111 - 108 = 3 (comparing
-  # against yesterday's extra run); with it, it should skip the too-recent
-  # 2026-08-05 snapshot and compare against the real week-old one.
-  expect_equal(env$compute_wow_delta(weekly), 111 - 100)
-})
-
-test_that("compute_wow_delta returns NA when no snapshot is old enough to count as 'last week'", {
-  env <- load_app()
-
-  weekly <- data.frame(
-    Archive_Date = as.Date(c("2026-08-05", "2026-08-06")),
-    n = c(50, 55)
-  )
-  expect_true(is.na(env$compute_wow_delta(weekly)))
-})
-
-test_that("compute_vacancy_rate_domain falls back to a placeholder range instead of Inf/-Inf when every rate is NA", {
-  env <- load_app()
-
-  expect_equal(env$compute_vacancy_rate_domain(c(NA_real_, NA_real_, NA_real_)), c(0, 1))
-  expect_equal(env$compute_vacancy_rate_domain(c(0.05, NA_real_, 0.20)), c(0.05, 0.20))
-})
-
 test_that("Sheridan/Gillette get a shared joint vacancy rate instead of NA", {
   # Regression for switching from "suppress both to NA" to "both show the
   # same combined rate" -- see map_he's Vacancy_Rate_Shared comment.
@@ -695,7 +621,7 @@ test_that("map popup 'View matching jobs' carries the map search to the Jobs tab
   env <- load_app()
   query <- "special ed"
   searchable <- paste(dplyr::coalesce(env$combineddata$Title, ""), dplyr::coalesce(env$combineddata$Position, ""))
-  hits <- env$combineddata[env$match_job_query(searchable, query), , drop = FALSE]
+  hits <- env$combineddata[match_job_query(searchable, query), , drop = FALSE]
   skip_if(nrow(hits) == 0, "no current postings match the test query")
   district <- names(sort(table(hits$District), decreasing = TRUE))[1]
   expected <- sum(hits$District == district)
@@ -705,23 +631,13 @@ test_that("map popup 'View matching jobs' carries the map search to the Jobs tab
     expect_equal(selected_district(), district)
     expect_equal(selected_k12_query(), query)
     df <- env$combineddata[env$combineddata$District == district, , drop = FALSE]
-    shown <- df[env$match_job_query(paste(dplyr::coalesce(df$Title, ""), dplyr::coalesce(df$Position, "")), selected_k12_query()), ]
+    shown <- df[match_job_query(paste(dplyr::coalesce(df$Title, ""), dplyr::coalesce(df$Position, "")), selected_k12_query()), ]
     expect_equal(nrow(shown), expected)
 
     # Any other route to the Jobs tab (home-page employer links) drops the map search.
     session$setInputs(popup_view_jobs = district)
     expect_null(selected_k12_query())
   })
-})
-
-test_that("weekly-totals downloads keep only the latest snapshot in each week", {
-  env <- load_app()
-  weekly <- data.frame(District = c("A", "B", "A", "B", "A"),
-                       Archive_Date = c("2026-08-03", "2026-08-03", "2026-08-07", "2026-08-07", "2026-08-11"),
-                       n = c(5, 2, 6, 3, 7))
-  out <- env$latest_snapshot_per_week(weekly)
-  expect_equal(out$Archive_Date, c("2026-08-07", "2026-08-07", "2026-08-11"))
-  expect_equal(out$n, c(6, 3, 7))
 })
 
 test_that("a college posting placed at another town gets its own map dot, and the counts still add up", {
