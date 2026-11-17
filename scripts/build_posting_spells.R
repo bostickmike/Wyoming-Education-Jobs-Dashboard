@@ -27,7 +27,7 @@ endings <- if (file.exists("schoolspring_endings.csv")) read.csv("schoolspring_e
 statuses <- if (file.exists("posting_status.csv")) read.csv("posting_status.csv", colClasses = "character") else NULL
 
 # ---- K-12 ----
-panel <- use_earliest_posted_date(bridge_posting_ids(k12_posting_panel("Archivek12_Data"), WY_SPELL_RULES))
+panel <- use_earliest_posted_date(split_posting_gaps(bridge_posting_ids(k12_posting_panel("Archivek12_Data"), WY_SPELL_RULES)))
 k12_cal <- if (is.null(calendar)) NULL else calendar[calendar$Segment %in% c("K-12", "Feed"), , drop = FALSE]
 frozen_k12 <- frozen_board_runs(panel)
 spells <- build_posting_spells(panel, k12_cal, endings, frozen = frozen_k12, statuses = statuses, rules = WY_SPELL_RULES)
@@ -45,7 +45,7 @@ cat("posting_spells_k12.csv:", nrow(spells), "postings,", sum(spells$In_Duration
 
 # ---- Higher ed: each institution is its own source in the calendar's HE rows ----
 he_cal <- if (is.null(calendar)) NULL else calendar[calendar$Segment == "HE", , drop = FALSE]
-he_panel <- use_earliest_posted_date(bridge_posting_ids(he_posting_panel("Archived_HE_Data"), WY_SPELL_RULES))
+he_panel <- use_earliest_posted_date(split_posting_gaps(bridge_posting_ids(he_posting_panel("Archived_HE_Data"), WY_SPELL_RULES)))
 frozen_he <- frozen_board_runs(he_panel)
 he_spells <- build_posting_spells(he_panel, he_cal, frozen = frozen_he, statuses = statuses, rules = WY_SPELL_RULES)
 he_durations <- bind_rows(summarize_posting_durations(he_spells),
