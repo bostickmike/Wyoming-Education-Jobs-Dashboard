@@ -59,3 +59,44 @@ test_that("Wy_ED_Jobs.Rmd K-12 scraping and combination chunks execute cleanly w
   expect_true(nrow(env$combined) > 0)
   expect_s3_class(env$combined$date_posted, "Date")
 })
+
+# The PeopleAdmin colleges' Location is a fixed campus label, so their pages' Page_Places (edjobs 0.34.0) is the only
+# way a Wright or Green River posting gets its own town. The per-institution select() in "higher ed scrapes" once
+# dropped it, and the 0.34.0 rehearsal placed none of the 6 measured WY postings.
+test_that("the higher-ed scrape and combine keep PeopleAdmin's Page_Places for place_he_postings()", {
+  rmd_lines <- readLines(here::here("Wy_ED_Jobs.Rmd"), warn = FALSE)
+  scrape_code <- extract_chunk_code(rmd_lines, "higher ed scrapes")
+  scrape_code <- sub('source\\("direct_api_scrapers.R"\\)', "", scrape_code)
+  munge_lines <- strsplit(extract_chunk_code(rmd_lines, "munge he data"), "\n")[[1]]
+  bind_start <- grep("^hedata <- unname\\(he_frames\\)", munge_lines)
+  bind_end <- grep('any_of\\("Page_Places"\\)\\)$', munge_lines)
+  expect_length(bind_start, 1)
+  expect_length(bind_end, 1)
+  bind_code <- paste(munge_lines[bind_start:bind_end], collapse = "\n")
+
+  posting <- function(title, inst_label) {
+    df <- data.frame(Title = title, Location = inst_label, Posted_Date = "2026-11-16",
+                     Link = paste0("https://example.invalid/", title), stringsAsFactors = FALSE)
+    ensure_posted_pay_columns(df)
+  }
+  env <- new.env(parent = globalenv())
+  env$safe_scrape <- function(name, scrape_fn, expected_cols = NULL, log_path = NULL) scrape_fn()
+  env$fetch_neogov_postings <- function(feed) posting("Neogov job", "Casper")
+  env$fetch_uw_postings <- function() posting("UW job", "Laramie, WY")
+  env$fetch_peopleadmin_atom <- function(feed_url, location_fallback, ...) {
+    df <- posting("Extension Educator", location_fallback)
+    df$Close_Date <- NA_character_
+    df$Page_Places <- "Wright"
+    df
+  }
+
+  withr::with_dir(here::here(), {
+    expect_no_error(eval(parse(text = scrape_code), envir = env))
+    expect_no_error(eval(parse(text = bind_code), envir = env))
+  })
+  pa <- env$he_registry$Institution[env$he_registry$Platform == "PeopleAdmin"]
+  expect_gt(length(pa), 0)
+  for (inst in pa) expect_identical(env$he_frames[[inst]]$Page_Places, "Wright", info = inst)
+  expect_true("Page_Places" %in% names(env$hedata))
+  expect_setequal(env$hedata$Page_Places[env$hedata$Institution %in% pa], "Wright")
+})
