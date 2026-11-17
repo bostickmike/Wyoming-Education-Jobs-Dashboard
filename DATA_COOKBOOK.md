@@ -128,6 +128,7 @@ Not an archive — one current row per of Wyoming's 48 school districts. `Distri
 | `Latitude` / `Longitude` | numeric | hand-maintained | Used for the map marker. |
 | `Link` | text | hand-maintained | District's general website (not currently surfaced in the app). |
 | `Job_Link` | text | hand-maintained | District's job-board URL, shown in the map popup as "Careers page." |
+| `CCD_Link` | text | built from `NCES_LEAID` | The district's NCES CCD page (edjobs `add_source_record_links()`, last chunk of the Rmd). Shows NCES's newest year, which can be newer than `CCD_Year`. Blank without an NCES id. |
 | `Teacher_Base_Salary` / `Teacher_Base_Salary_Prior_Year` | numeric | WSBA (weekly refresh) | Current + prior year base salary from the same PDF scrape. |
 | `Teacher_Avg_Salary` / `Teacher_Avg_Base_Salary` | numeric | Wyoming Dept of Education (WDE602) | Average total compensation / average base salary for instructional teachers from the WDE602 School District Staff Member Collection report (`dist_k12_staff_fte_and_avg_salary_by_assign_cat`). |
 | `WDE_Salary_Year` / `WDE_Salary_Source` | text | Wyoming Dept of Education | e.g. `"2025-26"` and `"WDE602 Staff Member Collection (edu.wyoming.gov)"`. |
@@ -287,6 +288,7 @@ One current row per Wyoming's 9 public HE institutions. `Name`/`Longitude`/`Lati
 | `Name` | text | hand-maintained | Canonical name; the join key. |
 | `Longitude` / `Latitude` | numeric | hand-maintained | |
 | `Link` | text | hand-maintained | Careers page, shown in the map popup. |
+| `IPEDS_Link` | text | built from `IPEDS_UNITID` | The institution's NCES College Navigator page (edjobs `add_source_record_links()`, last chunk of the Rmd). Shows NCES's newest year. |
 | `Faculty_Avg_Salary` / `Faculty_Avg_Salary_Professor` | numeric | IPEDS via Urban Institute | "All ranks combined" and Professor-rank average salary. |
 | `Faculty_Count` | numeric | IPEDS | Vacancy-rate denominator (full-time instructional staff only, matching `Job_Type == "Instructor/Teacher/Faculty"`'s scope). |
 | `Salary_Year` | text | IPEDS | The calendar year IPEDS surveyed as of (Nov 1 of that year), not an academic year. |

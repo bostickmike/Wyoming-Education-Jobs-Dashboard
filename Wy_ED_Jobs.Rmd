@@ -1207,3 +1207,16 @@ if (nrow(county_context_he) > 0) {
   message("Census ACS county context fetch failed -- leaving salarymap.csv untouched this run.")
 }
 ```
+
+### A link to each district's and college's page at its source
+```{r source record links, message=FALSE, warning=FALSE, echo=TRUE}
+library(edjobs)
+
+# CCD_Link (NCES district page, from NCES_LEAID) and IPEDS_Link (College Navigator, from IPEDS_UNITID), edjobs
+# 0.35.0 (Mike 2026-11-16: a link to each row's source wherever possible). Last, after every chunk that rewrites
+# these files; rebuilt from the id each run. Both pages show NCES's newest year, which can be newer than the file's.
+# wde602_district_staff_salaries.csv carries its own Source_Link (WDE's report; WDE has no page per district).
+for (p in c(file.path("Wy_Ed_Jobs", "salarymap2.csv"), file.path("Wy_Ed_Jobs", "salarymap.csv"))) {
+  if (file.exists(p)) write.csv(add_source_record_links(read.csv(p, fileEncoding = "UTF-8")), p, row.names = FALSE)
+}
+```
