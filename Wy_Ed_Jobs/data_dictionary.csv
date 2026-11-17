@@ -57,7 +57,6 @@
 "District Profiles & Context","salarymap2.csv","County","String","US Census Bureau","County in which the district central administrative headquarters is located."
 "District Profiles & Context","salarymap2.csv","Latitude","Decimal Degrees","This dashboard: district and college list","Geographic latitude coordinate of district central headquarters."
 "District Profiles & Context","salarymap2.csv","Longitude","Decimal Degrees","This dashboard: district and college list","Geographic longitude coordinate of district central headquarters."
-"District Profiles & Context","salarymap2.csv","Link","URL","This dashboard: district and college list","Official website home page URL for the school district."
 "District Profiles & Context","salarymap2.csv","Job_Link","URL","This dashboard: district and college list","Official employment, careers, or applicant tracking portal link for the district."
 "District Profiles & Context","salarymap2.csv","Teacher_Base_Salary","Currency ($)","WSBA Salary Survey","Published starting base salary for a certified teacher with a Bachelors degree and Step 1 experience."
 "District Profiles & Context","salarymap2.csv","Teacher_Base_Salary_Prior_Year","Currency ($)","WSBA Salary Survey","Published starting base salary for BA Step 1 in the preceding academic school year."

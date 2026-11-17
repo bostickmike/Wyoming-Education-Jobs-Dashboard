@@ -821,6 +821,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     coordinates and careers links say "district and college list", not IPEDS or Census geocoding: the cookbook has
     them hand-maintained. 131 of the CSV's rows and 128 rows of DATA_DICTIONARY.md changed; no other cell changed;
     the two agree on every label. Suite 1,364 passed, 0 failed. Plan: `claude-notes/2026-11-16_dictionary-source-labels.md`.
+  * [x] Small leftovers (2026-11-16; branch `small-leftovers`). (1) salarymap2.csv's `Link` column removed: no code read
+    it (the app, Rmd, schema check and tests use `Job_Link`), nothing refreshed it since the registry change (05bc330),
+    MT's salarymap2 has no such column, and its dictionary text ("home page") was wrong for most rows (48 of 57 filled,
+    most a job-board URL). Its row is gone from data_dictionary.csv and DATA_DICTIONARY.md; every other field of the
+    CSV is byte-identical. (2) `tests/testthat/testthat-problems.rds` untracked and ignored, as MT. Suite 1,364
+    passed, 0 failed; app boot smoke (NOT_CRAN) 24 passed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
