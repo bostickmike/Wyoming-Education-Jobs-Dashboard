@@ -277,12 +277,16 @@ if (file.exists(wde_staff_file)) {
 # sparkline trend next to each entity's raw count on the Top Hiring
 # tables, matching that same all-category count rather than a
 # teacher/faculty-only proxy that wouldn't line up with the number shown.
+# Twice-weekly runs (2026-11-17): every history file the charts read is rolled up to each ISO week's last run
+# (latest_snapshot_per_week()), so a chart has one point a week and "new this week" compares with a week ago.
 k12_district_weekly_totals <- read.csv("k12_district_weekly_totals.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("District", "Archive_Date", "n"), "k12_district_weekly_totals.csv", on_missing = note_load_issue) %>%
-  mutate(Archive_Date = as.Date(Archive_Date))
+  mutate(Archive_Date = as.Date(Archive_Date)) %>%
+  latest_snapshot_per_week()
 he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv", on_missing = note_load_issue) %>%
-  mutate(Archive_Date = as.Date(Archive_Date))
+  mutate(Archive_Date = as.Date(Archive_Date)) %>%
+  latest_snapshot_per_week()
 
 data_dictionary <- if (file.exists("data_dictionary.csv")) {
   read.csv("data_dictionary.csv", stringsAsFactors = FALSE)
@@ -356,6 +360,7 @@ k12sum <- read.csv("allsum.csv", fileEncoding = "UTF-8") %>%
   filter(Broad_Category != "Other")
 
 k12sum$Archive_Date <- as.Date(k12sum$Archive_Date)
+k12sum <- latest_snapshot_per_week(k12sum)
 
 # The source aggregation (group_by + summarize) only produces a row for a
 # Broad_Category/Archive_Date/District combination that actually had at
@@ -472,6 +477,7 @@ hesum_he <- read.csv("allsum_he.csv") %>%
   filter(Category != "Uncategorized")
 
 hesum_he$Archive_Date <- as.Date(hesum_he$Archive_Date)
+hesum_he <- latest_snapshot_per_week(hesum_he)
 
 # Same gap-filling as k12sum above -- a Category/Institution/Job_Type
 # combination with zero postings in a given week is simply missing from
@@ -621,7 +627,8 @@ HE_JOB_TYPE_COLORS <- c(
 #--------------------------------------------------
 k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("title", "Archive_Date", "location", "District"), "k12jobanalysis.csv", on_missing = note_load_issue) %>%
-  mutate(Archive_Date = as.Date(Archive_Date))
+  mutate(Archive_Date = as.Date(Archive_Date)) %>%
+  latest_snapshot_per_week()
 
 k12_new_this_week <- {
   dates <- sort(unique(k12_history$Archive_Date))
@@ -639,6 +646,7 @@ k12_new_this_week <- {
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
+  latest_snapshot_per_week() %>%
   filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
   mutate(Appointment = dplyr::recode(
     Job_Type,
