@@ -123,7 +123,6 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `County` | String | US Census Bureau | County in which the district central administrative headquarters is located. |
 | `Latitude` | Decimal Degrees | This dashboard: district and college list | Geographic latitude coordinate of district central headquarters. |
 | `Longitude` | Decimal Degrees | This dashboard: district and college list | Geographic longitude coordinate of district central headquarters. |
-| `Link` | URL | This dashboard: district and college list | Official website home page URL for the school district. |
 | `Job_Link` | URL | This dashboard: district and college list | Official employment, careers, or applicant tracking portal link for the district. |
 | `Teacher_Base_Salary` | Currency ($) | WSBA Salary Survey | Published starting base salary for a certified teacher with a Bachelors degree and Step 1 experience. |
 | `Teacher_Base_Salary_Prior_Year` | Currency ($) | WSBA Salary Survey | Published starting base salary for BA Step 1 in the preceding academic school year. |
