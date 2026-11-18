@@ -402,8 +402,9 @@ write.csv(k12jobs, file=file.path('Wy_Ed_Jobs','k12jobanalysis.csv'), row.names 
 # powers the sparkline trend shown next to each district's raw count on
 # the landing page's "Top K-12 Hiring Districts" table. Built from the
 # same combinedclean used above, just not filtered to position == "Teacher".
-this_week_district_totals <- combinedclean %>%
-  count(District, Archive_Date, name = "n")
+# n_not_marked: the postings classify_work_schedule() does not mark, as in the job-type totals below (the Home
+# page's top districts table and its sparklines count these when its switch is on).
+this_week_district_totals <- posting_run_totals(combinedclean, "District", "position", "title", "k12")
 k12_district_weekly_totals <- append_weekly_rows(
   file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), this_week_district_totals)
 write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
@@ -947,8 +948,8 @@ write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = F
 # each institution's raw count on the landing page's "Top Higher Ed
 # Hiring Institutions" table. Built from this week's hedata (already
 # canonicalized above) before the Job_Type/faculty-only filter.
-this_week_he_totals <- hedata %>%
-  count(Institution, Archive_Date, name = "n")
+# this_week_he_cat is hedata with Job_Type, which classify_work_schedule() reads for n_not_marked.
+this_week_he_totals <- posting_run_totals(this_week_he_cat, "Institution", "Job_Type", "Title", "college")
 he_institution_weekly_totals <- append_weekly_rows(
   file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), this_week_he_totals)
 write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)

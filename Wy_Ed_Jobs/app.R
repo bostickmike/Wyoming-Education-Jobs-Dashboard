@@ -284,11 +284,11 @@ if (file.exists(wde_staff_file)) {
 # Twice-weekly runs (2026-11-17): every history file the charts read is rolled up to each ISO week's last run
 # (latest_snapshot_per_week()), so a chart has one point a week and "new this week" compares with a week ago.
 k12_district_weekly_totals <- read.csv("k12_district_weekly_totals.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("District", "Archive_Date", "n"), "k12_district_weekly_totals.csv", on_missing = note_load_issue) %>%
+  validate_and_pad_schema(c("District", "Archive_Date", "n", "n_not_marked"), "k12_district_weekly_totals.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
   latest_snapshot_per_week()
 he_institution_weekly_totals <- read.csv("he_institution_weekly_totals.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("Institution", "Archive_Date", "n"), "he_institution_weekly_totals.csv", on_missing = note_load_issue) %>%
+  validate_and_pad_schema(c("Institution", "Archive_Date", "n", "n_not_marked"), "he_institution_weekly_totals.csv", on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
   latest_snapshot_per_week()
 # Per-run totals by job type (edjobs jobtype_run_totals()), for the Home page's job-type sparklines.
@@ -302,11 +302,15 @@ k12_jobtype_weekly_totals <- read_jobtype_totals("k12_jobtype_weekly_totals.csv"
 he_jobtype_weekly_totals <- read_jobtype_totals("he_jobtype_weekly_totals.csv")
 # Columns the app uses but never shows or exports.
 HIDDEN_COLS <- c(".Pay_Value", ".Pay_Unit", ".Map_Name", ".Job_Type", ".Not_Marked")
-# What the Home page's job-type and top-employer tables leave out.
-NOT_MARKED_NOTE <- paste("Substitutes, coaching and other extra-duty stipends, and postings whose title says part-time,",
-                         "student or temporary are left out.")
-NOT_MARKED_NOTE_HE <- paste("Adjunct and part-time faculty, student jobs, substitutes, and postings whose title says part-time",
-                            "or temporary are left out.")
+# What the Home page's job-type and top-employer tables leave out while its switch is on.
+HOME_SWITCH_LABEL <- "Leave out substitutes, coaching, part-time, student and temporary jobs"
+NOT_MARKED_NOTE <- paste("With the switch above the tables on (the default), substitutes, coaching and other extra-duty",
+                         "stipends, and postings whose title says part-time, student or temporary are left out.")
+NOT_MARKED_NOTE_HE <- paste("With the switch above the tables on (the default), adjunct and part-time faculty, student jobs,",
+                            "substitutes, and postings whose title says part-time or temporary are left out.")
+# The Jobs tables' "Showing:" line when a Home click carried the switch with it.
+NOT_MARKED_SHOWING <- "excluding substitutes, coaching and postings marked part-time, student or temporary"
+NOT_MARKED_SHOWING_HE <- "excluding adjunct, part-time, student and temporary postings"
 
 data_dictionary <- if (file.exists("data_dictionary.csv")) {
   read.csv("data_dictionary.csv", stringsAsFactors = FALSE)
@@ -1180,19 +1184,23 @@ ui <- page_navbar(
       uiOutput("kpi_he_total", fill = TRUE),
       uiOutput("kpi_last_refreshed", fill = TRUE)
     ),
+    # Drives the four tables below (counts, Share, sparklines) and the Jobs table their links open; KPI cards keep
+    # both numbers.
+    div(class = "home-basis-switch", style = "margin: 4px 0 -4px;",
+        input_switch("home_not_marked", HOME_SWITCH_LABEL, value = TRUE, width = "100%")),
     layout_columns(
       col_widths = c(6, 6),
       dash_card("Top K-12 Hiring Districts This Week",
                 div(style = "overflow-x: auto;", tableOutput("top_k12_districts")),
                 info = help_popover("Top K-12 hiring districts",
                   p("The five districts with the most postings in this week's scrape, all job types (teachers, aides, drivers and so on). ", NOT_MARKED_NOTE,
-                    " Last 12 Weeks: the district's postings of every kind, substitutes and coaching included, in each of its last 12 weekly scrapes. Click a district to see its jobs."),
+                    " Last 12 Weeks: the district's postings in each of its last 12 weekly scrapes, counted the same way. Click a district to see its jobs."),
                   source = "each district's own job board, read twice a week, or the Wyoming School Boards Association vacancies list for districts without one.")),
       dash_card("Top Higher Ed Hiring Institutions This Week",
                 div(style = "overflow-x: auto;", tableOutput("top_he_institutions")),
                 info = help_popover("Top higher ed hiring institutions",
                   p("The five colleges with the most postings in this week's scrape, faculty and staff. ", NOT_MARKED_NOTE_HE,
-                    " Last 12 Weeks: the college's postings of every kind in each of its last 12 weekly scrapes. Click a college to see its jobs."),
+                    " Last 12 Weeks: the college's postings in each of its last 12 weekly scrapes, counted the same way. Click a college to see its jobs."),
                   source = "each college's own job board, read twice a week."))
     ),
     layout_columns(
@@ -1951,6 +1959,9 @@ server <- function(input, output, session) {
   # Job type picked on the Home page's job-type tables (its postings not marked part-time etc.), or NULL.
   selected_k12_type <- reactiveVal(NULL)
   selected_he_type <- reactiveVal(NULL)
+  # TRUE when a Home link carried the switch (on) to the Jobs table: only postings not marked part-time etc.
+  k12_not_marked_only <- reactiveVal(FALSE)
+  he_not_marked_only <- reactiveVal(FALSE)
 
   # DATA_LOAD_ISSUES is populated once at app startup (see
   # validate_and_pad_schema() above) -- not reactive, but wrapped in
@@ -2023,65 +2034,41 @@ server <- function(input, output, session) {
     kpi_value_box(last_refreshed_date, "Last Refreshed", icon = icon("calendar"), color = "green")
   })
 
+  # Home switch: count only postings classify_work_schedule() doesn't mark (on, the default) or every posting. The
+  # sparklines read the pipeline's matching per-run column (n_not_marked or n), so a line and its table agree.
+  home_not_marked <- reactive(!isFALSE(input$home_not_marked))
+  home_count_col <- reactive(if (home_not_marked()) "n_not_marked" else "n")
+
+  top_entity_table <- function(df, col, totals, accent) {
+    top <- df %>% count(.data[[col]], sort = TRUE, name = "Open Postings") %>% head(5)
+    top$`Last 12 Weeks` <- vapply(top[[col]], function(e) {
+      series <- totals[totals[[col]] %in% e, ] %>% arrange(Archive_Date) %>% tail(12)
+      make_sparkline_svg(series[[home_count_col()]], accent = accent)
+    }, character(1))
+    top[[col]] <- paste0(
+      '<a href="#" onclick="Shiny.setInputValue(\'popup_view_jobs\', \'',
+      gsub("'", "&#39;", top[[col]], fixed = TRUE),
+      '\', {priority: \'event\'}); return false;">',
+      top[[col]],
+      '</a>'
+    )
+    top
+  }
   output$top_k12_districts <- renderTable({
-    top <- combineddata %>% filter(.Not_Marked) %>% count(District, sort = TRUE, name = "Open Postings") %>% head(5)
-    top$`Last 12 Weeks` <- vapply(top$District, function(d) {
-      series <- k12_district_weekly_totals %>%
-        filter(District == d) %>%
-        arrange(Archive_Date) %>%
-        tail(12) %>%
-        pull(n)
-      make_sparkline_svg(series, accent = "#2a78d6")
-    }, character(1))
-    top$District <- paste0(
-      '<a href="#" onclick="Shiny.setInputValue(\'popup_view_jobs\', \'',
-      gsub("'", "&#39;", top$District, fixed = TRUE),
-      '\', {priority: \'event\'}); return false;">',
-      top$District,
-      '</a>'
-    )
-    top
+    df <- if (home_not_marked()) combineddata %>% filter(.Not_Marked) else combineddata
+    top_entity_table(df, "District", k12_district_weekly_totals, "#2a78d6")
   }, sanitize.text.function = function(x) x)
-
   output$top_he_institutions <- renderTable({
-    top <- ccdata %>% filter(.Not_Marked) %>% count(Institution, sort = TRUE, name = "Open Postings") %>% head(5)
-    top$`Last 12 Weeks` <- vapply(top$Institution, function(inst) {
-      series <- he_institution_weekly_totals %>%
-        filter(Institution == inst) %>%
-        arrange(Archive_Date) %>%
-        tail(12) %>%
-        pull(n)
-      make_sparkline_svg(series, accent = "#4a3aa7")
-    }, character(1))
-    top$Institution <- paste0(
-      '<a href="#" onclick="Shiny.setInputValue(\'popup_view_jobs\', \'',
-      gsub("'", "&#39;", top$Institution, fixed = TRUE),
-      '\', {priority: \'event\'}); return false;">',
-      top$Institution,
-      '</a>'
-    )
-    top
+    df <- if (home_not_marked()) ccdata %>% filter(.Not_Marked) else ccdata
+    top_entity_table(df, "Institution", he_institution_weekly_totals, "#4a3aa7")
   }, sanitize.text.function = function(x) x)
 
-  # Vacancy-rate leaderboards -- a different question from the raw-count
-  # tables above ("who's short-staffed relative to their size" rather than
-  # "who's hiring the most"), so they sit alongside rather than replacing
-  # them. Same horizontal-bar, ranked-descending pattern as the Current
-  # Trends charts. combined_map_data's Vacancy_Rate is already NA below
-  # VACANCY_RATE_MIN_FTE, so no separate floor check is needed here.
-  #
-  # validate(need()), not a bare req() -- req() would leave the box showing
-  # only its spinner forever if nothing qualifies (e.g. every staffing
-  # source failed this week), with no indication that's a real state and
-  # not just slow loading. Matches the friendly-message pattern the
-  # longitudinal charts already use below.
-  # The five most-posted job types among postings classify_work_schedule() doesn't mark; sparkline from the
-  # pipeline's per-run totals (n_not_marked), counted the same way.
+  # The five most-posted job types; sparkline from the pipeline's per-run totals by type, counted the same way.
   top_job_types_table <- function(types, totals, accent, input_id) {
     top <- data.frame(Type = types, stringsAsFactors = FALSE) %>% count(Type, sort = TRUE, name = "Open Postings") %>% head(5)
     top$Share <- scales::percent(top$`Open Postings` / length(types), accuracy = 1)
     top$`Last 12 Weeks` <- vapply(top$Type, function(t) {
-      make_sparkline_svg(totals %>% filter(Job_Type == t) %>% arrange(Archive_Date) %>% tail(12) %>% pull(n_not_marked),
+      make_sparkline_svg(totals %>% filter(Job_Type == t) %>% arrange(Archive_Date) %>% tail(12) %>% pull(!!home_count_col()),
                          accent = accent)
     }, character(1))
     top$Type <- paste0('<a href="#" onclick="Shiny.setInputValue(\'', input_id, '\', \'',
@@ -2091,10 +2078,12 @@ server <- function(input, output, session) {
     top
   }
   output$top_k12_job_types <- renderTable({
-    top_job_types_table(combineddata$Position[combineddata$.Not_Marked], k12_jobtype_weekly_totals, "#2a78d6", "jobtype_view_k12")
+    keep <- !home_not_marked() | combineddata$.Not_Marked
+    top_job_types_table(combineddata$Position[keep], k12_jobtype_weekly_totals, "#2a78d6", "jobtype_view_k12")
   }, sanitize.text.function = function(x) x)
   output$top_he_job_types <- renderTable({
-    top_job_types_table(ccdata$.Job_Type[ccdata$.Not_Marked], he_jobtype_weekly_totals, "#4a3aa7", "jobtype_view_he")
+    keep <- !home_not_marked() | ccdata$.Not_Marked
+    top_job_types_table(ccdata$.Job_Type[keep], he_jobtype_weekly_totals, "#4a3aa7", "jobtype_view_he")
   }, sanitize.text.function = function(x) x)
 
   # -------- New This Week --------
@@ -2211,7 +2200,8 @@ server <- function(input, output, session) {
   output$k12_jobs <- renderDT({
     df <- combineddata
     if (!is.null(selected_district())) df <- df %>% filter(District == selected_district())
-    if (!is.null(selected_k12_type())) df <- df %>% filter(Position == selected_k12_type(), .Not_Marked)
+    if (!is.null(selected_k12_type())) df <- df %>% filter(Position == selected_k12_type())
+    if (k12_not_marked_only()) df <- df %>% filter(.Not_Marked)
     # Same matcher and searchable text as map_filtered(), so the count here
     # equals the popup's "N matching openings".
     if (!is.null(selected_k12_query())) {
@@ -2231,19 +2221,20 @@ server <- function(input, output, session) {
   output$k12_filter_status <- renderUI({
     if (!is.null(selected_k12_type())) {
       return(div(style = "margin-bottom: 10px;",
-                 strong(paste0("Showing: ", selected_k12_type(), " jobs, excluding substitutes, coaching and postings marked part-time, student or temporary")),
+                 strong(paste0("Showing: ", selected_k12_type(), " jobs", if (k12_not_marked_only()) paste0(", ", NOT_MARKED_SHOWING))),
                  actionButton("clear_k12_type", "Show All Jobs", class = "btn-xs", style = "margin-left: 10px;")))
     }
-    if (is.null(selected_district())) return(NULL)
+    if (is.null(selected_district()) && !k12_not_marked_only()) return(NULL)
     div(style = "margin-bottom: 10px;",
-        strong(paste0("Showing: ", selected_district(),
+        strong(paste0("Showing: ", if (is.null(selected_district())) "all districts" else selected_district(),
+                      if (k12_not_marked_only()) paste0(" \u2014 ", NOT_MARKED_SHOWING) else "",
                       if (!is.null(selected_k12_query())) paste0(" \u2014 jobs matching \u201c", selected_k12_query(), "\u201d") else "",
                       if (!is.null(selected_pay_band())) paste0(" \u2014 pay ", PAY_BANDS[[selected_pay_band()]]$label) else "")),
         actionButton("clear_k12_filter", "Show All Districts", class = "btn-xs", style = "margin-left: 10px;")
     )
   })
-  observeEvent(input$clear_k12_filter, { selected_district(NULL); selected_k12_query(NULL); selected_pay_band(NULL) })
-  observeEvent(input$clear_k12_type, selected_k12_type(NULL))
+  observeEvent(input$clear_k12_filter, { selected_district(NULL); selected_k12_query(NULL); selected_pay_band(NULL); k12_not_marked_only(FALSE) })
+  observeEvent(input$clear_k12_type, { selected_k12_type(NULL); k12_not_marked_only(FALSE) })
 
   # District Summary -- everything the map popups show (vacancy rate,
   # salary figures, source/date), but as a real exportable table instead
@@ -2981,17 +2972,20 @@ server <- function(input, output, session) {
       )
   })
 
+  # Home's top district/college links (the map popups use map_popup_view_jobs): the Jobs table follows the switch.
   observeEvent(input$popup_view_jobs, {
-    navigate_to_entity_jobs(input$popup_view_jobs)
+    navigate_to_entity_jobs(input$popup_view_jobs, not_marked = home_not_marked())
   })
   observeEvent(input$jobtype_view_k12, {
     selected_district(NULL); selected_k12_query(NULL); selected_pay_band(NULL)
     selected_k12_type(input$jobtype_view_k12)
+    k12_not_marked_only(home_not_marked())
     nav_select("sidebar_tabs", "k12_table", session = session)
   })
   observeEvent(input$jobtype_view_he, {
     selected_institution(NULL); selected_he_query(NULL); selected_pay_band(NULL)
     selected_he_type(input$jobtype_view_he)
+    he_not_marked_only(home_not_marked())
     nav_select("sidebar_tabs", "he_table", session = session)
   })
 
@@ -3002,9 +2996,11 @@ server <- function(input, output, session) {
     navigate_to_entity_jobs(ev$entity, if (nzchar(query)) query else NULL, band)
   })
 
-  navigate_to_entity_jobs <- function(entity, query = NULL, band = NULL) {
+  navigate_to_entity_jobs <- function(entity, query = NULL, band = NULL, not_marked = FALSE) {
     selected_k12_type(NULL)
     selected_he_type(NULL)
+    k12_not_marked_only(FALSE)
+    he_not_marked_only(FALSE)
     selected_k12_query(query)
     selected_he_query(query)
     selected_pay_band(band)
@@ -3012,16 +3008,20 @@ server <- function(input, output, session) {
     if (nrow(row) > 0) {
       if (row$Type[1] == "K-12 District") {
         selected_district(entity)
+        k12_not_marked_only(not_marked)
         nav_select("sidebar_tabs", "k12_table", session = session)
       } else {
         selected_institution(entity)
+        he_not_marked_only(not_marked)
         nav_select("sidebar_tabs", "he_table", session = session)
       }
     } else if (entity %in% combineddata$District) {
       selected_district(entity)
+      k12_not_marked_only(not_marked)
       nav_select("sidebar_tabs", "k12_table", session = session)
     } else if (entity %in% ccdata$Institution) {
       selected_institution(entity)
+      he_not_marked_only(not_marked)
       nav_select("sidebar_tabs", "he_table", session = session)
     }
   }
@@ -3144,7 +3144,8 @@ server <- function(input, output, session) {
   output$he_jobs <- renderDT({
     df <- ccdata
     if (!is.null(selected_institution())) df <- df %>% filter(Institution == selected_institution() | .Map_Name == selected_institution())
-    if (!is.null(selected_he_type())) df <- df %>% filter(.Job_Type == selected_he_type(), .Not_Marked)
+    if (!is.null(selected_he_type())) df <- df %>% filter(.Job_Type == selected_he_type())
+    if (he_not_marked_only()) df <- df %>% filter(.Not_Marked)
     if (!is.null(selected_he_query())) {
       df <- df[match_job_query(paste(coalesce(df$Title, ""), coalesce(df$Appointment, "")), selected_he_query()), , drop = FALSE]
     }
@@ -3165,19 +3166,20 @@ server <- function(input, output, session) {
   output$he_filter_status <- renderUI({
     if (!is.null(selected_he_type())) {
       return(div(style = "margin-bottom: 10px;",
-                 strong(paste0("Showing: ", selected_he_type(), " jobs, excluding adjunct, part-time, student and temporary postings")),
+                 strong(paste0("Showing: ", selected_he_type(), " jobs", if (he_not_marked_only()) paste0(", ", NOT_MARKED_SHOWING_HE))),
                  actionButton("clear_he_type", "Show All Jobs", class = "btn-xs", style = "margin-left: 10px;")))
     }
-    if (is.null(selected_institution())) return(NULL)
+    if (is.null(selected_institution()) && !he_not_marked_only()) return(NULL)
     div(style = "margin-bottom: 10px;",
-        strong(paste0("Showing: ", selected_institution(),
+        strong(paste0("Showing: ", if (is.null(selected_institution())) "all institutions" else selected_institution(),
+                      if (he_not_marked_only()) paste0(" \u2014 ", NOT_MARKED_SHOWING_HE) else "",
                       if (!is.null(selected_he_query())) paste0(" \u2014 jobs matching \u201c", selected_he_query(), "\u201d") else "",
                       if (!is.null(selected_pay_band())) paste0(" \u2014 pay ", PAY_BANDS[[selected_pay_band()]]$label) else "")),
         actionButton("clear_he_filter", "Show All Institutions", class = "btn-xs", style = "margin-left: 10px;")
     )
   })
-  observeEvent(input$clear_he_filter, { selected_institution(NULL); selected_he_query(NULL); selected_pay_band(NULL) })
-  observeEvent(input$clear_he_type, selected_he_type(NULL))
+  observeEvent(input$clear_he_filter, { selected_institution(NULL); selected_he_query(NULL); selected_pay_band(NULL); he_not_marked_only(FALSE) })
+  observeEvent(input$clear_he_type, { selected_he_type(NULL); he_not_marked_only(FALSE) })
 
   # Institution Summary -- same purpose as k12_summary_table above: the
   # map popups' data as a real exportable table, not one marker at a time.

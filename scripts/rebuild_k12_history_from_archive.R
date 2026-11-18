@@ -97,8 +97,7 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data",
 
   k12jobs <- build_k12_teacher_rows(combinedclean)
 
-  k12_district_weekly_totals <- combinedclean %>%
-    count(District, Archive_Date, name = "n")
+  k12_district_weekly_totals <- posting_run_totals(combinedclean, "District", "position", "title", "k12")
   k12_jobtype_weekly_totals <- jobtype_run_totals(combinedclean, "position", "title", "k12")
 
   k12sumdistrict <- summarize_k12_posting_counts(k12jobs)

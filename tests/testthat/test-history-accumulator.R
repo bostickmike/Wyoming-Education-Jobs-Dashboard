@@ -90,8 +90,7 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
   this_week_combinedclean <- wy_k12_combinedclean(this_week_raw, oews, district_county)
   this_week_k12jobs <- build_k12_teacher_rows(this_week_combinedclean)
 
-  this_week_weekly_totals <- this_week_combinedclean %>%
-    count(District, Archive_Date, name = "n")
+  this_week_weekly_totals <- posting_run_totals(this_week_combinedclean, "District", "position", "title", "k12")
 
   this_week_k12sumdistrict <- summarize_k12_posting_counts(this_week_k12jobs)
   this_week_k12sum <- this_week_k12sumdistrict %>%
@@ -170,7 +169,7 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
     mutate(Category = classify_he_faculty_category(Title)) %>%
     select(-any_of(c(POSTED_PAY_COLUMNS, "Close_Date", HE_PLACE_COLUMNS)))
 
-  this_week_weekly_totals <- raw_latest %>% count(Institution, Archive_Date, name = "n")
+  this_week_weekly_totals <- posting_run_totals(this_week_he_cat, "Institution", "Job_Type", "Title", "college")
 
   this_week_hesum <- this_week_facultydata %>%
     group_by(Category, Archive_Date, Job_Type) %>%

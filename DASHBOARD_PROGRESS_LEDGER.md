@@ -888,8 +888,23 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     vacancy-rate plots, the biggest-mover boxes and the vacancy footnote are gone from Home; "Top K-12 / Higher Ed
     Job Types This Week" cards take their place (open postings, share, 12-run sparkline; a click opens that type's
     jobs). The top tables and the KPI cards count postings edjobs `classify_work_schedule()` doesn't mark as
-    substitute, extra duty, part-time, student job or temporary: K-12 341 of 729, college 227 of 460. The district
-    and college sparklines still show all postings (their totals files have no not-marked count). The pipeline and
+    substitute, extra duty, part-time, student job or temporary: K-12 341 of 729, college 227 of 460. A switch on
+    Home (on by default; "Leave out substitutes, coaching, part-time, student and temporary jobs") sets which postings
+    the four top tables count, their Share and their sparklines, and the Jobs table a Home link opens follows it (a
+    map popup link never does); the KPI cards keep both numbers (plan `claude-notes/2026-11-18_sparkline-basis/PLAN.md`,
+    Mike 11-18). For the district and college sparklines, `k12_district_weekly_totals.csv` /
+    `he_institution_weekly_totals.csv` gain `n_not_marked` (edjobs `posting_run_totals()`, pipeline and both rebuild
+    scripts), backfilled from the archives (K-12 5,895 rows, college 1,083; the rebuilt `n` equals the committed `n` on every
+    row; script `claude-notes/2026-11-18_sparkline-basis/backfill_n_not_marked.R`); schema and data dictionary
+    cover the column. Switch screenshots `claude-notes/2026-11-18_sparkline-basis/shots/`. Rehearsals
+    (`claude-notes/2026-11-18_rehearsal-wy-sparkline-basis{,-run2}.log`): run 1 found the history-accumulator test
+    still counting this week's totals the old way (fixed: `posting_run_totals()`) and a WSBA name with a trailing
+    no-break space ("Sublette County School District No. 1", 11-18) that `canonicalize_wsba_district()` missed,
+    so 2 rows formed a phantom district (fixed: `str_squish()` first, test added). Run 2: rebuild parity 11/11, the
+    Sublette rows join "Sublette County School District 1" (3 rows, 2 not marked); data quality failed only on
+    Cheyenne Classical Academy's child-poverty range (Census geocoder failed for it this run and the committed
+    salarymap2.csv has no `SAIPE_Population` to fall back on; not this change); boot smoke 24/0 alone. Suite on the
+    final tree: 1,421 passed, 2 failed (the manifest test, until v0.41.0 is tagged). The pipeline and
     both rebuild scripts write `k12_jobtype_weekly_totals.csv` / `he_jobtype_weekly_totals.csv` (edjobs
     `jobtype_run_totals()`), backfilled from the archives: 1,695 and 2,064 rows, 123 and 121 runs from 2024-08-09
     to 2026-11-13; schema, data dictionary, rebuild parity and reclassify cover them. On a phone the Share column

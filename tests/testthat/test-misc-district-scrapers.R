@@ -2,6 +2,8 @@ test_that("canonicalize_wsba_district maps 'No. N' and '# N' format to project c
   expect_equal(canonicalize_wsba_district("Niobrara County School District No. 1"), "Niobrara County School District 1")
   expect_equal(canonicalize_wsba_district("Weston County School District No. 7"), "Weston County School District 7")
   expect_equal(canonicalize_wsba_district("Fremont County School District #21"), "Fremont County School District 21")
+  # WSBA 2026-11-18: trailing space + no-break space after the number.
+  expect_equal(canonicalize_wsba_district("Sublette County School District No. 1 \u00a0"), "Sublette County School District 1")
 })
 
 test_that("canonicalize_wsba_district leaves non-matching org names unchanged rather than dropping them", {

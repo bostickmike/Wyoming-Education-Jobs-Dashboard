@@ -77,7 +77,10 @@ fetch_wsba_vacancies <- function(url = "https://www.wsba-wy.org/vacancies") {
 # Then canonicalize_k12_district() for WSBA's own misspellings ("Cabon County
 # School District 2", 2026-10-30), so its rows meet the direct rows they
 # duplicate in remove_wsba_direct_duplicates().
+# str_squish() first: WSBA's 2026-11-18 list ended "Sublette County School District No. 1" with a space and a
+# no-break space, which base trimws() keeps, so the "No. N" rule missed and the rows formed a phantom district.
 canonicalize_wsba_district <- function(district) {
+  district <- str_squish(district)
   district <- str_replace(district, " School District (?:No\\.|#) ?(\\d+)$", " School District \\1")
   canonicalize_k12_district(str_replace(district, "^(Big Horn|Natrona) County School District", "\\1 School District"))
 }

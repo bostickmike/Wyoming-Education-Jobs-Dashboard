@@ -36,8 +36,7 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
     filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
     mutate(Category = classify_he_faculty_category(Title))
 
-  he_institution_weekly_totals <- combined_HE_data %>%
-    count(Institution, Archive_Date, name = "n")
+  he_institution_weekly_totals <- posting_run_totals(combined_cat, "Institution", "Job_Type", "Title", "college")
   he_jobtype_weekly_totals <- jobtype_run_totals(combined_cat, "Job_Type", "Title", "college")
 
   hesum <- facultydata %>%
