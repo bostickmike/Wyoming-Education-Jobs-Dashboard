@@ -874,6 +874,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] Push retry for the weekly data commit (2026-11-17; branch `push-retry`), ported from MT (its 2026-11-03 fix):
     `weekly-scrape.yml` rebases the data commit onto the run's branch and pushes, up to 3 tries 15 s apart; a rebase
     conflict still fails the step. Same checkout as MT, where the 11-17 test dispatch pushed through it.
+  * [x] Pin edjobs 0.40.0, the classifier batch (2026-11-17; branch `pin-0.40.0`): posted pay with a benefit word
+    after the amount, part-time FTE, subjects from school/place names, HE job types (police/security -> Support
+    Services, chief officers -> Administration, technicians), Apptegy "open until filled". Committed data
+    reclassified (`scripts/reclassify_committed_data.R --apply --skip-guard`; the guard needs the old version
+    installed, and the 11-17 rehearsal on 0.39.0 reproduced all 9 files): k12jobanalysis 27 subject rows,
+    allsum 10,758 -> 10,768, HE spells 29 Positions; spells K-12 median 26.5, HE 52.5 (unchanged). Full rehearsal
+    (`claude-notes/2026-11-17_rehearsal-wy-pin-0.40.0.log`): every step passed but the pre-run suite's app boot
+    smoke test (1 failure, Chrome timing while the render ran; 24/24 alone after); post-run suite 1,377 passed, 0
+    failed; WSBA 101 postings; K-12 rows 729 -> 730.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
