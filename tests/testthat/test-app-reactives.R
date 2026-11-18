@@ -673,3 +673,34 @@ test_that("a college posting placed at another town gets its own map dot, and th
     expect_equal(selected_institution(), campus$Name)
   })
 })
+
+test_that("Home job-type tables agree with the pipeline's per-run totals, and a click filters the Jobs table", {
+  # Plan 2026-11-17_home-job-types-plan.md, piece C: the app's .Not_Marked flag and the pipeline's
+  # k12_/he_jobtype_weekly_totals.csv make the same edjobs call, so this week's counts must match the latest run.
+  env <- load_app()
+  k12_latest <- env$k12_jobtype_weekly_totals %>% dplyr::filter(Archive_Date == max(Archive_Date))
+  app_k12 <- table(env$combineddata$Position[env$combineddata$.Not_Marked])
+  expect_equal(as.integer(app_k12[k12_latest$Job_Type[k12_latest$n_not_marked > 0]]),
+               as.integer(k12_latest$n_not_marked[k12_latest$n_not_marked > 0]))
+  he_latest <- env$he_jobtype_weekly_totals %>% dplyr::filter(Archive_Date == max(Archive_Date))
+  expect_equal(sum(env$ccdata$.Not_Marked), sum(he_latest$n_not_marked))
+  expect_false(any(c(".Not_Marked", ".Job_Type") %in% names(env$combineddata %>% dplyr::select(-dplyr::any_of(env$HIDDEN_COLS)))))
+
+  shiny::testServer(env$server, {
+    for (id in c("top_k12_job_types", "top_he_job_types", "top_k12_districts", "top_he_institutions")) {
+      expect_true(nzchar(output[[id]]), info = id)
+    }
+    top_type <- names(sort(app_k12, decreasing = TRUE))[1]
+    expect_match(output$top_k12_job_types, top_type, fixed = TRUE)
+    session$setInputs(jobtype_view_k12 = top_type)
+    expect_equal(selected_k12_type(), top_type)
+    expect_null(selected_district())
+    expect_match(output$k12_filter_status$html, top_type, fixed = TRUE)
+    # An employer link drops the type filter.
+    session$setInputs(popup_view_jobs = env$combineddata$District[1])
+    expect_null(selected_k12_type())
+    he_type <- names(sort(table(env$ccdata$.Job_Type[env$ccdata$.Not_Marked]), decreasing = TRUE))[1]
+    session$setInputs(jobtype_view_he = he_type)
+    expect_equal(selected_he_type(), he_type)
+  })
+})

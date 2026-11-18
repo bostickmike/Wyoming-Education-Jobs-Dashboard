@@ -51,11 +51,14 @@ rebuild_all <- function() {
        "allsum.csv" = k12$allsum, "allnow.csv" = k12$allnow,
        "k12_district_weekly_totals.csv" = k12$k12_district_weekly_totals,
        "facultydata.csv" = he$facultydata, "allsum_he.csv" = he$allsum_he, "allnow_he.csv" = he$allnow_he,
-       "he_institution_weekly_totals.csv" = he$he_institution_weekly_totals)
+       "he_institution_weekly_totals.csv" = he$he_institution_weekly_totals,
+              "k12_jobtype_weekly_totals.csv" = k12$k12_jobtype_weekly_totals,
+              "he_jobtype_weekly_totals.csv" = he$he_jobtype_weekly_totals)
 }
 committed <- lapply(setNames(nm = c("combinedclean.csv", "k12jobanalysis.csv", "allsum.csv", "allnow.csv",
                                     "k12_district_weekly_totals.csv", "facultydata.csv", "allsum_he.csv",
-                                    "allnow_he.csv", "he_institution_weekly_totals.csv")),
+                                    "allnow_he.csv", "he_institution_weekly_totals.csv",
+                                    "k12_jobtype_weekly_totals.csv", "he_jobtype_weekly_totals.csv")),
                     function(f) read.csv(file.path(app, f), colClasses = "character", check.names = FALSE))
 parity <- function(rebuilt) bind_rows(lapply(names(rebuilt), function(f) rebuild_parity_row(f, committed[[f]], rebuilt[[f]])))
 differs <- function(p) nzchar(p$Missing_Cols) | nzchar(p$Extra_Cols) | p$Only_Committed > 0 | p$Only_Rebuilt > 0
@@ -170,7 +173,9 @@ ROW_IDENTITY <- list(
   "facultydata.csv" = c("Title", "Link", "Archive_Date", "Institution"),
   "allsum_he.csv" = c("Category", "Archive_Date", "Institution", "Job_Type"),
   "allnow_he.csv" = c("Category", "Job_Type", "Institution"),
-  "he_institution_weekly_totals.csv" = c("Institution", "Archive_Date"))
+  "he_institution_weekly_totals.csv" = c("Institution", "Archive_Date"),
+  "k12_jobtype_weekly_totals.csv" = c("Job_Type", "Archive_Date"),
+  "he_jobtype_weekly_totals.csv" = c("Job_Type", "Archive_Date"))
 in_committed_order <- function(new, old, id_cols) {
   new <- as.data.frame(new, stringsAsFactors = FALSE)
   new[] <- lapply(new, function(x) if (inherits(x, "Date")) format(x) else x)

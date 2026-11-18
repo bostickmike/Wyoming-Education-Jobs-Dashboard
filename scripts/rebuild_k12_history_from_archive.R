@@ -1,5 +1,5 @@
 # Disaster-recovery / verification tool: rebuilds the K-12 accumulated
-# datasets (k12jobanalysis.csv, allsum.csv, k12_district_weekly_totals.csv)
+# datasets (k12jobanalysis.csv, allsum.csv, k12_district_weekly_totals.csv, k12_jobtype_weekly_totals.csv)
 # from scratch by reprocessing every raw snapshot in Archivek12_Data/, the
 # same way the weekly pipeline used to do on every single run before
 # history_accumulator.R's incremental-append path replaced that.
@@ -99,6 +99,7 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data",
 
   k12_district_weekly_totals <- combinedclean %>%
     count(District, Archive_Date, name = "n")
+  k12_jobtype_weekly_totals <- jobtype_run_totals(combinedclean, "position", "title", "k12")
 
   k12sumdistrict <- summarize_k12_posting_counts(k12jobs)
 
@@ -124,6 +125,7 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data",
     combinedclean = combinedclean %>% filter(Archive_Date == max(Archive_Date)),
     k12jobs = k12jobs,
     k12_district_weekly_totals = k12_district_weekly_totals,
+    k12_jobtype_weekly_totals = k12_jobtype_weekly_totals,
     allsum = allsum,
     allnow = allnow
   )
@@ -144,6 +146,7 @@ if (sys.nframe() == 0) {
   write.csv(result$allsum, file.path("Wy_Ed_Jobs", "allsum.csv"), row.names = FALSE)
   write.csv(result$allnow, file.path("Wy_Ed_Jobs", "allnow.csv"), row.names = FALSE)
   write.csv(result$k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
+  write.csv(result$k12_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "k12_jobtype_weekly_totals.csv"), row.names = FALSE)
 
   cat("Rebuilt combinedclean.csv (", nrow(result$combinedclean), " rows), k12jobanalysis.csv (",
       nrow(result$k12jobs), " rows), allsum.csv/allnow.csv (",

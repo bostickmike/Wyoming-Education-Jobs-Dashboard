@@ -408,6 +408,14 @@ k12_district_weekly_totals <- append_weekly_rows(
   file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), this_week_district_totals)
 write.csv(k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
 
+# Per-run totals by job type, all postings and those classify_work_schedule() doesn't mark (substitute, extra duty,
+# part-time, student, temporary): the Home page's "Top K-12 Job Types" table and its sparklines. Counted like the
+# district totals (rows); the rebuild makes the same call.
+k12_jobtype_weekly_totals <- append_weekly_rows(
+  file.path("Wy_Ed_Jobs", "k12_jobtype_weekly_totals.csv"),
+  jobtype_run_totals(combinedclean, "position", "title", "k12"))
+write.csv(k12_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "k12_jobtype_weekly_totals.csv"), row.names = FALSE)
+
 
 #Database for all dates by category
 # Dedup key is posting_id, not title+location: two real vacancies can have
@@ -944,6 +952,13 @@ this_week_he_totals <- hedata %>%
 he_institution_weekly_totals <- append_weekly_rows(
   file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), this_week_he_totals)
 write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
+
+# Per-run totals by college job type (every posting, not only faculty), all and not marked: the Home page's "Top
+# Higher Ed Job Types" table.
+he_jobtype_weekly_totals <- append_weekly_rows(
+  file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"),
+  jobtype_run_totals(this_week_he_cat, "Job_Type", "Title", "college"))
+write.csv(he_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"), row.names = FALSE)
 
 # facultydata includes both full-time-ish and Adjunct/Part-Time faculty
 # (Job_Type column distinguishes them) so the "Current Faculty Trends"

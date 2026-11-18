@@ -883,6 +883,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-17_rehearsal-wy-pin-0.40.0.log`): every step passed but the pre-run suite's app boot
     smoke test (1 failure, Chrome timing while the render ran; 24/24 alone after); post-run suite 1,377 passed, 0
     failed; WSBA 101 postings; K-12 rows 729 -> 730.
+  * [x] Home: top job types, pin edjobs 0.41.0 (2026-11-18; branch `home-job-types`; plan
+    `claude-notes/2026-11-17_home-job-types-plan.md`, flag rules `claude-notes/2026-11-18_not-full-time/`). The
+    vacancy-rate plots, the biggest-mover boxes and the vacancy footnote are gone from Home; "Top K-12 / Higher Ed
+    Job Types This Week" cards take their place (open postings, share, 12-run sparkline; a click opens that type's
+    jobs). The top tables and the KPI cards count postings edjobs `classify_work_schedule()` doesn't mark as
+    substitute, extra duty, part-time, student job or temporary: K-12 341 of 729, college 227 of 460. The district
+    and college sparklines still show all postings (their totals files have no not-marked count). The pipeline and
+    both rebuild scripts write `k12_jobtype_weekly_totals.csv` / `he_jobtype_weekly_totals.csv` (edjobs
+    `jobtype_run_totals()`), backfilled from the archives: 1,695 and 2,064 rows, 123 and 121 runs from 2024-08-09
+    to 2026-11-13; schema, data dictionary, rebuild parity and reclassify cover them. On a phone the Share column
+    is hidden and type names break after "/". Full rehearsal (`claude-notes/2026-11-18_rehearsal-wy-jobtype-0.41.0.log`):
+    every pipeline step passed, rebuild parity 11/11; the manifest step and its test fail until v0.41.0 is tagged
+    on GitHub (edjobs installed from disk); post-run suite 1,396 passed, those 2 failed; WSBA 101 postings; K-12
+    rows 729 -> 730. App tests on the final tree: reactives 315/0, boot smoke 24/0. Screenshots
+    `claude-notes/2026-11-18_home-job-types-shots/`.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

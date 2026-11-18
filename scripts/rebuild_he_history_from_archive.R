@@ -1,5 +1,5 @@
 # Disaster-recovery / verification tool: rebuilds the Higher Ed accumulated
-# datasets (facultydata.csv, allsum_he.csv, he_institution_weekly_totals.csv)
+# datasets (facultydata.csv, allsum_he.csv, he_institution_weekly_totals.csv, he_jobtype_weekly_totals.csv)
 # from scratch by reprocessing every raw snapshot in Archived_HE_Data/, the
 # same way the weekly pipeline used to do on every single run before
 # history_accumulator.R's incremental-append path replaced that.
@@ -38,6 +38,7 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
 
   he_institution_weekly_totals <- combined_HE_data %>%
     count(Institution, Archive_Date, name = "n")
+  he_jobtype_weekly_totals <- jobtype_run_totals(combined_cat, "Job_Type", "Title", "college")
 
   hesum <- facultydata %>%
     group_by(Category, Archive_Date, Job_Type) %>%
@@ -71,7 +72,8 @@ rebuild_he_history_from_archive <- function(archive_dir = "Archived_HE_Data") {
     facultydata = facultydata,
     allsum_he = allsum_he,
     allnow_he = allnow_he,
-    he_institution_weekly_totals = he_institution_weekly_totals
+    he_institution_weekly_totals = he_institution_weekly_totals,
+    he_jobtype_weekly_totals = he_jobtype_weekly_totals
   )
 }
 
@@ -85,6 +87,7 @@ if (sys.nframe() == 0) {
   write.csv(result$allsum_he, file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
   write.csv(result$allnow_he, file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
   write.csv(result$he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
+  write.csv(result$he_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"), row.names = FALSE)
 
   cat("Rebuilt facultydata.csv (", nrow(result$facultydata), " rows), allsum_he.csv/allnow_he.csv (",
       nrow(result$allsum_he), "/", nrow(result$allnow_he), " rows), he_institution_weekly_totals.csv (",
