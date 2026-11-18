@@ -871,6 +871,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] Second weekly run (2026-11-17; branch `second-cron`): `weekly-scrape.yml` cron `0 13 * * 2,5`, Tuesdays and
     Fridays (was Fridays); Montana moves to Mondays and Thursdays, so the shared `CENSUS_API_KEY` is never used by
     both on one day (days set by Mike 11-13). CLAUDE.md, README and the scraper skill's run-day line updated.
+  * [x] Push retry for the weekly data commit (2026-11-17; branch `push-retry`), ported from MT (its 2026-11-03 fix):
+    `weekly-scrape.yml` rebases the data commit onto the run's branch and pushes, up to 3 tries 15 s apart; a rebase
+    conflict still fails the step. Same checkout as MT, where the 11-17 test dispatch pushed through it.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

@@ -473,5 +473,18 @@ jobs:
             echo "No data changes this run -- nothing to commit."
           else
             git commit -m "Automated weekly data refresh ($(date +%Y-%m-%d))"
-            git push
+            # A code commit can land on main while the run works (MT 2026-11-03:
+            # the finished run's push was rejected; ported from MT 2026-11-17).
+            # Rebase this data commit onto it; a conflict (someone else changed
+            # the same data files) still fails the step, rather than merging data
+            # silently. Rebase onto the branch this run is on (main, or a
+            # test-dispatch branch: rebasing a branch onto main in this shallow
+            # checkout replays its commits, MT 2026-11-17).
+            pushed=false
+            for attempt in 1 2 3; do
+              if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then pushed=true; break; fi
+              git rebase --abort 2>/dev/null || true
+              sleep 15
+            done
+            if [ "$pushed" != "true" ]; then echo "Push failed after 3 attempts"; exit 1; fi
           fi
