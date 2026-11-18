@@ -1046,6 +1046,27 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   Girls Soccer Coach" / "MS Head Girls Soccer Coach" (word order; a word-order-blind key would merge "Assistant
   Teacher" with "Teacher Assistant"); Park #16 "K-12 School Guidance Counselor" / "School Guidance Counselor" (subset).
   Not duplicates: Platte #1's WSBA substitute rows (Glendo and Wheatland).
+- [ ] Using the twice-weekly runs and the daily presence check on the dashboard (Mike, 2026-11-18). Every run is
+  stored (`Archive_Date`; two a week, Tue + Fri, first Fri 2026-11-20); the app rolls the history up to each ISO week's last
+  run (`latest_snapshot_per_week()`), so the history charts stay weekly while the current counts read the newest run.
+  The presence check writes `presence_sightings.csv` (one row per posting: `First_Day`, `Last_Day`, `Days_Seen`) on
+  the `presence` branch; nothing on the dashboard reads it yet.
+  **Check ~2026-01-15 (about 8 weeks of twice-weekly runs):** do the two runs in a week differ by more than noise (new
+  postings, endings, totals, by day of week)? If not, the history charts could plot every run on a date axis (back to
+  the first twice-weekly run; nothing is lost by waiting). If there is a day-of-week pattern, keep one point a week.
+  Either way, re-measure the drift thresholds (tuned on weekly counts) before any run-level chart.
+  Ideas, not decided (each measured on the archives before building):
+  Twice-weekly runs: (1) listing durations to within 3-4 days instead of 7 (the spells already end per run);
+  (2) short-lived postings: postings seen in one run only, which weekly scrapes missed, by job type (fast fills or
+  quick withdrawals); (3) when districts post: new postings by day of week and by month (a hiring calendar);
+  (4) the weekly roll-up takes the week's most complete run instead of its last, so one failed run doesn't cost the
+  week; (5) a broken board noticed in 3-4 days instead of 7.
+  Daily presence (after the phase-0 audit ~11-27 and phase 1): (6) day-precision listing durations (planned: the
+  spells read the sightings); (7) a "Last seen on its board" date in the Jobs table, and postings gone between scrapes
+  hidden, so "open" means a candidate can still apply today; (8) closed early: postings that left the board before
+  their stated closing date, by job type; (9) days open so far for current postings, and the longest-open ones by job
+  type and district (a hard-to-fill signal; relistings censored, not linked); (10) board health: a board the daily
+  check can't read flagged within a day.
 
 - [x] WSBA parser reads en and em dashes (2026-11-14; 9b63a53). `parse_wsba_vacancies()` matched only a hyphen
   between title, district and town; in Mar-Jun 2024 WSBA typed many listings with en dashes, and those were skipped
