@@ -33,7 +33,7 @@ WSBA publishes only the current year's salary settlement with no public archive,
 
 ## Automation
 
-A GitHub Actions workflow runs weekly (Fridays), re-scrapes every source, regenerates every derived dataset, and commits + pushes if anything changed — which also triggers an automatic Posit Connect Cloud redeploy. Several non-blocking checks run alongside it:
+A GitHub Actions workflow runs twice a week (Tuesdays and Fridays since 2026-11-17; Fridays only before), re-scrapes every source, regenerates every derived dataset, and commits + pushes if anything changed — which also triggers an automatic Posit Connect Cloud redeploy. Several non-blocking checks run alongside it:
 
 - Full `testthat` suite must pass before any real data is touched.
 - A sanity check compares the new pull against the previous run and refuses to commit if either side dropped more than half its postings.

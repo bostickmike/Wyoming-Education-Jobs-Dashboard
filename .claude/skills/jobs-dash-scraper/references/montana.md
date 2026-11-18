@@ -1,6 +1,6 @@
 # Montana (`bostickmike/Montana-Education-Jobs-Dashboard`)
 
-Pipeline `Mt_ED_Jobs.Rmd` → dashboard `Mt_Ed_Jobs/app.R`. Weekly CI runs on Tuesdays. Counts as of 2026-11-09: **201 K-12 districts** of about 398 nominal (many are Elem+HS pairs sharing one board), and **23 HE institutions**. Check the current numbers with `wc -l k12_district_registry.csv he_institution_registry.csv` (subtract the header).
+Pipeline `Mt_ED_Jobs.Rmd` → dashboard `Mt_Ed_Jobs/app.R`. CI runs twice a week, Mondays and Thursdays (since 2026-11-17). Counts as of 2026-11-09: **201 K-12 districts** of about 398 nominal (many are Elem+HS pairs sharing one board), and **23 HE institutions**. Check the current numbers with `wc -l k12_district_registry.csv he_institution_registry.csv` (subtract the header).
 
 ## Registries
 - `k12_district_registry.csv`: `District, NCES_LEAID, City, County, Latitude, Longitude, Platform, Platform_Key, Job_Link, List_Start, List_Stop, List_Skip` (the schema both states share since 2026-11-16; `Platform_Key` was `Slug`, and the list rules were `k12_list_rules.csv`). `Platform` is a shared platform name (`AppliTrack`, `SchoolSpring`, `TedK12`, `TylerPortico`, `Apptegy`, `RedRoverK12`) or a per-district `<Name>Heuristic`.

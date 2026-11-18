@@ -868,6 +868,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-17_rehearsal-wy-twice-weekly.log`): every step passed, suites 1,375 / 1,377 passed, 0
     failed; WSBA statewide 101 postings; K-12 rows 729 -> 732, college 460 -> 468. The second weekly cron is a
     separate change.
+  * [x] Second weekly run (2026-11-17; branch `second-cron`): `weekly-scrape.yml` cron `0 13 * * 2,5`, Tuesdays and
+    Fridays (was Fridays); Montana moves to Mondays and Thursdays, so the shared `CENSUS_API_KEY` is never used by
+    both on one day (days set by Mike 11-13). CLAUDE.md, README and the scraper skill's run-day line updated.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

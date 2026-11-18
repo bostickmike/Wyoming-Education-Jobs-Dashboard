@@ -2,9 +2,11 @@ name: Weekly job data refresh
 
 on:
   schedule:
-    # Every Friday 13:00 UTC (~7am Mountain), matching the historical
-    # weekly cadence of the archive snapshots this replaces.
-    - cron: '0 13 * * 5'
+    # Tuesdays and Fridays 13:00 UTC (~6am Mountain), twice a week since
+    # 2026-11-17 (Fridays before, the historical weekly cadence of the
+    # archive snapshots). Never on Montana's days (Mondays and Thursdays):
+    # the two projects share one CENSUS_API_KEY.
+    - cron: '0 13 * * 2,5'
   workflow_dispatch: {}
 
 # One weekly run at a time: a second run waits for the first (MT has had this

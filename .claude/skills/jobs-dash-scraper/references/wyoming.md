@@ -1,6 +1,6 @@
 # Wyoming (`bostickmike/Wyoming-Education-Jobs-Dashboard`)
 
-Pipeline `Wy_ED_Jobs.Rmd` → dashboard `Wy_Ed_Jobs/app.R`. Weekly CI runs on Fridays. Wyoming has a small, fixed universe: **48 public school districts**, plus a few charters and **9 public HE institutions** (UW + the community colleges).
+Pipeline `Wy_ED_Jobs.Rmd` → dashboard `Wy_Ed_Jobs/app.R`. CI runs twice a week, Tuesdays and Fridays (since 2026-11-17). Wyoming has a small, fixed universe: **48 public school districts**, plus a few charters and **9 public HE institutions** (UW + the community colleges).
 
 ## Registries (the same schema as Montana's since 2026-11-16)
 - `k12_district_registry.csv`: `District, NCES_LEAID, City, County, Latitude, Longitude, Platform, Platform_Key, Job_Link, List_Start, List_Stop, List_Skip`, one row per K-12 scrape target:
