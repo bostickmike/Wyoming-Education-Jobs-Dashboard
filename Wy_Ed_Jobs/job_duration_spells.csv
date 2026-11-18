@@ -24,7 +24,7 @@
 "Albany County School District 1",5600730,"Elementary Teacher - Isolated Location","Elementary Education","Elementary","Teacher","2025-09-19","2025-10-03",3,21,"Closed / Filled",0,0,1,0,0,0
 "Albany County School District 1",5600730,"Elementary Teacher - Title I Interventionist","Elementary Education","Elementary","Teacher","2026-04-24","2026-05-01",2,14,"Closed / Filled",0,0,1,0,0,0
 "Albany County School District 1",5600730,"English Language Learner Teacher","Language Education","Language","Teacher","2026-03-20","2026-04-03",3,21,"Closed / Filled",0,0,0,0,0,0
-"Albany County School District 1",5600730,"English Second Language","Elementary Education","Elementary","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",0,0,1,0,0,0
+"Albany County School District 1",5600730,"English Second Language","Language Education","Language","Teacher","2024-08-09","2024-08-09",1,7,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"Gifted and Talented Teacher","Gifted and Talented","Gifted and Talented","Teacher","2025-04-25","2025-05-09",3,21,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"Gifted and Talented Teacher","Gifted and Talented","Gifted and Talented","Teacher","2026-04-10","2026-04-10",1,7,"Closed / Filled",0,0,0,0,0,0
 "Albany County School District 1",5600730,"High School Drama Teacher and Theater Manager","Art Teacher","Art","Teacher","2025-03-14","2025-04-04",4,28,"Closed / Filled",0,0,0,0,0,0
@@ -174,7 +174,7 @@
 "Campbell County School District 1",5601470,"English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2025-12-19","2026-01-02",3,21,"Closed / Filled",0,0,0,1,0,0
 "Campbell County School District 1",5601470,"English Teacher","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-13","2026-07-17",22,161,"Closed / Filled",0,0,0,1,0,0
 "Campbell County School District 1",5601470,"English Teacher with Acting/Drama Preferred","English Language Arts Education","English Language Arts Secondary","Teacher","2024-08-09","2024-10-11",10,70,"Closed / Filled",0,0,0,1,0,0
-"Campbell County School District 1",5601470,"English as a Second Language (ESL) Teacher","Elementary Education","Elementary","Teacher","2026-03-06","2026-03-13",2,14,"Closed / Filled",0,0,1,0,0,0
+"Campbell County School District 1",5601470,"English as a Second Language (ESL) Teacher","Language Education","Language","Teacher","2026-03-06","2026-03-13",2,14,"Closed / Filled",0,0,0,0,0,0
 "Campbell County School District 1",5601470,"Exceptional Child Specialist/ASD Program","Special Education - General","Special Education - General","Teacher","2025-04-11","2025-04-11",1,7,"Closed / Filled",0,1,0,0,0,0
 "Campbell County School District 1",5601470,"Exceptional Child Specialist/Resource Room","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2025-02-07","2025-07-04",21,154,"Closed / Filled",0,1,0,0,0,0
 "Campbell County School District 1",5601470,"Exceptional Child Specialist/Resource Room","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-01-30","2026-05-29",15,126,"Closed / Filled",0,1,0,0,0,0
@@ -1212,11 +1212,11 @@
 "Natrona School District 1",5604510,"Verda James Special Education Resource Teacher to Begin the 2026-27 School Year","Special Education - Resource/Life Skills","Special Education - Resource/Life Skills","Teacher","2026-04-10","2026-04-24",3,21,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Virtual Classroom Teacher - Language Arts for the 2024-2025 School Year Only","Elementary Education","Elementary","Teacher","2024-08-09","2024-10-11",10,70,"Closed / Filled",0,0,1,0,0,0
 "Natrona School District 1",5604510,"Vision Specialist (Teacher of the Visually Impaired) Begins the 2025-2026 School Year","Special Education - General","Special Education - General","Teacher","2025-05-23","2025-06-06",3,21,"Closed / Filled",0,1,0,0,0,0
-"Natrona School District 1",5604510,"Woods 2/3 Grade Teacher for the 2025-2026 School Year Only","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Woods K/1 Classroom Teacher for the 2025-2026 School Year Only","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-06-06","2025-06-20",3,21,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Woods K/1 Classroom Teacher for the 2025-2026 School Year Only","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-07-18","2025-08-01",3,21,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Woods Language Arts Teacher for the 2025-26 School Year Only","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-04-25","2025-05-09",3,21,"Closed / Filled",0,0,0,0,0,0
-"Natrona School District 1",5604510,"Woods Math Teacher beginning the 2025-26 School Year","Technical Education","CTE - Trades, Ag & Technical","Teacher","2025-05-09","2025-06-06",5,35,"Closed / Filled",0,0,0,0,0,0
+"Natrona School District 1",5604510,"Woods 2/3 Grade Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-03-14","2025-03-14",1,7,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Woods K/1 Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-06-06","2025-06-20",3,21,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Woods K/1 Classroom Teacher for the 2025-2026 School Year Only","Elementary Education","Elementary","Teacher","2025-07-18","2025-08-01",3,21,"Closed / Filled",0,0,1,0,0,0
+"Natrona School District 1",5604510,"Woods Language Arts Teacher for the 2025-26 School Year Only","English Language Arts Education","English Language Arts Secondary","Teacher","2025-04-25","2025-05-09",3,21,"Closed / Filled",0,0,0,1,0,0
+"Natrona School District 1",5604510,"Woods Math Teacher beginning the 2025-26 School Year","Mathematics Education","Math","Teacher","2025-05-09","2025-06-06",5,35,"Closed / Filled",1,0,0,0,0,0
 "Natrona School District 1",5604510,"Woods Special Education Teacher K-8","Special Education - General","Special Education - General","Teacher","2025-03-14","2025-03-21",2,14,"Closed / Filled",0,1,0,0,0,0
 "Natrona School District 1",5604510,"Woods Special Education Teacher beginning the 2025-26 School Year","Special Education - General","Special Education - General","Teacher","2025-05-23","2025-06-06",3,21,"Closed / Filled",0,1,0,0,0,0
 "Niobrara County School District 1",5604230,"7-12th Science Teacher","Science Education","Science","Teacher","2026-05-01","2026-05-01",1,7,"Closed / Filled",1,0,0,0,0,0
@@ -1462,8 +1462,8 @@
 "Sheridan County School District 2",5605695,"Special Education Teacher - Henry A. Coffeen/Sagebrush Elementary Schools","Special Education - General","Special Education - General","Teacher","2025-02-21","2025-02-28",2,14,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Special Education Teacher - Highland Park Elementary","Special Education - General","Special Education - General","Teacher","2026-02-27","2026-03-06",2,14,"Closed / Filled",0,1,0,0,0,0
 "Sheridan County School District 2",5605695,"Special Education Teacher - Sheridan Junior High School","Special Education - General","Special Education - General","Teacher","2025-03-07","2025-04-25",8,56,"Closed / Filled",0,1,0,0,0,0
-"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2025-12-12","2026-01-09",5,35,"Closed / Filled",0,0,0,1,0,0
-"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2026-02-13","2026-02-27",3,21,"Closed / Filled",0,0,0,1,0,0
+"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","Mathematics Education","Math","Teacher","2025-12-12","2026-01-09",5,35,"Closed / Filled",1,0,0,0,0,0
+"Sheridan County School District 2",5605695,"Title I Math Teacher - Sheridan Junior High School","Mathematics Education","Math","Teacher","2026-02-13","2026-02-27",3,21,"Closed / Filled",1,0,0,0,0,0
 "Sheridan County School District 2",5605695,"Title I Reading Teacher - Sheridan Junior High School","English Language Arts Education","English Language Arts Secondary","Teacher","2025-03-28","2025-04-11",3,21,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 3",5605680,"7-12 Social Studies Teacher","Social Studies Education","Secondary Social Studies","Teacher","2025-12-12","2026-03-06",13,91,"Closed / Filled",0,0,0,1,0,0
 "Sheridan County School District 3",5605680,"7–12 Science Teacher","Science Education","Science","Teacher","2026-06-19","2026-07-10",4,28,"Closed / Filled",1,0,0,0,0,0
