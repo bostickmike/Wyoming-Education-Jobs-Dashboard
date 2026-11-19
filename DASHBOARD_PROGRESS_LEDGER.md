@@ -956,6 +956,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     passed (data quality 132/0). The rehearsed files' ACS columns equal the committed ones. They also gain the
     columns added since WY's last run (ACS MOEs, CCD/IPEDS links, the SAIPE range) and the 11-16 registry links, as
     Friday's run on main would.
+  * [x] Scheduled runs moved to 07:17 UTC (2026-11-19; Mike: run very early, so a failure can be fixed and re-run the
+    same day and is known by morning). Just after midnight Mountain (00:17 MST, 01:17 MDT): every step's date is
+    Mountain (`TZ`), so a start before midnight would date the run the day before. GitHub started the 13:00 UTC cron
+    4-8.5 h late (runs since 09-25: 17:08-21:27 UTC), and the daily presence check's 13:17 UTC cron 5.5-9.5 h late,
+    so an off-the-hour minute doesn't avoid it. Days unchanged (MT Mon/Thu, WY Tue/Fri; shared Census key).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
