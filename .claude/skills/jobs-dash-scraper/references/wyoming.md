@@ -20,7 +20,7 @@ There's no backlog file. Build one from the 48-district universe (WDE directory,
 
 ## Files that change together when adopting
 1. A `k12_district_registry.csv` row.
-2. A parser only when the CMS is new to Wyoming. Add it as a platform-level `fetch_<cms>_postings` / `parse_<cms>_postings` pair, plus a branch in `fetch_misc_district_postings()`, a name in `MISC_DISTRICT_PLATFORMS`, a spec in `state_config.R`'s `WY_MISC_SCRAPER_SPECS` and a label in `K12_PLATFORM_SOURCE_LABELS`.
+2. A parser only when the CMS is new to Wyoming. Add it as a platform-level `fetch_<cms>_postings` / `parse_<cms>_postings` pair, plus a branch in `fetch_misc_district_postings()`, a name in `MISC_DISTRICT_PLATFORMS`, a spec in `state_config.R`'s `WY_MISC_SCRAPER_SPECS` (a platform edjobs already scrapes needs no spec: `edjobs::default_scraper_specs()`; its registry row needs `Platform_Key` where the spec reads it, e.g. AppliTrack's tenant path, SchoolSpring's domain) and a label in `K12_PLATFORM_SOURCE_LABELS`.
 3. Fixture + tests (`test-misc-district-platform-extractors.R` for platform parsers, `test-misc-district-orchestration.R` for registry/dispatch).
 4. `.github/copilot-allowlist.txt` + `test-copilot-allowlist.R` (same contract as Montana).
 5. `misc_district_coverage_tiers()` / Data_Coverage disclosure, if the district's coverage tier changes.
