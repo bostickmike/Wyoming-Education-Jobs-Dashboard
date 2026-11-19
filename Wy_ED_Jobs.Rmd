@@ -735,6 +735,12 @@ if (nrow(child_poverty) > 0) {
       for (col in intersect(c("Child_Poverty_Rate", "SAIPE_Year", "Child_Poverty_Basis", "SAIPE_Population"), names(prev_poverty))) {
         if (!is.na(k)) salarymap2[[col]][i] <- prev_poverty[[col]][k]
       }
+      # Last run's file may have no SAIPE_Population (before the 2026-11-16 range change reached it): take the host
+      # district's from this run, or the range comes out NA and the data-quality step stops the push (2026-11-19).
+      if (is.na(salarymap2$SAIPE_Population[i])) {
+        salarymap2$SAIPE_Population[i] <- carried_surrounding_population(salarymap2$Child_Poverty_Basis[i],
+                                                                         district_rates, district_names)
+      }
     }
   }
   log_scrape_result("Census geocoder (surrounding-district poverty, WY)",

@@ -85,6 +85,18 @@ refresh_he_static_columns <- function(salarymap, registry = read_he_registry()) 
   salarymap
 }
 
+# A school's SAIPE population when the Census geocoder failed and last run's file has none (2026-11-19). The
+# carried-over Child_Poverty_Basis ("Surrounding district: A / B") names the host district(s); their population comes
+# from this run's SAIPE rows (`saipe`: LEAID, Child_Poverty_Rate, SAIPE_Population), pooled the way
+# edjobs::surrounding_district_poverty() pools them, so add_saipe_range() can still give the 90% range. NA when the
+# basis is missing or names no district in `saipe`. `district_names`: LEAID -> display name.
+carried_surrounding_population <- function(basis, saipe, district_names) {
+  if (is.na(basis) || !grepl("^Surrounding district: ", basis)) return(NA_real_)
+  hosts <- strsplit(sub("^Surrounding district: ", "", basis), " / ", fixed = TRUE)[[1]]
+  ids <- unique(c(names(district_names)[district_names %in% hosts], hosts[hosts %in% as.character(saipe$LEAID)]))
+  pool_saipe_population(saipe[as.character(saipe$LEAID) %in% ids, , drop = FALSE])
+}
+
 set_state_config(state_config(
   state = "Wyoming", fips = "56", app_dir = "Wy_Ed_Jobs",
   feed = list(short_name = "WSBA", label = "WSBA statewide vacancies", url = "https://www.wsba-wy.org/vacancies",
