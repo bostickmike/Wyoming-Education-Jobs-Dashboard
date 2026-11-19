@@ -961,6 +961,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Mountain (`TZ`), so a start before midnight would date the run the day before. GitHub started the 13:00 UTC cron
     4-8.5 h late (runs since 09-25: 17:08-21:27 UTC), and the daily presence check's 13:17 UTC cron 5.5-9.5 h late,
     so an off-the-hour minute doesn't avoid it. Days unchanged (MT Mon/Thu, WY Tue/Fri; shared Census key).
+  * [x] Pin edjobs 0.49.0: pipeline stages, slice 2 (2026-11-19; branch `stage-columns`, replaces the 0.47.0 pin).
+    The HE chunk's IPEDS enrollment, 5-year enrollment trend and FSA Pell share blocks are now
+    `refresh_file_columns()` calls (edjobs 0.48.0; review step 5; Wyoming has no K-12 blocks of slice 3's shape: its
+    SAIPE chunk keeps the charter surrounding-district fallback). `test-pipeline-defensiveness.R` counts
+    `refresh_file_columns()` / `refresh_county_context()` as guards (they run their fetch through `safe_scrape()`).
+    manifest.json's edjobs entry is from a pak install of the `v0.49.0` tag. Full rehearsal
+    (`claude-notes/2026-11-19_rehearsal-wy-stage-columns-0.49.0.log`): every step passed (data quality 132/0); the
+    rehearsed Enrollment, Enrollment_Change_Pct and Pell columns equal the committed ones. The other differences are
+    those of the 0.47.0 rehearsal (columns and registry links merged since WY's last run, 11-13).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

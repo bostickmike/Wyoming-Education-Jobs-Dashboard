@@ -1089,55 +1089,17 @@ library(dplyr)
 library(edjobs)
 source("ipeds_unitids.R")
 
-he_enrollment <- safe_scrape(
-  "IPEDS fall enrollment FTE (WY)", retrieved_source = "Urban IPEDS", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = function() fetch_ipeds_he_enrollment(IPEDS_UNITID_MAP),
-  expected_cols = c("Name", "Enrollment", "Enrollment_Year")
-)
+# edjobs::refresh_file_columns() (0.48.0): fetch through safe_scrape(); on rows, swap these columns in salarymap.csv
+# by Name; a failed fetch leaves the file (and last week's values) alone.
+refresh_file_columns("salarymap.csv", "IPEDS fall enrollment FTE (WY)",
+                     fetch = function() fetch_ipeds_he_enrollment(IPEDS_UNITID_MAP),
+                     expected_cols = c("Name", "Enrollment", "Enrollment_Year"), by = "Name", retrieved_source = "Urban IPEDS")
 
-# 5-year enrollment trend -- HE's analogue of the Census county context
-# chunk's Population_Change_Pct, just at the institution level. A second,
-# independent safe_scrape() call (like teacher_salary/superintendent_
-# salary in the WSBA chunk above) rather than folded into
-# fetch_ipeds_he_enrollment() itself, so a trend-fetch failure (a missing
-# 5-years-back vintage) doesn't also block this week's current Enrollment
-# figure from updating.
-he_enrollment_trend <- safe_scrape(
-  "IPEDS fall enrollment 5-year trend (WY)", retrieved_source = "Urban IPEDS", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = function() fetch_ipeds_he_enrollment_trend(IPEDS_UNITID_MAP),
-  expected_cols = c("Name", "Enrollment_Change_Pct")
-)
-
-if (nrow(he_enrollment) > 0) {
-  # No "last updated" timestamp -- same reasoning as every other salary/
-  # staffing chunk. Enrollment_Year is the real freshness signal, matching
-  # salarymap2.csv's CCD_Year for the equivalent K-12 figure.
-  #
-  # Students_Per_Teacher is NOT stored here -- it's computed on the fly in
-  # app.R's map_he (Enrollment / Faculty_Count), the same way map_k12
-  # already computes it from Enrollment / Teachers_Total_FTE rather than
-  # storing a derived ratio in salarymap2.csv.
-  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-    select(-any_of(c("Enrollment", "Enrollment_Year"))) %>%
-    left_join(he_enrollment, by = "Name")
-  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
-} else {
-  message("IPEDS fall enrollment fetch failed -- leaving salarymap.csv untouched this run.")
-}
-
-# Written as its own read-modify-write against the just-updated file above
-# (not folded into the same conditional block) so a trend-fetch failure
-# alone can't blank out last week's good Enrollment_Change_Pct values --
-# same "leave it alone, don't blank it out" behavior every other salary/
-# staffing chunk in this pipeline already has on a failed fetch.
-if (nrow(he_enrollment_trend) > 0) {
-  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-    select(-any_of("Enrollment_Change_Pct")) %>%
-    left_join(he_enrollment_trend, by = "Name")
-  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
-} else {
-  message("IPEDS fall enrollment trend fetch failed -- leaving salarymap.csv's Enrollment_Change_Pct untouched this run.")
-}
+# 5-year enrollment trend: its own fetch, so a missing 5-years-back vintage doesn't hold back this week's
+# Enrollment.
+refresh_file_columns("salarymap.csv", "IPEDS fall enrollment 5-year trend (WY)",
+                     fetch = function() fetch_ipeds_he_enrollment_trend(IPEDS_UNITID_MAP),
+                     expected_cols = c("Name", "Enrollment_Change_Pct"), by = "Name", retrieved_source = "Urban IPEDS")
 ```
 
 ### Higher ed institution Pell Grant recipient share, from the US Dept. of Education's Federal Student Aid office via the Urban Institute's Education Data Portal API
@@ -1146,24 +1108,11 @@ library(dplyr)
 library(edjobs)
 source("ipeds_unitids.R")
 
-he_pell_share <- safe_scrape(
-  "FSA Pell Grant recipient share (WY)", retrieved_source = "Urban FSA", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = function() fetch_ipeds_he_pell_share(IPEDS_UNITID_MAP),
-  expected_cols = c("Name", "Pell_Recipient_Share", "Pell_Year")
-)
-
-if (nrow(he_pell_share) > 0) {
-  # No "last updated" timestamp -- same reasoning as every other salary/
-  # staffing chunk. Pell_Year is the real freshness signal (and, since FSA
-  # lags IPEDS by a couple of years, will typically read a year or more
-  # older than Enrollment_Year/Salary_Year above -- expected, not a bug).
-  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-    select(-any_of(c("Pell_Recipient_Share", "Pell_Year"))) %>%
-    left_join(he_pell_share, by = "Name")
-  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
-} else {
-  message("FSA Pell Grant recipient share fetch failed -- leaving salarymap.csv untouched this run.")
-}
+# edjobs::refresh_file_columns() (0.48.0): fetch through safe_scrape(); on rows, swap these columns in salarymap.csv
+# by Name; a failed fetch leaves the file (and last week's values) alone.
+refresh_file_columns("salarymap.csv", "FSA Pell Grant recipient share (WY)",
+                     fetch = function() fetch_ipeds_he_pell_share(IPEDS_UNITID_MAP),
+                     expected_cols = c("Name", "Pell_Recipient_Share", "Pell_Year"), by = "Name", retrieved_source = "Urban FSA")
 ```
 
 ### Higher ed institution county-level context (income, rent, mining/energy employment share, population trend), from the Census Bureau's ACS 5-Year Estimates
