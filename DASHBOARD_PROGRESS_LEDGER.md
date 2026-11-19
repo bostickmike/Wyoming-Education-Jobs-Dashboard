@@ -970,6 +970,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-19_rehearsal-wy-stage-columns-0.49.0.log`): every step passed (data quality 132/0); the
     rehearsed Enrollment, Enrollment_Change_Pct and Pell columns equal the committed ones. The other differences are
     those of the 0.47.0 rehearsal (columns and registry links merged since WY's last run, 11-13).
+  * [x] Pin edjobs 0.52.0: weekly check scripts in the package (2026-11-19; branch `step6-scripts`, replaces the
+    0.49.0 pin; review step 6, `claude-notes/2026-11-19_step6-scripts-measure.md`). Nine `.github/scripts` are now
+    short calls into edjobs (0.50.0-0.52.0): sanity, schema, run expectations, render-with-stack, drift
+    (`check_drift_step()`), pay coverage, title quality, the pre-flight canary (`canary_step()`) and rebuild parity
+    (`report_rebuild_parity()`; the script still sources the state's rebuild files). What differed by state is in
+    `state_config.R`: `k12_source_names` (archive district names through `canonicalize_k12_district()`; drift and
+    pay coverage still source `k12_he_classification.R` for it), `direct_registry = read_direct_board_registry`
+    (the feed section counts the direct boards only) and the feed's canary `signature`. Workflow paths unchanged.
+    `test-canary-api-check.R` moved to edjobs. Parity of old and new scripts on the committed data:
+    `claude-notes/2026-11-19_step6-parity/`. manifest.json's edjobs entry is from a pak install of the `v0.52.0` tag.
+    Full rehearsal (`claude-notes/2026-11-19_rehearsal-wy-step6-0.52.0.log`): every step passed (canary, data quality
+    132/0, drift 0 flagged, rebuild parity "all 11 files reproduced from the archives"); suite 1,426/0 before the
+    run, 1,428/0 after, none skipped.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
