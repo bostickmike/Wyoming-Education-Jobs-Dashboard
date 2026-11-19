@@ -9,10 +9,10 @@ Pipeline `Mt_ED_Jobs.Rmd` → dashboard `Mt_Ed_Jobs/app.R`. CI runs twice a week
 
 ## How a registry row reaches its scraper
 `state_config.R` → `MT_SCRAPER_SPECS` and `scraper_sources`, read by `edjobs::resolve_scraper_call(name)`:
-- Shared platforms map to one `fetch_*` with registry columns as arguments (e.g. `AppliTrack` → `fetch_applitrack_postings(Platform_Key)`).
+- Platforms edjobs scrapes take their spec from `edjobs::default_scraper_specs()` (edjobs 0.46.0): one `fetch_*` with registry columns as arguments (e.g. `AppliTrack` → `fetch_applitrack_postings(Platform_Key)`). `MT_SCRAPER_SPECS = scraper_specs(...)` adds only Montana's own scrapers; a district on a known platform needs only its registry row.
 - A K-12 `<Name>Heuristic` platform resolves **by convention** to `fetch_<lowercase name>_postings(Job_Link)`, so a new heuristic needs a function of exactly that name. (`CutBankHeuristic` → `fetch_cutbank_postings`.)
 - K-12 `Apptegy` / `ApptegyPageBuilder` rows read through the edjobs family routine (`fetch_apptegy_postings()`, edjobs 0.18.0), with optional rules in the row's `List_Start` / `List_Stop` / `List_Skip`: a new Apptegy district needs only its registry row. `ApptegyBespoke` rows (Shelby, Geyser) dispatch through `APPTEGY_DISTRICT_SCRAPERS` in `misc_district_scrapers.R`, keyed by the exact `District` name. CyberSchool rows read through `fetch_cyberschool_postings()`.
-- HE heuristics are listed explicitly in `MT_SCRAPER_SPECS`, so add one there.
+- HE heuristics are listed explicitly in `MT_SCRAPER_SPECS` (`scraper_specs(...)`), so add one there.
 - `test-drift-check.R` asserts every function named in the specs exists and every registered row resolves.
 
 Scraper files: `direct_api_scrapers.R` (real ATS APIs, K-12 + HE), `misc_district_scrapers.R`, `misc_college_scrapers.R`. Also check how `Mt_ED_Jobs.Rmd` calls a platform (some heuristics are called individually in their own chunk, and chromote districts share one session).
