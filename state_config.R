@@ -100,7 +100,12 @@ carried_surrounding_population <- function(basis, saipe, district_names) {
 set_state_config(state_config(
   state = "Wyoming", fips = "56", app_dir = "Wy_Ed_Jobs",
   feed = list(short_name = "WSBA", label = "WSBA statewide vacancies", url = "https://www.wsba-wy.org/vacancies",
-              discrepancy_file = "wy_discrepancy_report.csv"),
+              discrepancy_file = "wy_discrepancy_report.csv",
+              signature = c("wsba", "wyoming")),   # words the page must show (pre-flight canary, edjobs 0.52.0)
+  # How the weekly checks name a K-12 row's source (edjobs 0.51.0): archive district names canonicalized, as
+  # combinedclean.csv already is (k12_he_classification.R); the feed section counts the direct boards only.
+  k12_source_names = function(df) canonicalize_k12_district(df$District),
+  direct_registry = read_direct_board_registry,
   # The first archive that counts toward the drift check's per-source
   # baselines: earlier runs predate fixes that changed the counts.
   drift_baseline_from = "2026-08-03",
