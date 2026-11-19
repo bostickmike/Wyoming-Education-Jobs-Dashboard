@@ -106,6 +106,9 @@ set_state_config(state_config(
   # combinedclean.csv already is (k12_he_classification.R); the feed section counts the direct boards only.
   k12_source_names = function(df) canonicalize_k12_district(df$District),
   direct_registry = read_direct_board_registry,
+  # Districts SAIPE has no child poverty rate for (a BOCES; the state's school at the Boys School), so the Census
+  # check (edjobs 0.53.0) expects one for every other district in salarymap2.csv.
+  saipe_gaps = c("Northeast Wyoming BOCES", "Wyoming Boys School"),
   # The first archive that counts toward the drift check's per-source
   # baselines: earlier runs predate fixes that changed the counts.
   drift_baseline_from = "2026-08-03",

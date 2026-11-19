@@ -1034,7 +1034,7 @@
       "description": {
         "Package": "edjobs",
         "Title": "Shared Code for State Education Jobs Dashboards",
-        "Version": "0.52.0",
+        "Version": "0.53.0",
         "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
         "Description": "Code shared by state education jobs dashboards (today Montana\n    and Wyoming): platform and site-family scrapers, posting classification and\n    posted pay, posting spells and listing durations, federal context sources,\n    the daily presence check, the checks each weekly run makes on its own output,\n    and shared app helpers. What differs by state comes in as data through\n    state_config(). Each state repository pins a tagged version.",
         "License": "MIT + file LICENSE",
@@ -1042,7 +1042,7 @@
         "Encoding": "UTF-8",
         "Roxygen": "list(markdown = TRUE)",
         "Imports": "datasets, dplyr, htmltools, httr2, jsonlite, lubridate,\nmagrittr, readxl, rvest, scales, stringr, stats, survival,\ntidyr, utils, xml2",
-        "Suggests": "knitr, rmarkdown, testthat (>= 3.0.0), withr, writexl",
+        "Suggests": "chromote, knitr, rmarkdown, testthat (>= 3.0.0), withr,\nwritexl",
         "VignetteBuilder": "knitr",
         "Config/testthat/edition": "3",
         "Config/testthat/parallel": "true",
@@ -1053,18 +1053,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "edjobs",
         "RemoteUsername": "bostickmike",
-        "RemotePkgRef": "bostickmike/edjobs@v0.52.0",
-        "RemoteRef": "v0.52.0",
-        "RemoteSha": "1146f7079a01b56039c4b1fda79ce3cff8fc5174",
+        "RemotePkgRef": "bostickmike/edjobs@v0.53.0",
+        "RemoteRef": "v0.53.0",
+        "RemoteSha": "1afd80fe044cd0a727869826cf1915d0a27e871f",
         "GithubRepo": "edjobs",
         "GithubUsername": "bostickmike",
-        "GithubRef": "v0.52.0",
-        "GithubSHA1": "1146f7079a01b56039c4b1fda79ce3cff8fc5174",
+        "GithubRef": "v0.53.0",
+        "GithubSHA1": "1afd80fe044cd0a727869826cf1915d0a27e871f",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-19 19:33:04 UTC; mikebostick",
+        "Packaged": "2026-11-19 21:52:32 UTC; mikebostick",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-19 19:33:05 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-19 21:52:33 UTC; unix"
       }
     },
     "evaluate": {
