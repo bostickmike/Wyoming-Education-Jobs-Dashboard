@@ -210,7 +210,7 @@ if (!apply_changes) {
   cat("\nDry run: nothing written. Rerun with --apply to write these files.\n")
 } else {
   for (f in p$File[differs(p)]) {
-    write.csv(in_committed_order(rebuilt[[f]], committed[[f]], ROW_IDENTITY[[f]]), file.path(app, f), row.names = FALSE)
+    write_csv_keep_quoting(in_committed_order(rebuilt[[f]], committed[[f]], ROW_IDENTITY[[f]]), file.path(app, f))
   }
   cat("\nWritten:", paste(p$File[differs(p)], collapse = ", "), "\nRefreshing duration spells...\n")
   for (s in c("scripts/generate_job_duration_spells.R", "scripts/generate_he_job_duration_spells.R", "scripts/build_posting_spells.R")) {

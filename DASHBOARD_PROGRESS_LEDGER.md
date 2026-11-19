@@ -913,6 +913,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     on GitHub (edjobs installed from disk); post-run suite 1,396 passed, those 2 failed; WSBA 101 postings; K-12
     rows 729 -> 730. App tests on the final tree: reactives 315/0, boot smoke 24/0. Screenshots
     `claude-notes/2026-11-18_home-job-types-shots/`.
+  * [x] Pin edjobs 0.42.0 (2026-11-18; branch `home-job-types`, replaces the 0.41.0 pin). 0.41.0 is the job-type
+    flags the Home switch uses; 0.42.0 adds a day rate for a full/half day written before the amount (one MT posting;
+    no WY archived pay text changes) and `write_csv_keep_quoting()`, which `scripts/reclassify_committed_data.R` now
+    writes with (the file's own quoting kept). manifest.json's edjobs entry is from a pak install of the `v0.42.0`
+    tag (only version, refs, SHA and build dates change). Suite: 1,423 passed, 0 failed (manifest test passes).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
