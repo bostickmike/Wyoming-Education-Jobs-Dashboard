@@ -947,6 +947,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     that brackets the rate; data-quality sweep 128 passed, 0 failed. New `test-surrounding-poverty-fallback.R`.
     Notes: `claude-notes/2026-11-19_cheyenne-classical-poverty-fallback.md`. Still open (step 5): store the host
     district ids instead of geocoding each run.
+  * [x] Pin edjobs 0.47.0: pipeline stages, slice 1 (2026-11-19; branch `stage-context`, replaces the 0.46.0 pin).
+    The Rmd's two Census ACS county-context blocks (salarymap2.csv, salarymap.csv) are now
+    `refresh_county_context()` calls, and the source-record-links loop is `refresh_source_record_links()` (edjobs
+    0.47.0; review step 5). Wyoming keeps Census's county names ("X County, Wyoming"), so no `county_suffix`.
+    manifest.json's edjobs entry is from a pak install of the `v0.47.0` tag. Full rehearsal
+    (`claude-notes/2026-11-19_rehearsal-wy-stage-context-0.47.0-run2.log`, after the geocoder fix above): every step
+    passed (data quality 132/0). The rehearsed files' ACS columns equal the committed ones. They also gain the
+    columns added since WY's last run (ACS MOEs, CCD/IPEDS links, the SAIPE range) and the 11-16 registry links, as
+    Friday's run on main would.
   * [x] Scheduled runs moved to 07:17 UTC (2026-11-19; Mike: run very early, so a failure can be fixed and re-run the
     same day and is known by morning). Just after midnight Mountain (00:17 MST, 01:17 MDT): every step's date is
     Mountain (`TZ`), so a start before midnight would date the run the day before. GitHub started the 13:00 UTC cron
