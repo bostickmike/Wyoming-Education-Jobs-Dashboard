@@ -2,11 +2,15 @@ name: Weekly job data refresh
 
 on:
   schedule:
-    # Tuesdays and Fridays 13:00 UTC (~6am Mountain), twice a week since
+    # Tuesdays and Fridays 07:17 UTC: just after midnight Mountain (00:17 MST, 01:17 MDT), so a
+    # run counts for the right Mountain day however late GitHub starts it, and with the
+    # 4-9.5 h delays seen so far it is usually done by mid-morning, leaving the day to fix and re-run a
+    # failure (Mike, 2026-11-19; 13:00 UTC before, which started 17:00-21:30 UTC).
+    # Twice a week since
     # 2026-11-17 (Fridays before, the historical weekly cadence of the
     # archive snapshots). Never on Montana's days (Mondays and Thursdays):
     # the two projects share one CENSUS_API_KEY.
-    - cron: '0 13 * * 2,5'
+    - cron: '17 7 * * 2,5'
   workflow_dispatch: {}
 
 # One weekly run at a time: a second run waits for the first (MT has had this
