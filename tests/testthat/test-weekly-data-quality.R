@@ -107,6 +107,17 @@ test_that("salarymap2.csv (K-12): salary / staffing / context columns are in a p
   expect_true(in_band(d$Population, 0, 700000), info = "Population (largest WY county ~ Laramie, 100k)")
 })
 
+test_that("WSBA is named as the salary source only where WSBA gave a salary (the map popup shows it under the figures)", {
+  # Bug 2026-11-19: every district got the WSBA label, so nine WSBA doesn't list (charters, a BOCES, the Boys School)
+  # showed "Salary source: WSBA" under WDE's figure or under nothing.
+  d <- read_wy("salarymap2.csv")
+  bad <- d$District[!is.na(d$Salary_Source) & is.na(d$Teacher_Base_Salary) & is.na(d$Superintendent_Salary)]
+  expect_true(length(bad) == 0, info = paste("WSBA source with no WSBA salary:", paste(bad, collapse = "; ")))
+  he <- read_wy("salarymap.csv")
+  bad <- he$Name[!is.na(he$Salary_Source) & is.na(he$Faculty_Avg_Salary)]
+  expect_true(length(bad) == 0, info = paste("HE source with no IPEDS salary:", paste(bad, collapse = "; ")))
+})
+
 test_that("salarymap.csv (HE): faculty salary / count columns are in a plausible band", {
   d <- read_wy("salarymap.csv")
   expect_true(in_band(d$Faculty_Avg_Salary, 15000, 250000), info = "Faculty_Avg_Salary")

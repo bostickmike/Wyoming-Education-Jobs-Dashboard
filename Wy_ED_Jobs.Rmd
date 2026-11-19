@@ -513,7 +513,11 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
     # stamped fresh on every weekly pipeline run would just mislead people
     # into thinking the dollar figures themselves refresh that often.
     # Salary_Year is the real freshness signal.
-    mutate(Salary_Source = "WSBA (wsba-wy.org)")
+    # WSBA named only where it gave this district a base or superintendent salary: the map popup shows the source
+    # under the figures, and a charter or BOCES WSBA doesn't list would otherwise show "WSBA" under WDE's figure or
+    # under nothing (2026-11-19).
+    mutate(Salary_Source = ifelse(is.na(Teacher_Base_Salary) & is.na(Superintendent_Salary), NA_character_,
+                                  "WSBA (wsba-wy.org)"))
 
   write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
 
@@ -1046,7 +1050,8 @@ if (nrow(he_salary) > 0) {
   salarymap <- salarymap %>%
     select(-any_of(HE_SALARY_COLUMNS)) %>%
     left_join(he_salary, by = "Name") %>%
-    mutate(Salary_Source = "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)")
+    mutate(Salary_Source = ifelse(is.na(Faculty_Avg_Salary), NA_character_,   # only where IPEDS gave a figure
+                                  "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)"))
 
   # Multi-year salary trend (current + 2 prior years) -- IPEDS is
   # queryable by year indefinitely, unlike WSBA (no public historical

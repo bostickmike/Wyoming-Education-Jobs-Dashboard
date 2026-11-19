@@ -993,6 +993,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     copy with two SAIPE rates blanked, the new check flags both by name. Live check run with the state's real
     scrapers through a stubbed `gh` (Laramie County SD 1: 94 postings; Sublette County SD 1 has no single-source call). manifest.json's edjobs entry is from a pak install of the `v0.53.0` tag
     (Suggests gained chromote). Single-step change: each new script run on the committed data, plus the suite 1,426 passed, 0 failed.
+  * [x] Salary source named only where that source gave a salary (2026-11-19; branch `salary-source-label`, found
+    while measuring the salary drift check; MT has the same fix). The pipeline set `Salary_Source = "WSBA"` on every
+    district, so nine WSBA doesn't list (Snowy Range Academy, Laramie Montessori, Cheyenne Classical, Wyoming
+    Classical, Prairie View, Northeast Wyoming BOCES, STRIDE, the Sweetwater CDC, Wyoming Boys School) showed "Salary
+    source: WSBA" in their map popup under WDE's average (three of them) or under nothing. Now WSBA is named only
+    where it gave a base or superintendent salary, and IPEDS only where it gave a faculty salary (all nine colleges
+    today); the nine committed cells were blanked (every other column unchanged, and the new expression on the old
+    file gives the repaired one exactly). New data-quality test: a named source with no salary fails.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
