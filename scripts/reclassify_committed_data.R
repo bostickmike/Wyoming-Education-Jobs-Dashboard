@@ -102,7 +102,7 @@ if (!classifier_changed) cat("Note: no classifier change (edjobs checkout = ", p
 if (apply_changes && edjobs_changed) {
   # The spell builders run in their own R process with the installed edjobs.
   inst <- new.env(); sys.source(working_classifier, envir = inst)
-  stale <- Filter(function(n) is.function(inst[[n]]) && !identical(deparse(inst[[n]]), deparse(getExportedValue("edjobs", n))), ls(inst))
+  stale <- Filter(function(n) is.function(inst[[n]]) && !identical(deparse(inst[[n]]), deparse(get(n, envir = asNamespace("edjobs")))), ls(inst))
   if (length(stale)) stop("The installed edjobs isn't your edjobs checkout (", paste(head(stale, 3), collapse = ", "),
                           " differ). Install it first: R CMD INSTALL ", edjobs_dir)
 }
