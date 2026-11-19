@@ -650,35 +650,9 @@ library(edjobs)
 # without one. safe_scrape() catches a missing/invalid key the same way it
 # catches any other fetch failure: logs it, leaves salarymap2.csv
 # untouched this run, rather than crashing the whole pipeline.
-county_context <- safe_scrape(
-  "Census ACS county context (WY)", retrieved_source = "Census ACS", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = fetch_census_county_context,
-  expected_cols = c("County", "Median_Household_Income", "Median_Gross_Rent",
-                     "Population", "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct")
-)
-
-if (nrow(county_context) > 0) {
-  # Joins on County, not District -- one County value maps to multiple
-  # sibling districts (e.g. Sheridan County SD1 and SD2 both correctly
-  # get the same Sheridan County figures), same one-to-many relationship
-  # WSBA's own District-level salary data doesn't have but this genuinely
-  # does. No "last updated" timestamp, same reasoning as the WSBA/CCD/
-  # IPEDS chunks above -- ACS_Year is the real freshness signal, and this
-  # is 5-year-smoothed data that doesn't meaningfully change week to week.
-  # select(-any_of(...)) drops last run's copy of these columns first so
-  # a re-run doesn't produce Median_Household_Income.x/.y duplicates --
-  # only reached on a successful fetch, so a failed run leaves the
-  # existing columns (and every other column) fully untouched, same as
-  # every other salary/staffing chunk in this pipeline.
-  salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
-    select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
-                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct",
-                      "Median_Household_Income_MOE", "Median_Gross_Rent_MOE", "Mining_Employment_Share_MOE"))) %>%
-    left_join(county_context, by = "County")
-  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
-} else {
-  message("Census ACS county context fetch failed -- leaving salarymap2.csv untouched this run.")
-}
+# edjobs::refresh_county_context() (0.47.0): fetch through safe_scrape(), then swap the ACS columns in the file;
+# a failed fetch leaves the file untouched. County names follow state_config(county_suffix = ).
+county_context <- refresh_county_context("salarymap2.csv", "Census ACS county context (WY)")
 ```
 
 ### District-level child poverty rate, from the Census Bureau's SAIPE program
@@ -1207,27 +1181,9 @@ library(edjobs)
 # other chunk in this file being self-contained and re-runnable on its
 # own -- this data changes at most once a year, so a second cheap fetch
 # costs nothing.
-county_context_he <- safe_scrape(
-  "Census ACS county context for HE institutions (WY)", retrieved_source = "Census ACS", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = fetch_census_county_context,
-  expected_cols = c("County", "Median_Household_Income", "Median_Gross_Rent",
-                     "Population", "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct")
-)
-
-if (nrow(county_context_he) > 0) {
-  # select(-any_of(...)) drops last run's copy first so a re-run doesn't
-  # produce .x/.y duplicates, only reached on a successful fetch -- same
-  # "never blank out last week's good values on a failed fetch" pattern
-  # the K-12 census chunk uses.
-  salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
-    select(-any_of(c("Median_Household_Income", "Median_Gross_Rent", "Population",
-                      "ACS_Year", "Mining_Employment_Share", "Population_Change_Pct",
-                      "Median_Household_Income_MOE", "Median_Gross_Rent_MOE", "Mining_Employment_Share_MOE"))) %>%
-    left_join(county_context_he, by = "County")
-  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
-} else {
-  message("Census ACS county context fetch failed -- leaving salarymap.csv untouched this run.")
-}
+# edjobs::refresh_county_context() (0.47.0): fetch through safe_scrape(), then swap the ACS columns in the file;
+# a failed fetch leaves the file untouched. County names follow state_config(county_suffix = ).
+county_context_he <- refresh_county_context("salarymap.csv", "Census ACS county context for HE institutions (WY)")
 ```
 
 ### A link to each district's and college's page at its source
@@ -1238,7 +1194,5 @@ library(edjobs)
 # 0.35.0 (Mike 2026-11-16: a link to each row's source wherever possible). Last, after every chunk that rewrites
 # these files; rebuilt from the id each run. Both pages show NCES's newest year, which can be newer than the file's.
 # wde602_district_staff_salaries.csv carries its own Source_Link (WDE's report; WDE has no page per district).
-for (p in c(file.path("Wy_Ed_Jobs", "salarymap2.csv"), file.path("Wy_Ed_Jobs", "salarymap.csv"))) {
-  if (file.exists(p)) write.csv(add_source_record_links(read.csv(p, fileEncoding = "UTF-8")), p, row.names = FALSE)
-}
+refresh_source_record_links()   # edjobs 0.47.0: salarymap2.csv and salarymap.csv
 ```
