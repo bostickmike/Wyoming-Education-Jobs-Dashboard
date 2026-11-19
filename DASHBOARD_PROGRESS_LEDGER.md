@@ -918,6 +918,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     no WY archived pay text changes) and `write_csv_keep_quoting()`, which `scripts/reclassify_committed_data.R` now
     writes with (the file's own quoting kept). manifest.json's edjobs entry is from a pak install of the `v0.42.0`
     tag (only version, refs, SHA and build dates change). Suite: 1,423 passed, 0 failed (manifest test passes).
+  * [x] Pin edjobs 0.44.0 (2026-11-19; branch `pin-0.44.0`, replaces the 0.42.0 pin). 0.43.0: pay units after a
+    `;` and wrapped ranges (Browning "Lane 3/Step 0; $21.16" -> hour, Townsend "$13.52 -" / "$13.82/hour" ->
+    $13.52-$13.82/hour; replay of 1,044 archived Pay_Text: 1 changes). 0.44.0, the hardening release: 170 exports
+    made internal, no state names in package code, `state_config(timezone = )` (set here to America/Denver, the value
+    the package used as its default), front matter. `scripts/reclassify_committed_data.R` reads the package namespace
+    (`asNamespace`), since some helpers are no longer exported. manifest.json's edjobs entry is from a pak install of
+    the `v0.44.0` tag (version, Title, Description, refs, SHA, build dates). Full rehearsal
+    (`claude-notes/2026-11-19_rehearsal-wy-pin-0.44.0.log`): every pipeline step passed; post-run suite 1,425 passed, 0 failed. The pre-run suite's app boot smoke test failed once while the render ran (the known Chrome timing flake); alone it passes 24/24.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
