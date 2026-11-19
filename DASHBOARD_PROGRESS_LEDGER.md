@@ -926,6 +926,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`asNamespace`), since some helpers are no longer exported. manifest.json's edjobs entry is from a pak install of
     the `v0.44.0` tag (version, Title, Description, refs, SHA, build dates). Full rehearsal
     (`claude-notes/2026-11-19_rehearsal-wy-pin-0.44.0.log`): every pipeline step passed; post-run suite 1,425 passed, 0 failed. The pre-run suite's app boot smoke test failed once while the render ran (the known Chrome timing flake); alone it passes 24/24.
+  * [x] Pin edjobs 0.46.0 (2026-11-19; branch `package-specs`, replaces the 0.44.0 pin).
+    The scraper specs for the platforms edjobs scrapes now come from the package (`edjobs::default_scraper_specs()`,
+    0.46.0; review step 4): `state_config.R` passes `scraper_specs(...)` with only this state's own scrapers (the district-site families, Paylocity, UW) and its PeopleAdmin spec (campus labels), so a
+    district on a known platform is one registry row. These specs drive the PR live check, `scripts/repro_scraper.R`
+    and the auto-fix issue, not the weekly pipeline. Dispatch parity (every source's resolved call before vs after,
+    `claude-notes/2026-11-19_package-specs/`): 59 of 61 sources identical; Washakie 2 and Weston 1 (Edlio) now also pass `skip_section = NA`, the function's default. Also in the pin: 0.45.0's `state_config(oews_areas = )`
+    (`oews_area_definitions()` identical to 0.44.0's for this state, 81 rows) and the toy state in package CI.
+    manifest.json's edjobs entry is from a pak install of the `v0.46.0` tag. `k12_district_registry.csv`: `Platform_Key` filled for the 21 AppliTrack rows (tenant path) and 7 SchoolSpring rows (domain), equal to what the Rmd's loop derives from `Job_Link` (only that field changes; new check in `test-drift-check.R`). Live repro of Big Horn School District 1 through the new key: 11 postings. Suite on the tag: 1,425 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

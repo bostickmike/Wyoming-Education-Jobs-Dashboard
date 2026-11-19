@@ -65,6 +65,12 @@ test_that("registry-backed calls derive their arguments with the Rmd's own helpe
   r <- k12[k12$Platform == "RedRoverK12", ][1, ]
   expect_equal(resolve_scraper_call(r$District)$args,
                list(as.character(r$Platform_Key), redrover_org_slug(r$Job_Link)))
+  # The live check reads Platform_Key (edjobs::default_scraper_specs()); the Rmd's loop derives the same key from
+  # Job_Link. They must agree row by row, or the live check would test a different board than the pipeline reads.
+  ap <- k12[k12$Platform == "AppliTrack", ]
+  expect_identical(as.character(ap$Platform_Key), applitrack_tenant_path(ap$Job_Link))
+  ss <- k12[k12$Platform == "SchoolSpring", ]
+  expect_identical(as.character(ss$Platform_Key), schoolspring_domain(ss$Job_Link))
   rmd <- paste(readLines(here::here("Wy_ED_Jobs.Rmd"), warn = FALSE), collapse = "\n")
   for (helper in c("applitrack_tenant_path(row$Job_Link)", "schoolspring_domain(row$Job_Link)", "redrover_org_slug(row$Job_Link)")) {
     expect_true(grepl(helper, rmd, fixed = TRUE), info = helper)
