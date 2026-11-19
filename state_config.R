@@ -25,20 +25,14 @@ read_k12_registry <- function() utils::read.csv(wy_registry_path("k12_district_r
                                                  colClasses = c(NCES_LEAID = "character", Platform_Key = "character"))
 read_he_registry <- function() utils::read.csv(wy_registry_path("he_institution_registry.csv"), stringsAsFactors = FALSE)
 
-# A registry row's list rule (NA when none): the family routines' start/stop (and Apptegy's skip).
-wy_list_rule <- function(col) function(row) {
-  v <- row[[col]]
-  if (is.null(v) || length(v) == 0 || is.na(v[1]) || !nzchar(v[1])) NA_character_ else as.character(v[1])
-}
+# How each platform is scraped: the platforms edjobs scrapes (AppliTrack,
+# SchoolSpring, TedK12, Red Rover, Edlio, Apptegy, NEOGOV ...) come from
+# edjobs::default_scraper_specs() (edjobs 0.46.0), reading the registry's
+# Platform_Key (AppliTrack's tenant path, SchoolSpring's domain, Red Rover's
+# org id), Job_Link, City and list rules; the specs below add Wyoming's own
+# scrapers and replace PeopleAdmin's.
 # The direct district boards: scraped in Wy_ED_Jobs.Rmd's registry loop.
-WY_K12_SCRAPER_SPECS <- list(
-  AppliTrack   = scraper_spec("fetch_applitrack_postings", list(function(row) applitrack_tenant_path(row$Job_Link))),
-  TedK12       = scraper_spec("fetch_tedk12_postings", "Job_Link"),
-  SchoolSpring = scraper_spec("fetch_schoolspring_postings", list(function(row) schoolspring_domain(row$Job_Link))),
-  RedRoverK12  = scraper_spec("fetch_redrover_postings",
-                              list(function(row) as.character(row$Platform_Key), function(row) redrover_org_slug(row$Job_Link)))
-)
-WY_DIRECT_BOARD_PLATFORMS <- names(WY_K12_SCRAPER_SPECS)
+WY_DIRECT_BOARD_PLATFORMS <- c("AppliTrack", "TedK12", "SchoolSpring", "RedRoverK12")
 # The direct-board rows only: what the Rmd's registry loop scrapes, and the
 # "registered districts" the drift check's WSBA section counts.
 read_direct_board_registry <- function() {
@@ -52,17 +46,11 @@ WY_MISC_SCRAPER_SPECS <- list(
   WordPressBespoke = scraper_spec("fetch_wy_wordpress_postings", "Job_Link", fixture_prefix = "wordpress"),
   SmartSites = scraper_spec("fetch_smartsites_postings", "Job_Link"),
   SchoolBlocks = scraper_spec("fetch_schoolblocks_postings", "Job_Link"),
-  Edlio = scraper_spec("fetch_edlio_postings", list("Job_Link", function(row) NA_character_, wy_list_rule("List_Start"),
-                                                   wy_list_rule("List_Stop"))),
   EdlioTabs = scraper_spec("fetch_wy_edlio_postings", "Job_Link", fixture_prefix = "edlio"),
   GoogleSitesBespoke = scraper_spec("fetch_wy_googlesites_postings", "Job_Link", session = TRUE,
                                     fixture_prefix = "googlesites"),
   EducationalNetworks = scraper_spec("fetch_educational_networks_postings", "Job_Link",
                                      fixture_prefix = "educational_networks"),
-  Apptegy = scraper_spec("fetch_apptegy_postings", list("Job_Link", function(row) NA_character_, function(row) "text",
-                                                       wy_list_rule("List_Start"), wy_list_rule("List_Stop"),
-                                                       wy_list_rule("List_Skip")),
-                         session = TRUE),
   PrairieViewHeuristic = scraper_spec("fetch_prairieview_postings", "Job_Link", session = TRUE, fixture_prefix = "prairieview")
 )
 WY_OTHER_K12_SCRAPER_SPECS <- list(
@@ -75,7 +63,6 @@ WY_OTHER_K12_SCRAPER_SPECS <- list(
 # on PeopleAdmin. PeopleAdmin: WY keeps its campus names (Location_Label)
 # rather than the feed's authors (location_from_author = FALSE).
 WY_HE_SCRAPER_SPECS <- list(
-  Neogov = scraper_spec("fetch_neogov_postings", "Feed_URL"),
   PeopleAdmin = scraper_spec("fetch_peopleadmin_atom", list("Feed_URL", "Location_Label",
                                                             location_from_author = function(row) FALSE)),
   UWHeuristic = scraper_spec("fetch_uw_postings")
@@ -110,8 +97,9 @@ set_state_config(state_config(
   scraper_sources = list(
     # The registry sits at the repository root; tests run from tests/testthat.
     scraper_registry(read_k12_registry, "District", "k12_district_registry.csv",
-                     specs = c(WY_K12_SCRAPER_SPECS, WY_MISC_SCRAPER_SPECS, WY_OTHER_K12_SCRAPER_SPECS)),
-    scraper_registry(read_he_registry, "Institution", "he_institution_registry.csv", specs = WY_HE_SCRAPER_SPECS)
+                     specs = scraper_specs(c(WY_MISC_SCRAPER_SPECS, WY_OTHER_K12_SCRAPER_SPECS))),
+    scraper_registry(read_he_registry, "Institution", "he_institution_registry.csv",
+                     specs = scraper_specs(WY_HE_SCRAPER_SPECS))
   ),
   # The auto-fix issue: scraper files read as text; fixtures are named
   # <platform>_<district>..., and several districts share one parser.
