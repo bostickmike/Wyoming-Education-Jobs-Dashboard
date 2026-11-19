@@ -983,6 +983,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Full rehearsal (`claude-notes/2026-11-19_rehearsal-wy-step6-0.52.0.log`): every step passed (canary, data quality
     132/0, drift 0 flagged, rebuild parity "all 11 files reproduced from the archives"); suite 1,426/0 before the
     run, 1,428/0 after, none skipped.
+  * [x] Pin edjobs 0.53.0: the Census check and the auto-fix live check in the package (2026-11-19; branch
+    `step6-census`, replaces the 0.52.0 pin; review step 6, slice 4). `check_census_drift.R` is
+    `check_census_step()` and `live_check_autofix.R` is `live_check_autofix_step()` (the script sources the scraper
+    files first). The Census check's expected counts now come from `salarymap2.csv` / `salarymap.csv`: the script's
+    hard-coded ones had gone stale (48 districts against 57), so a source could lose most of its coverage before it fired. Every county
+    should have ACS context and every district a SAIPE rate, except `state_config(saipe_gaps = )`: Northeast Wyoming BOCES and Wyoming Boys School.
+    Parity (`claude-notes/2026-11-19_step6-parity/slice4/`): identical output on the committed data (healthy); on a
+    copy with two SAIPE rates blanked, the new check flags both by name. Live check run with the state's real
+    scrapers through a stubbed `gh` (Laramie County SD 1: 94 postings; Sublette County SD 1 has no single-source call). manifest.json's edjobs entry is from a pak install of the `v0.53.0` tag
+    (Suggests gained chromote). Single-step change: each new script run on the committed data, plus the suite 1,426 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
