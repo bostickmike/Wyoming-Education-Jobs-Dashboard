@@ -25,7 +25,8 @@ test_that("all chunk-level fetch_* calls in Wy_ED_Jobs.Rmd are wrapped in safe_s
       if (rlang::is_missing(node) || is.null(node)) return()
       if (is.call(node)) {
         fn_name <- tryCatch(deparse(node[[1]])[1], error = function(e) "")
-        is_guard <- fn_name %in% c("safe_scrape", "tryCatch")
+        # edjobs pipeline stages that run their fetch through safe_scrape() themselves (0.47.0+).
+        is_guard <- sub(".*::", "", fn_name) %in% c("safe_scrape", "tryCatch", "refresh_file_columns", "refresh_county_context")
         now_inside <- inside_guard || is_guard
 
         bare_fn <- sub(".*::", "", fn_name)
