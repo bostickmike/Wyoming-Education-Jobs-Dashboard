@@ -19,7 +19,9 @@ Each dataset is accessible via the **Data Sources & Open Research Downloads** ta
 | **Higher Ed Job Duration Spells** | `he_job_duration_spells.csv` | Longitudinal spell panel tracking collegiate faculty search duration (time-to-fill) and discipline flags. | Posting spell | Weekly |
 | **Higher Ed Institutional Profiles** | `salarymap.csv` | College and university profiles: IPEDS instructional faculty salaries, enrollment, and Pell recipient shares. | Institution level | Weekly / Annual |
 | **K-12 Weekly Vacancy Time Series** | `k12_district_weekly_totals.csv` | Weekly aggregate open job vacancy counts by school district over time. | District × Week | Weekly |
+| **K-12 Job Type Time Series** | `k12_jobtype_weekly_totals.csv` | Open job postings per run by K-12 position type, all and those not marked part-time, substitute or extra duty. | Job type × Run | Each run |
 | **Higher Ed Weekly Vacancy Time Series** | `he_institution_weekly_totals.csv` | Weekly aggregate open job vacancy counts by higher education institution. | Institution × Week | Weekly |
+| **Higher Ed Job Type Time Series** | `he_jobtype_weekly_totals.csv` | Open college job postings per run by job type, all and those not marked part-time, student or temporary. | Job type × Run | Each run |
 | **Data Dictionary & Codebook** | `data_dictionary.csv` | Machine-readable column definitions, types, and primary source authorities across all files. | Variable level | Static / Maintained |
 
 ---
@@ -249,6 +251,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Mining_Employment_Share` | Proportion (0-1) | US Census ACS 5-year | Share of the county's employed civilians (16 and over) who work in mining, quarrying, and oil and gas extraction (ACS table S2403). |
 | `Mining_Employment_Share_MOE` | Proportion (0-1) | US Census ACS 5-year (derived) | 90% margin of error for Mining_Employment_Share, from Census's formula for a derived proportion (ACS handbook 2020, ch. 8, formula 6) using the S2403 MOEs. When it is at least the share itself, the share is not distinguishable from zero (Census's CV > 0.61 line) and the dashboard says so. Census's CV-based reliability rules are unstable for shares under 5% (National Research Council 2007, p. 67), so no reliability tier is given. |
 | `Population_Change_Pct` | Proportion | US Census ACS 5-year | County 5-year percentage change in total resident population. |
+| `n_not_marked` | Integer | This dashboard: job classification | Of those, postings classify_work_schedule() (edjobs) does not mark as a substitute, extra-duty (coaching, activities, stipend), part-time, student or temporary/seasonal job. Sources never confirm full-time, so this is "not marked", not "full-time". The Home page's top districts table and its sparklines count these when its switch is on (the default). |
 
 ---
 
@@ -259,6 +262,18 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `District` | String | This dashboard: district and college list | Canonical public school district or charter school name. |
 | `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: weekly snapshot | Snapshot observation date for that weekly pipeline sweep. |
 | `n` | Integer | This dashboard: weekly snapshot | Total count of active job postings observed open for that district in that weekly snapshot. |
+| `n_not_marked` | Integer | This dashboard: job classification | Of those, postings classify_work_schedule() (edjobs) does not mark as a substitute, extra-duty (coaching, activities, stipend), part-time, student or temporary/seasonal job. Sources never confirm full-time, so this is "not marked", not "full-time". The Home page's top colleges table and its sparklines count these when its switch is on (the default). |
+
+---
+
+### H2. K-12 Job Type Time Series (`k12_jobtype_weekly_totals.csv`)
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `Job_Type` | String | This dashboard: job classification | K-12 position bucket (position in combinedclean.csv). |
+| `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: weekly snapshot | Snapshot observation date for that pipeline run. |
+| `n` | Integer | This dashboard: weekly snapshot | Count of active job postings of that type observed open on that run. |
+| `n_not_marked` | Integer | This dashboard: job classification | Of those, postings classify_work_schedule() (edjobs) does not mark as a substitute, extra-duty (coaching, activities, stipend), part-time, student or temporary/seasonal job. Sources never confirm full-time, so this is "not marked", not "full-time". The Home page's job-type tables count these. |
 
 ---
 
@@ -269,5 +284,16 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Institution` | String | This dashboard: district and college list | Canonical public college or university name. |
 | `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: weekly snapshot | Snapshot observation date for that weekly pipeline sweep. |
 | `n` | Integer | This dashboard: weekly snapshot | Total count of active job postings observed open for that higher education institution in that weekly snapshot. |
+
+---
+
+### I2. Higher Ed Job Type Time Series (`he_jobtype_weekly_totals.csv`)
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `Job_Type` | String | This dashboard: job classification | College job type (classify_he_job_type(), every posting, not only faculty). |
+| `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: weekly snapshot | Snapshot observation date for that pipeline run. |
+| `n` | Integer | This dashboard: weekly snapshot | Count of active college job postings of that type observed open on that run. |
+| `n_not_marked` | Integer | This dashboard: job classification | Of those, postings classify_work_schedule() (edjobs) does not mark as a substitute, extra-duty (coaching, activities, stipend), part-time, student or temporary/seasonal job. Sources never confirm full-time, so this is "not marked", not "full-time". The Home page's job-type tables count these. |
 
 ---

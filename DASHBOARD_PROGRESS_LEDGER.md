@@ -883,6 +883,41 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-17_rehearsal-wy-pin-0.40.0.log`): every step passed but the pre-run suite's app boot
     smoke test (1 failure, Chrome timing while the render ran; 24/24 alone after); post-run suite 1,377 passed, 0
     failed; WSBA 101 postings; K-12 rows 729 -> 730.
+  * [x] Home: top job types, pin edjobs 0.41.0 (2026-11-18; branch `home-job-types`; plan
+    `claude-notes/2026-11-17_home-job-types-plan.md`, flag rules `claude-notes/2026-11-18_not-full-time/`). The
+    vacancy-rate plots, the biggest-mover boxes and the vacancy footnote are gone from Home; "Top K-12 / Higher Ed
+    Job Types This Week" cards take their place (open postings, share, 12-run sparkline; a click opens that type's
+    jobs). The top tables and the KPI cards count postings edjobs `classify_work_schedule()` doesn't mark as
+    substitute, extra duty, part-time, student job or temporary: K-12 341 of 729, college 227 of 460. A switch on
+    Home (on by default; "Leave out substitutes, coaching, part-time, student and temporary jobs") sets which postings
+    the four top tables count, their Share and their sparklines, and the Jobs table a Home link opens follows it (a
+    map popup link never does); the KPI cards keep both numbers (plan `claude-notes/2026-11-18_sparkline-basis/PLAN.md`,
+    Mike 11-18). For the district and college sparklines, `k12_district_weekly_totals.csv` /
+    `he_institution_weekly_totals.csv` gain `n_not_marked` (edjobs `posting_run_totals()`, pipeline and both rebuild
+    scripts), backfilled from the archives (K-12 5,895 rows, college 1,083; the rebuilt `n` equals the committed `n` on every
+    row; script `claude-notes/2026-11-18_sparkline-basis/backfill_n_not_marked.R`); schema and data dictionary
+    cover the column. Switch screenshots `claude-notes/2026-11-18_sparkline-basis/shots/`. Rehearsals
+    (`claude-notes/2026-11-18_rehearsal-wy-sparkline-basis{,-run2}.log`): run 1 found the history-accumulator test
+    still counting this week's totals the old way (fixed: `posting_run_totals()`) and a WSBA name with a trailing
+    no-break space ("Sublette County School District No. 1", 11-18) that `canonicalize_wsba_district()` missed,
+    so 2 rows formed a phantom district (fixed: `str_squish()` first, test added). Run 2: rebuild parity 11/11, the
+    Sublette rows join "Sublette County School District 1" (3 rows, 2 not marked); data quality failed only on
+    Cheyenne Classical Academy's child-poverty range (Census geocoder failed for it this run and the committed
+    salarymap2.csv has no `SAIPE_Population` to fall back on; not this change); boot smoke 24/0 alone. Suite on the
+    final tree: 1,421 passed, 2 failed (the manifest test, until v0.41.0 is tagged). The pipeline and
+    both rebuild scripts write `k12_jobtype_weekly_totals.csv` / `he_jobtype_weekly_totals.csv` (edjobs
+    `jobtype_run_totals()`), backfilled from the archives: 1,695 and 2,064 rows, 123 and 121 runs from 2024-08-09
+    to 2026-11-13; schema, data dictionary, rebuild parity and reclassify cover them. On a phone the Share column
+    is hidden and type names break after "/". Full rehearsal (`claude-notes/2026-11-18_rehearsal-wy-jobtype-0.41.0.log`):
+    every pipeline step passed, rebuild parity 11/11; the manifest step and its test fail until v0.41.0 is tagged
+    on GitHub (edjobs installed from disk); post-run suite 1,396 passed, those 2 failed; WSBA 101 postings; K-12
+    rows 729 -> 730. App tests on the final tree: reactives 315/0, boot smoke 24/0. Screenshots
+    `claude-notes/2026-11-18_home-job-types-shots/`.
+  * [x] Pin edjobs 0.42.0 (2026-11-18; branch `home-job-types`, replaces the 0.41.0 pin). 0.41.0 is the job-type
+    flags the Home switch uses; 0.42.0 adds a day rate for a full/half day written before the amount (one MT posting;
+    no WY archived pay text changes) and `write_csv_keep_quoting()`, which `scripts/reclassify_committed_data.R` now
+    writes with (the file's own quoting kept). manifest.json's edjobs entry is from a pak install of the `v0.42.0`
+    tag (only version, refs, SHA and build dates change). Suite: 1,423 passed, 0 failed (manifest test passes).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
@@ -1016,6 +1051,27 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   Girls Soccer Coach" / "MS Head Girls Soccer Coach" (word order; a word-order-blind key would merge "Assistant
   Teacher" with "Teacher Assistant"); Park #16 "K-12 School Guidance Counselor" / "School Guidance Counselor" (subset).
   Not duplicates: Platte #1's WSBA substitute rows (Glendo and Wheatland).
+- [ ] Using the twice-weekly runs and the daily presence check on the dashboard (Mike, 2026-11-18). Every run is
+  stored (`Archive_Date`; two a week, Tue + Fri, first Fri 2026-11-20); the app rolls the history up to each ISO week's last
+  run (`latest_snapshot_per_week()`), so the history charts stay weekly while the current counts read the newest run.
+  The presence check writes `presence_sightings.csv` (one row per posting: `First_Day`, `Last_Day`, `Days_Seen`) on
+  the `presence` branch; nothing on the dashboard reads it yet.
+  **Check ~2026-01-15 (about 8 weeks of twice-weekly runs):** do the two runs in a week differ by more than noise (new
+  postings, endings, totals, by day of week)? If not, the history charts could plot every run on a date axis (back to
+  the first twice-weekly run; nothing is lost by waiting). If there is a day-of-week pattern, keep one point a week.
+  Either way, re-measure the drift thresholds (tuned on weekly counts) before any run-level chart.
+  Ideas, not decided (each measured on the archives before building):
+  Twice-weekly runs: (1) listing durations to within 3-4 days instead of 7 (the spells already end per run);
+  (2) short-lived postings: postings seen in one run only, which weekly scrapes missed, by job type (fast fills or
+  quick withdrawals); (3) when districts post: new postings by day of week and by month (a hiring calendar);
+  (4) the weekly roll-up takes the week's most complete run instead of its last, so one failed run doesn't cost the
+  week; (5) a broken board noticed in 3-4 days instead of 7.
+  Daily presence (after the phase-0 audit ~11-27 and phase 1): (6) day-precision listing durations (planned: the
+  spells read the sightings); (7) a "Last seen on its board" date in the Jobs table, and postings gone between scrapes
+  hidden, so "open" means a candidate can still apply today; (8) closed early: postings that left the board before
+  their stated closing date, by job type; (9) days open so far for current postings, and the longest-open ones by job
+  type and district (a hard-to-fill signal; relistings censored, not linked); (10) board health: a board the daily
+  check can't read flagged within a day.
 
 - [x] WSBA parser reads en and em dashes (2026-11-14; 9b63a53). `parse_wsba_vacancies()` matched only a hyphen
   between title, district and town; in Mar-Jun 2024 WSBA typed many listings with en dashes, and those were skipped

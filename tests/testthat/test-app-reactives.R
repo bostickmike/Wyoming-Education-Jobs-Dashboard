@@ -673,3 +673,98 @@ test_that("a college posting placed at another town gets its own map dot, and th
     expect_equal(selected_institution(), campus$Name)
   })
 })
+
+test_that("Home job-type tables agree with the pipeline's per-run totals, and a click filters the Jobs table", {
+  # Plan 2026-11-17_home-job-types-plan.md, piece C: the app's .Not_Marked flag and the pipeline's
+  # k12_/he_jobtype_weekly_totals.csv make the same edjobs call, so this week's counts must match the latest run.
+  env <- load_app()
+  k12_latest <- env$k12_jobtype_weekly_totals %>% dplyr::filter(Archive_Date == max(Archive_Date))
+  app_k12 <- table(env$combineddata$Position[env$combineddata$.Not_Marked])
+  expect_equal(as.integer(app_k12[k12_latest$Job_Type[k12_latest$n_not_marked > 0]]),
+               as.integer(k12_latest$n_not_marked[k12_latest$n_not_marked > 0]))
+  he_latest <- env$he_jobtype_weekly_totals %>% dplyr::filter(Archive_Date == max(Archive_Date))
+  expect_equal(sum(env$ccdata$.Not_Marked), sum(he_latest$n_not_marked))
+  expect_false(any(c(".Not_Marked", ".Job_Type") %in% names(env$combineddata %>% dplyr::select(-dplyr::any_of(env$HIDDEN_COLS)))))
+
+  shiny::testServer(env$server, {
+    for (id in c("top_k12_job_types", "top_he_job_types", "top_k12_districts", "top_he_institutions")) {
+      expect_true(nzchar(output[[id]]), info = id)
+    }
+    top_type <- names(sort(app_k12, decreasing = TRUE))[1]
+    expect_match(output$top_k12_job_types, top_type, fixed = TRUE)
+    session$setInputs(jobtype_view_k12 = top_type)
+    expect_equal(selected_k12_type(), top_type)
+    expect_null(selected_district())
+    expect_match(output$k12_filter_status$html, top_type, fixed = TRUE)
+    # An employer link drops the type filter.
+    session$setInputs(popup_view_jobs = env$combineddata$District[1])
+    expect_null(selected_k12_type())
+    he_type <- names(sort(table(env$ccdata$.Job_Type[env$ccdata$.Not_Marked]), decreasing = TRUE))[1]
+    session$setInputs(jobtype_view_he = he_type)
+    expect_equal(selected_he_type(), he_type)
+  })
+})
+
+test_that("Home switch: tables, sparklines and the Jobs links count the same postings, on and off", {
+  # Plan 2026-11-18_sparkline-basis/PLAN.md: the district/college totals carry n_not_marked from the same edjobs call
+  # as the app's .Not_Marked, so this week's per-employer counts match the latest run's, both ways.
+  env <- load_app()
+  latest <- function(t) t[t$Archive_Date == max(t$Archive_Date), ]
+  k12_t <- latest(env$k12_district_weekly_totals)
+  app_all <- table(env$combineddata$District)
+  app_nm <- table(env$combineddata$District[env$combineddata$.Not_Marked])
+  expect_equal(sum(k12_t$n_not_marked), sum(env$combineddata$.Not_Marked))
+  expect_equal(as.integer(app_nm[k12_t$District[k12_t$n_not_marked > 0]]), as.integer(k12_t$n_not_marked[k12_t$n_not_marked > 0]))
+  expect_true(all(k12_t$n_not_marked <= k12_t$n))
+  he_t <- latest(env$he_institution_weekly_totals)
+  expect_equal(sum(he_t$n_not_marked), sum(env$ccdata$.Not_Marked))
+  expect_false(anyNA(env$k12_district_weekly_totals$n_not_marked))
+  expect_false(anyNA(env$he_institution_weekly_totals$n_not_marked))
+
+  cell <- function(html, name, n) grepl(paste0(">", gsub("([.()|+?*^$\\[\\]{}\\\\])", "\\\\\\1", name, perl = TRUE),
+                                              "</a> </td>\\s*<td[^>]*> *", n, " *</td>"), html, perl = TRUE)
+  top1 <- function(tab) { o <- sort(tab, decreasing = TRUE); list(name = names(o)[1], n = as.integer(o[1])) }
+  shiny::testServer(env$server, {
+    # Default (switch not yet sent by the browser = on): not-marked counts and sparkline column.
+    expect_true(home_not_marked())
+    expect_equal(home_count_col(), "n_not_marked")
+    t_on <- top1(app_nm)
+    expect_true(cell(output$top_k12_districts, t_on$name, t_on$n), info = t_on$name)
+    session$setInputs(popup_view_jobs = t_on$name)
+    expect_equal(selected_district(), t_on$name)
+    expect_true(k12_not_marked_only())
+    expect_match(output$k12_filter_status$html, "excluding substitutes", fixed = TRUE)
+    type_on <- names(sort(table(env$combineddata$Position[env$combineddata$.Not_Marked]), decreasing = TRUE))[1]
+    session$setInputs(jobtype_view_k12 = type_on)
+    expect_true(k12_not_marked_only())
+    session$setInputs(clear_k12_type = 1)
+    expect_false(k12_not_marked_only())
+
+    # Off: every posting, the n column, and the links open the unfiltered Jobs table.
+    session$setInputs(home_not_marked = FALSE)
+    expect_equal(home_count_col(), "n")
+    t_off <- top1(app_all)
+    expect_true(cell(output$top_k12_districts, t_off$name, t_off$n), info = t_off$name)
+    he_off <- top1(table(env$ccdata$Institution))
+    expect_true(cell(output$top_he_institutions, he_off$name, he_off$n), info = he_off$name)
+    type_off <- names(sort(table(env$combineddata$Position), decreasing = TRUE))[1]
+    expect_match(output$top_k12_job_types, gsub("/", "/<wbr>", type_off, fixed = TRUE), fixed = TRUE)
+    session$setInputs(jobtype_view_k12 = type_off)
+    expect_false(k12_not_marked_only())
+    expect_false(grepl("excluding", output$k12_filter_status$html, fixed = TRUE))
+    session$setInputs(popup_view_jobs = t_off$name)
+    expect_false(k12_not_marked_only())
+    he_type <- names(sort(table(env$ccdata$.Job_Type), decreasing = TRUE))[1]
+    session$setInputs(jobtype_view_he = he_type)
+    expect_false(he_not_marked_only())
+
+    # Back on; a map popup link never carries the switch.
+    session$setInputs(home_not_marked = TRUE)
+    session$setInputs(jobtype_view_he = he_type)
+    expect_true(he_not_marked_only())
+    expect_match(output$he_filter_status$html, "excluding adjunct", fixed = TRUE)
+    session$setInputs(map_popup_view_jobs = list(entity = t_on$name, query = "", band = ""))
+    expect_false(k12_not_marked_only())
+    expect_false(he_not_marked_only())
+  })
+})

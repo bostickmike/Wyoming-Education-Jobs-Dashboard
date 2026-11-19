@@ -28,7 +28,9 @@ pairs <- list("combinedclean.csv" = k12$combinedclean, "k12jobanalysis.csv" = k1
               "allsum.csv" = k12$allsum, "allnow.csv" = k12$allnow,
               "k12_district_weekly_totals.csv" = k12$k12_district_weekly_totals,
               "facultydata.csv" = he$facultydata, "allsum_he.csv" = he$allsum_he, "allnow_he.csv" = he$allnow_he,
-              "he_institution_weekly_totals.csv" = he$he_institution_weekly_totals)
+              "he_institution_weekly_totals.csv" = he$he_institution_weekly_totals,
+              "k12_jobtype_weekly_totals.csv" = k12$k12_jobtype_weekly_totals,
+              "he_jobtype_weekly_totals.csv" = he$he_jobtype_weekly_totals)
 parity <- bind_rows(lapply(names(pairs), function(f) {
   rebuild_parity_row(f, read.csv(file.path(app, f), colClasses = "character", check.names = FALSE), pairs[[f]])
 }))
