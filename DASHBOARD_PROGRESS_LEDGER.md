@@ -1001,6 +1001,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     where it gave a base or superintendent salary, and IPEDS only where it gave a faculty salary (all nine colleges
     today); the nine committed cells were blanked (every other column unchanged, and the new expression on the old
     file gives the repaired one exactly). New data-quality test: a named source with no salary fails.
+  * [x] Pin edjobs 0.54.0: the auto-fix issue step in the package (2026-11-19; branch `step6-autofix`, replaces the
+    0.53.0 pin; review step 6, slice 5). `file_autofix_issues.R` is `file_autofix_issues_step()`; the script keeps its
+    own sourcing (`drift_check.R` and the two scraper files). Parity (`claude-notes/2026-11-19_step6-parity/slice5/`): a fake `gh` on PATH logs every call,
+    its body file and token; five scenarios (Claude dispatch; Copilot assignment and its PR; an edjobs companion
+    issue; escalation to Claude; Copilot refusing; recovery closes with the companion; a confirmed_broken comment; no
+    results file; the cap) give identical calls and output from the old script, the package function and the new
+    script. manifest.json's edjobs entry is from a pak install of the `v0.54.0` tag. Suite on the tag: 1,428 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
