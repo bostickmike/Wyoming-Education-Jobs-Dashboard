@@ -937,6 +937,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] Scraper skill synced from the toolkit (2026-11-19): the specs for platforms edjobs scrapes come from
     `edjobs::default_scraper_specs()` (0.46.0; montana.md, wyoming.md), and an edjobs helper may be internal since
     0.44.0 (ci-automation.md: list the namespace with `ls(asNamespace("edjobs"))`, call one as `edjobs:::name`).
+  * [x] Surrounding-district poverty range survives a geocoder failure (2026-11-19; Mike: "yes"). When the Census
+    geocoder fails for a charter/early-childhood school, the Rmd keeps last run's rate, but the committed
+    salarymap2.csv had no `SAIPE_Population` yet, so the 90% range came out NA and the blocking data-quality step
+    failed (rehearsals 11-18 and 11-19: Cheyenne Classical; then Cheyenne Classical, Wyoming Classical, Sweetwater
+    CDC). `carried_surrounding_population()` (state_config.R) now takes the population of the host district named in
+    the carried-over `Child_Poverty_Basis` from this run's SAIPE rows, pooled as edjobs pools them. Live run of the
+    SAIPE chunk on the committed data with the geocoder failing for all 7 schools: all 7 get a population and a range
+    that brackets the rate; data-quality sweep 128 passed, 0 failed. New `test-surrounding-poverty-fallback.R`.
+    Notes: `claude-notes/2026-11-19_cheyenne-classical-poverty-fallback.md`. Still open (step 5): store the host
+    district ids instead of geocoding each run.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
