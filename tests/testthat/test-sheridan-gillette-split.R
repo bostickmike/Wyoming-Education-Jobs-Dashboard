@@ -49,3 +49,11 @@ test_that("IPEDS_UNITID_MAP gives Sheridan and Gillette the shared unitid and th
   expect_true(all(is.na(IPEDS_UNITID_MAP$Salary_Note[IPEDS_UNITID_MAP$unitid != 240666L])))
   expect_equal(nrow(IPEDS_UNITID_MAP), 9)
 })
+
+test_that("the salary check's split-watch lines: nothing when still joint, a note when the call failed, the new unitid", {
+  expect_equal(sheridan_gillette_split_lines(data.frame(unitid = integer(0), inst_name = character(0))), character(0))
+  expect_match(sheridan_gillette_split_lines(NULL)[1], "Could not check whether IPEDS")
+  lines <- sheridan_gillette_split_lines(data.frame(unitid = 999999L, inst_name = "Gillette College"))
+  expect_true("- unitid 999999: Gillette College" %in% lines)
+  expect_true(is.function(current_state_config()$salary_checks$extra))
+})

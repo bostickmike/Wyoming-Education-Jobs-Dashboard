@@ -109,6 +109,26 @@ set_state_config(state_config(
   # Districts SAIPE has no child poverty rate for (a BOCES; the state's school at the Boys School), so the Census
   # check (edjobs 0.53.0) expects one for every other district in salarymap2.csv.
   saipe_gaps = c("Northeast Wyoming BOCES", "Wyoming Boys School"),
+  # The weekly salary check (edjobs 0.57.0): each source's coverage against last run's committed file (it counted WSBA's
+  # rows before, which passed with 10 districts lacking a base salary). Bounds are generous (2025-26 teacher base
+  # $45k-$57k, superintendents $127k-$175k): they catch a misread digit, not real variation. The Sheridan/Gillette
+  # split watch is ipeds_unitids.R's, sourced by check_salary_drift.R.
+  salary_checks = salary_checks(
+    coverage = data.frame(
+      name = c("K-12 teacher base salary (WSBA)", "K-12 superintendent salary (WSBA)", "K-12 teacher FTE (CCD)",
+               "HE avg faculty salary (IPEDS)", "HE fall enrollment FTE (IPEDS)", "HE 5-year enrollment trend (IPEDS)",
+               "HE Pell Grant recipient share (FSA)"),
+      file = rep(c("salarymap2.csv", "salarymap.csv"), c(3, 4)),
+      column = c("Teacher_Base_Salary", "Superintendent_Salary", "Teachers_Total_FTE", "Faculty_Avg_Salary",
+                 "Enrollment", "Enrollment_Change_Pct", "Pell_Recipient_Share")),
+    bounds = data.frame(
+      name = c("K-12 teacher base salary (WSBA)", "K-12 superintendent salary (WSBA)", "HE avg faculty salary (IPEDS)"),
+      file = c("salarymap2.csv", "salarymap2.csv", "salarymap.csv"),
+      column = c("Teacher_Base_Salary", "Superintendent_Salary", "Faculty_Avg_Salary"),
+      min_ok = c(25000, 60000, 30000), max_ok = c(150000, 350000, 150000)),
+    yoy = data.frame(file = c("salarymap2.csv", "salarymap.csv"), current = c("Teacher_Base_Salary", "Faculty_Avg_Salary"),
+                     prior = c("Teacher_Base_Salary_Prior_Year", "Faculty_Avg_Salary_Y1Ago")),
+    extra = function() sheridan_gillette_split_lines()),
   # The drift corroboration's URL lookup (edjobs 0.55.0): registry links are keyed by the raw spelling ("Converse County
   # School Distrcit 2") while the drift check flags the corrected one, so the keys are canonicalized the same way.
   canonical_source_name = function(x) canonicalize_k12_district(x),

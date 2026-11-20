@@ -44,7 +44,7 @@ Post-pipeline checks the CI workflow runs, in order (useful to run manually when
 Rscript .github/scripts/sanity_check.R      # blocking: refuses if either dataset lost >50% of rows
 Rscript .github/scripts/verify_schema.R     # blocking: every column app.R expects is still present
 Rscript .github/scripts/check_drift.R       # diagnostic only: per-source count vs. historical baseline
-Rscript .github/scripts/check_salary_drift.R   # diagnostic: WSBA/IPEDS coverage vs. known-fixed universe
+Rscript .github/scripts/check_salary_drift.R   # diagnostic: WSBA/CCD/IPEDS coverage vs. last run's committed files (edjobs salary_drift_step())
 Rscript .github/scripts/check_census_drift.R   # diagnostic: ACS/SAIPE coverage + value plausibility
 Rscript .github/scripts/check_pay_coverage.R   # diagnostic: sources whose posted pay went missing vs. their own history, plus implausible amounts blanked this run
 Rscript .github/scripts/check_title_quality.R  # diagnostic: titles that aren't job titles (page text, summaries, pay Posted Pay lacks), and sources whose Other share jumped vs. their last 8 weeks

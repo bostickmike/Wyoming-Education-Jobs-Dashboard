@@ -249,9 +249,9 @@ jobs:
 
       # Runs after corroborate_drift.R (which overwrites, not appends,
       # /tmp/drift_report.md) so a flagged salary source never gets
-      # silently clobbered by that step running afterward -- see
-      # check_salary_drift.R's own append-if-exists logic.
-      - name: Check salary source coverage against its known-fixed universe
+      # silently clobbered by that step running afterward. It must run before
+      # the commit step: it compares with git's HEAD copy of the salary maps.
+      - name: Check salary source coverage against last run's committed files
         id: check_salary_drift
         continue-on-error: true
         run: Rscript .github/scripts/check_salary_drift.R
