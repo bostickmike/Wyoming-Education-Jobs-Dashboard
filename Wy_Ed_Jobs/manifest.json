@@ -1034,7 +1034,7 @@
       "description": {
         "Package": "edjobs",
         "Title": "Shared Code for State Education Jobs Dashboards",
-        "Version": "0.55.0",
+        "Version": "0.56.0",
         "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
         "Description": "Code shared by state education jobs dashboards (today Montana\n    and Wyoming): platform and site-family scrapers, posting classification and\n    posted pay, posting spells and listing durations, federal context sources,\n    the daily presence check, the checks each weekly run makes on its own output,\n    and shared app helpers. What differs by state comes in as data through\n    state_config(). Each state repository pins a tagged version.",
         "License": "MIT + file LICENSE",
@@ -1053,18 +1053,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "edjobs",
         "RemoteUsername": "bostickmike",
-        "RemotePkgRef": "bostickmike/edjobs@v0.55.0",
-        "RemoteRef": "v0.55.0",
-        "RemoteSha": "39f204996a138a07ac696b5fa5045569d6c0d20c",
+        "RemotePkgRef": "bostickmike/edjobs@v0.56.0",
+        "RemoteRef": "v0.56.0",
+        "RemoteSha": "97efa61cb85f6aa36c026b48f8265ea1848912b8",
         "GithubRepo": "edjobs",
         "GithubUsername": "bostickmike",
-        "GithubRef": "v0.55.0",
-        "GithubSHA1": "39f204996a138a07ac696b5fa5045569d6c0d20c",
+        "GithubRef": "v0.56.0",
+        "GithubSHA1": "97efa61cb85f6aa36c026b48f8265ea1848912b8",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-19 23:56:06 UTC; mikebostick",
+        "Packaged": "2026-11-20 00:28:02 UTC; mikebostick",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-19 23:56:07 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-20 00:28:03 UTC; unix"
       }
     },
     "evaluate": {
