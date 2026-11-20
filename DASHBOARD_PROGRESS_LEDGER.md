@@ -1045,6 +1045,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     salary and Census healthy, rebuild parity 11/11, run expectations 28/28, K-12 total 735), a commit dated 2026-11-20
     in Mountain time. Pin 0.59.0 (no R change). manifest.json's edjobs entry is from a pak install of the `v0.59.0`
     tag. Suite on the tag: 1,434 passed, 0 failed.
+  * [x] Package review step 7, slice 1 (+ 2a): the app's shared server, UI helpers, Feedback form and Listing
+    Duration tabs from edjobs 0.60.0 (2026-11-21; branch `app-server-shared`, edjobs #59; Mike's choice A, 11-20).
+    `server` calls `dashboard_server_shared()` first (the 101 server blocks both states had identical or differing
+    only by the state's name) and keeps this state's own 14 blocks, which read 7 of its reactives; `outputOptions()`
+    on the map stays here because it must run after the state's map output exists (the first parity run failed on
+    it). The six UI helpers, `feedback.R` and the two Listing Duration panels (`k12_spells_panel()`,
+    `he_spells_panel()`) are gone from the app folder; app.R 4,005 -> 2,461 lines. Tests: `test-feedback.R` moved to
+    edjobs; `test-app-reactives.R` reaches shared internals as `shared$name()`; the data-dictionary download test
+    also reads the package's handlers (same download files as main). Checks vs main: every data object identical
+    (83); every tab's outputs identical (shinytest2, 33/33). edjobs 0.60.0 also carries the Carbon
+    posted-pay fix. manifest.json: the edjobs entry (with its new Suggests) from a pak install of the `v0.60.0` tag,
+    feedback.R out of the file list, stale file checksums refreshed. Suite on the tag: 1,407 passed, 0 failed. Notes and scripts:
+    `claude-notes/2026-11-21_step7-slice1/`.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
