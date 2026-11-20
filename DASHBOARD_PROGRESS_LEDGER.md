@@ -1014,6 +1014,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     scrape error, no URL, live boards, a college, and Converse County SD 2, whose registry spelling differs) through the old script and the new one give the same verdicts,
     `drift_results.csv`, report and printed lines (apart from one page's live "current as of" time). manifest.json's edjobs entry is from a pak install of the
     `v0.55.0` tag. Suite on the tag: 1,428 passed, 0 failed.
+  * [x] Pin edjobs 0.56.0: a drift corroboration with no LLM reading keeps its verdict (2026-11-19; branch
+    `pin-0.56.0`, found during slice 6). With no reading (no key, a failed or quota-limited Gemini call, a rejected
+    count) the corroboration had turned "inconclusive" pages into "looks_genuinely_empty" ("an LLM read no postings
+    off the live page either"), which the drift report leaves out, so a Gemini outage would hide them. Now they stay
+    inconclusive and are reported; a real empty reading still downgrades. A source the statewide feed lists postings
+    for, with no reading, now stays inconclusive (a human look) instead of reaching likely_broken (an auto-fix issue)
+    through that downgrade. Live run with the key off (`claude-notes/2026-11-19_llm-unavailable/live-0.56.0.log`):
+    Laramie County SD 1 and UW now inconclusive, as expected. manifest.json's edjobs entry is from a pak install of the `v0.56.0` tag.
+    Suite on the tag: 1,428 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
