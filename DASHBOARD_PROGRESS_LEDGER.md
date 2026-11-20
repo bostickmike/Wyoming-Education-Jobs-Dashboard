@@ -1032,6 +1032,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     committed data apart from one reworded sentence; with 5 WSBA districts blanked the old script passed and the new one names
     them. Rehearsals have no `.git`: `dryrun.sh` sets `EDJOBS_SALARY_BASELINE`. manifest.json's edjobs entry is from a pak
     install of the `v0.57.0` tag. Suite on the tag: 1,432 passed, 0 failed.
+  * [x] Pin edjobs 0.58.0 (2026-11-20; branch `pin-0.58.0`): a salary value range per unit of another column, for MT's
+    general fund (no Wyoming config change); salary report amounts are whole dollars. manifest.json's edjobs entry is
+    from a pak install of the `v0.58.0` tag. Suite on the tag: 1,432 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
