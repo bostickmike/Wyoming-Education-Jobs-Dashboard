@@ -1023,6 +1023,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     through that downgrade. Live run with the key off (`claude-notes/2026-11-19_llm-unavailable/live-0.56.0.log`):
     Laramie County SD 1 and UW now inconclusive, as expected. manifest.json's edjobs entry is from a pak install of the `v0.56.0` tag.
     Suite on the tag: 1,428 passed, 0 failed.
+  * [x] Pin edjobs 0.57.0: the salary-source check in the package, coverage against last run's committed file
+    (2026-11-20; branch `step6-salary-drift`, replaces the 0.56.0 pin; review step 6, slice 7; Mike chose B over
+    per-source gap lists). `check_salary_drift.R` is `salary_drift_step()`; the sources, value bounds and
+    year-over-year pairs are `state_config(salary_checks = )`. The WSBA line counted rows (57 >= 48 with 10 districts lacking a base salary); it now counts base salaries, and adds WSBA superintendent pay and CCD teacher FTE. The Sheridan/Gillette split watch is the `extra` hook (`sheridan_gillette_split_lines()`, `ipeds_unitids.R`, now tested). A drop names the districts or colleges that lost a value; it is
+    flagged once (after that run's commit it is the baseline). Replayed on every committed version of both states'
+    salary maps (75 commits): no false flags. Parity (`claude-notes/2026-11-19_step6-parity/slice7/`): same output on the
+    committed data apart from one reworded sentence; with 5 WSBA districts blanked the old script passed and the new one names
+    them. Rehearsals have no `.git`: `dryrun.sh` sets `EDJOBS_SALARY_BASELINE`. manifest.json's edjobs entry is from a pak
+    install of the `v0.57.0` tag. Suite on the tag: 1,432 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

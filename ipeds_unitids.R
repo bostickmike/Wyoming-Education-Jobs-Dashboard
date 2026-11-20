@@ -58,3 +58,23 @@ fetch_sheridan_gillette_split_check <- function() {
   latest <- edjobs::find_latest_ipeds_directory_year()
   check_sheridan_gillette_still_joint(latest$data)
 }
+
+# The weekly salary check's report lines for the split watch (edjobs salary_drift_step()'s `extra`, set in
+# state_config.R): a live directory call, so a failed call says "couldn't check" instead of passing silently.
+sheridan_gillette_split_lines <- function(split_result = tryCatch(fetch_sheridan_gillette_split_check(), error = function(e) NULL)) {
+  if (is.null(split_result)) {
+    return(c(
+      "Could not check whether IPEDS has started reporting Sheridan College and Gillette College separately -- the directory API call failed. Not necessarily a problem (could be a transient network issue), but worth a manual check if it keeps happening.",
+      ""
+    ))
+  }
+  if (nrow(split_result) == 0) return(character(0))
+  c(
+    paste0("IPEDS now reports a NEW unitid for Sheridan/Gillette as of ", Sys.Date(), " -- they may have finished splitting into two separate colleges:"),
+    "",
+    paste0("- unitid ", split_result$unitid, ": ", split_result$inst_name),
+    "",
+    "If this is real, update IPEDS_UNITID_MAP in ipeds_unitids.R to the new unitid(s). That's the only change needed: the Salary_Note there is set only for unitid == 240666, so it (and everything downstream keyed off it -- Wy_Ed_Jobs/app.R's Vacancy_Rate_Shared in map_he) will automatically go back to each institution having its own real, independent Faculty_Count and vacancy rate once neither institution maps to 240666 anymore.",
+    ""
+  )
+}
