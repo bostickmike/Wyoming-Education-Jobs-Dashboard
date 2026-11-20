@@ -109,6 +109,11 @@ set_state_config(state_config(
   # Districts SAIPE has no child poverty rate for (a BOCES; the state's school at the Boys School), so the Census
   # check (edjobs 0.53.0) expects one for every other district in salarymap2.csv.
   saipe_gaps = c("Northeast Wyoming BOCES", "Wyoming Boys School"),
+  # The drift corroboration's URL lookup (edjobs 0.55.0): registry links are keyed by the raw spelling ("Converse County
+  # School Distrcit 2") while the drift check flags the corrected one, so the keys are canonicalized the same way.
+  canonical_source_name = function(x) canonicalize_k12_district(x),
+  drift_intro = paste("A source is flagged when it has at least 2 weeks of history averaging real postings, and this week's count dropped to 20% or less of that average.",
+                      "This is the same failure signature that hid ~200 real postings across 10 Applitrack districts on 2026-08-03 (a Windows-1252 encoding bug, not real absence of jobs) -- these entries are corroborated against the actual live page but still need a human look."),
   # The first archive that counts toward the drift check's per-source
   # baselines: earlier runs predate fixes that changed the counts.
   drift_baseline_from = "2026-08-03",
