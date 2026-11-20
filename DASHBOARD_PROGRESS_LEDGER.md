@@ -1035,6 +1035,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] Pin edjobs 0.58.0 (2026-11-20; branch `pin-0.58.0`): a salary value range per unit of another column, for MT's
     general fund (no Wyoming config change); salary report amounts are whole dollars. manifest.json's edjobs entry is
     from a pak install of the `v0.58.0` tag. Suite on the tag: 1,432 passed, 0 failed.
+  * [x] The weekly run is edjobs's reusable workflow (2026-11-20; branch `weekly-run`, edjobs #58, v0.59.0; review
+    step 6, second half). `weekly-scrape.yml` is a short caller: cron, `concurrency`, `permissions`, secrets passed one
+    by one, and Wyoming's data as inputs (the app folder, the Rmd, its commit files, `check_frozen_boards.R` as the
+    state's own check). The `uses:` tag equals `EDJOBS_VERSION` (`test-weekly-workflow-ref.R`).
+    Test dispatch on a branch copy of main after the 11-20 run (run 44766801917, data discarded): success, the same 40
+    step outcomes as the 11-20 run 44762141481 apart from two renamed steps, the frozen-boards check running as "The
+    state's own checks", and the auto-fix filing (skipped off main); every check summary identical (drift 0 flagged,
+    salary and Census healthy, rebuild parity 11/11, run expectations 28/28, K-12 total 735), a commit dated 2026-11-20
+    in Mountain time. Pin 0.59.0 (no R change). manifest.json's edjobs entry is from a pak install of the `v0.59.0`
+    tag. Suite on the tag: 1,434 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

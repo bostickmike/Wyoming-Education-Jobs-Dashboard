@@ -3,9 +3,10 @@ description: >
   R, system libraries, the pipeline's R packages, and headless Chrome --
   enough to run the full testthat suite (including the shinytest2 boot
   smoke) and any single scraper live. Shared by pr-tests.yml and
-  copilot-setup-steps.yml. weekly-scrape.yml keeps its own inline copy on
-  purpose (its package list also feeds rsconnect::writeManifest()), so if
-  you add a package there, add it here too.
+  copilot-setup-steps.yml. The weekly run (edjobs's weekly-run.yml, called by
+  weekly-scrape.yml) keeps its own package list on purpose (it also feeds
+  rsconnect::writeManifest()), so if you add a package here, add it there
+  too (its shared list, or the caller's extra_packages).
 outputs:
   chrome-path:
     description: Path to the installed Chrome binary (for CHROMOTE_CHROME)
@@ -43,7 +44,7 @@ runs:
         ))'
 
     # Shared code (bostickmike/edjobs) at the version pinned in EDJOBS_VERSION
-    # (R package migration, phase 0, 2026-11-10); weekly-scrape.yml installs it
+    # (R package migration, phase 0, 2026-11-10); the weekly run installs it
     # the same way.
     - name: Install edjobs at the pinned version
       shell: bash
