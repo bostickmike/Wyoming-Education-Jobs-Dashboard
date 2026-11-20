@@ -1008,6 +1008,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     issue; escalation to Claude; Copilot refusing; recovery closes with the companion; a confirmed_broken comment; no
     results file; the cap) give identical calls and output from the old script, the package function and the new
     script. manifest.json's edjobs entry is from a pak install of the `v0.54.0` tag. Suite on the tag: 1,428 passed, 0 failed.
+  * [x] Pin edjobs 0.55.0: the drift corroboration in the package (2026-11-19; branch `step6-corroborate`, replaces the
+    0.54.0 pin; review step 6, slice 6). `corroborate_drift.R` is `corroborate_drift_step()`; the script keeps its
+    own sourcing. `state_config.R` gains `canonical_source_name` (the URL lookup's raw registry spellings canonicalized) and `drift_intro` (the report's opening text). Live parity, Gemini off (`claude-notes/2026-11-19_step6-parity/slice6/`): five flagged sources (a
+    scrape error, no URL, live boards, a college, and Converse County SD 2, whose registry spelling differs) through the old script and the new one give the same verdicts,
+    `drift_results.csv`, report and printed lines (apart from one page's live "current as of" time). manifest.json's edjobs entry is from a pak install of the
+    `v0.55.0` tag. Suite on the tag: 1,428 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
