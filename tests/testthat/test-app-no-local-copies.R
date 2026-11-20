@@ -1,8 +1,8 @@
 # Package phase 6 (2026-11-16): app.R and feedback.R attach edjobs. A top-level definition with the name of an edjobs
 # export would mask the package's version (a moved helper left behind, or a new one written over it).
-test_that("app.R and feedback.R define nothing edjobs exports", {
+test_that("app.R defines nothing edjobs exports", {
   exported <- getNamespaceExports("edjobs")
-  for (f in c("app.R", "feedback.R")) {
+  for (f in "app.R") {   # feedback.R moved into edjobs (step 7 slice 1, 2026-11-21)
     ex <- parse(here::here("Wy_Ed_Jobs", f), keep.source = FALSE)
     defined <- unlist(lapply(ex, function(x)
       if (is.call(x) && as.character(x[[1]]) %in% c("<-", "=") && is.name(x[[2]])) as.character(x[[2]])))
