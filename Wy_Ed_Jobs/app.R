@@ -1614,151 +1614,57 @@ ui <- page_navbar(
   ),
 
   # ------------------ Data & community ------------------
-  nav_panel(
-    "Data", value = "data_tab", icon = icon("database"),
-    h1(class = "page-title", "Data Sources & Open Research Downloads"),
-    p(class = "lead", "Transparent data provenance, methodology documentation, and downloadable datasets for researchers, policy analysts, school administrators, and the public."),
-
-    dash_card(
-      "Open Research Downloads",
-      p("Every weekly snapshot is preserved. Download current or multi-year longitudinal datasets in standard CSV format:"),
-      layout_column_wrap(
-        width = "230px", fill = FALSE,
-        download_tile("briefcase", "Active K-12 Jobs",
-                      "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks.",
-                      "download_active_k12", "Active Jobs (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "each district's own job board, or the Wyoming School Boards Association vacancies list; Typical pay: BLS Occupational Employment and Wage Statistics; Teacher Starting Base: WSBA salary settlements; Role Avg Salary: WDE602."),
-                                          dictionary_columns_help("combinedclean.csv", data_dictionary))),
-        download_tile("clock-rotate-left", "K-12 History Archive",
-                      "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies.",
-                      "download_history_k12", "Historical K-12 (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the districts' job boards, one row per teacher posting per weekly scrape; subjects by this dashboard's title classifier."),
-                                          dictionary_columns_help("k12jobanalysis.csv", data_dictionary))),
-        download_tile("stopwatch", "K-12 Listing Duration",
-                      "Each posting's first and last week on the boards this dashboard tracks, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the note on the Listing Duration tab.",
-                      "download_spells", "Listing Duration (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
-                                          dictionary_columns_help("job_duration_spells.csv", data_dictionary))),
-        download_tile("school", "District Benchmarks",
-                      "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent.",
-                      "download_district_benchmarks", "District Profiles (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "WSBA salary settlements; WDE602; NCES Common Core of Data (via the Urban Institute); Census American Community Survey 5-year estimates and SAIPE."),
-                                          dictionary_columns_help("salarymap2.csv", data_dictionary))),
-        download_tile("users", "WDE602 Staff Matrix",
-                      "Wyoming Dept of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories.",
-                      "download_wde_staff", "WDE602 Matrix (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "Wyoming Department of Education, Staff Member Collection (WDE602)."),
-                                          dictionary_columns_help("wde602_district_staff_salaries.csv", data_dictionary))),
-        download_tile("building-columns", "Higher Ed Archive",
-                      "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records).",
-                      "download_history_he", "Higher Ed Archive (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "each college's own job board, one row per posting per weekly scrape; categories by this dashboard's title classifier."),
-                                          dictionary_columns_help("facultydata.csv", data_dictionary))),
-        download_tile("stopwatch", "Higher Ed Listing Duration",
-                      "Each faculty/staff posting's first and last week on the boards this dashboard tracks, days listed, and discipline flags. Not a time-to-fill measure: see the note on the Listing Duration tab.",
-                      "download_he_spells", "Higher Ed Listing Duration (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "built from the weekly scrapes: the first and last week each posting was seen."),
-                                          dictionary_columns_help("he_job_duration_spells.csv", data_dictionary))),
-        download_tile("graduation-cap", "Higher Ed Profiles",
-                      "Institution-level profiles: IPEDS UNITID, instructional faculty salaries (all ranks and professor), enrollment, and federal Pell shares.",
-                      "download_he_benchmarks", "Higher Ed Profiles (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "IPEDS and Federal Student Aid data (via the Urban Institute's Education Data Portal); Census American Community Survey 5-year estimates."),
-                                          dictionary_columns_help("salarymap.csv", data_dictionary))),
-        download_tile("chart-line", "K-12 Weekly Vacancies",
-                      "Weekly longitudinal vacancy totals across Wyoming school districts. Ideal for seasonal hiring cycles and supply/demand modeling.",
-                      "download_weekly_totals", "K-12 Weekly Totals (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each district's postings in each week."),
-                                          dictionary_columns_help("k12_district_weekly_totals.csv", data_dictionary))),
-        download_tile("chart-line", "Higher Ed Weekly Vacancies",
-                      "Weekly longitudinal vacancy totals across Wyoming community colleges and UW. Ideal for tracking higher ed hiring seasonality.",
-                      "download_he_weekly_totals", "Higher Ed Weekly Totals (CSV)",
-                      info = help_popover("What is in this file", p(tags$strong("Sources: "), "the weekly scrapes: each college's postings in each week."),
-                                          dictionary_columns_help("he_institution_weekly_totals.csv", data_dictionary))),
-        download_tile("book", "Data Dictionary",
-                      "Comprehensive machine-readable codebook documenting variable names, data types, definitions, and source authorities across all datasets.",
-                      "download_dictionary", "Codebook (CSV)")
-      )
+  # Data tab: the layout and the text both states share are edjobs's data_tab_panel(); this is Wyoming's own text.
+  data_tab_panel(
+    tiles = list(
+      data_tile("download_active_k12",
+                "All current public school job openings in Wyoming with standardized titles, positions, locations, links, and district/role salary benchmarks.",
+                sources = "each district's own job board, or the Wyoming School Boards Association vacancies list; Typical pay: BLS Occupational Employment and Wage Statistics; Teacher Starting Base: WSBA salary settlements; Role Avg Salary: WDE602."),
+      data_tile("download_history_k12",
+                "Multi-year historical record of weekly K-12 job postings across Wyoming (76,000+ records) for hiring seasonality and longitudinal demand studies."),
+      data_tile("download_spells",
+                "Each posting's first and last week on the boards this dashboard tracks, with NCES LEAID, days listed, and subject flags (STEM, SPED, etc.). Not a time-to-fill measure: see the note on the Listing Duration tab."),
+      data_tile("download_district_benchmarks",
+                "District profiles: NCES LEAID, WSBA base salaries, WDE avg salaries, NCES teacher FTE & enrollment, student-to-teacher ratios, and Census poverty/rent.",
+                heading = "District Benchmarks",
+                sources = "WSBA salary settlements; WDE602; NCES Common Core of Data (via the Urban Institute); Census American Community Survey 5-year estimates and SAIPE."),
+      data_tile("download_wde_staff",
+                "Wyoming Dept of Education staffing matrix: average total & base salaries and FTE counts for 51 districts across 30+ assignment categories.",
+                icon = "users", heading = "WDE602 Staff Matrix", label = "WDE602 Matrix (CSV)",
+                sources = "Wyoming Department of Education, Staff Member Collection (WDE602).",
+                dictionary_file = "wde602_district_staff_salaries.csv"),
+      data_tile("download_history_he",
+                "Longitudinal postings for instructional faculty, adjuncts, and staff across Wyoming's 9 public community colleges and UW (29,000+ records)."),
+      data_tile("download_he_spells"),
+      data_tile("download_he_benchmarks"),
+      data_tile("download_weekly_totals",
+                "Weekly longitudinal vacancy totals across Wyoming school districts. Ideal for seasonal hiring cycles and supply/demand modeling.",
+                label = "K-12 Weekly Totals (CSV)"),
+      data_tile("download_he_weekly_totals",
+                "Weekly longitudinal vacancy totals across Wyoming community colleges and UW. Ideal for tracking higher ed hiring seasonality."),
+      data_tile("download_dictionary")
     ),
-
-    dash_card(
-      "Interactive Data Dictionary & Variable Codebook",
-      p("Search, sort, and filter variable definitions, data types, and primary source authorities across all datasets:"),
-      div(style = "overflow-x: auto;", withSpinner(DTOutput("data_dictionary_table", fill = FALSE)))
+    dictionary = data_dictionary,
+    provenance_title = "Data Provenance & Methodology",
+    provenance_intro = "This project integrates 7 primary public data layers, updated either on a continuous weekly automated cadence or an annual federal/state survey release cycle:",
+    provenance_headers = c("Data Layer", "Source Organization", "Update Cadence", "Scope & Description"),
+    provenance_table_class = "table table-striped table-hover", provenance_table_style = "font-size: 13px;",
+    provenance_rows = list(
+      data_provenance_row(layer = "Job Openings", source = "District Hiring Portals & Statewide Feeds",
+                          cadence = "Weekly Refresh", badge = "success",
+                          description = "Directly compiled from online district hiring portals (Frontline/AppliTrack, SchoolSpring, Red Rover, NEOGOV, Oracle Cloud) and statewide aggregators. Cleaned to remove duplicate listings and standardized into consistent role categories."),
+      data_provenance_row(layer = "Starting Base Salaries", source = "Wyoming School Boards Association (WSBA)", cadence = "Annual",
+                          description = "Published BA Step 1 teacher base settlements and superintendent compensation across all 48 Wyoming public school districts."),
+      data_provenance_row(layer = "Average Salaries by Role", source = "Wyoming Department of Education (WDE602)", cadence = "Annual",
+                          description = "Official state collection reporting actual average total compensation and FTE for teachers, administrators, counselors, aides, and support staff across all districts."),
+      data_provenance_row("ccd_staffing", layer = "Staffing Headcounts & FTE"),
+      data_provenance_row("ipeds_pay",
+                          description = "Average salaries of full-time instructional staff on 9- to 12-month contracts (all ranks and full professor rank) for Wyoming's 7 community colleges, Gillette College, and the University of Wyoming."),
+      data_provenance_row("county"),
+      data_provenance_row("student_need")
     ),
-
-    dash_card(
-      "Data Provenance & Methodology",
-      p("This project integrates 7 primary public data layers, updated either on a continuous weekly automated cadence or an annual federal/state survey release cycle:"),
-      tags$div(class = "table-responsive",
-        tags$table(class = "table table-striped table-hover", style = "font-size: 13px;",
-          tags$thead(
-            tags$tr(
-              tags$th("Data Layer"),
-              tags$th("Source Organization"),
-              tags$th("Update Cadence"),
-              tags$th("Scope & Description")
-            )
-          ),
-          tags$tbody(
-            tags$tr(
-              tags$td(strong("Job Openings")),
-              tags$td("District Hiring Portals & Statewide Feeds"),
-              tags$td(span(class = "badge text-bg-success", "Weekly Refresh")),
-              tags$td("Directly compiled from online district hiring portals (Frontline/AppliTrack, SchoolSpring, Red Rover, NEOGOV, Oracle Cloud) and statewide aggregators. Cleaned to remove duplicate listings and standardized into consistent role categories.")
-            ),
-            tags$tr(
-              tags$td(strong("Starting Base Salaries")),
-              tags$td("Wyoming School Boards Association (WSBA)"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Published BA Step 1 teacher base settlements and superintendent compensation across all 48 Wyoming public school districts.")
-            ),
-            tags$tr(
-              tags$td(strong("Average Salaries by Role")),
-              tags$td("Wyoming Department of Education (WDE602)"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Official state collection reporting actual average total compensation and FTE for teachers, administrators, counselors, aides, and support staff across all districts.")
-            ),
-            tags$tr(
-              tags$td(strong("Staffing Headcounts & FTE")),
-              tags$td("NCES Common Core of Data (CCD) via Urban Institute"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Federal National Center for Education Statistics district-level teacher FTE and student enrollment counts. Powers vacancy-rate calculations and student-to-teacher ratios.")
-            ),
-            tags$tr(
-              tags$td(strong("Higher Ed Faculty Compensation")),
-              tags$td("NCES IPEDS Instructional Staff Salary Survey"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Average salaries of full-time instructional staff on 9- to 12-month contracts (all ranks and full professor rank) for Wyoming's 7 community colleges, Gillette College, and the University of Wyoming.")
-            ),
-            tags$tr(
-              tags$td(strong("County Economic Context")),
-              tags$td("US Census Bureau (ACS 5-Year Estimates)"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("County median household income, median gross rent, share of employed residents 16 and over working in mining, quarrying, and oil and gas extraction (ACS S2403), and 5-year population trajectory.")
-            ),
-            tags$tr(
-              tags$td(strong("Student Need Context")),
-              tags$td("Census SAIPE & US Dept of Education FSA"),
-              tags$td(span(class = "badge text-bg-info", "Annual")),
-              tags$td("Small Area Income and Poverty Estimates (SAIPE) district-level estimates of school-age children in poverty for K-12, and Federal Student Aid (FSA) undergraduate Pell Grant recipient shares for colleges.")
-            )
-          )
-        )
-      )
-    ),
-
-    dash_card(
-      "Open Research Citation & Code",
-      p("This project is open-source and maintained to promote labor market transparency in public education. If you use these datasets in academic research, policy analysis, or journalism, please cite:"),
-      tags$blockquote(
-        style = "font-size: 13px; background: #f9f9f9; padding: 10px 15px; border-left: 4px solid #2a78d6;",
-        "Bostick, M., & Perkins, M. (2026). Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context. ",
-        tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard", target = "_blank", "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard")
-      ),
-      p(style = "margin-bottom: 0; font-size: 12px; color: #777;",
-        "To report discrepancies, missing districts, or data issues, use the Feedback button at the top right (no account needed), or open an issue on the ",
-        tags$a(href = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard/issues", target = "_blank", "GitHub Issue Tracker"), ".")
-    )
+    citation = "Bostick, M., & Perkins, M. (2026). Wyoming Education Jobs Dashboard: Longitudinal Staffing Demand, Compensation, and Socioeconomic Context. ",
+    repo_url = "https://github.com/bostickmike/Wyoming-Education-Jobs-Dashboard"
   ),
 
   nav_spacer(),
