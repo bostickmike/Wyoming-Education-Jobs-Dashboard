@@ -53,7 +53,7 @@ test_that("HE longitudinal 'Total' view is not double-counted", {
       he_detail_level_trends = "detail"
     )
 
-    windowed <- he_windowed()
+    windowed <- shared$he_windowed()
     expect_true(all(windowed$Institution != "Total"))
 
     latest_date <- max(windowed$Archive_Date)
@@ -89,7 +89,7 @@ test_that("K-12 longitudinal 'Total' view is still not double-counted", {
       k12_detail_level_trends = "detail"
     )
 
-    windowed <- df_windowed()
+    windowed <- shared$df_windowed()
     expect_true(all(windowed$Broad_Category %in% unique(env$k12sum$Broad_Category)))
 
     latest_date <- max(windowed$Archive_Date)
@@ -116,7 +116,7 @@ test_that("HE and K-12 reactives don't error across every institution/district",
       session$setInputs(inst_trend = inst, he_category = sort(unique(env$hesum_he$Category)),
                          he_scroll = c(min(env$hesum_he$Archive_Date), max(env$hesum_he$Archive_Date)),
                          he_chart_type = "all", he_detail_level_trends = "detail")
-      expect_no_error(he_windowed())
+      expect_no_error(shared$he_windowed())
       expect_no_error(output$he_longitudinal_plot)
     }
     for (inst in sort(unique(env$henowsum_he$Institution))) {
@@ -132,7 +132,7 @@ test_that("HE and K-12 reactives don't error across every institution/district",
       session$setInputs(district_trend = d, broad_category = sort(unique(env$k12sum$Broad_Category)),
                          k12_scroll = c(min(env$k12sum$Archive_Date), max(env$k12sum$Archive_Date)),
                          k12_detail_level_trends = "detail")
-      expect_no_error(df_windowed())
+      expect_no_error(shared$df_windowed())
       expect_no_error(output$k12_longitudinal_plot)
     }
     for (d in sort(unique(env$k12nowsum$District))) {
@@ -435,8 +435,8 @@ test_that("K-12 and HE comparator reactives and presets execute cleanly", {
     expect_no_error(output$k12_compare_openings_plot)
     expect_no_error(output$k12_compare_jobs_table)
     # renderPlotly() shows an error in the page rather than raising it, so build the charts themselves.
-    enrollment <- plotly::plotly_build(k12_compare_bar_plot("Enrollment", "Students enrolled", "#34495e", ""))
-    openings <- plotly::plotly_build(k12_compare_bar_plot("CurrentCount", "Active openings", "#e74c3c", ""))
+    enrollment <- plotly::plotly_build(shared$k12_compare_bar_plot("Enrollment", "Students enrolled", "#34495e", ""))
+    openings <- plotly::plotly_build(shared$k12_compare_bar_plot("CurrentCount", "Active openings", "#e74c3c", ""))
     expect_equal(length(enrollment$x$data[[1]]$y), 2)
     expect_equal(as.character(enrollment$x$data[[1]]$x), as.character(openings$x$data[[1]]$x))
 
@@ -670,7 +670,7 @@ test_that("a college posting placed at another town gets its own map dot, and th
 
   shiny::testServer(env$server, {
     session$setInputs(map_popup_view_jobs = list(entity = campus$Name, query = "", band = ""))
-    expect_equal(selected_institution(), campus$Name)
+    expect_equal(shared$selected_institution(), campus$Name)
   })
 })
 
@@ -701,7 +701,7 @@ test_that("Home job-type tables agree with the pipeline's per-run totals, and a 
     expect_null(selected_k12_type())
     he_type <- names(sort(table(env$ccdata$.Job_Type[env$ccdata$.Not_Marked]), decreasing = TRUE))[1]
     session$setInputs(jobtype_view_he = he_type)
-    expect_equal(selected_he_type(), he_type)
+    expect_equal(shared$selected_he_type(), he_type)
   })
 })
 
@@ -726,8 +726,8 @@ test_that("Home switch: tables, sparklines and the Jobs links count the same pos
   top1 <- function(tab) { o <- sort(tab, decreasing = TRUE); list(name = names(o)[1], n = as.integer(o[1])) }
   shiny::testServer(env$server, {
     # Default (switch not yet sent by the browser = on): not-marked counts and sparkline column.
-    expect_true(home_not_marked())
-    expect_equal(home_count_col(), "n_not_marked")
+    expect_true(shared$home_not_marked())
+    expect_equal(shared$home_count_col(), "n_not_marked")
     t_on <- top1(app_nm)
     expect_true(cell(output$top_k12_districts, t_on$name, t_on$n), info = t_on$name)
     session$setInputs(popup_view_jobs = t_on$name)
@@ -742,7 +742,7 @@ test_that("Home switch: tables, sparklines and the Jobs links count the same pos
 
     # Off: every posting, the n column, and the links open the unfiltered Jobs table.
     session$setInputs(home_not_marked = FALSE)
-    expect_equal(home_count_col(), "n")
+    expect_equal(shared$home_count_col(), "n")
     t_off <- top1(app_all)
     expect_true(cell(output$top_k12_districts, t_off$name, t_off$n), info = t_off$name)
     he_off <- top1(table(env$ccdata$Institution))
@@ -756,15 +756,15 @@ test_that("Home switch: tables, sparklines and the Jobs links count the same pos
     expect_false(k12_not_marked_only())
     he_type <- names(sort(table(env$ccdata$.Job_Type), decreasing = TRUE))[1]
     session$setInputs(jobtype_view_he = he_type)
-    expect_false(he_not_marked_only())
+    expect_false(shared$he_not_marked_only())
 
     # Back on; a map popup link never carries the switch.
     session$setInputs(home_not_marked = TRUE)
     session$setInputs(jobtype_view_he = he_type)
-    expect_true(he_not_marked_only())
+    expect_true(shared$he_not_marked_only())
     expect_match(output$he_filter_status$html, "excluding adjunct", fixed = TRUE)
     session$setInputs(map_popup_view_jobs = list(entity = t_on$name, query = "", band = ""))
     expect_false(k12_not_marked_only())
-    expect_false(he_not_marked_only())
+    expect_false(shared$he_not_marked_only())
   })
 })

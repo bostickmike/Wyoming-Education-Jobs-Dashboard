@@ -1034,7 +1034,7 @@
       "description": {
         "Package": "edjobs",
         "Title": "Shared Code for State Education Jobs Dashboards",
-        "Version": "0.59.0",
+        "Version": "0.60.0",
         "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
         "Description": "Code shared by state education jobs dashboards (today Montana\n    and Wyoming): platform and site-family scrapers, posting classification and\n    posted pay, posting spells and listing durations, federal context sources,\n    the daily presence check, the checks each weekly run makes on its own output,\n    and shared app helpers. What differs by state comes in as data through\n    state_config(). Each state repository pins a tagged version.",
         "License": "MIT + file LICENSE",
@@ -1042,7 +1042,7 @@
         "Encoding": "UTF-8",
         "Roxygen": "list(markdown = TRUE)",
         "Imports": "datasets, dplyr, htmltools, httr2, jsonlite, lubridate,\nmagrittr, readxl, rvest, scales, stringr, stats, survival,\ntidyr, utils, xml2",
-        "Suggests": "chromote, knitr, rmarkdown, testthat (>= 3.0.0), withr,\nwritexl",
+        "Suggests": "bslib, chromote, codetools, curl, DT, ggplot2, grid, knitr,\nplotly, rmarkdown, shiny, shinycssloaders, shinyWidgets,\ntestthat (>= 3.0.0), withr, writexl",
         "VignetteBuilder": "knitr",
         "Config/testthat/edition": "3",
         "Config/testthat/parallel": "true",
@@ -1053,18 +1053,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "edjobs",
         "RemoteUsername": "bostickmike",
-        "RemotePkgRef": "bostickmike/edjobs@v0.59.0",
-        "RemoteRef": "v0.59.0",
-        "RemoteSha": "4b4d6132d7a2f337bf3ef50dfa2a2c0bf66f0367",
+        "RemotePkgRef": "bostickmike/edjobs@v0.60.0",
+        "RemoteRef": "v0.60.0",
+        "RemoteSha": "4c4ce67aed1b6bdf61d9ab5e36b5dae282d3245a",
         "GithubRepo": "edjobs",
         "GithubUsername": "bostickmike",
-        "GithubRef": "v0.59.0",
-        "GithubSHA1": "4b4d6132d7a2f337bf3ef50dfa2a2c0bf66f0367",
+        "GithubRef": "v0.60.0",
+        "GithubSHA1": "4c4ce67aed1b6bdf61d9ab5e36b5dae282d3245a",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-20 05:23:43 UTC; mikebostick",
+        "Packaged": "2026-11-20 21:32:01 UTC; mikebostick",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-20 05:23:44 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-20 21:32:02 UTC; unix"
       }
     },
     "evaluate": {
@@ -3939,73 +3939,70 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "30c864849795ab4f652534f0fd575ad3"
+      "checksum": "23590dc05b03da55304b354f8f4ac38c"
     },
     "allnow.csv": {
-      "checksum": "3bf7191afae9f4692078280dd368d634"
+      "checksum": "595248486f77ca2be6ee35d6698d3bc0"
     },
     "allsum_he.csv": {
-      "checksum": "49b443a871d3319c8cb358f9d03c18c6"
+      "checksum": "4120a62998ad340b9552e8c9c17445f0"
     },
     "allsum.csv": {
-      "checksum": "66718f7898d71b8af6374d0441b2c553"
+      "checksum": "44d21821bb25785d3854a3fe2f30e5da"
     },
     "app.R": {
-      "checksum": "7f6ca7acab9f9c65fb71a494201a82fc"
+      "checksum": "a5d9310b1861020171e61021716f43e3"
     },
     "combinedclean.csv": {
-      "checksum": "d1c9cc226a54b41dad0ab45e5b8219ad"
+      "checksum": "8339225b1b2241f68a5f236f5d9e9242"
     },
     "data_dictionary.csv": {
-      "checksum": "39f54c83987961393281585b44b79e15"
+      "checksum": "ae3f5fab9db5aa6fb4df4666f2dd0c98"
     },
     "facultydata.csv": {
-      "checksum": "e2c590388afe055a96a6a0a36209f35e"
-    },
-    "feedback.R": {
-      "checksum": "fe40f8d90a88afcabc60c23a487950f4"
+      "checksum": "99057e3be86d5ab69760a8a439c2439c"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "84ae44c960edc8960b274f614f1d5a50"
+      "checksum": "72fb057a4f895e3bce77e94f9d9c742b"
     },
     "he_job_duration_spells.csv": {
-      "checksum": "8f9e7e432533b0e83c20fd2f2fc7f33f"
+      "checksum": "507e990e343e30dfc4f48c6928fdbc69"
     },
     "hedata.xlsx": {
-      "checksum": "b830ad80b4ea20b8d9a568a90ebee682"
+      "checksum": "4a5d2b15c9a0e9e215657e7905e17f2b"
     },
     "ipeds_staff_salaries.csv": {
       "checksum": "b5a8e82b453c6862ca3cea904094a171"
     },
     "job_duration_spells.csv": {
-      "checksum": "0d4a18bc40246ee8d6b3095288d949a4"
+      "checksum": "b91325cc63b1cdc57bd0430b151f8c74"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "47dbe55f1b2ad5068d22b956c70d4ca2"
+      "checksum": "ca7be5350448767d5e1bc77acb2e2437"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "eef991f61d3fc413885015119d854073"
+      "checksum": "d03dd83f6bb5040a9480f6439e54c7bc"
     },
     "oews_role_wages.csv": {
       "checksum": "e76d522f393eef5f4b3d04f6b08c35da"
     },
     "posting_first_seen.csv": {
-      "checksum": "cc594dc76416bc9262c693dc74e911d1"
+      "checksum": "4e5062900ab09a974e7226814b93df13"
     },
     "qcew_county_school_pay.csv": {
       "checksum": "878f496a43d7d58b3cad681aa38ea910"
     },
     "salarymap.csv": {
-      "checksum": "f8dafcb3746df7346c4174d84ef76dc5"
+      "checksum": "a06d61cb6a8fde6a5b93221d3a886afc"
     },
     "salarymap2.csv": {
-      "checksum": "8f6b51e7d751c050cddab6f7fc5c803e"
+      "checksum": "2991fda22fcc4e916323a110ecdce53e"
     },
     "source_retrieved_dates.csv": {
-      "checksum": "e9d463b9a05aef8d50b8d96691b3496f"
+      "checksum": "2dafdf3988624fa25b0b439ceef72971"
     },
     "uw_salary_book.csv": {
       "checksum": "56027ba3824b3367afc2b83495196c86"

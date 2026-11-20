@@ -67,7 +67,8 @@ test_that("every public research download in app.R corresponds to a documented f
   dict <- utils::read.csv(dict_path, stringsAsFactors = FALSE)
   documented_files <- unique(dict$File_Name)
 
-  app_lines <- readLines(app_path, warn = FALSE)
+  # Most download handlers live in edjobs's dashboard_server_shared() since step 7 slice 1 (2026-11-21).
+  app_lines <- c(readLines(app_path, warn = FALSE), deparse(body(edjobs::dashboard_server_shared), width.cutoff = 500L))
   copy_lines <- grep("file\\.copy\\(", app_lines, value = TRUE)
   download_files <- unique(sub('.*file\\.copy\\("([^"]+\\.csv)".*', '\\1', copy_lines))
   download_files <- grep("\\.csv$", download_files, value = TRUE)
