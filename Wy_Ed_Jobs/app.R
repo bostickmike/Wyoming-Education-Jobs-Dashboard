@@ -1121,79 +1121,21 @@ ui <- page_navbar(
         if (!is.na(oews_year)) paste0("May ", oews_year, " ") else "",
         "median pay for that role in the posting's region (hover for the role and area; OEWS, all employers, not just schools), so treat it as a regional estimate, not this job's offer. "),
         "Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches.")),
-    nav_panel(
-      "Districts", value = "k12_summary", icon = icon("school"),
-      navset_card_tab(
-        id = "k12_summary_tabs",
-        nav_panel(
-          title = tagList(icon("table-list"), " District Directory"),
-          value = "k12_summary_dir",
-          h4("One row per district -- current openings, teacher vacancy rate, and salary data ",
-             help_popover("District directory",
-               p(tags$strong("Openings: "), "postings in this week's scrape (all job types) and those new since last week. Posting Data says whether the count is complete (the district's own board) or a floor (only the WSBA statewide list)."),
-               p(tags$strong("Teacher vacancy rate and students per teacher: "), "current teacher postings, and enrollment, divided by teacher FTE (NCES Common Core of Data)."),
-               p(tags$strong("Salaries: "), "starting base for a bachelor's-degree teacher at step 1 and the superintendent's salary (WSBA salary settlements); average teacher pay (WDE602)."),
-               p(tags$strong("County and poverty: "), "county median household income, median rent, mining/energy share of jobs and 5-year population change (Census American Community Survey 5-year estimates, with 90% margins of error); school-age children in poverty for the district (Census SAIPE), with its approximate 90% range."),
-               source = "see each group above; full definitions in the District Benchmarks download's (?) on the Data tab.")),
-          DTOutput("k12_summary_table", fill = FALSE),
-          uiOutput("k12_summary_footnote")
-        ),
-        nav_panel(
-          title = tagList(icon("code-compare"), " Head-to-Head Comparator"),
-          value = "k12_summary_comp",
-          p(class = "text-muted small", style = "margin-top: 6px;",
-            "Select up to four school districts to evaluate staffing demand, compensation benchmarks, and community demographics side-by-side."),
-          layout_columns(
-            col_widths = c(8, 4),
-            selectizeInput(
-              "k12_compare_districts",
-              label = "Select School Districts (up to 4):",
-              choices = sort(unique(mapdata2_k12$Name)),
-              selected = c("Laramie County School District 1", "Natrona School District 1"),
-              multiple = TRUE,
-              width = "100%",
-              options = list(maxItems = 4, placeholder = "Type or select up to 4 districts...")
-            ),
-            div(
-              tags$label("Quick Presets:", style = "display: block; margin-bottom: 5px;"),
-              div(
-                class = "btn-group",
-                actionButton("k12_comp_preset_top", "Top Hiring", class = "btn-sm btn-outline-secondary", icon = icon("fire")),
-                actionButton("k12_comp_preset_largest", "Largest", class = "btn-sm btn-outline-secondary", icon = icon("users")),
-                actionButton("k12_comp_preset_clear", "Clear", class = "btn-sm btn-outline-secondary", icon = icon("xmark"))
-              )
-            )
-          ),
-          uiOutput("k12_compare_cards"),
-          layout_columns(
-            col_widths = c(4, 4, 4),
-            dash_card("Starting Base & Average Salary",
-                      withSpinner(plotlyOutput("k12_compare_salary_plot", height = "360px")),
-                      info = help_popover("Teacher salaries",
-                        p(tags$strong("Base Starting Salary: "), "the district's published starting salary for a teacher with a bachelor's degree, step 1."),
-                        p(tags$strong("Average Salary (WDE): "), "the average total pay of the district's teachers."),
-                        source = "Wyoming School Boards Association salary settlements (starting base); Wyoming Department of Education, Staff Member Collection, WDE602 (average).")),
-            dash_card("Student Enrollment",
-                      withSpinner(plotlyOutput("k12_compare_enrollment_plot", height = "360px")),
-                      info = help_popover("Student enrollment",
-                        p("Pre-K through grade 12 fall enrollment. Districts are in the same order in all three charts, largest enrollment first."),
-                        source = "NCES Common Core of Data, via the Urban Institute's Education Data Portal.")),
-            # Two bar charts, not one dual-axis chart (Mike 2026-11-16): a line
-            # across districts implied a trend, and the two axes' scales made the
-            # bars-vs-line comparison arbitrary. Same district order in both.
-            dash_card("Active Openings",
-                      withSpinner(plotlyOutput("k12_compare_openings_plot", height = "360px")),
-                      info = help_popover("Active openings",
-                        p("Postings in this week's scrape, all job types (teachers, aides, coaches, drivers and so on)."),
-                        source = "each district's own job board, or the Wyoming School Boards Association vacancies list."))
-          ),
-          dash_card("Active Openings in Selected Districts",
-                    DTOutput("k12_compare_jobs_table", fill = FALSE),
-                    info = help_popover("Openings in the selected districts",
-                      p("Every current posting from the districts chosen above, with the same columns as the K-12 Jobs tab: see \"About the pay columns\" there.")))
-        )
-      )
-    ),
+    # K-12 Districts tab: edjobs's k12_districts_panel() (step 7 slice 2b); this state's text and salary card.
+    k12_districts_panel(sort(unique(mapdata2_k12$Name)), c("Laramie County School District 1", "Natrona School District 1"),
+      openings_note = "postings in this week's scrape (all job types) and those new since last week. Posting Data says whether the count is complete (the district's own board) or a floor (only the WSBA statewide list).",
+      directory_notes = tagList(
+        p(tags$strong("Salaries: "), "starting base for a bachelor's-degree teacher at step 1 and the superintendent's salary (WSBA salary settlements); average teacher pay (WDE602)."),
+        p(tags$strong("County and poverty: "), "county median household income, median rent, mining/energy share of jobs and 5-year population change (Census American Community Survey 5-year estimates, with 90% margins of error); school-age children in poverty for the district (Census SAIPE), with its approximate 90% range.")),
+      directory_source = "see each group above; full definitions in the District Benchmarks download's (?) on the Data tab.",
+      compare_blurb = "Select up to four school districts to evaluate staffing demand, compensation benchmarks, and community demographics side-by-side.",
+      salary_card = dash_card("Starting Base & Average Salary",
+          withSpinner(plotlyOutput("k12_compare_salary_plot", height = "360px")),
+          info = help_popover("Teacher salaries",
+            p(tags$strong("Base Starting Salary: "), "the district's published starting salary for a teacher with a bachelor's degree, step 1."),
+            p(tags$strong("Average Salary (WDE): "), "the average total pay of the district's teachers."),
+            source = "Wyoming School Boards Association salary settlements (starting base); Wyoming Department of Education, Staff Member Collection, WDE602 (average).")),
+      openings_source = "each district's own job board, or the Wyoming School Boards Association vacancies list."),
     # K-12 Trends tab: edjobs's k12_trends_panel() (step 7 slice 2b).
     k12_trends_panel(k12nowsum, k12sum),
     k12_spells_panel()
