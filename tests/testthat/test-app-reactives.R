@@ -610,10 +610,6 @@ test_that("K-12 and HE quick filter buttons and new postings tables evaluate cle
     session$setInputs(he_quick_filter = "new")
     expect_no_error(output$he_jobs)
 
-    # Dedicated New This Week tables
-    expect_no_error(output$k12_new_table)
-    session$setInputs(he_new_appointment = "all")
-    expect_no_error(output$he_new_table)
   })
 })
 

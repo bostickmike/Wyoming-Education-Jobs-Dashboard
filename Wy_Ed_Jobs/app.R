@@ -933,13 +933,6 @@ app_theme <- bs_theme(
 # Education Data Portal data are under ODC-By, cited in its short form for
 # visualizations (educationdata.urban.org/documentation/). Audit:
 # claude-notes/2026-11-15_citations-audit.md.
-# USGS's requested acknowledgment for The National Map's services
-# (usgs.gov FAQ "What are the Terms of Use/Licensing for map services and data
-# from The National Map?", updated 2022-11-10).
-USGS_TILE_CREDIT <- paste('<a href="https://www.usgs.gov/programs/national-geospatial-program/national-map"',
-                          'target="_blank" rel="noopener">USGS The National Map</a>: map services and data available',
-                          "from U.S. Geological Survey, National Geospatial Program")
-
 # When each outside source was last retrieved (source_retrieved_dates.csv, written by the pipeline only when a fetch
 # succeeds and its data is kept; hand-kept files carry the date they were added). BLS asks for the access date
 # (Mike, 2026-11-16: give one for every source). Missing file or source: the line shows no date.
@@ -1224,7 +1217,10 @@ server <- function(input, output, session) {
   # state's own blocks follow and read the reactives it returns.
   shared <- dashboard_server_shared(input, output, session,
                                     data = mget(dashboard_server_data_names(), inherits = TRUE),
-                                    state_name = "Wyoming", feedback_repo = FEEDBACK_REPO_DEFAULT)
+                                    state_name = "Wyoming", feedback_repo = FEEDBACK_REPO_DEFAULT,
+                                    timezone = "America/Denver",
+                                    map_view = list(lng = -107.5, lat = 43, zoom = 7), he_page_length = 9,
+                                    he_shared_salary_note = "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette")
   k12_not_marked_only <- shared$k12_not_marked_only
   selected_district <- shared$selected_district
   selected_k12_query <- shared$selected_k12_query
@@ -1232,15 +1228,6 @@ server <- function(input, output, session) {
   selected_pay_band <- shared$selected_pay_band
   map_filtered <- shared$map_filtered
   filtered_hesum <- shared$filtered_hesum
-
-
-  # -------- New This Week --------
-  output$k12_new_table <- renderDT({
-    datatable(
-      k12_new_this_week %>% select(title, District, location, Broad_Category, url),
-      options = list(scrollX = TRUE)
-    )
-  })
 
 
   output$download_wde_staff <- downloadHandler(
@@ -1527,81 +1514,6 @@ server <- function(input, output, session) {
   })
 
 
-  # -------- Combined map (Introduction tab) --------
-  output$combined_map <- renderLeaflet({
-    leaflet() %>%
-      # Basemaps with open terms, OpenStreetMap first (Mike, 2026-11-15; claude-notes/2026-11-15_basemap-options.md).
-      # Esri's tiles were dropped: its terms need Esri software or an ArcGIS
-      # Online subscription for use like this. USGS The National Map is public
-      # domain ("There are no restrictions"), with an acknowledgment requested;
-      # OpenStreetMap needs its credit, which addTiles() shows by default.
-      # OSM's tile policy: "https://tile.openstreetmap.org/{z}/{x}/{y}.png" exactly
-      # (Leaflet's default still uses the old a/b/c subdomains).
-      addTiles(
-        urlTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-        attribution = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-        options = tileOptions(maxZoom = 19),
-        group = "OpenStreetMap (Default)"
-      ) %>%
-      addTiles(
-        urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
-        attribution = USGS_TILE_CREDIT,
-        options = tileOptions(maxZoom = 16),
-        group = "USGS National Map"
-      ) %>%
-      addTiles(
-        urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/tile/{z}/{y}/{x}",
-        attribution = USGS_TILE_CREDIT,
-        options = tileOptions(maxZoom = 16),
-        group = "Shaded Relief"
-      ) %>%
-      addTiles(
-        urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/{z}/{y}/{x}",
-        options = tileOptions(maxZoom = 16),
-        group = "Shaded Relief"
-      ) %>%
-      setView(lng = -107.5, lat = 43, zoom = 7) %>%
-      addLayersControl(
-        baseGroups = c("OpenStreetMap (Default)", "USGS National Map", "Shaded Relief"),
-        options = layersControlOptions(collapsed = TRUE)
-      ) %>%
-      addLegend(position = "bottomright", pal = vacancy_rate_palette, values = vacancy_rate_domain,
-                title = "Vacancy rate", labFormat = labelFormat(suffix = "%", transform = function(x) 100 * x),
-                na.label = "N/A")
-  })
-  # The map now lives on its own "Map" tab, not the default active one --
-  # without this, the marker-update observe() below fires (and calls
-  # leafletProxy()) before the browser has ever rendered/registered the
-  # widget, since shinydashboard doesn't render hidden tabs' outputs by
-  # default. Confirmed live 2026-08-05: markers silently never appeared,
-  # "Couldn't find map with id combined_map" in the browser console.
-  outputOptions(output, "combined_map", suspendWhenHidden = FALSE)
-
-
-  observeEvent(input$map_county, {
-    if (is.null(input$map_county) || input$map_county == "all") {
-      leafletProxy("combined_map") %>%
-        setView(lng = -107.5, lat = 43, zoom = 7)
-    } else {
-      county_data <- combined_map_data %>%
-        filter(County == input$map_county, !is.na(Latitude), !is.na(Longitude))
-      if (nrow(county_data) > 0) {
-        if (nrow(county_data) == 1) {
-          leafletProxy("combined_map") %>%
-            setView(lng = county_data$Longitude[1], lat = county_data$Latitude[1], zoom = 9)
-        } else {
-          leafletProxy("combined_map") %>%
-            fitBounds(
-              lng1 = min(county_data$Longitude) - 0.15,
-              lat1 = min(county_data$Latitude) - 0.15,
-              lng2 = max(county_data$Longitude) + 0.15,
-              lat2 = max(county_data$Latitude) + 0.15
-            )
-        }
-      }
-    }
-  }, ignoreInit = TRUE)
-
   observe({
     df <- map_filtered()
 
@@ -1776,134 +1688,6 @@ server <- function(input, output, session) {
         popup = popups
       )
   })
-
-
-  
- 
-  
-
-  
-
-
-  # Institution Summary -- same purpose as k12_summary_table above: the
-  # map popups' data as a real exportable table, not one marker at a time.
-  output$he_summary_table <- renderDT({
-    he_rows <- combined_map_data %>% filter(Type == "Higher Ed Institution")
-    appointment_counts <- ccdata %>%
-      count(Institution, Appointment, name = "Openings") %>%
-      tidyr::complete(
-        Institution,
-        Appointment = c("Faculty/instructor (non-adjunct)", "Adjunct/part-time faculty"),
-        fill = list(Openings = 0L)
-      ) %>%
-      tidyr::pivot_wider(names_from = Appointment, values_from = Openings, values_fill = 0)
-    year <- unique(na.omit(he_rows$Salary_Year))
-    year_label <- if (length(year) > 0) year[1] else "current"
-    year_int <- suppressWarnings(as.integer(year_label))
-    y1_label <- if (!is.na(year_int)) as.character(year_int - 1) else "1 year ago"
-    y2_label <- if (!is.na(year_int)) as.character(year_int - 2) else "2 years ago"
-
-    df <- he_rows %>%
-      left_join(appointment_counts, by = c("Name" = "Institution")) %>%
-      arrange(desc(CurrentCount)) %>%
-      transmute(
-        Institution = Name,
-        County,
-        `Current Openings` = CurrentCount,
-        `Faculty/instructor (non-adjunct)` = coalesce(`Faculty/instructor (non-adjunct)`, 0L),
-        `Adjunct/part-time faculty` = coalesce(`Adjunct/part-time faculty`, 0L),
-        `New This Week` = WeeklyNew,
-        `Faculty Vacancy Rate` = ifelse(is.na(Vacancy_Rate), NA_character_, scales::percent(Vacancy_Rate, accuracy = 0.1)),
-        AvgFacultySalary = ifelse(is.na(Faculty_Avg_Salary), NA_character_, scales::dollar(Faculty_Avg_Salary)),
-        AvgFacultySalaryY1 = ifelse(is.na(Faculty_Avg_Salary_Y1Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y1Ago)),
-        AvgFacultySalaryY2 = ifelse(is.na(Faculty_Avg_Salary_Y2Ago), NA_character_, scales::dollar(Faculty_Avg_Salary_Y2Ago)),
-        ProfessorAvgSalary = ifelse(is.na(Faculty_Avg_Salary_Professor), NA_character_, scales::dollar(Faculty_Avg_Salary_Professor)),
-        `Faculty Count` = Faculty_Count,
-        # IPEDS fall enrollment (FTE) -- HE's analogue of the K-12 District
-        # Summary table's Enrollment/Students per Teacher columns, added
-        # 2026-08-06 via ipeds_enrollment_scraper.R.
-        Enrollment,
-        `Students per Faculty` = ifelse(is.na(Students_Per_Teacher), NA_character_, sprintf("%.1f", Students_Per_Teacher)),
-        # 5-year enrollment trend, institution-level (IPEDS) -- the HE
-        # analogue of the K-12 District Summary table's county-level
-        # "County Population Trend (5yr)" column, but arguably a more
-        # direct signal here since it's the actual institution, not just
-        # its county.
-        `Enrollment Trend (5yr)` = ifelse(is.na(Enrollment_Change_Pct), NA_character_,
-                                           paste0(ifelse(Enrollment_Change_Pct >= 0, "+", ""), scales::percent(Enrollment_Change_Pct, accuracy = 0.1))),
-        # Share of students receiving a Pell Grant (FSA) -- the HE
-        # analogue of the K-12 District Summary table's "District Child
-        # Poverty Rate" column, a different federal program since SAIPE
-        # has no HE equivalent. Pell_Year usually trails Salary_Year/
-        # Enrollment's year (FSA's own data lags IPEDS's), so it's called
-        # out by name here rather than assumed to match.
-        `Pell Grant Recipient Share` = ifelse(is.na(Pell_Recipient_Share), NA_character_,
-                                               paste0(scales::percent(Pell_Recipient_Share, accuracy = 0.1), " (", Pell_Year, ")")),
-        # County-level context (Census ACS 5-Year) -- same reasoning and
-        # same source as the K-12 District Summary table's equivalent
-        # columns, added 2026-08-06 once salarymap.csv gained a County
-        # column to join through. No child-poverty-rate column here (see
-        # map_he's Child_Poverty_Rate comment for why SAIPE has no HE
-        # equivalent).
-        `County Median Income` = ifelse(is.na(Median_Household_Income), NA_character_,
-                                        paste0(scales::dollar(Median_Household_Income), format_moe_dollars(Median_Household_Income_MOE))),
-        `County Median Rent` = ifelse(is.na(Median_Gross_Rent), NA_character_,
-                                      paste0(scales::dollar(Median_Gross_Rent), "/mo", format_moe_dollars(Median_Gross_Rent_MOE))),
-        `County Mining/Energy Jobs` = ifelse(is.na(Mining_Employment_Share), NA_character_,
-                                             paste0(scales::percent(Mining_Employment_Share, accuracy = 0.1), format_moe_points(Mining_Employment_Share_MOE),
-                                                    ifelse(indistinct_from_zero(Mining_Employment_Share, Mining_Employment_Share_MOE),
-                                                           " (not distinguishable from 0)", ""))),
-        `County Population Trend (5yr)` = ifelse(is.na(Population_Change_Pct), NA_character_,
-                                                   paste0(ifelse(Population_Change_Pct >= 0, "+", ""), scales::percent(Population_Change_Pct, accuracy = 0.1))),
-        # Short plain-text label, not the full Salary_Note sentence --
-        # that blew out Sheridan/Gillette's row height next to every other
-        # institution's single-line rows (confirmed visually 2026-08-05).
-        # Kept plain text rather than an HTML tooltip so the CSV/copy
-        # export buttons still produce clean text, not raw markup. Now
-        # mentions the vacancy rate too, since that's a combined figure
-        # here as well (see Vacancy_Rate_Shared), not just salary.
-        Note = ifelse(is.na(Salary_Note), "", "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette")
-      )
-    names(df)[names(df) == "AvgFacultySalary"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", year_label)
-    names(df)[names(df) == "AvgFacultySalaryY1"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", y1_label)
-    names(df)[names(df) == "AvgFacultySalaryY2"] <- paste0("Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts), ", y2_label)
-    names(df)[names(df) == "ProfessorAvgSalary"] <- paste0("Professor Avg Salary (", year_label, ")")
-
-    datatable(df, filter = "top", extensions = "Buttons",
-              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 9))
-  })
-
-
-  
-  # ---- Update slider based on filtered data ----
-  observe({
-    df <- filtered_hesum()
-    req(nrow(df) > 0)
-    
-    df$Archive_Date <- as.Date(df$Archive_Date)
-    he_dates <- sort(unique(df$Archive_Date))
-    
-    # Set slider min/max as actual dates
-    updateSliderInput(
-      session,
-      "he_scroll",
-      min = min(he_dates),
-      max = max(he_dates),
-      value = c(max(he_dates) - WINDOW_WEEKS*7, max(he_dates)),
-      timeFormat = "%Y-%m-%d"
-    )
-    
-    # Store for reactive filtering
-    session$userData$he_dates <- he_dates
-  })
-  
-  
-  # ---- Optional: show slider range ----
-  output$he_slider_label <- renderText({
-    req(input$he_scroll)
-    paste0("Showing: ", input$he_scroll[1], " to ", input$he_scroll[2])
-  })
-  
 
 
 }
