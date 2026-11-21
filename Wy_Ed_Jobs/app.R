@@ -1167,38 +1167,12 @@ ui <- page_navbar(
   # ------------------ K-12 ------------------
   nav_menu(
     "K-12", icon = icon("school"),
-    nav_panel(
-      "Jobs", value = "k12_table", icon = icon("table"),
-      div(
-        class = "table-toolbar",
-        div(
-          style = "display: flex; align-items: center; gap: 8px; flex-wrap: wrap;",
-          span(style = "font-weight: 600; font-size: 13.5px; color: #334155;", "Filter Postings:"),
-          radioGroupButtons(
-            inputId = "k12_quick_filter",
-            label = NULL,
-            choices = c(
-              "All Active Postings" = "all",
-              "🟢 New This Week" = "new"
-            ),
-            selected = "all",
-            status = "primary",
-            size = "sm",
-            checkIcon = list(yes = icon("check"))
-          )
-        ),
-        uiOutput("k12_filter_status")
-      ),
-      p(class = "text-muted small mb-2",
-        "Posted Pay is what the posting itself states; the other pay columns are labeled estimates, not this job's offer. ",
-        info_popover("About the pay columns",
-          p(class = "mb-0", POSTED_LISTED_NOTE, paste0("Posted Pay is the pay the job posting itself states (hourly, daily, annual, or a season stipend, as written); blank where the posting gives no figure. ",
+    # K-12 Jobs tab: the layout and filters are edjobs's jobs_tab_panel(); this is Wyoming's pay note.
+    jobs_tab_panel("k12", pay_note = list(POSTED_LISTED_NOTE, paste0("Posted Pay is the pay the job posting itself states (hourly, daily, annual, or a season stipend, as written); blank where the posting gives no figure. ",
         "Typical pay (BLS est.) fills in where the posting states none: the Bureau of Labor Statistics' ",
         if (!is.na(oews_year)) paste0("May ", oews_year, " ") else "",
         "median pay for that role in the posting's region (hover for the role and area; OEWS, all employers, not just schools), so treat it as a regional estimate, not this job's offer. "),
-        "Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches."))),
-      DTOutput("k12_jobs", fill = FALSE)
-    ),
+        "Teacher Starting Base is the district's published starting base salary for teachers (BA Step 1, Source: WSBA), shown on teaching postings only. Role Avg Salary is the average total compensation the Wyoming Department of Education reports (Source: WDE602) for that job category in that district (e.g. Teacher, Admin, Aide, Bus Driver, Custodial). It is blank where WDE602 has no matching category, such as substitutes and coaches.")),
     nav_panel(
       "Districts", value = "k12_summary", icon = icon("school"),
       navset_card_tab(
@@ -1356,44 +1330,8 @@ ui <- page_navbar(
   # ------------------ Higher Ed ------------------
   nav_menu(
     "Higher Ed", icon = icon("building-columns"),
-    nav_panel(
-      "Jobs", value = "he_table", icon = icon("table"),
-      div(
-        class = "table-toolbar",
-        div(
-          style = "display: flex; align-items: center; gap: 8px; flex-wrap: wrap;",
-          span(style = "font-weight: 600; font-size: 13.5px; color: #334155;", "Filter Postings:"),
-          radioGroupButtons(
-            inputId = "he_quick_filter",
-            label = NULL,
-            choices = c(
-              "All Active Postings" = "all",
-              "🟢 New This Week" = "new"
-            ),
-            selected = "all",
-            status = "primary",
-            size = "sm",
-            checkIcon = list(yes = icon("check"))
-          ),
-          radioButtons(
-            "he_table_appointment", "Appointment:",
-            choices = c(
-              "All roles" = "all",
-              "Faculty/instructor (non-adjunct)" = "Faculty/instructor (non-adjunct)",
-              "Adjunct/part-time faculty" = "Adjunct/part-time faculty",
-              "Other / not faculty" = "Other / not faculty"
-            ),
-            selected = "all", inline = TRUE
-          )
-        ),
-        uiOutput("he_filter_status")
-      ),
-      p(class = "text-muted small mb-2",
-        "Posted Pay is what the posting itself states; the other pay columns are labeled estimates, not this job's offer. ",
-        info_popover("About the pay columns",
-          p(class = "mb-0", POSTED_LISTED_NOTE, "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Typical pay (est.) fills in for salaried staff postings that state none, not this job's offer: for the University of Wyoming, the median salary of UW staff with the same title in UW's published salary book; for the other colleges, the college's average pay for its full-time staff in that job category (IPEDS). Hover for the source. Hourly and student jobs get no estimate. Avg. Salary, Full-Time Instructional Staff is the college's IPEDS average for full-time instructional staff on 9- to 12-month contracts, all ranks (via the Urban Institute), not this job's offer."))),
-      DTOutput("he_jobs", fill = FALSE)
-    ),
+    # Higher Ed Jobs tab: the layout and filters are edjobs's jobs_tab_panel(); this is Wyoming's pay note.
+    jobs_tab_panel("he", pay_note = list(POSTED_LISTED_NOTE, "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Typical pay (est.) fills in for salaried staff postings that state none, not this job's offer: for the University of Wyoming, the median salary of UW staff with the same title in UW's published salary book; for the other colleges, the college's average pay for its full-time staff in that job category (IPEDS). Hover for the source. Hourly and student jobs get no estimate. Avg. Salary, Full-Time Instructional Staff is the college's IPEDS average for full-time instructional staff on 9- to 12-month contracts, all ranks (via the Urban Institute), not this job's offer.")),
     nav_panel(
       "Colleges", value = "he_summary", icon = icon("building-columns"),
       navset_card_tab(
