@@ -1096,6 +1096,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check OK (0/0/0). manifest.json:
     the edjobs entry for the `v0.64.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly workflow ref 0.64.0.
     Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
+  * [x] Package review step 7, slice 2b, Higher Ed Colleges: its UI from edjobs 0.65.0's `he_colleges_panel()`
+    (2026-11-21; branch `he-colleges-panel`, edjobs #64, this repo's #84). app.R keeps Wyoming's two directory notes
+    (Salaries: three IPEDS years and the professor-rank average; County: income and rent) and opens the comparator on
+    UW vs LCCC. Checks vs main (`claude-notes/2026-11-21_step7-slice2b-he-colleges/`): page HTML identical (210,165
+    chars, `ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check
+    OK (0/0/0). manifest.json: the edjobs entry for the `v0.65.0` tag, and app.R's checksum; EDJOBS_VERSION and the
+    weekly workflow ref 0.65.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

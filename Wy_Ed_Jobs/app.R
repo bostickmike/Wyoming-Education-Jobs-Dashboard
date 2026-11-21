@@ -1332,67 +1332,10 @@ ui <- page_navbar(
     "Higher Ed", icon = icon("building-columns"),
     # Higher Ed Jobs tab: the layout and filters are edjobs's jobs_tab_panel(); this is Wyoming's pay note.
     jobs_tab_panel("he", pay_note = list(POSTED_LISTED_NOTE, "Posted Pay is the pay the job posting itself states (hourly, annual, or per credit hour, as written); blank where the posting gives no figure. Typical pay (est.) fills in for salaried staff postings that state none, not this job's offer: for the University of Wyoming, the median salary of UW staff with the same title in UW's published salary book; for the other colleges, the college's average pay for its full-time staff in that job category (IPEDS). Hover for the source. Hourly and student jobs get no estimate. Avg. Salary, Full-Time Instructional Staff is the college's IPEDS average for full-time instructional staff on 9- to 12-month contracts, all ranks (via the Urban Institute), not this job's offer.")),
-    nav_panel(
-      "Colleges", value = "he_summary", icon = icon("building-columns"),
-      navset_card_tab(
-        id = "he_summary_tabs",
-        nav_panel(
-          title = tagList(icon("building-columns"), " Institution Directory"),
-          value = "he_summary_dir",
-          h4("One row per institution -- current openings, faculty vacancy rate, and salary data ",
-             help_popover("Institution directory",
-               p(tags$strong("Openings: "), "postings in this week's scrape, split into full-time and adjunct/part-time faculty by the job title, and those new since last week."),
-               p(tags$strong("Faculty vacancy rate, faculty count and students per faculty: "), "full-time faculty postings, and enrollment, divided by full-time instructional staff (IPEDS)."),
-               p(tags$strong("Salaries: "), "IPEDS average salary of full-time instructional staff on 9- to 12-month contracts, all ranks, for the latest three years, and the professor-rank average."),
-               p(tags$strong("Students: "), "5-year enrollment trend (IPEDS) and the share of students receiving Pell Grants (Federal Student Aid)."),
-               p(tags$strong("County: "), "the college's county's median income and rent (Census American Community Survey 5-year estimates)."),
-               source = "IPEDS and Federal Student Aid data via the Urban Institute's Education Data Portal; Census ACS; the colleges' job boards.")),
-          DTOutput("he_summary_table", fill = FALSE),
-          uiOutput("he_summary_footnote")
-        ),
-        nav_panel(
-          title = tagList(icon("code-compare"), " Head-to-Head Comparator"),
-          value = "he_summary_comp",
-          p(class = "text-muted small", style = "margin-top: 6px;",
-            "Select up to four higher education institutions to evaluate faculty demand, IPEDS salary benchmarks, and institutional enrollment side-by-side."),
-          layout_columns(
-            col_widths = c(8, 4),
-            selectizeInput(
-              "he_compare_insts",
-              label = "Select Institutions (up to 4):",
-              choices = sort(unique(mapdata2_he$Name)),
-              selected = c("University of Wyoming", "Laramie County Community College"),
-              multiple = TRUE,
-              width = "100%",
-              options = list(maxItems = 4, placeholder = "Type or select up to 4 institutions...")
-            ),
-            div(
-              tags$label("Quick Presets:", style = "display: block; margin-bottom: 5px;"),
-              div(
-                class = "btn-group",
-                actionButton("he_comp_preset_top", "Top Hiring", class = "btn-sm btn-outline-secondary", icon = icon("fire")),
-                actionButton("he_comp_preset_clear", "Clear", class = "btn-sm btn-outline-secondary", icon = icon("xmark"))
-              )
-            )
-          ),
-          uiOutput("he_compare_cards"),
-          layout_columns(
-            col_widths = c(6, 6),
-            dash_card("Avg. Salary, Full-Time Instructional Staff (IPEDS)", info = help_popover("Faculty average salary",
-                        p("The average salary of full-time instructional staff on 9- to 12-month contracts, all academic ranks, for the latest IPEDS year and the year before. IPEDS collects no salaries for part-time staff, or for full-time staff on contracts under 9 months."),
-                        source = "IPEDS, via the Urban Institute's Education Data Portal."),
-                      withSpinner(plotlyOutput("he_compare_salary_plot", height = "360px"))),
-            dash_card("Openings by Appointment Type", info = help_popover("Openings by appointment type",
-                        p("This week's postings, sorted by the job title: adjunct or part-time faculty (titles with \"adjunct\" or \"part-time\"), full-time faculty or instructor (titles such as instructor, professor, lecturer, librarian), or other (staff)."),
-                        source = "each college's own job board."),
-                      withSpinner(plotlyOutput("he_compare_openings_plot", height = "360px")))
-          ),
-          dash_card("Active Openings in Selected Institutions", info = help_popover("Openings in the selected institutions",
-                      p("Every current posting from the colleges chosen above, with the same columns as the Higher Ed Jobs tab.")),
-                    DTOutput("he_compare_jobs_table", fill = FALSE))
-        )
-      )
-    ),
+    # Higher Ed Colleges tab: edjobs's he_colleges_panel() (step 7 slice 2b); Wyoming's Salaries and County notes.
+    he_colleges_panel(sort(unique(mapdata2_he$Name)), c("University of Wyoming", "Laramie County Community College"),
+      salaries_note = "IPEDS average salary of full-time instructional staff on 9- to 12-month contracts, all ranks, for the latest three years, and the professor-rank average.",
+      county_note = "the college's county's median income and rent (Census American Community Survey 5-year estimates)."),
     # Higher Ed Trends tab: edjobs's he_trends_panel() (step 7 slice 2b).
     he_trends_panel(henowsum_he, hesum_he),
     he_spells_panel()
