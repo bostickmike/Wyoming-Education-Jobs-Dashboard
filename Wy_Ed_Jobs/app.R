@@ -1246,84 +1246,8 @@ ui <- page_navbar(
         )
       )
     ),
-    nav_panel(
-      "Trends", value = "k12_trends", icon = icon("chart-line"),
-      navset_card_tab(
-        id = "k12_trends_tabs",
-        nav_panel(
-          title = tagList(icon("chart-column"), " Current Trends"),
-          value = "k12_trends_current",
-          p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Current subject distribution across active K-12 postings with 12-week vacancy sparklines. ",
-            help_popover("Current K-12 trends",
-              p("Teacher postings in this week's scrape by subject, with each subject's postings over its last 12 weekly scrapes. The subject is read from the job title (\"Major subject groups\" combines subjects, e.g. all STEM). Non-teaching jobs are not counted here."),
-              source = "the districts' job boards, scraped weekly; subjects by this dashboard's title classifier.")),
-          layout_sidebar(
-            fillable = FALSE,
-            sidebar = sidebar(
-              width = 260,
-              selectInput(
-                "district_current",
-                "District:",
-                choices = sort(unique(k12nowsum$District)),
-                selected = "Total"
-              ),
-              radioButtons("k12_detail_level_current", "View:",
-                           choices = c("Individual subjects" = "detail",
-                                       "Major subject groups" = "agg"),
-                           selected = "detail")
-            ),
-            div(class = "trends-table-container mt-0",
-                withSpinner(tableOutput("k12_current_trends_table")))
-          )
-        ),
-        nav_panel(
-          title = tagList(icon("chart-line"), " Multi-Year Trends"),
-          value = "k12_trends_historical",
-          p(class = "text-muted", style = "margin-top: 5px; margin-bottom: 12px;",
-            "Multi-year vacancy volume time series tracking hiring trends across weekly snapshots. ",
-            help_popover("Multi-year K-12 trends",
-              p("Teacher postings counted in each weekly scrape, by subject (read from the job title). A count is how many postings were up that week, not how many were new."),
-              source = "the districts' job boards, scraped weekly and kept in the K-12 History Archive (Data tab).")),
-          layout_sidebar(
-            fillable = FALSE,
-            sidebar = sidebar(
-              width = 260,
-              selectInput(
-                "district_trend",
-                "District:",
-                choices = sort(unique(k12sum$District)),
-                selected = "Total"
-              ),
-              pickerInput(
-                "broad_category",
-                "Teacher category:",
-                choices  = sort(unique(k12sum$Broad_Category)),
-                selected = sort(unique(k12sum$Broad_Category)),
-                multiple = TRUE,
-                width = "100%",
-                options = pickerOptions(actionsBox = TRUE, liveSearch = TRUE, selectedTextFormat = "count > 3")
-              ),
-              radioButtons("k12_detail_level_trends", "View:",
-                           choices = c("Individual subjects" = "detail",
-                                       "Major subject groups" = "agg"),
-                           selected = "detail")
-            ),
-            sliderInput(
-              "k12_scroll",
-              "Scroll timeline:",
-              min = min(k12sum$Archive_Date),
-              max = max(k12sum$Archive_Date),
-              value = c(max(k12sum$Archive_Date) - 365,
-                        max(k12sum$Archive_Date)),
-              timeFormat = "%Y-%m-%d",
-              width = "100%"
-            ),
-            withSpinner(plotlyOutput("k12_longitudinal_plot"))
-          )
-        )
-      )
-    ),
+    # K-12 Trends tab: edjobs's k12_trends_panel() (step 7 slice 2b).
+    k12_trends_panel(k12nowsum, k12sum),
     k12_spells_panel()
   ),
 
