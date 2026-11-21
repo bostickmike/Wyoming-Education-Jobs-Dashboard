@@ -1127,6 +1127,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     CMD check OK (0/0/0). manifest.json: the edjobs entry for the `v0.68.0` tag, and app.R's checksum; EDJOBS_VERSION
     and the weekly workflow ref 0.68.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped. With all 11 tabs from
     edjobs, app.R is 1,911 lines (2,299 before slice 2b).
+  * [x] Package review step 7, slice 3, part 1: the server blocks that differed only by a setting come from edjobs
+    0.69.0's `dashboard_server_shared()` (2026-11-21; branch `slice3-config`, edjobs #69, this repo's #89): the
+    map's basemaps, legend and opening view (`map_view`, -107.5/43, zoom 7) and county zoom, the Institution
+    Summary table (page length 9 and its Note text (Sheridan & Gillette shared reporting)), the HE slider's opening range and the slider labels
+    (`bounded_timeline_value()` / `timeline_history_note()` now edjobs's). Dead `k12_new_table` removed (no UI showed
+    it). The Feedback form's report time takes `timezone = "America/Denver"` (edjobs had the zone hard-coded since
+    0.60.0). Map marker popups stay here for part 3 (their pay lines differ by state). Checks vs main
+    (`claude-notes/2026-11-21_step7-slice3a/`): every tab's outputs identical (shinytest2, main on 0.68.0 vs branch on
+    0.69.0, 33/33, 122 table rows shown). manifest.json: the edjobs entry for the `v0.69.0` tag, and app.R's
+    checksum; EDJOBS_VERSION and the weekly workflow ref 0.69.0. Suite on the tag: 1,405 passed, 0 failed,
+    0 skipped. app.R is 1,695 (1,911) lines before).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
