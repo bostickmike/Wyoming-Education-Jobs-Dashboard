@@ -1089,6 +1089,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     identical (210,165 chars, `ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown).
     edjobs R CMD check OK (0/0/0). manifest.json: the edjobs entry for the `v0.63.0` tag, and app.R's checksum;
     EDJOBS_VERSION and the weekly workflow ref 0.63.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
+  * [x] Package review step 7, slice 2b, Higher Ed Trends: its UI from edjobs 0.64.0's `he_trends_panel()`
+    (2026-11-21; branch `he-trends-panel`, edjobs #63, this repo's #83). Wyoming uses the default timeline window
+    (the last 365 days), so app.R passes only the two summaries. Checks vs main
+    (`claude-notes/2026-11-21_step7-slice2b-he-trends/`): page HTML identical (210,165 chars, `ui_parity.R`); every
+    tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check OK (0/0/0). manifest.json:
+    the edjobs entry for the `v0.64.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly workflow ref 0.64.0.
+    Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
