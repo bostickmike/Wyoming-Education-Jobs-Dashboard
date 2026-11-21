@@ -115,7 +115,8 @@ for (col in c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text",
 }
 oews_year <- na.omit(combineddata$Est_Year)[1]
 combineddata <- combineddata %>%
-  validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url"), "combinedclean.csv", on_missing = note_load_issue) %>%
+  validate_and_pad_schema(c("District", "title", "position", "location", "date_posted", "url", "Posting_ID"), "combinedclean.csv",
+                          on_missing = note_load_issue) %>%
   mutate(`Posted Pay` = format_posted_pay(Pay_Min, Pay_Max, Pay_Unit),
          `Typical pay (BLS est.)` = format_bls_estimate(Est_Pay, Est_Pay_Unit, Est_Occupation, Est_Area, !is.na(Pay_Min)),
          # Home page job-type tables: TRUE unless edjobs classify_work_schedule() marks the posting as a substitute,
@@ -123,7 +124,7 @@ combineddata <- combineddata %>%
          # k12_jobtype_weekly_totals.csv, so the counts agree; WY has no role hints, so Role_Hint is NA).
          .Not_Marked = is.na(classify_work_schedule(title, k12_position = position, role_hint = Role_Hint))) %>%
   select(District, title, position, location, `Posted Pay`, `Typical pay (BLS est.)`, date_posted, url,
-         Pay_Min, Pay_Max, Pay_Unit, Est_Pay, Est_Pay_Unit, .Not_Marked) %>%
+         Posting_ID, Pay_Min, Pay_Max, Pay_Unit, Est_Pay, Est_Pay_Unit, .Not_Marked) %>%
   mutate(District = str_squish(as.character(District))) %>%
   mutate(date_posted = format_posted_or_listed_date(date_posted)) %>%
   mutate(date_posted = fill_first_seen(date_posted, District, title, url, "K-12", lookup = first_seen_table)) %>%
@@ -254,7 +255,7 @@ if (file.exists(wde_staff_file)) {
                                     ifelse(!is.na(Final_Salary), "year", Est_Pay_Unit))$unit
     ) %>%
     select(District, Title, Position, Location, `Posted Pay`, `Typical pay (BLS est.)`, `Teacher Starting Base`,
-           `Role Avg Salary`, `Posted / listed`, Link, .Pay_Value, .Pay_Unit, .Not_Marked)
+           `Role Avg Salary`, `Posted / listed`, Link, Posting_ID, .Pay_Value, .Pay_Unit, .Not_Marked)
 } else {
   combineddata <- combineddata %>%
     left_join(k12_salary_lookup, by = c("District" = "Name")) %>%
@@ -272,7 +273,7 @@ if (file.exists(wde_staff_file)) {
       .Pay_Unit = posting_pay_value(Pay_Min, Pay_Max, Pay_Unit, .fallback_value, .fallback_unit)$unit
     ) %>%
     select(District, Title, Position, Location, `Posted Pay`, `Typical pay (BLS est.)`, `Teacher Starting Base`,
-           `Role Avg Salary`, `Posted / listed`, Link, .Pay_Value, .Pay_Unit, .Not_Marked)
+           `Role Avg Salary`, `Posted / listed`, Link, Posting_ID, .Pay_Value, .Pay_Unit, .Not_Marked)
 }
 
 # Weekly ALL-category posting totals per district/institution (not scoped
@@ -608,22 +609,14 @@ HE_JOB_TYPE_COLORS <- c(
 # are already filtered that way upstream).
 #--------------------------------------------------
 k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
-  validate_and_pad_schema(c("title", "Archive_Date", "location", "District"), "k12jobanalysis.csv", on_missing = note_load_issue) %>%
+  validate_and_pad_schema(c("title", "Archive_Date", "location", "District", "Posting_ID"), "k12jobanalysis.csv",
+                          on_missing = note_load_issue) %>%
   mutate(Archive_Date = as.Date(Archive_Date)) %>%
   latest_snapshot_per_week()
 
-k12_new_this_week <- {
-  dates <- sort(unique(k12_history$Archive_Date))
-  if (length(dates) >= 2) {
-    latest <- dates[length(dates)]
-    previous <- dates[length(dates) - 1]
-    k12_history %>%
-      filter(Archive_Date == latest) %>%
-      anti_join(k12_history %>% filter(Archive_Date == previous), by = c("title", "location", "District"))
-  } else {
-    k12_history[0, ]
-  }
-}
+
+# New by Posting_ID and by title + location + District (edjobs find_k12_new_postings(); Mike chose rule A, 2026-11-21).
+k12_new_this_week <- find_k12_new_postings(k12_history)
 
 he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("Title", "Location", "Institution", "Link", "Archive_Date", "Job_Type", "Category"), "facultydata.csv", on_missing = note_load_issue) %>%
@@ -1236,29 +1229,6 @@ server <- function(input, output, session) {
       file.copy("wde602_district_staff_salaries.csv", file)
     }
   )
-
-
-  # -------- K-12 --------
-  output$k12_jobs <- renderDT({
-    df <- combineddata
-    if (!is.null(selected_district())) df <- df %>% filter(District == selected_district())
-    if (!is.null(selected_k12_type())) df <- df %>% filter(Position == selected_k12_type())
-    if (k12_not_marked_only()) df <- df %>% filter(.Not_Marked)
-    # Same matcher and searchable text as map_filtered(), so the count here
-    # equals the popup's "N matching openings".
-    if (!is.null(selected_k12_query())) {
-      df <- df[match_job_query(paste(coalesce(df$Title, ""), coalesce(df$Position, "")), selected_k12_query()), , drop = FALSE]
-    }
-    if (!is.null(selected_pay_band())) df <- df[in_pay_band(df$.Pay_Value, df$.Pay_Unit, selected_pay_band(), PAY_BANDS), , drop = FALSE]
-    df <- df %>% select(-any_of(HIDDEN_COLS))
-    if (isTRUE(identical(input$k12_quick_filter, "new"))) {
-      new_keys <- paste(k12_new_this_week$title, k12_new_this_week$District, sep = "@@@")
-      current_keys <- paste(df$Title, df$District, sep = "@@@")
-      df <- df[current_keys %in% new_keys, ]
-    }
-    datatable(df, filter = "top", escape = FALSE, extensions = "Buttons",
-              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print")))
-  })
 
 
   # District Summary -- everything the map popups show (vacancy rate,

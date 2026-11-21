@@ -1139,6 +1139,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     0.69.0, 33/33, 122 table rows shown). manifest.json: the edjobs entry for the `v0.69.0` tag, and app.R's
     checksum; EDJOBS_VERSION and the weekly workflow ref 0.69.0. Suite on the tag: 1,405 passed, 0 failed,
     0 skipped. app.R is 1,695 lines (1,911 before).
+  * [x] Package review step 7, slice 3, part 2: K-12 "new this week" from edjobs 0.70.0's `find_k12_new_postings()`,
+    the K-12 Jobs table from `dashboard_server_shared()` (2026-11-21; branch `slice3-new-this-week`, edjobs #70, this
+    repo's #90). Mike chose rule A, then its paired form once measured: a new `Posting_ID`, less ID changes (a new
+    ID replacing, one for one, a gone posting with the same title, location and district). Literal A would also have
+    dropped a second same-title opening next to one still listed (MT 18, WY 76 over the archives;
+    `claude-notes/2026-11-21_step7-slice3a/rule_a_paired.R`). Here: 2,439 new over 119 archived weeks instead of 2,371 by title +
+    location + District (title edits no longer count; second same-title openings do); the Jobs filter matches by
+    `Posting_ID`, not every posting sharing a new one's title + District (198 extra rows over the archive). app.R
+    carries `Posting_ID` (required in combinedclean.csv, k12jobanalysis.csv), so the active K-12 jobs download gains
+    that column, as MT's has. Latest week 1 -> 1. Parity vs main (shinytest2, every tab): 33/33 outputs identical, 122
+    table rows shown.
+    manifest.json: the edjobs entry for the `v0.70.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly
+    workflow ref 0.70.0. Suite on the tag: 1,405 passed, 0 failed, 0 skipped.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
