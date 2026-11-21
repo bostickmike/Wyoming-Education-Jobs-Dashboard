@@ -1034,7 +1034,7 @@
       "description": {
         "Package": "edjobs",
         "Title": "Shared Code for State Education Jobs Dashboards",
-        "Version": "0.61.0",
+        "Version": "0.62.0",
         "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
         "Description": "Code shared by state education jobs dashboards (today Montana\n    and Wyoming): platform and site-family scrapers, posting classification and\n    posted pay, posting spells and listing durations, federal context sources,\n    the daily presence check, the checks each weekly run makes on its own output,\n    and shared app helpers. What differs by state comes in as data through\n    state_config(). Each state repository pins a tagged version.",
         "License": "MIT + file LICENSE",
@@ -1042,7 +1042,7 @@
         "Encoding": "UTF-8",
         "Roxygen": "list(markdown = TRUE)",
         "Imports": "datasets, dplyr, htmltools, httr2, jsonlite, lubridate,\nmagrittr, readxl, rvest, scales, stringr, stats, survival,\ntidyr, utils, xml2",
-        "Suggests": "bslib, chromote, codetools, curl, DT, ggplot2, grid, knitr,\nplotly, rmarkdown, shiny, shinycssloaders, shinyWidgets,\ntestthat (>= 3.0.0), withr, writexl",
+        "Suggests": "bslib, chromote, codetools, curl, DT, ggplot2, grid, knitr,\nleaflet, plotly, rmarkdown, shiny, shinycssloaders,\nshinyWidgets, testthat (>= 3.0.0), withr, writexl",
         "VignetteBuilder": "knitr",
         "Config/testthat/edition": "3",
         "Config/testthat/parallel": "true",
@@ -1053,18 +1053,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "edjobs",
         "RemoteUsername": "bostickmike",
-        "RemotePkgRef": "bostickmike/edjobs@v0.61.0",
-        "RemoteRef": "v0.61.0",
-        "RemoteSha": "d7b2fc61aecee489a66388bf0f22ea7a1bbb23ef",
+        "RemotePkgRef": "bostickmike/edjobs@v0.62.0",
+        "RemoteRef": "v0.62.0",
+        "RemoteSha": "fa03b63527af7d8a79a5d9928f003f001fc85e06",
         "GithubRepo": "edjobs",
         "GithubUsername": "bostickmike",
-        "GithubRef": "v0.61.0",
-        "GithubSHA1": "d7b2fc61aecee489a66388bf0f22ea7a1bbb23ef",
+        "GithubRef": "v0.62.0",
+        "GithubSHA1": "fa03b63527af7d8a79a5d9928f003f001fc85e06",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-20 23:50:59 UTC; mikebostick",
+        "Packaged": "2026-11-21 02:36:57 UTC; mikebostick",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-20 23:51:00 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-21 02:36:59 UTC; unix"
       }
     },
     "evaluate": {
@@ -3951,7 +3951,7 @@
       "checksum": "44d21821bb25785d3854a3fe2f30e5da"
     },
     "app.R": {
-      "checksum": "c2e6b23a901dfab8e64de4849bd980b8"
+      "checksum": "dfaebf0c07d826f4b11066620016cbf8"
     },
     "combinedclean.csv": {
       "checksum": "8339225b1b2241f68a5f236f5d9e9242"
