@@ -1034,7 +1034,7 @@
       "description": {
         "Package": "edjobs",
         "Title": "Shared Code for State Education Jobs Dashboards",
-        "Version": "0.68.0",
+        "Version": "0.69.0",
         "Authors@R": "person(\"Mike\", \"Bostick\", email = \"michael.bostick@montana.edu\", role = c(\"aut\", \"cre\"))",
         "Description": "Code shared by state education jobs dashboards (today Montana\n    and Wyoming): platform and site-family scrapers, posting classification and\n    posted pay, posting spells and listing durations, federal context sources,\n    the daily presence check, the checks each weekly run makes on its own output,\n    and shared app helpers. What differs by state comes in as data through\n    state_config(). Each state repository pins a tagged version.",
         "License": "MIT + file LICENSE",
@@ -1053,18 +1053,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "edjobs",
         "RemoteUsername": "bostickmike",
-        "RemotePkgRef": "bostickmike/edjobs@v0.68.0",
-        "RemoteRef": "v0.68.0",
-        "RemoteSha": "9ac9a3da8ad98c4f04eb98da19486e63eee71dad",
+        "RemotePkgRef": "bostickmike/edjobs@v0.69.0",
+        "RemoteRef": "v0.69.0",
+        "RemoteSha": "29465831cc8652e0b7a04c49eacf8323535a4579",
         "GithubRepo": "edjobs",
         "GithubUsername": "bostickmike",
-        "GithubRef": "v0.68.0",
-        "GithubSHA1": "9ac9a3da8ad98c4f04eb98da19486e63eee71dad",
+        "GithubRef": "v0.69.0",
+        "GithubSHA1": "29465831cc8652e0b7a04c49eacf8323535a4579",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-21 07:52:03 UTC; mikebostick",
+        "Packaged": "2026-11-21 15:52:35 UTC; mikebostick",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-21 07:52:04 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-21 15:52:36 UTC; unix"
       }
     },
     "evaluate": {
@@ -3951,7 +3951,7 @@
       "checksum": "44d21821bb25785d3854a3fe2f30e5da"
     },
     "app.R": {
-      "checksum": "b8852f7eea2ba5aee78b674e13cec559"
+      "checksum": "547bbc7c379dfca1b56070d5e4d58074"
     },
     "combinedclean.csv": {
       "checksum": "8339225b1b2241f68a5f236f5d9e9242"
