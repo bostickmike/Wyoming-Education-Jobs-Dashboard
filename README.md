@@ -18,7 +18,7 @@ A live, weekly-updated dashboard of K-12 and higher education job openings acros
 
 | Data | Source |
 |---|---|
-| K-12 job postings | Each district's own job board (Applitrack, TedK12, SchoolSpring, NEOGOV, PeopleAdmin, RedRover, Apptegy, and several district-specific sites), plus WSBA's statewide vacancy feed for districts without their own structured board |
+| K-12 job postings | Each district's own job board (AppliTrack, Red Rover, SchoolSpring, TedK12, Paylocity, and school-site CMSs: Apptegy, Edlio, SmartSites, Educational Networks, SchoolBlocks, plus a few district-specific sites), plus WSBA's statewide vacancy feed for districts without their own structured board |
 | Higher ed job postings | Each institution's own job board (NEOGOV, PeopleAdmin) |
 | K-12 salary | [WSBA](https://sites.google.com/wsba-wy.org/my-wsba/wy-education-salaries) (Wyoming School Boards Association) annual teacher salary settlement and superintendent salary documents |
 | K-12 teacher staffing (for vacancy rate) | NCES Common Core of Data (CCD), via the [Urban Institute Education Data Portal](https://educationdata.urban.org) |
@@ -38,26 +38,27 @@ A GitHub Actions workflow runs twice a week (Tuesdays and Fridays since 2026-11-
 - Full `testthat` suite must pass before any real data is touched.
 - A sanity check compares the new pull against the previous run and refuses to commit if either side dropped more than half its postings.
 - Drift detection flags any source whose posting count falls far below its own historical baseline, with a live `chromote` render of the page as corroboration before anything is filed as a GitHub Issue.
-- Salary-source coverage checks watch WSBA and IPEDS against their known, essentially-fixed universe (48 WY school districts, 9 WY public HE institutions) and flag if either starts returning noticeably less than expected.
+- Salary-source coverage checks compare each source (WSBA, CCD, IPEDS) with the last run's committed salary files and flag a source that comes back with values for fewer districts or colleges than before, or with values outside plausible bounds.
 - The same coverage + value-plausibility checks run for the Census ACS/SAIPE sources (county income/rent/mining-share/population-trend, district child poverty) — flagging if fewer counties/districts come back than expected, or if a figure lands outside a generous sane range.
 - A dedicated check watches for IPEDS starting to report Sheridan College and Gillette College as separate institutions (they currently share one combined figure, since the two are in the process of splitting into separate colleges).
 
 ## Repository layout
 
 - `Wy_ED_Jobs.Rmd` — the single pipeline entry point: scrapes every source, classifies and cleans postings, and appends this week's newly derived rows onto the accumulated datasets in `Wy_Ed_Jobs/`.
-- `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself.
-- `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — the scraping, classification, and monitoring logic the pipeline sources.
+- `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself. Its tabs and most of its server come from edjobs (one function per tab, such as `home_tab_panel()`, and `dashboard_server_shared()`); app.R loads the data, passes Wyoming's text for each tab, and keeps the server blocks that still differ by state.
+- `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — Wyoming's own scrapers and its parts of classification and monitoring (name corrections, posting identity); each attaches edjobs, which holds the shared platform scrapers, classifier and checks.
+- `EDJOBS_VERSION` — the [edjobs](https://github.com/bostickmike/edjobs) version this repo pins: the R package with the code Wyoming and Montana share (platform scrapers, classifier, posting spells, the weekly run's checks, the dashboard's tabs).
 - `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
 - edjobs `fetch_census_county_context()` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
 - edjobs `fetch_census_saipe_child_poverty()` — district-level child poverty (by NCES id) rate from the Census Bureau's SAIPE program, joined directly onto each K-12 district (not county-level like the ACS fetch).
 - `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
 - `scripts/repair_uw_pagination_duplicates.R` — narrow, fail-closed repair for the historical UW Oracle pagination incident. Run `Rscript scripts/repair_uw_pagination_duplicates.R --dry-run`, review the report, then run it with `--apply` to repair verified repeated Oracle IDs and rebuild affected current/historical HE datasets.
 - `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.
-- `.github/workflows/weekly-scrape.yml` — the automation described above.
+- `.github/workflows/weekly-scrape.yml` — the automation described above: a short caller of edjobs's reusable `weekly-run.yml` at the pinned tag, holding Wyoming's cron, secrets and state check.
 
 ## Running locally
 
-Requirements: R (>= 4.0).
+Requirements: R (>= 4.5.0), the version edjobs requires.
 
 ```r
 install.packages(c(
@@ -70,6 +71,12 @@ install.packages(c(
   "shiny", "bslib", "shinyWidgets", "DT", "data.table",
   "leaflet", "plotly", "scales", "shinycssloaders"
 ))
+```
+
+Install the pinned edjobs (the app and the pipeline both load it):
+
+```r
+pak::pak(paste0("bostickmike/edjobs@v", readLines("EDJOBS_VERSION")))
 ```
 
 To run the dashboard against the data already committed in the repo (no scraping needed):
