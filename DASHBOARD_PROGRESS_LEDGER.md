@@ -1067,7 +1067,8 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-21_step7-slice2b-data/`): page HTML identical before the counts commit, only the count
     lines after it (`ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown);
     Data tab screenshots looked at. manifest.json edjobs entry from a pak install of the `v0.61.0` tag;
-    EDJOBS_VERSION and the weekly workflow ref 0.61.0. Suite on the tag: 1,383 passed, 0 failed.
+    EDJOBS_VERSION and the weekly workflow ref 0.61.0. Suite on the tag: 1,407 passed, 0 failed (with NOT_CRAN=true, so the app boot test runs).
+    Live 11-21 01:05 UTC: new counts shown; Home, Map, Data, K-12 Jobs connected with 0 errors, 3 tries.
   * [x] Data tab wording: two tile counts that didn't match the data (2026-11-21; branch `data-tab-wording`). The
     Higher Ed Archive tile said "Wyoming's 9 public community colleges and UW"; salarymap.csv has 9 institutions,
     UW plus 8 community colleges (the provenance row already said 7 + Gillette + UW), so now "8". The WDE602 tile
