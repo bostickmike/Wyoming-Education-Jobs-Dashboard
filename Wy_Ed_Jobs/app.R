@@ -301,12 +301,6 @@ k12_jobtype_weekly_totals <- read_jobtype_totals("k12_jobtype_weekly_totals.csv"
 he_jobtype_weekly_totals <- read_jobtype_totals("he_jobtype_weekly_totals.csv")
 # Columns the app uses but never shows or exports.
 HIDDEN_COLS <- c(".Pay_Value", ".Pay_Unit", ".Map_Name", ".Job_Type", ".Not_Marked")
-# What the Home page's job-type and top-employer tables leave out while its switch is on.
-HOME_SWITCH_LABEL <- "Leave out substitutes, coaching, part-time, student and temporary jobs"
-NOT_MARKED_NOTE <- paste("With the switch above the tables on (the default), substitutes, coaching and other extra-duty",
-                         "stipends, and postings whose title says part-time, student or temporary are left out.")
-NOT_MARKED_NOTE_HE <- paste("With the switch above the tables on (the default), adjunct and part-time faculty, student jobs,",
-                            "substitutes, and postings whose title says part-time or temporary are left out.")
 # The Jobs tables' "Showing:" line when a Home click carried the switch with it.
 NOT_MARKED_SHOWING <- "excluding substitutes, coaching and postings marked part-time, student or temporary"
 NOT_MARKED_SHOWING_HE <- "excluding adjunct, part-time, student and temporary postings"
@@ -1103,55 +1097,9 @@ ui <- page_navbar(
   ),
 
   # ------------------ Global Introduction ------------------
-  nav_panel(
-    "Home", value = "intro", icon = icon("house"),
-    h1(class = "page-title", "Education Jobs in Wyoming"),
-    uiOutput("data_load_issues_banner"),
-    layout_columns(
-      col_widths = c(4, 4, 4),
-      uiOutput("kpi_k12_total", fill = TRUE),
-      uiOutput("kpi_he_total", fill = TRUE),
-      uiOutput("kpi_last_refreshed", fill = TRUE)
-    ),
-    # Drives the four tables below (counts, Share, sparklines) and the Jobs table their links open; KPI cards keep
-    # both numbers.
-    div(class = "home-basis-switch", style = "margin: 4px 0 -4px;",
-        input_switch("home_not_marked", HOME_SWITCH_LABEL, value = TRUE, width = "100%")),
-    layout_columns(
-      col_widths = c(6, 6),
-      dash_card("Top K-12 Hiring Districts This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_k12_districts")),
-                info = help_popover("Top K-12 hiring districts",
-                  p("The five districts with the most postings in this week's scrape, all job types (teachers, aides, drivers and so on). ", NOT_MARKED_NOTE,
-                    " Last 12 Weeks: the district's postings in each of its last 12 weekly scrapes, counted the same way. Click a district to see its jobs."),
-                  source = "each district's own job board, read twice a week, or the Wyoming School Boards Association vacancies list for districts without one.")),
-      dash_card("Top Higher Ed Hiring Institutions This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_he_institutions")),
-                info = help_popover("Top higher ed hiring institutions",
-                  p("The five colleges with the most postings in this week's scrape, faculty and staff. ", NOT_MARKED_NOTE_HE,
-                    " Last 12 Weeks: the college's postings in each of its last 12 weekly scrapes, counted the same way. Click a college to see its jobs."),
-                  source = "each college's own job board, read twice a week."))
-    ),
-    layout_columns(
-      col_widths = c(6, 6),
-      dash_card("Top K-12 Job Types This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_k12_job_types")),
-                info = help_popover("Top K-12 job types",
-                  p("The five most-posted K-12 job types in this week's scrape, with each type's share of those postings. ", NOT_MARKED_NOTE,
-                    " The sources never say a job is full-time, so this counts postings not marked otherwise. Most-posted is not the same as most in demand: a count of open postings also reflects turnover and how often a district posts."),
-                  p("Last 12 Weeks: that type's postings in each of the last 12 weekly scrapes, counted the same way. Click a type to see its jobs."),
-                  source = "each district's own job board, read twice a week, or the Wyoming School Boards Association vacancies list for districts without one.")),
-      dash_card("Top Higher Ed Job Types This Week",
-                div(style = "overflow-x: auto;", tableOutput("top_he_job_types")),
-                info = help_popover("Top higher ed job types",
-                  p("The five most-posted college job types in this week's scrape, faculty and staff, with each type's share of those postings. ", NOT_MARKED_NOTE_HE,
-                    " Most-posted is not the same as most in demand."),
-                  p("Last 12 Weeks: that type's postings in each of the last 12 weekly scrapes, counted the same way. Click a type to see its jobs."),
-                  source = "each college's own job board, read twice a week."))
-    ),
-    div(style = "text-align:center; color:#999; font-size:0.85em; padding:15px;",
-        paste0("Refreshed on: ", last_refreshed_date, " · Developed by Mike Bostick and Mark Perkins"))
-  ),
+  # Home tab: edjobs's home_tab_panel() (step 7 slice 2b).
+  home_tab_panel("Wyoming", "each district's own job board, read twice a week, or the Wyoming School Boards Association vacancies list for districts without one.",
+    last_refreshed_date, "Developed by Mike Bostick and Mark Perkins"),
 
   # Map tab: the layout, filters and shared text are edjobs's map_tab_panel(); this is Wyoming's own text.
   map_tab_panel(
