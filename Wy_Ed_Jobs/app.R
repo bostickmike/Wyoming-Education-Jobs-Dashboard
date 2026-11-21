@@ -675,15 +675,42 @@ VACANCY_RATE_MIN_FTE <- 10
 WSBA_SALARY_SOURCE_URL <- "https://sites.google.com/wsba-wy.org/my-wsba/wy-education-salaries"
 IPEDS_SALARY_SOURCE_URL <- "https://educationdata.urban.org"
 
-# WSBA's Salary_Year is a "2025-2026"-style school-year range -- the prior
-# year is that same range shifted back by one, not a separate value we
-# fetch. Used to put the actual year in the K-12 summary table's column
-# headers instead of a generic "Prior Year" label.
-prior_school_year_label <- function(year_label) {
-  parts <- regmatches(year_label, gregexpr("[0-9]{4}", year_label))[[1]]
-  if (length(parts) != 2) return(NA_character_)
-  paste0(as.integer(parts[1]) - 1, "-", as.integer(parts[2]) - 1)
-}
+# The Districts tab's pay and budget columns, their map popup lines, the compare plot's bars and the footnote's
+# state paragraphs (edjobs district_spec(), step 7 slice 3 part 3, 2026-11-21).
+# WSBA's base salary for the current and prior school year (the prior label is the same range shifted back a year,
+# prior_school_year_label()), WDE's average teacher salary and the superintendent's salary.
+DISTRICT_SPEC <- district_spec(
+  columns = list(
+    district_column("Teacher Base Salary (%s)", value = "Teacher_Base_Salary", year_col = "Salary_Year",
+                    year_fallback = "current year", card = "Base Starting Salary:"),
+    district_column("Teacher Base Salary (%s)", value = "Teacher_Base_Salary_Prior_Year", year_col = "Salary_Year",
+                    year_fallback = "prior year", prior_year = TRUE),
+    district_column("Teacher Avg Salary (%s WDE)", value = "Teacher_Avg_Salary", year_col = "WDE_Salary_Year",
+                    year_fallback = "2025-26", card = "Avg Salary (WDE):"),
+    district_column("Superintendent Salary", value = "Superintendent_Salary")
+  ),
+  popup_lines = list(
+    district_popup_line("Teacher base salary", "Teacher_Base_Salary", also = "Teacher_Base_Salary_Prior_Year",
+                        also_label = " prior year", year_col = "Salary_Year"),
+    district_popup_line("Average teacher salary", "Teacher_Avg_Salary", year_col = "WDE_Salary_Year", suffix = " (WDE)"),
+    district_popup_line("Superintendent salary", "Superintendent_Salary")
+  ),
+  compare_bars = c("Base Starting Salary" = "Teacher_Base_Salary", "Average Salary (WDE)" = "Teacher_Avg_Salary"),
+  compare_y_title = "Annual Salary ($)",
+  # Salary_Year and Salary_Source are the same for every district (one WSBA document covers all 48 for one school
+  # year), so they are a footnote with a live link rather than a column repeating one value.
+  source_notes = list(
+    district_source_note("Base salary data:", "Salary_Source", year_col = "Salary_Year", url = WSBA_SALARY_SOURCE_URL,
+                         url_text = "wsba-wy.org"),
+    district_source_note("Average teacher salary data:", "WDE_Salary_Source", year_col = "WDE_Salary_Year",
+                         url = "https://edu.wyoming.gov/data/staff-member-collection/", url_text = "edu.wyoming.gov",
+                         require_year = FALSE)
+  ),
+  saipe_scope_note = ". District-level (unlike the county context above).",
+  saipe_standin_note = "A charter school or early-childhood center has no Census poverty estimate of its own; it shows its surrounding district's estimate (marked \"Surrounding district\").",
+  page_length = 48,
+  shared_vacancy_note = "combined Sheridan + Gillette figure -- see note below"
+)
 
 k12_teacher_current_counts <- k12_history %>%
   filter(Archive_Date == max(Archive_Date)) %>%
@@ -1213,7 +1240,8 @@ server <- function(input, output, session) {
                                     state_name = "Wyoming", feedback_repo = FEEDBACK_REPO_DEFAULT,
                                     timezone = "America/Denver",
                                     map_view = list(lng = -107.5, lat = 43, zoom = 7), he_page_length = 9,
-                                    he_shared_salary_note = "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette")
+                                    he_shared_salary_note = "Shared salary & vacancy-rate reporting w/ Sheridan & Gillette",
+                                    district_spec = DISTRICT_SPEC)
   k12_not_marked_only <- shared$k12_not_marked_only
   selected_district <- shared$selected_district
   selected_k12_query <- shared$selected_k12_query
@@ -1229,436 +1257,6 @@ server <- function(input, output, session) {
       file.copy("wde602_district_staff_salaries.csv", file)
     }
   )
-
-
-  # District Summary -- everything the map popups show (vacancy rate,
-  # salary figures, source/date), but as a real exportable table instead
-  # of something only visible one marker at a time.
-  output$k12_summary_table <- renderDT({
-    k12_rows <- combined_map_data %>% filter(Type == "K-12 District")
-    year <- unique(na.omit(k12_rows$Salary_Year))
-    current_label <- if (length(year) > 0) year[1] else "current year"
-    prior_label <- if (length(year) > 0) prior_school_year_label(year[1]) else "prior year"
-    wde_years <- unique(na.omit(k12_rows$WDE_Salary_Year))
-    wde_label <- if (length(wde_years) > 0) wde_years[1] else "2025-26"
-
-    df <- k12_rows %>%
-      arrange(desc(CurrentCount)) %>%
-      transmute(
-        District = Name,
-        County,
-        `Current Openings` = CurrentCount,
-        # Real, sortable/filterable column -- not just a map badge or a
-        # buried code comment -- so "why does this district look quiet"
-        # is answerable directly from the exportable table, not just the
-        # map. "Full" is the overwhelming majority (every district on a
-        # real job-board platform); see the Map tab's helpText for what
-        # the partial tiers mean.
-        `Posting Data` = Data_Coverage,
-        `New This Week` = WeeklyNew,
-        `Teacher Vacancy Rate` = Vacancy_Rate,
-        Enrollment,
-        `Students per Teacher` = round(Students_Per_Teacher, 1),
-        TeacherBaseSalary = Teacher_Base_Salary,
-        TeacherBaseSalaryPrior = Teacher_Base_Salary_Prior_Year,
-        TeacherAvgSalary = Teacher_Avg_Salary,
-        `Superintendent Salary` = Superintendent_Salary,
-        # County-level context (Census ACS 5-Year) -- constant across
-        # sibling districts in the same county, same as any other county-
-        # level figure, and deliberately alongside the salary columns
-        # rather than off in a separate tab: "$46k pay in a county where
-        # median rent is $650/mo" is the actual comparison a prospective
-        # teacher is making, not two numbers looked up separately.
-        `County Median Income` = Median_Household_Income,
-        `County Median Rent (per month)` = Median_Gross_Rent,
-        # Share of the county's civilian workforce in mining/oil & gas --
-        # Wyoming's energy-producing counties pay teachers measurably more
-        # specifically to compete with these wages for the same local
-        # labor pool, so this is the one column here that helps explain
-        # WHY salaries vary across WY districts, not just what things cost.
-        `County Mining/Energy Jobs` = Mining_Employment_Share,
-        `County Figures: 90% Margin of Error` = county_moe_summary(Median_Household_Income_MOE, Median_Gross_Rent_MOE,
-                                                            Mining_Employment_Share, Mining_Employment_Share_MOE),
-        `County Population Trend (5yr)` = Population_Change_Pct,
-        # District-level, not county-level, unlike the four columns above --
-        # the closest free proxy to free/reduced-lunch eligibility at the
-        # actual district a posting is in (Census SAIPE doesn't publish
-        # free/reduced-lunch counts directly). A prospective teacher sizing
-        # up a district's student population, not just its town.
-        # Numbers, formatted by DT below, so the column sorts as numbers (the
-        # table sorts on the server, in R, by the underlying value); where the rate is a
-        # stand-in (a school with no SAIPE geography of its own) the next
-        # column says so.
-        `School-Age Children in Poverty (Census est.)` = Child_Poverty_Rate,
-        `Approx. 90% Range` = format_poverty_range(Child_Poverty_Low, Child_Poverty_High),
-        `Poverty Estimate Basis` = ifelse(is.na(Child_Poverty_Rate), NA_character_,
-                                      ifelse(is.na(Child_Poverty_Basis), "District", "Surrounding district")),
-        # School-based count beside the Census estimate (CCD school directory):
-        # share of students eligible for free or reduced-price lunch, and its year.
-        `Free/Reduced Lunch` = Free_Reduced_Lunch_Share,
-        `Lunch Data Year` = ifelse(is.na(Free_Reduced_Lunch_Share), NA_character_, FRL_Year)
-      )
-    # Real year in the header instead of a generic "Prior Year" label --
-    # cleaner than a separate Salary Year column repeating the same value
-    # in every row.
-    names(df)[names(df) == "TeacherBaseSalary"] <- paste0("Teacher Base Salary (", current_label, ")")
-    names(df)[names(df) == "TeacherBaseSalaryPrior"] <- paste0("Teacher Base Salary (", prior_label, ")")
-    names(df)[names(df) == "TeacherAvgSalary"] <- paste0("Teacher Avg Salary (", wde_label, " WDE)")
-
-    # Numeric columns stay numbers so the server-side sort is numeric
-    # (2026-11-09 review: "9%" sorted after "92%", "100%" first or last);
-    # DT formats them for display. Matched by prefix: some headers get a year.
-    cols_like <- function(prefixes) names(df)[vapply(names(df), function(n) any(startsWith(n, prefixes)), logical(1))]
-    datatable(df, filter = "top", extensions = "Buttons",
-              options = list(scrollX = TRUE, dom = "Bfrtip", buttons = c("copy", "csv", "print"), pageLength = 48)) %>%
-      formatPercentage(cols_like(c("Teacher Vacancy Rate", "County Mining/Energy Jobs", "School-Age Children in Poverty (Census est.)", "County Population Trend (5yr)")), digits = 1) %>%
-      formatPercentage(cols_like(c("Free/Reduced Lunch")), digits = 0) %>%
-      formatCurrency(cols_like(c("Teacher Base Salary", "Teacher Avg Salary", "Superintendent Salary", "County Median Income", "County Median Rent (per month)")), digits = 0) %>%
-      formatRound("Students per Teacher", digits = 1)
-  })
-
-  # Salary_Year and Salary_Source are the same for every district (one
-  # WSBA document covers all 48 for one school year) -- a column repeating
-  # an identical value 48 times isn't information, so it's a single
-  # footnote with a live link instead.
-  output$k12_summary_footnote <- renderUI({
-    year <- unique(na.omit(combined_map_data$Salary_Year[combined_map_data$Type == "K-12 District"]))
-    source <- unique(na.omit(combined_map_data$Salary_Source[combined_map_data$Type == "K-12 District"]))
-    wde_year <- unique(na.omit(combined_map_data$WDE_Salary_Year[combined_map_data$Type == "K-12 District"]))
-    wde_source <- unique(na.omit(combined_map_data$WDE_Salary_Source[combined_map_data$Type == "K-12 District"]))
-    acs_year <- unique(na.omit(combined_map_data$ACS_Year[combined_map_data$Type == "K-12 District"]))
-    saipe_year <- unique(na.omit(combined_map_data$SAIPE_Year[combined_map_data$Type == "K-12 District"]))
-    req(length(year) > 0, length(source) > 0)
-    tagList(
-      helpText(
-        "Base salary data:", source[1], paste0("(", year[1], " school year)"), "—",
-        tags$a(href = WSBA_SALARY_SOURCE_URL, target = "_blank", "wsba-wy.org")
-      ),
-      if (length(wde_source) > 0) {
-        helpText(
-          "Average teacher salary data:", wde_source[1],
-          if (length(wde_year) > 0) paste0("(", wde_year[1], " school year)") else "", "—",
-          tags$a(href = "https://edu.wyoming.gov/data/staff-member-collection/", target = "_blank", "edu.wyoming.gov")
-        )
-      },
-      if (length(acs_year) > 0) {
-        helpText(
-          "County context (income, rent, mining/energy employment share, population trend): US Census Bureau, American Community Survey 5-Year Estimates",
-          paste0("(", acs_year[1], ")"), "—",
-          tags$a(href = "https://www.census.gov/data/developers/data-sets/acs-5year.html", target = "_blank", "census.gov"),
-          ". County-level, not district-level -- sibling districts in the same county share the same figures.",
-          "\u00b1 values are the Census Bureau's 90% margins of error (the mining share's from Census's formula for a",
-          "proportion); a share whose margin is at least as large as the share is marked \"not distinguishable from 0\".",
-          "County population totals are set to Census's population estimates, so the 5-year trend has no margin of error."
-        )
-      },
-      helpText(
-        "Free/reduced lunch: share of students eligible for free or reduced-price lunch, NCES Common Core of Data",
-        "school directory (Lunch Data Year: that district's newest reporting year) --",
-        tags$a(href = "https://educationdata.urban.org/documentation/", target = "_blank", "educationdata.urban.org"),
-        ". A school-based count, not a poverty estimate: schools serving free meals to all (community eligibility)",
-        "may count every student; a share of 100% is marked \"every student counted (likely free meals for all)\".",
-        "Left blank where schools holding under 80% of a district's students reported."
-      ),
-      if (length(saipe_year) > 0) {
-        helpText(
-          "School-age children in poverty: US Census Bureau, Small Area Income and Poverty Estimates (SAIPE)",
-          paste0("(", saipe_year[1], ")"), "—",
-          tags$a(href = "https://www.census.gov/programs-surveys/saipe/data/datasets.html", target = "_blank", "census.gov/saipe"),
-          ". District-level (unlike the county context above).",
-          # Census: "A true poverty \"rate\" for children cannot be determined from these figures,
-          # because the numerator and denominator refer to slightly different universes" (SAIPE
-          # school district overview, revised 2026-01-12; Mike chose this label 2026-11-15).
-          "Census's estimate of related children 5-17 in families in poverty, divided by all children 5-17 in the district.",
-          "Census notes this is not a true poverty rate: foster children, other children not related to the householder and",
-          "children in group quarters are counted in the second figure only.",
-          # "Quantifying Relative Error in the School District Estimates" (census.gov, revised 2025-12-17).
-          "The range beside each estimate is Census's approximate 90% range for a district of that size: Census publishes",
-          "no margin of error for one district, only median relative errors by district size, which it calls an approximate",
-          "upper bound. Under 2,500 people an estimate can be off by about 110% of itself; at 65,000 or more, by about 25%.",
-          "A charter school or early-childhood center has no Census poverty estimate of its own; it shows its surrounding district's estimate (marked \"Surrounding district\")."
-        )
-      }
-    )
-  })
-
-
-  output$k12_compare_cards <- renderUI({
-    selected <- input$k12_compare_districts
-    if (is.null(selected) || length(selected) == 0) {
-      return(div(class = "alert alert-info", style = "margin-top: 15px;",
-                 icon("circle-info"), " Please select one to four school districts above to display comparative benchmarks."))
-    }
-    
-    col_width <- case_when(
-      length(selected) == 1 ~ 12,
-      length(selected) == 2 ~ 6,
-      length(selected) == 3 ~ 4,
-      TRUE ~ 3
-    )
-
-    k12_rows <- combined_map_data %>%
-      filter(Type == "K-12 District", Name %in% selected)
-
-    cards <- lapply(selected, function(dname) {
-      row <- k12_rows %>% filter(Name == dname)
-      if (nrow(row) == 0) return(NULL)
-
-      base_sal <- if (!is.na(row$Teacher_Base_Salary[1])) scales::dollar(row$Teacher_Base_Salary[1]) else "N/A"
-      avg_sal <- if (!is.na(row$Teacher_Avg_Salary[1])) scales::dollar(row$Teacher_Avg_Salary[1]) else "N/A"
-      vac_rate <- if (!is.na(row$Vacancy_Rate[1])) scales::percent(row$Vacancy_Rate[1], accuracy = 0.1) else "N/A"
-      enroll <- if (!is.na(row$Enrollment[1])) scales::comma(row$Enrollment[1]) else "N/A"
-      spt <- if (!is.na(row$Students_Per_Teacher[1])) sprintf("%.1f", row$Students_Per_Teacher[1]) else "N/A"
-      rent <- if (!is.na(row$Median_Gross_Rent[1])) paste0(scales::dollar(row$Median_Gross_Rent[1]), "/mo", format_moe_dollars(row$Median_Gross_Rent_MOE[1])) else "N/A"
-      poverty <- if (!is.na(row$Child_Poverty_Rate[1])) scales::percent(row$Child_Poverty_Rate[1], accuracy = 0.1) else "N/A"
-      if (!is.na(row$Child_Poverty_Rate[1]) && !is.na(row$Child_Poverty_Basis[1])) poverty <- paste(poverty, "(surrounding district)")
-      poverty_range <- format_poverty_range(row$Child_Poverty_Low[1], row$Child_Poverty_High[1])
-      if (!is.na(row$Child_Poverty_Rate[1]) && !is.na(poverty_range)) poverty <- paste0(poverty, " (", poverty_range, ")")
-      frl <- if (!is.na(row$Free_Reduced_Lunch_Share[1])) paste0(scales::percent(row$Free_Reduced_Lunch_Share[1], accuracy = 1), " (", row$FRL_Year[1], ")") else "N/A"
-      if (!is.na(row$Free_Reduced_Lunch_Share[1]) && row$Free_Reduced_Lunch_Share[1] >= 0.995) frl <- paste(frl, "-- every student counted (likely free meals for all)")
-
-      column(
-        width = col_width,
-        div(
-          class = "box box-solid box-primary",
-          style = "border-top: 3px solid #2a78d6; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px;",
-          div(
-            class = "box-header with-border", style = "background: #f7f9fa; padding: 10px 15px;",
-            h4(style = "margin: 0; font-size: 15px; font-weight: 600; color: #222;", dname),
-            tags$small(class = "text-muted", paste0(row$County[1], " County"))
-          ),
-          div(
-            class = "box-body", style = "padding: 15px;",
-            fluidRow(
-              column(6, div(style = "text-align: center; border-right: 1px solid #eee;",
-                           div(style = "font-size: 22px; font-weight: 700; color: #2a78d6;", row$CurrentCount[1]),
-                           div(style = "font-size: 11px; text-transform: uppercase; color: #777;", "Active Openings"))),
-              column(6, div(style = "text-align: center;",
-                           div(style = "font-size: 22px; font-weight: 700; color: #e67e22;", vac_rate),
-                           div(style = "font-size: 11px; text-transform: uppercase; color: #777;", "Vacancy Rate")))
-            ),
-            tags$hr(style = "margin: 12px 0;"),
-            tags$table(
-              style = "width: 100%; font-size: 13px; line-height: 1.8;",
-              tags$tr(tags$td(class = "text-muted", "Base Starting Salary:"), tags$td(style = "text-align: right; font-weight: 600;", base_sal)),
-              tags$tr(tags$td(class = "text-muted", "Avg Salary (WDE):"), tags$td(style = "text-align: right; font-weight: 600;", avg_sal)),
-              tags$tr(tags$td(class = "text-muted", "Enrollment:"), tags$td(style = "text-align: right; font-weight: 600;", enroll)),
-              tags$tr(tags$td(class = "text-muted", "Students / Teacher:"), tags$td(style = "text-align: right; font-weight: 600;", spt)),
-              tags$tr(tags$td(class = "text-muted", "County Median Rent:"), tags$td(style = "text-align: right; font-weight: 600;", rent)),
-              tags$tr(tags$td(class = "text-muted", "Children in Poverty (Census est.):"), tags$td(style = "text-align: right; font-weight: 600;", poverty)),
-              tags$tr(tags$td(class = "text-muted", "Free/Reduced Lunch:"), tags$td(style = "text-align: right; font-weight: 600;", frl))
-            )
-          )
-        )
-      )
-    })
-    fluidRow(cards)
-  })
-
-  output$k12_compare_salary_plot <- renderPlotly({
-    selected <- input$k12_compare_districts
-    if (is.null(selected) || length(selected) == 0) {
-      return(plot_ly(type = "scatter", mode = "none") %>% layout(
-        annotations = list(list(text = "Select one or more districts to display salary comparison",
-                                showarrow = FALSE, font = list(size = 14, color = "#666"))),
-        xaxis = list(visible = FALSE), yaxis = list(visible = FALSE)
-      ))
-    }
-    df <- combined_map_data %>%
-      filter(Type == "K-12 District", Name %in% selected) %>%
-      select(Name, Enrollment, Teacher_Base_Salary, Teacher_Avg_Salary) %>%
-      # Same district order as the enrollment and openings charts.
-      arrange(desc(coalesce(Enrollment, -1)), Name) %>%
-      mutate(Name = factor(Name, levels = Name))
-    
-    plot_ly(df, x = ~Name) %>%
-      add_bars(y = ~Teacher_Base_Salary, name = "Base Starting Salary", marker = list(color = "#4a90e2")) %>%
-      add_bars(y = ~Teacher_Avg_Salary, name = "Average Salary (WDE)", marker = list(color = "#50e3c2")) %>%
-      layout(
-        barmode = "group",
-        xaxis = list(title = "", tickangle = -15),
-        yaxis = list(title = "Annual Salary ($)", tickformat = "$,.0f"),
-        legend = list(orientation = "h", x = 0, y = 1.15),
-        margin = list(b = 60, l = 60, r = 20, t = 40)
-      )
-  })
-
-
-  observe({
-    df <- map_filtered()
-
-    # Clear unconditionally so unchecking every filter or having 0 matches
-    # empties the map safely without erroring on 0-row popups.
-    proxy <- leafletProxy("combined_map", data = df) %>% clearMarkers()
-    qcew_row <- match(sub(",.*$", "", trimws(as.character(df$County))), qcew_school_pay$County)
-    df$School_Pay_County <- ifelse(df$Type == "K-12 District", qcew_school_pay$Avg_Annual_Pay[qcew_row], NA_real_)
-    df$School_Pay_Year <- qcew_school_pay$Year[qcew_row]
-    if (nrow(df) == 0) return()
-
-    # Informative hover tooltip labels
-    labels <- with(df, sprintf(
-      "<strong>%s</strong><br/>%s%s%s",
-      Name,
-      ifelse(SearchActive,
-             sprintf("<span style='color:#198754;font-weight:600;'>🎯 %d matching opening%s for \"%s\"</span><br/>",
-                     DisplayCount, ifelse(DisplayCount == 1, "", "s"), SearchQuery),
-             sprintf("%d active opening%s<br/>", CurrentCount, ifelse(CurrentCount == 1, "", "s"))),
-      ifelse(!is.na(Vacancy_Rate), sprintf("Vacancy rate: %.1f%%<br/>", Vacancy_Rate * 100), ""),
-      "<span style='color:#666;font-size:11px;'>Click marker for details & jobs</span>"
-    )) %>% lapply(HTML)
-
-    # A marker click always just opens its popup (leaflet's default) --
-    # navigating away from the map has to be a second, deliberate action,
-    # so the "View all jobs" link below fires a Shiny input from inside
-    # the popup itself rather than reacting to the marker click event,
-    # which used to fire at the same instant as the popup opened and
-    # immediately navigated away before it could be read.
-    popups <- with(df, paste0(
-      "<div><strong>", Name, "</strong><br/>", ifelse(!is.na(Campus_Of), "Higher Ed campus or site", Type), "</div>",
-      ifelse(SearchActive,
-             paste0("<div style='margin:4px 0;background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:4px;font-weight:600;font-size:0.9em;'>",
-                    "🎯 ", DisplayCount, " matching opening", ifelse(DisplayCount == 1, "", "s"),
-                    " for &ldquo;", SearchQuery, "&rdquo; (out of ", CurrentCount, " total)</div>",
-                    ifelse(nzchar(MatchingSample), paste0("<div style='margin-bottom:4px;font-size:0.85em;'><strong>Matching:</strong> ", MatchingSample, "</div>"), "")),
-             ""),
-      # Visible badge, not just a footnote or a code comment -- Data_Coverage
-      # is "Full" for every district on a real structured job-board platform;
-      # the ~25-40% (own page) / ~25-40% only (WSBA-only) partial tiers come
-      # from misc_district_coverage_tiers() in misc_district_scrapers.R.
-      ifelse(!SearchActive & !is.na(Data_Coverage) & Data_Coverage != "Full",
-             paste0("<div style='margin:2px 0;'><span style='background:#fdecea;color:#a92f1e;",
-                    "font-size:0.78em;font-weight:bold;padding:1px 6px;border-radius:8px;'>",
-                    Data_Coverage, "</span></div>"),
-             ""),
-      "<div>Current openings: <strong>", CurrentCount, "</strong></div>",
-      ifelse(!is.na(Campus_Note), paste0("<div style='font-size:0.85em;color:#666;'>", Campus_Note, "</div>"), ""),
-      "<div>New this week: ", WeeklyNew, "</div>",
-      ifelse(!is.na(Vacancy_Rate),
-             paste0("<div>", ifelse(Type == "K-12 District", "Teacher", "Faculty"),
-                    " vacancy rate: ", scales::percent(Vacancy_Rate, accuracy = 0.1),
-                    ifelse(Vacancy_Rate_Shared,
-                           " <span style='color:#666;'>(combined Sheridan + Gillette figure -- see note below)</span>",
-                           ""),
-                    "</div>"),
-             ""),
-      ifelse(!SearchActive & nzchar(SampleTitles), paste0("<div>Recent postings: ", SampleTitles, "</div>"), ""),
-      ifelse(!is.na(Students_Per_Teacher),
-             paste0("<div>Students per ", ifelse(Type == "K-12 District", "teacher", "faculty member"), ": ",
-                    sprintf("%.1f", Students_Per_Teacher),
-                    " (", format(Enrollment, big.mark = ","), " students)</div>"),
-             ""),
-      # Institution-level, HE only -- K-12's equivalent trend is county-
-      # level (Population_Change_Pct, shown further down alongside income/
-      # rent/mining share) since no district-level enrollment trend is
-      # pulled here.
-      ifelse(!is.na(Enrollment_Change_Pct),
-             paste0("<div>Enrollment trend (5yr): ", ifelse(Enrollment_Change_Pct >= 0, "+", ""),
-                    scales::percent(Enrollment_Change_Pct, accuracy = 0.1), "</div>"),
-             ""),
-      # HE only -- see Pell_Recipient_Share's map_he comment for why
-      # there's no K-12 equivalent.
-      ifelse(!is.na(Pell_Recipient_Share),
-             paste0("<div>Pell Grant recipients: ", scales::percent(Pell_Recipient_Share, accuracy = 0.1),
-                    " of students (", Pell_Year, ")</div>"),
-             ""),
-      ifelse(!is.na(Teacher_Base_Salary),
-             paste0("<div>Teacher base salary: ", scales::dollar(Teacher_Base_Salary),
-                    ifelse(!is.na(Teacher_Base_Salary_Prior_Year),
-                           paste0(" (", scales::dollar(Teacher_Base_Salary_Prior_Year), " prior year)"),
-                           ""),
-                    " &middot; ", Salary_Year, "</div>"),
-             ""),
-      ifelse(!is.na(Teacher_Avg_Salary),
-             paste0("<div>Average teacher salary: ", scales::dollar(Teacher_Avg_Salary),
-                    ifelse(!is.na(WDE_Salary_Year), paste0(" &middot; ", WDE_Salary_Year), ""),
-                    " (WDE)</div>"),
-             ""),
-      ifelse(!is.na(Superintendent_Salary),
-             paste0("<div>Superintendent salary: ", scales::dollar(Superintendent_Salary), "</div>"),
-             ""),
-      ifelse(!is.na(Faculty_Avg_Salary),
-             paste0("<div>Avg. salary, full-time instructional staff (IPEDS, 9–12-month contracts): ", scales::dollar(Faculty_Avg_Salary),
-                    ifelse(!is.na(Faculty_Avg_Salary_Professor),
-                           paste0(" (Professor rank: ", scales::dollar(Faculty_Avg_Salary_Professor), ")"),
-                           ""),
-                    " &middot; ", Salary_Year, "</div>"),
-             ""),
-      ifelse(!is.na(Salary_Note),
-             paste0("<div style='font-size:0.85em;color:#666;'>", Salary_Note, "</div>"),
-             ""),
-      ifelse(!is.na(Salary_Source),
-             paste0("<div style='font-size:0.85em;color:#666;'>Salary source: ", Salary_Source, "</div>"),
-             ""),
-      ifelse(!is.na(Median_Household_Income),
-             paste0("<div style='font-size:0.85em;color:#666;margin-top:4px;'>County: median income ",
-                    scales::dollar(Median_Household_Income), format_moe_dollars(Median_Household_Income_MOE),
-                    ", median rent ", scales::dollar(Median_Gross_Rent), "/mo", format_moe_dollars(Median_Gross_Rent_MOE),
-                    ifelse(!is.na(Mining_Employment_Share) & Mining_Employment_Share >= 0.05,
-                           paste0(", ", scales::percent(Mining_Employment_Share, accuracy = 1), format_moe_points(Mining_Employment_Share_MOE),
-                                  " of jobs in mining/energy"),
-                           ""),
-                    "</div>"),
-             ""),
-      ifelse(!is.na(Child_Poverty_Rate),
-             paste0("<div style='font-size:0.85em;color:#666;'>",
-                    ifelse(is.na(Child_Poverty_Basis), "District: ", ""),
-                    scales::percent(Child_Poverty_Rate, accuracy = 0.1), " of school-age children in poverty (Census est.",
-                    ifelse(is.na(Child_Poverty_Low) | is.na(Child_Poverty_High), "",
-                           paste0("; ", format_poverty_range(Child_Poverty_Low, Child_Poverty_High))), ")",
-                    ifelse(is.na(Child_Poverty_Basis), "", paste0(" (", sub("^Surrounding", "surrounding", Child_Poverty_Basis), ")")),
-                    "</div>"),
-             ""),
-      ifelse(!is.na(Free_Reduced_Lunch_Share),
-             paste0("<div style='font-size:0.85em;color:#666;'>",
-                    scales::percent(Free_Reduced_Lunch_Share, accuracy = 1),
-                    " of students eligible for free/reduced-price lunch (", FRL_Year, ")",
-                    ifelse(Free_Reduced_Lunch_Share >= 0.995, " -- every student counted (likely free meals for all)", ""),
-                    "</div>"),
-             ""),
-      ifelse(!is.na(School_Pay_County),
-             paste0("<div style='font-size:0.85em;color:#666;'>", sub(",.*$", "", County),
-                    " public school employees averaged ", scales::dollar(School_Pay_County, accuracy = 1),
-                    " in ", School_Pay_Year, " (all roles; BLS QCEW)</div>"),
-             ""),
-      "<div style='margin-top:6px;'>",
-      "<a href='", Link, "' target='_blank'>Careers page</a>",
-      " &nbsp;|&nbsp; ",
-      # Carries the active map search with it, so the Jobs tab opens on just
-      # the postings this popup counted. URL-encoded so quotes in the query
-      # can't break out of the JS string.
-      "<a href='#' onclick=\"Shiny.setInputValue('map_popup_view_jobs', {entity: '",
-      gsub("'", "&#39;", Name, fixed = TRUE),
-      "', query: '",
-      ifelse(SearchActive,
-             vapply(coalesce(SearchKeyword, ""), utils::URLencode, character(1), reserved = TRUE, USE.NAMES = FALSE),
-             ""),
-      "', band: '", ifelse(SearchActive, SearchBand, ""),
-      "'}, {priority: 'event'}); return false;\">",
-      ifelse(SearchActive,
-             paste0("View ", DisplayCount, " matching job", ifelse(DisplayCount == 1, "", "s")),
-             "View all jobs"),
-      " &rarr;</a>",
-      "</div>"
-    ))
-
-    proxy %>%
-      addCircleMarkers(
-        lng = ~Longitude, lat = ~Latitude,
-        radius = ~map_marker_radius(DisplayCount),
-        fillColor = ~vacancy_rate_palette(Vacancy_Rate),
-        color = "#333333", weight = 1,
-        fillOpacity = 0.85,
-        layerId = ~Name,
-        label = labels,
-        labelOptions = labelOptions(
-          style = list("font-weight" = "normal", padding = "4px 8px"),
-          textsize = "12px",
-          direction = "auto"
-        ),
-        popup = popups
-      )
-  })
-
 
 }
 

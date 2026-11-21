@@ -1152,6 +1152,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     table rows shown.
     manifest.json: the edjobs entry for the `v0.70.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly
     workflow ref 0.70.0. Suite on the tag: 1,405 passed, 0 failed, 0 skipped.
+  * [x] Package review step 7, slice 3, part 3: the Districts tab and map markers from edjobs 0.71.0's
+    `dashboard_server_shared()` (2026-11-21; branch `slice3-districts`, edjobs #72, this repo's #91): the District
+    Summary table and footnote, the compare cards and salary plot, and the map marker observer. app.R keeps a
+    `DISTRICT_SPEC <- district_spec(...)`: WSBA base salary current and prior year (`prior_school_year_label()`, now edjobs's), WDE average, superintendent salary, their card rows and popup lines, the compare bars (base vs WDE average), the WSBA and WDE source notes and the Sheridan + Gillette vacancy remark. Parity vs main (`claude-notes/2026-11-21_step7-slice3b/`,
+    testServer, old app.R on 0.70.0 vs branch): table data and widget, footnote, cards and plot (none / 4 / 2
+    districts), and every popup and label (24 + 78) identical. One rule changed: a popup pay line drops " · year" when
+    the year is missing (no row here has one). manifest.json: the edjobs entry for the `v0.71.0` tag, and app.R's
+    checksum; EDJOBS_VERSION and the weekly workflow ref 0.71.0. Suite on the tag: 1,405 passed, 0 failed, 0 skipped. app.R is 1,263 lines
+    (1,665 before).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
