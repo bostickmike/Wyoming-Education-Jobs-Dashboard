@@ -1110,6 +1110,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     every tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check OK (0/0/0).
     manifest.json: the edjobs entry for the `v0.66.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly
     workflow ref 0.66.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
+  * [x] Package review step 7, slice 2b, Home: its UI from edjobs 0.67.0's `home_tab_panel()` (2026-11-21; branch
+    `home-tab-panel`, edjobs #66, this repo's #86). app.R passes Wyoming's name, where its K-12 postings come from,
+    the refreshed date and the credit line (Mike Bostick and Mark Perkins); the switch label and its two notes
+    (HOME_SWITCH_LABEL, NOT_MARKED_NOTE, NOT_MARKED_NOTE_HE) now come from edjobs. Checks vs main
+    (`claude-notes/2026-11-21_step7-slice2b-home-districts/`): page HTML identical (210,165 chars, `ui_parity.R`);
+    every tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check OK (0/0/0).
+    manifest.json: the edjobs entry for the `v0.67.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly
+    workflow ref 0.67.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
