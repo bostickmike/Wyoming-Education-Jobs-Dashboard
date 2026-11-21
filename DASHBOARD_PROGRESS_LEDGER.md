@@ -1058,6 +1058,16 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     posted-pay fix. manifest.json: the edjobs entry (with its new Suggests) from a pak install of the `v0.60.0` tag,
     feedback.R out of the file list, stale file checksums refreshed. Suite on the tag: 1,407 passed, 0 failed. Notes and scripts:
     `claude-notes/2026-11-21_step7-slice1/`.
+  * [x] Package review step 7, slice 2b, Data tab: its UI from edjobs 0.61.0's `data_tab_panel()` (2026-11-21;
+    branch `data-tab-panel`, edjobs #60; Mike 11-21: the package builds each tab, the state passes its text, one tab
+    per PR). app.R keeps only Wyoming's own text: 11 `data_tile()`s (fields it leaves out take the shared default
+    for that download), the provenance rows (`data_provenance_row()`; county, student need, CCD staffing and IPEDS
+    pay rows shared), and the citation and repository. The tile counts are now computed from the downloads at app
+    start (`download_rows()`, `rows_phrase()`); the hand-written ones were stale: 76,000+ K-12 and 29,000+ higher ed records for downloads of 13,513 and 18,532 rows; now 13,000+ and 18,000+. Checks vs main
+    (`claude-notes/2026-11-21_step7-slice2b-data/`): page HTML identical before the counts commit, only the count
+    lines after it (`ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown);
+    Data tab screenshots looked at. manifest.json edjobs entry from a pak install of the `v0.61.0` tag;
+    EDJOBS_VERSION and the weekly workflow ref 0.61.0. Suite on the tag: 1,383 passed, 0 failed.
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
