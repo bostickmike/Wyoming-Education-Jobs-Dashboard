@@ -1118,6 +1118,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     every tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R CMD check OK (0/0/0).
     manifest.json: the edjobs entry for the `v0.67.0` tag, and app.R's checksum; EDJOBS_VERSION and the weekly
     workflow ref 0.67.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped.
+  * [x] Package review step 7, slice 2b, K-12 Districts (the last tab): its UI from edjobs 0.68.0's
+    `k12_districts_panel()` (2026-11-21; branch `k12-districts-panel`, edjobs #67, this repo's #87). app.R keeps
+    Wyoming's text (the Openings note, the directory's pay/county paragraphs and source, the comparator blurb, the
+    openings source), the comparator's opening pair (Laramie 1 vs Natrona 1) and its salary chart's card (WSBA base
+    and WDE average). Checks vs main (`claude-notes/2026-11-21_step7-slice2b-home-districts/`): page HTML identical
+    (210,165 chars, `ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown). edjobs R
+    CMD check OK (0/0/0). manifest.json: the edjobs entry for the `v0.68.0` tag, and app.R's checksum; EDJOBS_VERSION
+    and the weekly workflow ref 0.68.0. Suite on the tag: 1,407 passed, 0 failed, 0 skipped. With all 11 tabs from
+    edjobs, app.R is 1,911 lines (2,299 before slice 2b).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
