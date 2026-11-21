@@ -1068,6 +1068,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     lines after it (`ui_parity.R`); every tab's outputs identical (shinytest2, 33/33, 122 table rows shown);
     Data tab screenshots looked at. manifest.json edjobs entry from a pak install of the `v0.61.0` tag;
     EDJOBS_VERSION and the weekly workflow ref 0.61.0. Suite on the tag: 1,383 passed, 0 failed.
+  * [x] Data tab wording: two tile counts that didn't match the data (2026-11-21; branch `data-tab-wording`). The
+    Higher Ed Archive tile said "Wyoming's 9 public community colleges and UW"; salarymap.csv has 9 institutions,
+    UW plus 8 community colleges (the provenance row already said 7 + Gillette + UW), so now "8". The WDE602 tile
+    said "51 districts"; the file's 51 are the 48 school districts plus 3 charter schools (Cheyenne Classical
+    Academy, Prairie View Community School, Wyoming Classical Academy), so it now says that. Page HTML vs main:
+    only those two lines differ (`claude-notes/2026-11-21_step7-slice2b-data/ui_parity.R`).
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
