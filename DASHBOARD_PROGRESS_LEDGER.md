@@ -1177,6 +1177,20 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     - he_job_duration_spells.csv: those 2 postings.
     The script wrote facultydata.csv with CRLF inside multi-line fields (2,228 CRs; the committed file has none), so
     they were stripped; the parsed table then differs only in those 19 Category values, in the same order.
+  * [x] `reclassify_committed_data.R` no longer writes CRs (2026-11-21; branch `reclassify-no-cr`). The raw HE
+    archives hold `\r\n` inside some multi-line text fields; `read.csv()` (so the weekly run's append) stores them
+    as `\n`, and `rebuild_parity_row()` ignores the difference, so the guard passed and `--apply` wrote them back
+    (the 2,228 CRs above). `in_committed_order()` now turns `\r\n` into `\n` in text columns. Check (rebuild at
+    the pinned classifier, each file written with the old and the fixed code, compared byte for byte with the
+    committed file): facultydata.csv old 2,228 CRs, fixed byte-identical; the other 10 files have no CRs either way.
+    Same fix in MT's copy. Follow-up (2026-11-22, same branch): a committed row now keeps its own text wherever the
+    rebuild differs only in what the guard ignores (NA vs "", \r\n vs \n), and every column is written as text,
+    so the committed quoting holds (the old number coercion wrote combinedclean.csv's quoted Est_Year bare). The
+    rebuild scripts' Rscript entry points (`rebuild_*_history_from_archive.R`) wrote with plain `write.csv()`: the
+    same 2,228 CRs, plus quoted dates in 9 files; they now write the committed format (row order stays the
+    rebuild's). Check: all 11 files byte-identical in both states; replaying b41c8c8 (facultydata.csv before ->
+    0.73.0 rebuild) gives the hand-cleaned commit byte for byte; the rebuild entry points give the committed
+    content with no CRs or quoting changes (only row order differs). Spell builders: no change.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
