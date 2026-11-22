@@ -1160,7 +1160,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     districts), and every popup and label (24 + 78) identical. One rule changed: a popup pay line drops " · year" when
     the year is missing (no row here has one). manifest.json: the edjobs entry for the `v0.71.0` tag, and app.R's
     checksum; EDJOBS_VERSION and the weekly workflow ref 0.71.0. Suite on the tag: 1,405 passed, 0 failed, 0 skipped. app.R is 1,263 lines
-    (1,665 before).
+    (1,665 before).  * [x] edjobs 0.72.0 (2026-11-21; branch `edjobs-0.72.0`). For WY only its pay fix applies: an amount in millions
+    or billions is not pay ("$1M ... endowment" was read as pay of $1, found on MT's new UM Interfolio source). No
+    archived Pay_Text in either state has such an amount, so no committed value changes. The release's other change
+    (the coverage calendar's `extra_sources`) is unused here. manifest.json: the edjobs entry for the `v0.72.0` tag;
+    EDJOBS_VERSION and the weekly workflow ref 0.72.0. Suite: 1,385 passed, 0 failed, 0 skipped.
+
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
