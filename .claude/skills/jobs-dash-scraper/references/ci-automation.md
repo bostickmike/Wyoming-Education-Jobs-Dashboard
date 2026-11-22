@@ -12,8 +12,8 @@
 You can't push, open PRs, comment, or edit labels. The workflow handles all of that after you finish, based on the files you leave. Don't commit either. Leave your changes in the working tree, and the workflow squashes them into one commit.
 
 After you exit, the workflow **rejects the whole run** if your diff touches anything outside:
-- the scraper files (`direct_api_scrapers.R`, `misc_district_scrapers.R`, `misc_college_scrapers.R` in Montana, and `eastern_wyoming_scraper.R` in Wyoming)
-- `tests/testthat/**` (fixtures and tests)
+- the scraper files (`direct_api_scrapers.R`, `misc_district_scrapers.R`, `misc_college_scrapers.R` in Montana)
+- `tests/testthat/**` (fixtures and tests), except `tests/testthat/parser-fixture-allowlist.csv`: never add a parser to it. A parser you fix or add needs a test on a captured page that asserts an exact title (`test-parser-fixtures.R`); if no page with a posting can be captured, say so in your report and leave the list to a human.
 - in `.edjobs/`: `R/platform_scrapers.R` and `tests/testthat/**` only. The workflow opens a separate PR on edjobs for those changes, and a human tags it and bumps `EDJOBS_VERSION` after merging.
 
 The registry, the `.Rmd`, workflows, data directories, and docs are human territory in CI. If the right fix needs them (platform migration, new URL), that's a "needs-human" outcome, not a fix.

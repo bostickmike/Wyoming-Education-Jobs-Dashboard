@@ -18,6 +18,25 @@ test_that("parse_uw_requisitions maps Oracle fields to the standard schema", {
   ))
 })
 
+test_that("parse_uw_requisitions reads a real captured page of UW's Oracle requisitions", {
+  # Real fixture captured 2026-11-22, unaltered: page 1 (25 of 230) of
+  # recruitingCEJobRequisitions?onlyData=true&expand=requisitionList&finder=findReqs;siteNumber=CX_1,limit=25,offset=0
+  # read the way fetch_uw_postings() reads each page.
+  parsed <- jsonlite::fromJSON(test_path("fixtures", "uw_requisitions_page1_2026-11-22.json"), simplifyVector = TRUE)
+  item <- parsed$items[1, ]
+  expect_equal(as.integer(item$TotalJobsCount), 230L)
+  ui_base <- "https://eeik.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1"
+  result <- parse_uw_requisitions(item$requisitionList[[1]], ui_base)
+
+  expect_equal(nrow(result), 25)
+  expect_equal(result$Title[1:2], c("Internal Auditor - Internal Audit Department",
+                                    "Glazier/Flooring Specialist - Structural Trades"))
+  expect_equal(result$Location[1], "Laramie, WY, United States")
+  expect_equal(result$Posted_Date[1], "2026-11-20")
+  expect_equal(result$Link[1], paste0(ui_base, "/job/262905"))
+  expect_false(anyNA(result$Title) || anyNA(result$Posted_Date) || anyDuplicated(result$Link) > 0)
+})
+
 test_that("fetch_uw_postings paginates through finder arguments and preserves each requisition", {
   page1 <- '{"items":[{"TotalJobsCount":3,"requisitionList":[
     {"Id":"101","Title":"First Job","PostedDate":"2026-08-01","PrimaryLocation":"Laramie"},
