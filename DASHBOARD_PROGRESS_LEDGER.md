@@ -1177,6 +1177,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     - he_job_duration_spells.csv: those 2 postings.
     The script wrote facultydata.csv with CRLF inside multi-line fields (2,228 CRs; the committed file has none), so
     they were stripped; the parsed table then differs only in those 19 Category values, in the same order.
+  * [x] `reclassify_committed_data.R` no longer writes CRs (2026-11-21; branch `reclassify-no-cr`). The raw HE
+    archives hold `\r\n` inside some multi-line text fields; `read.csv()` (so the weekly run's append) stores them
+    as `\n`, and `rebuild_parity_row()` ignores the difference, so the guard passed and `--apply` wrote them back
+    (the 2,228 CRs above). `in_committed_order()` now turns `\r\n` into `\n` in text columns. Check (rebuild at
+    the pinned classifier, each file written with the old and the fixed code, compared byte for byte with the
+    committed file): facultydata.csv old 2,228 CRs, fixed byte-identical; the other 10 files have no CRs either way.
+    Same fix in MT's copy. Separate, not fixed: combinedclean.csv comes back with Est_Year bare (committed quoted).
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the

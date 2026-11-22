@@ -179,6 +179,12 @@ ROW_IDENTITY <- list(
 in_committed_order <- function(new, old, id_cols) {
   new <- as.data.frame(new, stringsAsFactors = FALSE)
   new[] <- lapply(new, function(x) if (inherits(x, "Date")) format(x) else x)
+  # Line breaks as the committed file stores them: the raw archives hold
+  # \r\n inside some multi-line text fields, read.csv() (and so the weekly
+  # run's append) turns a quoted \r\n into \n, and the guard's parity check
+  # ignores the difference; written as is, they came back as ~2,200 stray
+  # CRs in WY's facultydata.csv (2026-11-21).
+  new[] <- lapply(new, function(x) if (is.character(x)) gsub("\r\n", "\n", x, fixed = TRUE) else x)
   k <- function(d) {
     base <- do.call(paste, c(lapply(d[id_cols], as.character), sep = "\u001f"))
     paste(base, stats::ave(seq_along(base), base, FUN = seq_along))   # repeated identities stay distinct
