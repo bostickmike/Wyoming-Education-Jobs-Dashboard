@@ -12,7 +12,7 @@
 You can't push, open PRs, comment, or edit labels. The workflow handles all of that after you finish, based on the files you leave. Don't commit either. Leave your changes in the working tree, and the workflow squashes them into one commit.
 
 After you exit, the workflow **rejects the whole run** if your diff touches anything outside:
-- the scraper files (`direct_api_scrapers.R`, `misc_district_scrapers.R`, `misc_college_scrapers.R` in Montana, and `eastern_wyoming_scraper.R` in Wyoming)
+- the scraper files (`direct_api_scrapers.R`, `misc_district_scrapers.R`, `misc_college_scrapers.R` in Montana)
 - `tests/testthat/**` (fixtures and tests)
 - in `.edjobs/`: `R/platform_scrapers.R` and `tests/testthat/**` only. The workflow opens a separate PR on edjobs for those changes, and a human tags it and bumps `EDJOBS_VERSION` after merging.
 

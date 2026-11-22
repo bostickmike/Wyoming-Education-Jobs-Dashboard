@@ -1198,6 +1198,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     archives before 11-13 have no `Posting_Source`, so WSBA rows count for a district there, and Sheridan County SD 3
     (own board 0 rows on 11-13 and 11-20, WSBA 3) can be listed from the fourth labeled run. The workflow step runs
     from the pin bump to 0.74.0, held until after the 11-24 WY run.
+  * [x] Every posting parser has a captured, non-empty fixture with an exact title (2026-11-22; branch
+    `test-kit-parser-fixtures`; test-kit plan item 4). `tests/testthat/test-parser-fixtures.R` (same file in MT): each
+    posting parser at the repo root needs a test that reads a captured fixture and asserts a literal title that can
+    only pass with rows, or a line in `parser-fixture-allowlist.csv` (empty here). UW's `parse_uw_requisitions()` was
+    tested only on a hand-built data frame: new fixture `uw_requisitions_page1_2026-11-22.json` (live page 1, 25 of
+    230, unaltered) and a test on it. `eastern_wyoming_scraper.R` (RSelenium, not called by the Rmd since Eastern
+    became a PeopleAdmin row in `he_institution_registry.csv`) deleted with its test, its `helper-setup.R` line and its
+    entry in `claude-autofix.yml`'s allowed paths. 10 parsers, all covered.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
