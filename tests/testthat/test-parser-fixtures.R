@@ -57,11 +57,14 @@ parser_fixture_coverage <- function(src_files, test_files) {
     if (reads && !grepl("\\b(g?sub|regmatches)\\(", body)) readers <- union(readers, as.character(e[[2]]))
   }
   test_exprs <- Filter(function(e) is.call(e) && identical(e[[1]], as.name("test_that")), exprs)
-  blocks <- vapply(test_exprs, text_of, "")
+  # The block's code only: a description that names a parser ("falls back to parse_x_postings()") is not a call.
+  blocks <- vapply(test_exprs, function(e) if (length(e) >= 3) text_of(e[[3]]) else "", "")
   reader_re <- if (length(readers)) paste0("\\b(", paste(readers, collapse = "|"), ")\\(") else "$^"
   reads_fixture <- grepl(fixture_re, blocks) | grepl(reader_re, blocks)
+  # A block that edits the page itself (sub/gsub/regmatches), or always skips, doesn't test a captured page.
+  edits_or_skips <- grepl("\\b(g?sub|regmatches)\\(|\\bskip\\(", blocks)
   asserts_title <- vapply(test_exprs, asserts_literal_title, TRUE)
-  good <- blocks[reads_fixture & asserts_title]
+  good <- blocks[reads_fixture & asserts_title & !edits_or_skips]
   covered <- vapply(defs, function(fn) any(grepl(paste0("\\b", fn, "\\("), good)), TRUE)
   data.frame(fn = defs, covered = unname(covered), stringsAsFactors = FALSE)
 }
@@ -85,14 +88,20 @@ test_that("the coverage check tells a real fixture test from an empty or hand-wr
   src <- withr::local_tempfile(fileext = ".R")
   writeLines(c("parse_a_postings <- function(html) NULL", "parse_b_postings <- function(html) NULL",
                "parse_c_postings <- function(html) NULL", "parse_d_postings <- function(html) NULL",
-               "parse_e_job_details <- function(html) NULL"), src)
+               "parse_e_job_details <- function(html) NULL", "parse_f_postings <- function(html) NULL",
+               "parse_g_postings <- function(html) NULL"), src)
   tst <- withr::local_tempfile(fileext = ".R")
   writeLines(c(
     'test_that("a", { r <- parse_a_postings(readLines(test_path("fixtures", "a.html"))); expect_true("Bus Driver" %in% r$Title) })',
     'test_that("b", { r <- parse_b_postings(readLines(test_path("fixtures", "b.html"))); expect_equal(nrow(r), 0) })',
     'test_that("c", { r <- parse_c_postings("<li>Cook</li>"); expect_equal(r$Title, "Cook") })',
-    'test_that("d", { r <- parse_d_postings(readLines(test_path("fixtures", "d.html"))); expect_false("Notice" %in% r$Title) })'), tst)
+    'test_that("d", { r <- parse_d_postings(readLines(test_path("fixtures", "d.html"))); expect_false("Notice" %in% r$Title) })',
+    # Named only in the description; the block tests parse_a_postings.
+    'test_that("falls back to parse_f_postings() on error", { r <- parse_a_postings(readLines(test_path("fixtures", "a.html"))); expect_true("Bus Driver" %in% r$Title) })',
+    # The fixture is edited inline to add a posting.
+    'test_that("g", { r <- parse_g_postings(gsub("No jobs", "<li>Cook</li>", readLines(test_path("fixtures", "g.html")))); expect_true("Cook" %in% r$Title) })'), tst)
   cov <- parser_fixture_coverage(src, tst)
-  expect_equal(cov$fn, c("parse_a_postings", "parse_b_postings", "parse_c_postings", "parse_d_postings"))
-  expect_equal(cov$covered, c(TRUE, FALSE, FALSE, FALSE))
+  expect_equal(cov$fn, c("parse_a_postings", "parse_b_postings", "parse_c_postings", "parse_d_postings",
+                         "parse_f_postings", "parse_g_postings"))
+  expect_equal(cov$covered, c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE))
 })
