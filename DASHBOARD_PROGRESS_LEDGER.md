@@ -1165,6 +1165,18 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     archived Pay_Text in either state has such an amount, so no committed value changes. The release's other change
     (the coverage calendar's `extra_sources`) is unused here. manifest.json: the edjobs entry for the `v0.72.0` tag;
     EDJOBS_VERSION and the weekly workflow ref 0.72.0. Suite: 1,385 passed, 0 failed, 0 skipped.
+  * [x] HE faculty category fixes, edjobs 0.73.0 (2026-11-21; branch `edjobs-0.73.0`, edjobs #75; Mike chose b), from
+    MT's UM Interfolio faculty titles. Clinical ranks, speech-language, forestry and the biological sciences are fixed,
+    and UW's Wyoming Institute for Disabilities is Health Sciences (an academic unit of UW's College of Health
+    Sciences, uwyo.edu/wind). Replay: 15 WY archived titles move. 14 WIND titles go Education -> Health Sciences;
+    "Clinical Assistant Professor - Educational Health Center of Wyoming" (UW College of Education's clinic) goes
+    Health Sciences -> Education. Committed data reclassified (`reclassify_committed_data.R --apply`):
+    - facultydata.csv: 19 rows (the EHC post's 15 to Education, WIND's Research Professor's 4 to Health Sciences;
+      WIND's Clinical Professor, 12 rows, stays Health Sciences);
+    - allsum_he.csv: 51 rows -> 52;
+    - he_job_duration_spells.csv: those 2 postings.
+    The script wrote facultydata.csv with CRLF inside multi-line fields (2,228 CRs; the committed file has none), so
+    they were stripped; the parsed table then differs only in those 19 Category values, in the same order.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
