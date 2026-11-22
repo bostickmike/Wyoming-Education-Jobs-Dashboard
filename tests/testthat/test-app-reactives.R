@@ -417,7 +417,7 @@ test_that("HE Vacancy_Numerator counts only full-time faculty postings, not adju
   }
 
   shared_differing <- intersect(differing, shared_names)
-  if (length(shared_differing) > 0) {
+  if (length(shared_differing) > 0) {  # guard-ok: the joint-count rule only applies when shared institutions differ
     expected_joint <- sum(vapply(shared_names, ft_only_count, numeric(1)))
     shared_rows <- he[he$Name %in% shared_names, ]
     expect_true(all(shared_rows$Vacancy_Numerator == expected_joint))
