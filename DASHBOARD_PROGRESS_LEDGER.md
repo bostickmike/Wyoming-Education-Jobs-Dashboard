@@ -1187,7 +1187,7 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     rebuild differs only in what the guard ignores (NA vs "", \r\n vs \n), and every column is written as text,
     so the committed quoting holds (the old number coercion wrote combinedclean.csv's quoted Est_Year bare). The
     rebuild scripts' Rscript entry points (`rebuild_*_history_from_archive.R`) wrote with plain `write.csv()`: the
-    same 2,228 CRs, plus quoted dates in 8 files; they now write the committed format (row order stays the
+    same 2,228 CRs, plus quoted dates in 9 files; they now write the committed format (row order stays the
     rebuild's). Check: all 11 files byte-identical in both states; replaying b41c8c8 (facultydata.csv before ->
     0.73.0 rebuild) gives the hand-cleaned commit byte for byte; the rebuild entry points give the committed
     content with no CRs or quoting changes (only row order differs). Spell builders: no change.
