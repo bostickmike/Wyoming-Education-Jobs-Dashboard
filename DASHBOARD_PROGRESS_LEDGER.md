@@ -1191,6 +1191,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     rebuild's). Check: all 11 files byte-identical in both states; replaying b41c8c8 (facultydata.csv before ->
     0.73.0 rebuild) gives the hand-cleaned commit byte for byte; the rebuild entry points give the committed
     content with no CRs or quoting changes (only row order differs). Spell builders: no change.
+  * [x] Silent-source check, repo side (2026-11-22; branch `silent-sources-check`; edjobs 0.74.0, bostickmike/edjobs#76;
+    test-kit plan item 1). `.github/scripts/check_silent_sources.R` runs `check_silent_sources_step()`: a registry
+    district or college with no rows in any of its last 4 weekly runs goes into the drift issue unless
+    `silent_sources_acknowledged.csv` (empty) lists it with a reason. On the archives today (11-22) it lists none:
+    archives before 11-13 have no `Posting_Source`, so WSBA rows count for a district there, and Sheridan County SD 3
+    (own board 0 rows on 11-13 and 11-20, WSBA 3) can be listed from the fourth labeled run. The workflow step runs
+    from the pin bump to 0.74.0, held until after the 11-24 WY run.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
