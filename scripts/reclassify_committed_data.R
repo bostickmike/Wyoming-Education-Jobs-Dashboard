@@ -179,17 +179,35 @@ ROW_IDENTITY <- list(
 in_committed_order <- function(new, old, id_cols) {
   new <- as.data.frame(new, stringsAsFactors = FALSE)
   new[] <- lapply(new, function(x) if (inherits(x, "Date")) format(x) else x)
+  # Every column as text, so write_csv_keep_quoting() quotes it as the
+  # committed file does (by column) and nothing else does: a number converted
+  # back to a number lost the quotes the pipeline writes around Est_Year in
+  # combinedclean.csv (2026-11-22).
+  new[] <- lapply(new, as.character)
   # Line breaks as the committed file stores them: the raw archives hold
   # \r\n inside some multi-line text fields, read.csv() (and so the weekly
   # run's append) turns a quoted \r\n into \n, and the guard's parity check
-  # ignores the difference; written as is, they came back as ~2,200 stray
+  # ignores the difference; written as is, they came back as 2,228 stray
   # CRs in WY's facultydata.csv (2026-11-21).
-  new[] <- lapply(new, function(x) if (is.character(x)) gsub("\r\n", "\n", x, fixed = TRUE) else x)
+  new[] <- lapply(new, function(x) gsub("\r\n", "\n", x, fixed = TRUE))
   k <- function(d) {
     base <- do.call(paste, c(lapply(d[id_cols], as.character), sep = "\u001f"))
     paste(base, stats::ave(seq_along(base), base, FUN = seq_along))   # repeated identities stay distinct
   }
   pos <- match(k(new), k(old))
+  # A committed row keeps its own text wherever the rebuild differs from it
+  # only in what the guard ignores (rebuild_parity_row(): NA vs "", \r\n vs
+  # \n), so the diff shows only what the classifier moved (MT facultydata.csv
+  # came back with a "" Location as NA, 2026-11-22).
+  same <- function(a, b) {
+    norm <- function(x) { x <- gsub("\r\n", "\n", x, fixed = TRUE); x[is.na(x) | x == ""] <- "<NA>"; x }
+    norm(a) == norm(b)
+  }
+  hit <- which(!is.na(pos))
+  for (col in intersect(names(new), names(old))) {
+    keep <- hit[same(new[[col]][hit], old[[col]][pos[hit]])]
+    new[[col]][keep] <- old[[col]][pos[keep]]
+  }
   if ("Archive_Date" %in% id_cols) {
     last_of_week <- tapply(seq_len(nrow(old)), old$Archive_Date, max)
     pos[is.na(pos)] <- unname(last_of_week[new$Archive_Date[is.na(pos)]]) + 0.5
@@ -197,19 +215,7 @@ in_committed_order <- function(new, old, id_cols) {
   pos[is.na(pos)] <- Inf
   # Committed columns in their order, then any column the pipeline now adds
   # (e.g. Role_Hint, 2026-11-09) at the end, as the next weekly run writes it.
-  out <- new[order(pos, seq_along(pos)), c(names(old)[names(old) %in% names(new)], setdiff(names(new), names(old))), drop = FALSE]
-  # Each column as the committed file stores it (a number unquoted, text
-  # quoted): Est_Year was written as a number by a hand repair on 2026-11-03
-  # and as text by the pipeline.
-  for (col in intersect(names(out), names(old))) {
-    committed_type <- class(utils::type.convert(old[[col]], as.is = TRUE))[1]
-    if (committed_type %in% c("integer", "numeric", "logical") && is.character(out[[col]])) {
-      out[[col]] <- methods::as(out[[col]], committed_type)
-    } else if (committed_type == "character" && !is.character(out[[col]])) {
-      out[[col]] <- as.character(out[[col]])
-    }
-  }
-  out
+  new[order(pos, seq_along(pos)), c(names(old)[names(old) %in% names(new)], setdiff(names(new), names(old))), drop = FALSE]
 }
 
 if (!apply_changes) {

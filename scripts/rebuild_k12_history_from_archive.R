@@ -140,12 +140,23 @@ if (sys.nframe() == 0) {
   source("history_accumulator.R")
   result <- rebuild_k12_history_from_archive()
 
-  write.csv(result$combinedclean, file.path("Wy_Ed_Jobs", "combinedclean.csv"), row.names = FALSE)
-  write.csv(result$k12jobs, file.path("Wy_Ed_Jobs", "k12jobanalysis.csv"), row.names = FALSE)
-  write.csv(result$allsum, file.path("Wy_Ed_Jobs", "allsum.csv"), row.names = FALSE)
-  write.csv(result$allnow, file.path("Wy_Ed_Jobs", "allnow.csv"), row.names = FALSE)
-  write.csv(result$k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"), row.names = FALSE)
-  write.csv(result$k12_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "k12_jobtype_weekly_totals.csv"), row.names = FALSE)
+  # Written as the committed file is (the weekly run's format): dates bare,
+  # each column quoted as the committed file quotes it, and \r\n inside a
+  # text field as \n (read.csv() and so the weekly append store it that way;
+  # written as is, the HE rebuild put 2,228 CRs into WY's facultydata.csv,
+  # 2026-11-22). Row order is the rebuild's own.
+  write_rebuilt <- function(df, path) {
+    df <- as.data.frame(df, stringsAsFactors = FALSE)
+    df[] <- lapply(df, function(x) gsub("\r\n", "\n", if (inherits(x, "Date")) format(x) else as.character(x), fixed = TRUE))
+    if (file.exists(path)) write_csv_keep_quoting(df, path) else utils::write.csv(df, path, row.names = FALSE)
+  }
+
+  write_rebuilt(result$combinedclean, file.path("Wy_Ed_Jobs", "combinedclean.csv"))
+  write_rebuilt(result$k12jobs, file.path("Wy_Ed_Jobs", "k12jobanalysis.csv"))
+  write_rebuilt(result$allsum, file.path("Wy_Ed_Jobs", "allsum.csv"))
+  write_rebuilt(result$allnow, file.path("Wy_Ed_Jobs", "allnow.csv"))
+  write_rebuilt(result$k12_district_weekly_totals, file.path("Wy_Ed_Jobs", "k12_district_weekly_totals.csv"))
+  write_rebuilt(result$k12_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "k12_jobtype_weekly_totals.csv"))
 
   cat("Rebuilt combinedclean.csv (", nrow(result$combinedclean), " rows), k12jobanalysis.csv (",
       nrow(result$k12jobs), " rows), allsum.csv/allnow.csv (",

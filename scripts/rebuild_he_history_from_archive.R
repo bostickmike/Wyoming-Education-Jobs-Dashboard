@@ -82,11 +82,22 @@ if (sys.nframe() == 0) {
   source("k12_he_classification.R")
   result <- rebuild_he_history_from_archive()
 
-  write.csv(result$facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
-  write.csv(result$allsum_he, file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
-  write.csv(result$allnow_he, file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
-  write.csv(result$he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
-  write.csv(result$he_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"), row.names = FALSE)
+  # Written as the committed file is (the weekly run's format): dates bare,
+  # each column quoted as the committed file quotes it, and \r\n inside a
+  # text field as \n (read.csv() and so the weekly append store it that way;
+  # written as is, the HE rebuild put 2,228 CRs into WY's facultydata.csv,
+  # 2026-11-22). Row order is the rebuild's own.
+  write_rebuilt <- function(df, path) {
+    df <- as.data.frame(df, stringsAsFactors = FALSE)
+    df[] <- lapply(df, function(x) gsub("\r\n", "\n", if (inherits(x, "Date")) format(x) else as.character(x), fixed = TRUE))
+    if (file.exists(path)) write_csv_keep_quoting(df, path) else utils::write.csv(df, path, row.names = FALSE)
+  }
+
+  write_rebuilt(result$facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"))
+  write_rebuilt(result$allsum_he, file.path("Wy_Ed_Jobs", "allsum_he.csv"))
+  write_rebuilt(result$allnow_he, file.path("Wy_Ed_Jobs", "allnow_he.csv"))
+  write_rebuilt(result$he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"))
+  write_rebuilt(result$he_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"))
 
   cat("Rebuilt facultydata.csv (", nrow(result$facultydata), " rows), allsum_he.csv/allnow_he.csv (",
       nrow(result$allsum_he), "/", nrow(result$allnow_he), " rows), he_institution_weekly_totals.csv (",
