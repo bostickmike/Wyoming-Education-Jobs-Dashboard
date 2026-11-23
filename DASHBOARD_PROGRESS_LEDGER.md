@@ -1241,6 +1241,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     shows (no "biggest movers" or vacancy-rate leaderboards); app.R's one Wyoming-only server block named (WDE staff
     download); archives are one snapshot per update (weekly before 11-17); the UW repair script in plain words;
     "update", not "run" or "week".
+  * [x] `scripts/reclassify_committed_data.R` sees every edjobs change (2026-11-22; branch
+    `reclassify-sees-all-edjobs`; both states). Its rebuild runs in the installed edjobs's namespace, so sourcing the
+    checkout's classifier file reached nothing inside the package, and 0.81.0's feed titles (`R/k12_history.R`) came
+    out "nothing to write". Now the guard requires the pinned tag installed (it stops and says so otherwise), and when
+    the checkout's `R/` differs from the tag, steps 2-3 rerun in a child process with the checkout installed in a
+    temporary library (the spell builders inherit it). Tested on MT (same script) at the 0.80.0 commit with 0.80.0 installed:
+    guard passes, then the same moves as the manual restatement, and `--apply` writes the five files byte for byte
+    as committed in `bump-edjobs-0.81.0`; with 0.81.0 installed the guard stops. WY: no-change path, nothing to write.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
