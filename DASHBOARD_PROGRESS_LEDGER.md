@@ -1206,6 +1206,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     230, unaltered) and a test on it. `eastern_wyoming_scraper.R` (RSelenium, not called by the Rmd since Eastern
     became a PeopleAdmin row in `he_institution_registry.csv`) deleted with its test, its `helper-setup.R` line and its
     entry in `claude-autofix.yml`'s allowed paths. 10 parsers, all covered.
+  * [x] edjobs pinned at 0.81.0 (2026-11-22; branch `bump-edjobs-0.81.0`; bostickmike/edjobs#83). 0.74.0-0.80.0 as
+    MT (silent sources, title lint, drift report blocks, pay range fix, drift acknowledgements by posting); 0.81.0:
+    OPI's generic titles take the description's job (MT only: WY's feed has no descriptions) and "Family Consumer
+    Science" / "Family & Consumer Science" are FCS, not Science Education. Reclassified with 0.81.0 installed: 19
+    k12jobanalysis rows Science Education -> Family and Consumer Science (2 archived titles), allsum regrouped;
+    posting spells unchanged.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
