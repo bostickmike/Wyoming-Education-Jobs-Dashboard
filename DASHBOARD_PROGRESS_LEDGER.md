@@ -1206,6 +1206,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     230, unaltered) and a test on it. `eastern_wyoming_scraper.R` (RSelenium, not called by the Rmd since Eastern
     became a PeopleAdmin row in `he_institution_registry.csv`) deleted with its test, its `helper-setup.R` line and its
     entry in `claude-autofix.yml`'s allowed paths. 10 parsers, all covered.
+  * [x] edjobs pinned at 0.81.0 (2026-11-22; branch `bump-edjobs-0.81.0`; bostickmike/edjobs#83). 0.74.0-0.80.0 as
+    MT (silent sources, title lint, drift report blocks, pay range fix, drift acknowledgements by posting); 0.81.0:
+    OPI's generic titles take the description's job (MT only: WY's feed has no descriptions) and "Family Consumer
+    Science" / "Family & Consumer Science" are FCS, not Science Education. Reclassified with 0.81.0 installed: 19
+    k12jobanalysis rows Science Education -> Family and Consumer Science (2 archived titles), allsum regrouped;
+    posting spells unchanged.
+  * [x] edjobs pinned at 0.82.0 (2026-11-22; same branch; bostickmike/edjobs#84): silent-source acknowledgements can
+    carry an `Empty_Text` pattern the board must still match (WY has no silent sources; no change).
+  * [x] edjobs pinned at 0.84.0 (2026-11-23; same branch; bostickmike/edjobs#85-#88): "Last 12 Weeks" sparklines
+    plot the latest count in each of the last 12 weeks, and the dashboard text says "update", not "scrape". Dashboard
+    code only: `reclassify_committed_data.R` guard passed at v0.84.0, nothing moved; posting spells unchanged.
+    Full rehearsal (11-23): every step passed except one post-run test, `test-app-reactives.R`'s "has new" map
+    filter, which asked for at least one district with a new teaching posting; 11-20 to 11-23 had none (53 teaching
+    postings, all seen before). Since the suite runs before each weekly run, a quiet few days would have blocked the
+    next run. The test now checks the filter keeps exactly the places with a new posting (same fix in MT).
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only

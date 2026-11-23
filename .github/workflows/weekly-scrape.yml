@@ -31,7 +31,7 @@ permissions:
 
 jobs:
   weekly:
-    uses: bostickmike/edjobs/.github/workflows/weekly-run.yml@v0.73.0
+    uses: bostickmike/edjobs/.github/workflows/weekly-run.yml@v0.84.0
     with:
       app_dir: Wy_Ed_Jobs
       rmd: Wy_ED_Jobs.Rmd

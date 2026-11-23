@@ -535,9 +535,14 @@ test_that("Map multi-dimensional filters and reset reactive controls function wi
     expect_true(nrow(v2) > 0)
     expect_true(all(v2$CurrentCount >= 2))
 
+    # "Has new" keeps exactly the places with a new posting. Compared with the unfiltered map rather than asking for
+    # at least one row: with two updates a week, a few quiet days can leave none (WY, 11-20 to 11-23: 53 teaching
+    # postings, none new), and the suite runs before each weekly run.
+    session$setInputs(map_urgency = "all")
+    v_all <- map_filtered()
     session$setInputs(map_urgency = "has_new")
     v_new <- map_filtered()
-    expect_true(nrow(v_new) > 0)
+    expect_setequal(v_new$Name, v_all$Name[v_all$WeeklyNew > 0])
     expect_true(all(v_new$WeeklyNew > 0))
 
     # Empty match state
