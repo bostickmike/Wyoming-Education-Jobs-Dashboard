@@ -28,7 +28,7 @@ Scraper files: `direct_api_scrapers.R` (real ATS APIs, K-12 + HE), `misc_distric
 3. Fixture + test in `tests/testthat/test-misc-district-scrapers.R` (heuristics), `test-apptegy-family.R` / `test-cyberschool-family.R` (family routines) or `test-direct-api-scrapers.R`.
 4. `.github/copilot-allowlist.txt`: add the district's domain (`test-copilot-allowlist.R` fails otherwise). While the Copilot path is still enabled, tell the user to paste it into repo Settings → Copilot → Internet access too.
 5. DLI teacher pay: look the district up in DLI's regional PDFs (`fetch_dli_region_pdf_text(<region>)` in `salary_scrapers.R`; nine regions, search every one, since names repeat across regions: Gallatin's and Hill's "Cottonwood Elementary" are in 4Rivers and HiLine). Found: add an `MT_DLI_DISTRICT_MAP` entry (pay "ND" or a count "<5" parse to NA, a real gap). Not found: add the district to `test-salary-scrapers.R`'s `setdiff(registry$District, names(MT_DLI_DISTRICT_MAP))` list.
-6. Documented counts: grep for the old count (`grep -rn "128" README.md CLAUDE.md DATA_COOKBOOK.md`) and update each mention.
+6. Documented counts: grep for the old count (`grep -rn "128" README.md CLAUDE.md METHODS.md`) and update each mention.
 7. `DISTRICT_BACKLOG.md` status.
 
 Context data needs no hand mapping since 2026-11-09: CCD staffing, SAIPE child poverty, OPI finance and the free/reduced lunch share come from `mt_district_crosswalk.csv` by the registry's NCES id (plus the town's high-school district by the crosswalk's rules), and `salarymap2.csv` gets the row on the next run. The hand maps (`MT_CCD_LEA_MAP`, `MT_SAIPE_DISTRICT_MAP`, `MT_OPI_FINANCE_LEA_MAP`) still win for the districts in them; add an entry only when the crosswalk ties the wrong districts.
