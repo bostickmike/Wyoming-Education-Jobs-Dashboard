@@ -60,7 +60,7 @@ Apptegy sites sit behind a Fastly "Client Challenge" that a plain request can't 
      --county "<County> County" --lat <lat> --lon <lon> --url "<employment page>" \
      --slug "<slug>" --leaid <NCES id> [--node text|pagebuilder] [--start "<regex>"] [--stop "<regex>"] [--skip "<regex>"]
    ```
-   It writes the registry row (with its list rules when one is given), the allowlist host, the DLI-unmapped test entry, a `test-apptegy-family.R` block asserting the titles the routine returns on the fixture, and the README/cookbook counts. It prints the titles: **check them against the live page**. Wrong or missing titles: try the other `--node`, or a `--start`/`--stop` rule (rerun after deleting the test block it wrote). Rerunning is safe (each step skips what's there).
+   It writes the registry row (with its list rules when one is given), the allowlist host, the DLI-unmapped test entry, a `test-apptegy-family.R` block asserting the titles the routine returns on the fixture, and the README/METHODS counts. It prints the titles: **check them against the live page**. Wrong or missing titles: try the other `--node`, or a `--start`/`--stop` rule (rerun after deleting the test block it wrote). Rerunning is safe (each step skips what's there).
 3. **Finish by hand:** `DISTRICT_BACKLOG.md`, CLAUDE.md's district count, the DLI map if there is one, the repo's Copilot internet-access setting. Change the shared filter (edjobs `R/apptegy.R`) only for a pattern several districts share, and rerun both states' family tests when you do.
 4. Tests (`test-apptegy-family.R`, `test-salary-scrapers.R`, `test-copilot-allowlist.R`), then `scripts/repro_scraper.R "<District>"` for the live run.
 

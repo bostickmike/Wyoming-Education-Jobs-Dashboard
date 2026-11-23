@@ -71,7 +71,7 @@ To minimize LLM token usage and prevent manual editing errors across coupled fil
    - `misc_district_scrapers.R` (CMS-specific boilerplate fetch/parse functions)
    - `tests/testthat/test-misc-district-scrapers.R` (unit test templates)
    - `README.md` (updates K-12 coverage count)
-   - `DATA_COOKBOOK.md` (updates K-12 coverage count)
+   - `METHODS.md` (updates K-12 coverage count)
    *Note:* If `--cms` is omitted, the script inspects the downloaded fixture and auto-detects the CMS.
 
 5. **Implement parser selector and empty-state handling**:
@@ -121,7 +121,7 @@ One confirmed case isn't worth a whole new extraction technique (the Box Elder p
 - **Keep old fixtures and their tests passing.** Sites flip between layouts, so a fix handles both.
 - **Respect the parser's existing scope.** Read the comment above the `parse_*` function and the existing tests. Some sources deliberately exclude standing substitute lists, and some count them. Restore what the parser used to find, and mention anything new instead of quietly widening it.
 - **HTTP goes through `perform_with_retry()`** (`scrape_helpers.R`), not bare `req_perform()`. Every scraper returns `Title, Location, Posted_Date, Link` and is wrapped by `safe_scrape()` upstream.
-- **Posting identity is a contract** (Montana `DATA_COOKBOOK.md` → "Posting identity"). Use a real per-posting URL as `Link` when one exists. Never use the board/listing URL as if it identified one posting.
+- **Posting identity is a contract** (Montana `METHODS.md` → "One posting, one ID"). Use a real per-posting URL as `Link` when one exists. Never use the board/listing URL as if it identified one posting.
 - **Don't touch** accumulated data (`Mt_Ed_Jobs/`, `Wy_Ed_Jobs/`), the archives, or `REQUIRED_SCHEMAS`.
 - **Run the full suite before you're done:** `Rscript -e 'testthat::test_dir("tests/testthat")'`. Several tests are coupled to the registry, so adding a row breaks them until you update the matching lists. The state reference names them.
 
