@@ -18,12 +18,12 @@ covers the choices behind them and their limits.
 - **Higher education:** the job boards of 9 colleges: the University of Wyoming's own careers site and the community
   colleges' NEOGOV and PeopleAdmin boards.
 - **When:** every board is read twice a week, Tuesdays and Fridays (Fridays only before 2026-11-17). Each reading is
-  a *run*, and every file records the run's date (`Archive_Date`).
+  an *update*, and every file records its date (`Archive_Date`).
 - **Since:** August 2024.
 
 ## One posting, one ID
 
-Each posting gets a `Posting_ID` that stays the same in every run it appears in, so counts, "new this week" and
+Each posting gets a `Posting_ID` that stays the same in every update it appears in, so counts, "new this week" and
 listing durations follow the posting rather than the row. Where a board gives each posting its own address or job
 number (AppliTrack, SchoolSpring, Red Rover, TedK12), the ID is built from that. Where it doesn't (district
 websites, WSBA), the ID is built from the district, link, title, location and posted date
@@ -74,7 +74,7 @@ and Gillette College report to IPEDS as one institution while they separate, so 
 
 ## Listing duration
 
-The Listing Duration tab lists each posting with the first and last run that showed it (`job_duration_spells.csv`,
+The Listing Duration tab lists each posting with the first and last update that showed it (`job_duration_spells.csv`,
 `he_job_duration_spells.csv`). Days listed is the span from the first to the last sighting, plus 7 days; a posting
 that disappears for more than 21 days and comes back under the same title starts a new row. It starts at the
 first sighting, which is often after the posting went up, and "no longer listed" means only that it stopped
@@ -87,9 +87,9 @@ That measure is built and published at the repository root (`posting_spells_k12.
 and their HE counterparts), not yet on the dashboard:
 
 - **Start:** the board's posted date when plausible (on or before the first sighting, at most a year earlier);
-  otherwise the first run that found it. A posting already listed the first time the dashboard read its board has
+  otherwise the first update that found it. A posting already listed the first time the dashboard read its board has
   an unknown start (*left-censored*).
-- **End:** a posting counts as ended only when its board was read successfully in the next run and it was gone. If
+- **End:** a posting counts as ended only when its board was read successfully in the next update and it was gone. If
   the board failed or moved, the end is unknown (*censored*).
 - **Left out of the medians, but kept in the files:** standing ads and pools ("Substitute Teachers", always
   hiring), boards that stopped changing (frozen), same-title postings that can't be told apart, and unknown starts.
@@ -111,15 +111,15 @@ CCD, IPEDS and Federal Student Aid figures come through the
 [Urban Institute Education Data Portal](https://educationdata.urban.org).
 
 A blank means the source has no figure (suppressed, or not reported), not that the dashboard skipped it. When a
-source fails in a run, the previous run's values are kept rather than blanked.
+source fails in a update, the previous update's values are kept rather than blanked.
 
 ## Files and history
 
-- `combinedclean.csv`, `hedata.xlsx`, `allnow.csv` and `allnow_he.csv` hold the latest run only. The other files
-  grow by one run at a time.
-- Every run also saves the raw postings (`Archivek12_Data/`, `Archived_HE_Data/`). The history files can be rebuilt
-  from them exactly, and the weekly run checks that they are.
-- A change to a counting rule applies from the next run on; earlier runs keep the counts they had unless the
+- `combinedclean.csv`, `hedata.xlsx`, `allnow.csv` and `allnow_he.csv` hold the latest update only. The other files
+  grow by one update at a time.
+- Every update also saves the raw postings (`Archivek12_Data/`, `Archived_HE_Data/`). The history files can be rebuilt
+  from them exactly, and every update checks that they are.
+- A change to a counting rule applies from the next update on; earlier updates keep the counts they had unless the
   history is recomputed from the raw files.
 
 ---
