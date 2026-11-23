@@ -24,7 +24,7 @@ There's no backlog file. Build one from the 48-district universe (WDE directory,
 3. Fixture + tests (`test-misc-district-platform-extractors.R` for platform parsers, `test-misc-district-orchestration.R` for registry/dispatch).
 4. `.github/copilot-allowlist.txt` + `test-copilot-allowlist.R` (same contract as Montana).
 5. `misc_district_coverage_tiers()` / Data_Coverage disclosure, if the district's coverage tier changes.
-6. Counts in `README.md` / `CLAUDE.md` / `DATA_COOKBOOK.md`.
+6. Counts in `README.md` / `CLAUDE.md` / `METHODS.md`.
 
 ## Quirks
 Sheridan/Gillette had a district split that has its own test (`test-sheridan-gillette-split.R`). UW's paginated feed has had duplicate-row bugs (`repair_uw_pagination_duplicates.R`). Repairs follow `--dry-run` then `--apply`.
