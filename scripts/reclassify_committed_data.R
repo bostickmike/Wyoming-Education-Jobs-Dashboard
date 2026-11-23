@@ -29,8 +29,10 @@
 #   Rscript scripts/reclassify_committed_data.R --apply    # write
 #   ... --skip-guard   only if the guard's difference is understood and wanted
 #   ... --edjobs <dir>  the edjobs checkout holding the changed classifier
-# --apply also needs that checkout installed (R CMD INSTALL <dir>): the spell
-# builders run as separate R processes and load the installed edjobs.
+# The guard needs the pinned tag installed. When the checkout's R/ differs from
+# the tag, steps 2-3 run in a child process with the checkout installed in a
+# temporary library (the rebuild runs in edjobs's namespace, so sourcing a file
+# reaches only code outside the package), and the spell builders inherit it.
 
 suppressPackageStartupMessages({ library(dplyr); library(readxl) })
 args <- commandArgs(trailingOnly = TRUE)
@@ -81,6 +83,12 @@ edjobs_changed <- !identical(readLines(pinned_classifier, warn = FALSE), readLin
 state_changed <- system2("git", c("diff", "--quiet", "HEAD", "--", "k12_he_classification.R")) != 0
 classifier_changed <- edjobs_changed || state_changed
 if (!skip_guard) {
+  # The rebuild runs in the installed edjobs's namespace, so "the classifier as committed" means the pinned
+  # tag installed (sourcing its classifier file below covers only that one file).
+  if (as.character(utils::packageVersion("edjobs")) != sub("^v", "", pinned_tag)) {
+    stop("The guard needs the pinned edjobs installed (", pinned_tag, "; installed ", as.character(utils::packageVersion("edjobs")),
+         "). Install it (pak::pak(\"bostickmike/edjobs@", pinned_tag, "\")), or pass --skip-guard.")
+  }
   if (edjobs_changed) source(pinned_classifier)
   if (state_changed) source(git_file(".", "HEAD", "k12_he_classification.R"))
   cat("Guard: rebuilding with the classifier as committed (edjobs ", pinned_tag, ", this repo at HEAD)...\n", sep = "")
@@ -95,6 +103,25 @@ if (!skip_guard) {
   cat("Guard passed: all", nrow(g), "files reproduced.\n\n")
 } else {
   cat("--skip-guard: not checking that the committed classifier reproduces the committed data.\n\n")
+}
+# A change anywhere in edjobs's R/ reaches the rebuild only through the installed package:
+# build_k12_combinedclean() and the rest run in edjobs's namespace, where sourcing a file into the global
+# environment changes nothing (0.81.0's feed titles, in R/k12_history.R, came out "nothing to write";
+# 2026-11-22). So when the checkout's R/ differs from the pinned tag, install the checkout into a temporary
+# library and run steps 2-3 there (its spell builders inherit the library). Untracked new files in R/ aren't
+# seen by `git diff`; commit them first.
+if (!nzchar(Sys.getenv("RECLASSIFY_WITH_CHECKOUT")) &&
+    system2("git", c("-C", edjobs_dir, "diff", "--quiet", pinned_tag, "--", "R")) != 0) {
+  lib <- tempfile("edjobs-checkout-lib"); dir.create(lib)
+  cat("The edjobs checkout's R/ differs from ", pinned_tag, ": installing it into a temporary library and ",
+      "rebuilding there.\n\n", sep = "")
+  if (system2("R", c("CMD", "INSTALL", "--no-test-load", "-l", shQuote(lib), shQuote(edjobs_dir)), stdout = FALSE, stderr = FALSE) != 0) {
+    stop("R CMD INSTALL -l <temp> ", edjobs_dir, " failed")
+  }
+  libs <- paste(c(lib, Sys.getenv("R_LIBS")[nzchar(Sys.getenv("R_LIBS"))]), collapse = ":")
+  status <- system2("Rscript", c("scripts/reclassify_committed_data.R", unique(c(args, "--skip-guard"))),
+                    env = c(paste0("R_LIBS=", shQuote(libs)), "RECLASSIFY_WITH_CHECKOUT=1"))
+  quit(save = "no", status = status)
 }
 source(working_classifier)
 source("k12_he_classification.R")
