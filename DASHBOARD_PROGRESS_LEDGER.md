@@ -1212,6 +1212,8 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Science" / "Family & Consumer Science" are FCS, not Science Education. Reclassified with 0.81.0 installed: 19
     k12jobanalysis rows Science Education -> Family and Consumer Science (2 archived titles), allsum regrouped;
     posting spells unchanged.
+  * [x] edjobs pinned at 0.82.0 (2026-11-22; same branch; bostickmike/edjobs#84): silent-source acknowledgements can
+    carry an `Empty_Text` pattern the board must still match (WY has no silent sources; no change).
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
