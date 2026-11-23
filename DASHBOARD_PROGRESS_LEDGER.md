@@ -1215,6 +1215,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     `DATA_COOKBOOK.md` (headed "SUPERSEDED", untested) becomes `METHODS.md`, for a data user, sources linked; its
     engineering notes stay in git history. Same in MT.
 
+  * [x] Dashboard text corrected (2026-11-23; branch `app-text-facts`; `claude-notes/2026-11-23_docs-review/app-text/`).
+    Partial badge: "WSBA reliably captures only ~25-40% of real openings" had no source (cut); it now says a Partial
+    district's postings come from its own site and WSBA, or WSBA only, and either can miss openings. Downloads: the
+    K-12 history is teaching postings only; the HE archive is faculty and adjuncts, no staff; weekly totals are
+    postings, not vacancies. Provenance: twice weekly; the real platform list; WSBA salaries "across all 48
+    districts" -> computed (47 with a starting base). METHODS.md: the Listing Duration tab shows first-to-last
+    sightings; the posting spells are built but not on the dashboard yet.
+
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a

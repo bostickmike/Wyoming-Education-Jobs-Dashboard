@@ -74,8 +74,17 @@ and Gillette College report to IPEDS as one institution while they separate, so 
 
 ## Listing duration
 
-The Listing Duration tab and the spells files follow each posting from its start to the run it was no longer
-listed.
+The Listing Duration tab lists each posting with the first and last run that showed it (`job_duration_spells.csv`,
+`he_job_duration_spells.csv`). Days listed is the span from the first to the last sighting, plus 7 days; a posting
+that disappears for more than 21 days and comes back under the same title starts a new row. It starts at the
+first sighting, which is often after the posting went up, and "no longer listed" means only that it stopped
+appearing.
+
+Days listed is not time to fill: filled jobs can stay posted, and open jobs get reposted. For that reason the tab
+shows the table only, without medians or charts, until a more careful measure has been checked.
+
+That measure is built and published at the repository root (`posting_spells_k12.csv`, `posting_durations_k12.csv`
+and their HE counterparts), not yet on the dashboard:
 
 - **Start:** the board's posted date when plausible (on or before the first sighting, at most a year earlier);
   otherwise the first run that found it. A posting already listed the first time the dashboard read its board has
@@ -84,10 +93,8 @@ listed.
   the board failed or moved, the end is unknown (*censored*).
 - **Left out of the medians, but kept in the files:** standing ads and pools ("Substitute Teachers", always
   hiring), boards that stopped changing (frozen), same-title postings that can't be told apart, and unknown starts.
-- Medians use the Kaplan-Meier method, so postings still listed count for as long as they've been up.
-
-Days listed is not time to fill: filled jobs can stay posted, and open jobs get reposted. The mechanics, with a
-worked example, are in the edjobs package's [posting spells vignette](https://github.com/bostickmike/edjobs/blob/main/vignettes/posting-spells.Rmd).
+- Medians use the Kaplan-Meier method, so postings still listed count for as long as they've been up. The mechanics,
+  with a worked example, are in the edjobs package's [posting spells vignette](https://github.com/bostickmike/edjobs/blob/main/vignettes/posting-spells.Rmd).
 
 ## Context data
 
