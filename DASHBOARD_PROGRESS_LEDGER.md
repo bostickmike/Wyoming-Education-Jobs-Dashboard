@@ -1217,6 +1217,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] edjobs pinned at 0.84.0 (2026-11-23; same branch; bostickmike/edjobs#85-#88): "Last 12 Weeks" sparklines
     plot the latest count in each of the last 12 weeks, and the dashboard text says "update", not "scrape". Dashboard
     code only: `reclassify_committed_data.R` guard passed at v0.84.0, nothing moved; posting spells unchanged.
+    Full rehearsal (11-23): every step passed except one post-run test, `test-app-reactives.R`'s "has new" map
+    filter, which asked for at least one district with a new teaching posting; 11-20 to 11-23 had none (53 teaching
+    postings, all seen before). Since the suite runs before each weekly run, a quiet few days would have blocked the
+    next run. The test now checks the filter keeps exactly the places with a new posting (same fix in MT).
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
