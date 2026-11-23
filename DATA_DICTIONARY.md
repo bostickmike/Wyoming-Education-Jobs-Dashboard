@@ -201,7 +201,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `Institution` | String | This dashboard: district and college list | Canonical name of the public college or university. |
 | `Link` | URL | Job posting (college job board) | Direct URL link to the official higher education employment vacancy announcement. |
 | `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: run snapshot | Date of the run that saw the posting listed (runs are twice a week since 2026-11-17, weekly before). |
-| `Job_Type` | Categorical | This dashboard: job title classification | Collegiate appointment category: Instructor/Teacher/Faculty, Adjunct/Part-Time Faculty, or Staff. |
+| `Job_Type` | Categorical | This dashboard: job title classification | Instructor/Teacher/Faculty or Adjunct/Part-Time Faculty (this file holds faculty postings only). |
 | `Category` | String | This dashboard: job title classification | Academic discipline, instructional field, or administrative functional area. |
 
 **Repeated rows.** 170 rows are exact repeats of another row in the same week (August 2024 to January 2026, 1-5 per week, mostly Sheridan College's "Part-time Faculty Pool" listings and University of Wyoming faculty titles). Those snapshots link to the listing page rather than the posting, so two identical rows can be two real openings with the same title; they are kept, and counted as separate postings. Weeks since January 2026 have none.
@@ -234,7 +234,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `Name` | String | This dashboard: district and college list | Official legal institution name of the public college or university. |
+| `Name` | String | This dashboard: district and college list | College or university name. |
 | `IPEDS_UNITID` | String (6-digit) | NCES IPEDS | Official 6-digit federal NCES Integrated Postsecondary Education Data System Unit ID. |
 | `IPEDS_Link` | URL | NCES IPEDS | Link to this institution's page in NCES College Navigator, built from IPEDS_UNITID (edjobs college_navigator_url()). The page shows NCES's newest year, which can be newer than this file's year columns. Blank when the institution has no IPEDS id. |
 | `Longitude` | Decimal Degrees | This dashboard: district and college list | Geographic longitude coordinate of main campus centroid. |
@@ -293,7 +293,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 
 | Column Name | Data Type | Source Authority | Description |
 | :--- | :--- | :--- | :--- |
-| `Institution` | String | This dashboard: district and college list | Canonical public college or university name. |
+| `Institution` | String | This dashboard: district and college list | College or university name. |
 | `Archive_Date` | Date (YYYY-MM-DD) | This dashboard: run snapshot | Date of the run. |
 | `n` | Integer | This dashboard: run snapshot | Total count of active job postings observed open for that higher education institution in that run. |
 
