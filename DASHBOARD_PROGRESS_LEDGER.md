@@ -1207,6 +1207,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     became a PeopleAdmin row in `he_institution_registry.csv`) deleted with its test, its `helper-setup.R` line and its
     entry in `claude-autofix.yml`'s allowed paths. 10 parsers, all covered.
 
+  * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
+    Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
+    reports. Data dictionary: Data tab name; teaching / faculty-only files; days listed is not time to fill; runs,
+    not weeks; now every shipped file (71 rows, 12 files; college estimates are IPEDS staff averages or the UW
+    salary book, `Est_Source`), and `test-data-dictionary.R` fails on any undocumented file in `Wy_Ed_Jobs/`.
+    `DATA_COOKBOOK.md` (headed "SUPERSEDED", untested) becomes `METHODS.md`, for a data user, sources linked; its
+    engineering notes stay in git history. Same in MT.
+
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
