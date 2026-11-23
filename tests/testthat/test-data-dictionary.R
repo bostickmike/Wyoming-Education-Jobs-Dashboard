@@ -40,7 +40,8 @@ test_that("every column in every public research CSV is documented in data_dicti
     file_path <- file.path(app_dir, f)
     expect_true(file.exists(file_path), info = paste("Documented file does not exist:", f))
 
-    actual_cols <- names(utils::read.csv(file_path, nrows = 1))
+    actual_cols <- if (grepl("\\.xlsx$", f)) names(readxl::read_excel(file_path, n_max = 1)) else
+      names(utils::read.csv(file_path, nrows = 1, check.names = FALSE))
     actual_cols <- setdiff(actual_cols, "X") # drop row-index col if present
 
     dict_cols <- dict$Column_Name[dict$File_Name == f]
@@ -97,4 +98,15 @@ test_that("DATA_DICTIONARY.md mirrors data_dictionary.csv datasets and files", {
     expect_true(grepl(paste0("`", f, "`"), md_text, fixed = TRUE),
                 info = paste("DATA_DICTIONARY.md does not reference file:", f))
   }
+})
+
+test_that("every data file in the app folder is documented in data_dictionary.csv", {
+  # The repository is public, so every file shipped beside app.R is published data (the dictionary itself aside).
+  dict_path <- here::here("Wy_Ed_Jobs", "data_dictionary.csv")
+  skip_if_not(file.exists(dict_path), "data_dictionary.csv not found")
+  dict <- utils::read.csv(dict_path, stringsAsFactors = FALSE)
+  shipped <- list.files(here::here("Wy_Ed_Jobs"), pattern = "\\.(csv|xlsx)$")
+  undocumented <- setdiff(shipped, c(unique(dict$File_Name), "data_dictionary.csv"))
+  expect_equal(undocumented, character(0),
+               info = paste("Files in Wy_Ed_Jobs/ not in data_dictionary.csv:", paste(undocumented, collapse = ", ")))
 })
