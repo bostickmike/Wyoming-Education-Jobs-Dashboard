@@ -1214,6 +1214,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     posting spells unchanged.
   * [x] edjobs pinned at 0.82.0 (2026-11-22; same branch; bostickmike/edjobs#84): silent-source acknowledgements can
     carry an `Empty_Text` pattern the board must still match (WY has no silent sources; no change).
+  * [x] edjobs pinned at 0.84.0 (2026-11-23; same branch; bostickmike/edjobs#85-#88): "Last 12 Weeks" sparklines
+    plot the latest count in each of the last 12 weeks, and the dashboard text says "update", not "scrape". Dashboard
+    code only: `reclassify_committed_data.R` guard passed at v0.84.0, nothing moved; posting spells unchanged.
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
