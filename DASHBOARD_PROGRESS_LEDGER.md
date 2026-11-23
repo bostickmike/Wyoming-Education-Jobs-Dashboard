@@ -1222,6 +1222,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings, not vacancies. Provenance: twice weekly; the real platform list; WSBA salaries "across all 48
     districts" -> computed (47 with a starting base). METHODS.md: the Listing Duration tab shows first-to-last
     sightings; the posting spells are built but not on the dashboard yet.
+  * [x] README read against the running app and the registry (2026-11-23; branch `docs-readme`): Home lists what it
+    shows (no "biggest movers" or vacancy-rate leaderboards); app.R's one Wyoming-only server block named (WDE staff
+    download); archives are one snapshot per update (weekly before 11-17); the UW repair script in plain words;
+    "update", not "run" or "week".
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the

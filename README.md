@@ -6,10 +6,10 @@ A live dashboard of K-12 and higher education job openings across Wyoming, with 
 
 ## What it does
 
-- **Home**: headline counts with change since the last run, the districts and colleges hiring most (with 12-week trend sparklines), biggest movers, and leaderboards for highest vacancy rate.
+- **Home**: open K-12 and college postings, each with a 12-week trend line and the change since the last update; the five districts, colleges, K-12 job types and college job types with the most postings, each with its own 12-week line; and a switch that leaves out substitute, coaching and part-time jobs.
 - **Map**: every district and college with a current opening (districts and charter schools posting only on WSBA's statewide list included). Circle size is current openings; color is the vacancy rate (openings as a share of teaching or faculty staff).
 - **K-12 and Higher Ed menus**, each with:
-  - **Jobs**: every open posting, filterable and exportable, with posted pay where the posting states it. A "New this week" filter shows postings that appeared since the previous run.
+  - **Jobs**: every open posting, filterable and exportable, with posted pay where the posting states it. A "New this week" filter shows postings that appeared since the previous update.
   - **Districts** / **Colleges**: a directory with openings, vacancy rate, pay (including multi-year salary trends where the source supports it) and community context per district or college, and a head-to-head comparison of up to four.
   - **Trends**: current counts by category with sparklines and change over a month, quarter or year, and multi-year charts with a Simple or Detailed category toggle.
   - **Listing Duration**: how long postings stay listed, by job type.
@@ -29,9 +29,9 @@ A live dashboard of K-12 and higher education job openings across Wyoming, with 
 | Higher ed fall enrollment (FTE) | IPEDS via the Urban Institute Education Data Portal, a different survey component from the two rows above — powers a students-per-faculty figure and a 5-year enrollment trend, the HE analogues of K-12's students-per-teacher and county population trend |
 | Higher ed Pell Grant recipient share | US Dept. of Education, Federal Student Aid, via the Urban Institute Education Data Portal — the HE analogue of K-12's district child poverty rate (a different federal program, since SAIPE has no HE equivalent) |
 | County-level context (median income, median rent, mining/energy employment share, 5-year population trend) | US Census Bureau, American Community Survey 5-Year Estimates, via the [Census Data API](https://www.census.gov/data/developers/data-sets/acs-5year.html) directly — joined onto each K-12 district's own county and, since 2026-08-06, each HE institution's own county too |
-| District-level child poverty rate | US Census Bureau, [Small Area Income and Poverty Estimates (SAIPE)](https://www.census.gov/programs-surveys/saipe/data/datasets.html), via the same Census Data API — real per-district figures, not county-level like the row above |
+| District-level child poverty rate | US Census Bureau, [Small Area Income and Poverty Estimates (SAIPE)](https://www.census.gov/programs-surveys/saipe/data/datasets.html), via the same Census Data API — figures for each district, not for its county like the row above |
 
-WSBA publishes only the current year's salary settlement with no public archive, so multi-year K-12 salary history is captured and grown by this project's own weekly pipeline going forward, one snapshot per new settlement year. IPEDS is queryable by year directly, so higher-ed salary already shows multiple years back.
+WSBA publishes only the current year's salary settlement with no public archive, so this project keeps its own multi-year K-12 salary history (`k12_salary_history.csv`): one snapshot for each new settlement year. IPEDS is queryable by year directly, so higher-ed salary already shows multiple years back.
 
 ## Automation
 
@@ -54,18 +54,17 @@ Two smaller workflows: `presence.yml` records once a day which postings the plat
 
 ## Repository layout
 
-- `Wy_ED_Jobs.Rmd` — the single pipeline entry point: scrapes every source, classifies and cleans postings, and appends this week's newly derived rows onto the accumulated datasets in `Wy_Ed_Jobs/`.
-- `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself. Its tabs and most of its server come from edjobs (one function per tab, such as `home_tab_panel()`, and `dashboard_server_shared()`); app.R loads the data, passes Wyoming's text for each tab, and keeps the server blocks that still differ by state.
+- `Wy_ED_Jobs.Rmd` — the single pipeline entry point: scrapes every source, classifies and cleans postings, and adds each update's new rows to the accumulated datasets in `Wy_Ed_Jobs/`.
+- `Wy_Ed_Jobs/app.R` — the Shiny dashboard itself. Its tabs and most of its server come from edjobs (one function per tab, such as `home_tab_panel()`, and `dashboard_server_shared()`); app.R loads the data, passes Wyoming's text and settings, and keeps the one server block only Wyoming has (the WDE staff salary download).
 - `*_scrapers.R`, `k12_he_classification.R`, `drift_check.R`, `scrape_helpers.R` — Wyoming's own scrapers and its parts of classification and monitoring (name corrections, posting identity); each attaches edjobs, which holds the shared platform scrapers, classifier and checks.
 - `EDJOBS_VERSION` — the [edjobs](https://github.com/bostickmike/edjobs) version this repo pins: the R package with the code Wyoming and Montana share (platform scrapers, classifier, posting spells, the weekly run's checks, the dashboard's tabs).
 - `METHODS.md` — how the numbers are made: what counts as a posting, WSBA de-duplication, categories, pay, vacancy rate, listing duration, context data.
 - `DATA_DICTIONARY.md` (and `Wy_Ed_Jobs/data_dictionary.csv`, shown on the dashboard's Data tab) — every published file and column.
-- `history_accumulator.R` — appends each week's newly classified rows onto the existing accumulated datasets (idempotent, schema-checked) instead of reprocessing the full raw archive every run.
-- edjobs `fetch_census_county_context()` — county-level socioeconomic context from the Census Bureau's ACS 5-Year Estimates, joined onto each K-12 district's own county in `salarymap2.csv`.
-- edjobs `fetch_census_saipe_child_poverty()` — district-level child poverty (by NCES id) rate from the Census Bureau's SAIPE program, joined directly onto each K-12 district (not county-level like the ACS fetch).
-- `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per week, going back to August 2024, still written every run as the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to verify the incremental path hasn't drifted.
-- `scripts/repair_uw_pagination_duplicates.R` — narrow, fail-closed repair for the historical UW Oracle pagination incident. Run `Rscript scripts/repair_uw_pagination_duplicates.R --dry-run`, review the report, then run it with `--apply` to repair verified repeated Oracle IDs and rebuild affected current/historical HE datasets.
-- `tests/testthat/` — the test suite, built almost entirely on real captured fixtures (real scraped HTML, real downloaded PDFs, real API responses) rather than synthetic data.
+- `history_accumulator.R` — adds each update's newly classified rows to the accumulated datasets (a same-day re-run replaces that day's rows; a column mismatch stops the run) instead of reprocessing the whole raw archive each time.
+- Census context comes from edjobs: `fetch_census_county_context()` (ACS 5-Year Estimates, by county) and `fetch_census_saipe_child_poverty()` (SAIPE child poverty, by district's NCES id), both joined onto each K-12 district in `salarymap2.csv`.
+- `Archivek12_Data/`, `Archived_HE_Data/` — one dated raw snapshot per update (weekly until 2026-11-17, twice a week since), going back to August 2024: the durable source of truth. `scripts/rebuild_*_history_from_archive.R` rebuild the accumulated datasets from these from scratch, for disaster recovery or to check that the incremental path matches a full rebuild (each update checks this too).
+- `scripts/repair_uw_pagination_duplicates.R` — a one-time repair for an old University of Wyoming problem: its careers site's paging repeated postings, so some were counted twice. Run it with `--dry-run` and read the report, then with `--apply`; it changes only postings whose Oracle ID repeats and rebuilds the college files they touch.
+- `tests/testthat/` — the test suite, built almost entirely on fixtures captured from the live sources (scraped HTML, downloaded PDFs, API responses) rather than made-up data.
 - `.github/workflows/weekly-scrape.yml` — the automation described above: a short caller of edjobs's reusable `weekly-run.yml` at the pinned tag, holding Wyoming's cron, secrets and state check.
 
 ## Running locally
