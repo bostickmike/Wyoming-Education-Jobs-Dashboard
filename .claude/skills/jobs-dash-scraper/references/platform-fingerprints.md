@@ -30,7 +30,7 @@ The most common win: a district's own "Employment" page is just a link out to on
 | Finalsite | `finalsite`, `fs-` class prefixes, `resources.finalsite.net` | Often confused with Apptegy, so check the footer. |
 | Edlio | `edlio`, `edliocdn` | WY has `parse_wy_edlio_postings`. |
 | SchoolBlocks | `schoolblocks` | WY `parse_schoolblocks_postings(widget_title=…)`. |
-| SmartSites | `smartsites`, `/\d+_\d+` page paths | WY `parse_smartsites_postings`. |
+| SmartSites | `smartsites`, `/\d+_\d+` page paths | edjobs `fetch_smartsites_postings()` (registry Platform `SmartSites`; posts list, document list and image gallery widgets; edjobs 0.88.0). |
 | Educational Networks | `educationalnetworks.net` | WY `parse_educational_networks_postings`. |
 | WordPress | `wp-content`, `wp-json` | WY `parse_wy_wordpress_postings`. Look at the `wp-json` REST API before scraping HTML. |
 | Google Sites | `sites.google.com` | JS-rendered, innerText. MT Cut Bank, WY `googlesites`. |

@@ -103,6 +103,21 @@ python3 <skill-dir>/scripts/fingerprint_platform.py <url> [<url> ...]
 
 It fetches the raw HTML and reports known platform signatures, outbound ATS links (an employment page that just links to `applitrack.com/<slug>` is an AppliTrack district), and whether the page looks JS-rendered (a tiny body with no text means you need chromote, so look at the rendered innerText before concluding anything). It's a lead generator, and it can be wrong. Confirm by looking at the live page, through the rendered text when it's JS-heavy.
 
+## Simple pages: a CSS-board rule, not a new parser
+
+When a page's postings are found by CSS selectors alone (an accordion of titles, a list of PDF links, one card per
+posting with its title, link and place inside), don't write a `parse_*` function. Give the registry row Platform
+`CSSBoard` and add a row to the state's `css_board_rules.csv`, keyed by `Source` (the registry name). edjobs
+`parse_css_board()` reads it (edjobs 0.87.0; `?css_board_rules` documents every column): `Title_CSS` (required);
+`Item_CSS` (one element per posting); `Link_CSS` (blank = the page, `@title` = the title's own `href`, else a
+selector inside the item); `Location_CSS` (inside the item; blank = the registry's place); `Board_CSS` (an element
+the board always has, postings or not: set it, so a redesigned page is an error instead of "no postings");
+`Exclude_Regex` / `Include_Regex` (on the title); `Max_Title_Chars`; `Max_Tries`. Test it like any scraper: a real
+captured fixture and the exact Title/Location/Link vectors. Fixing a broken CSS board means editing its rules row,
+not code; in CI that file is outside the allowed paths, so (as for Apptegy's `List_*` registry columns) report the
+row change on the issue instead of editing. A page that needs text markers, dates or paired anchors is still a
+one-off, or belongs to a family (Apptegy, CyberSchool, Google Sites, WordPress, ...).
+
 ## Bespoke heuristic scrapers: when yes, when no
 
 Build one only when the live page has a **structural marker** that separates postings from everything else: a heading the openings sit under, a stable start/stop text marker, a list or table, or a JSON payload. Decline, and record why, when:
