@@ -1149,8 +1149,14 @@ ui <- page_navbar(
             p(tags$strong("Average Salary (WDE): "), "the average total pay of the district's teachers."),
             source = "Wyoming School Boards Association salary settlements (starting base); Wyoming Department of Education, Staff Member Collection, WDE602 (average).")),
       openings_source = "each district's own job board, or the Wyoming School Boards Association vacancies list."),
-    # K-12 Trends tab: edjobs's k12_trends_panel() (step 7 slice 2b).
-    k12_trends_panel(k12nowsum, k12sum),
+    # K-12 Trends tab: edjobs's k12_trends_panel() (step 7 slice 2b); the note on old board ads (edjobs
+    # flag_stale_board_postings(), 2026-11-24; METHODS.md "Old board ads").
+    k12_trends_panel(k12nowsum, k12sum, counting_note = tagList(
+      tags$strong("How postings are counted: "),
+      "a job listed on both a district's own board and WSBA's statewide list counts once, from the district's board. ",
+      "Since the end of November 2026, board ads posted (or closing) before the July 1 that began the previous school year aren't counted, ",
+      "except substitute pools and jobs districts advertise all year (bus drivers, paraprofessionals, custodians, food service, coaches); ",
+      "earlier weeks still count them.")),
     k12_spells_panel()
   ),
 
@@ -1209,7 +1215,7 @@ ui <- page_navbar(
     provenance_rows = list(
       data_provenance_row(layer = "Job Openings", source = "District Hiring Portals & Statewide Feeds",
                           cadence = "Twice weekly", badge = "success",
-                          description = "Read from each district's job board (AppliTrack, SchoolSpring, Red Rover, TedK12, Paylocity, or its own website), WSBA's statewide vacancies list, and each college's board (NEOGOV, PeopleAdmin, UW's Oracle site). A job listed on both a district board and WSBA counts once; postings are sorted into role categories."),
+                          description = "Read from each district's job board (AppliTrack, SchoolSpring, Red Rover, TedK12, Paylocity, or its own website), WSBA's statewide vacancies list, and each college's board (NEOGOV, PeopleAdmin, UW's Oracle site). A job listed on both a district board and WSBA counts once; board ads from before the previous school year are left out (except substitute pools and jobs advertised all year); postings are sorted into role categories."),
       data_provenance_row(layer = "Starting Base Salaries", source = "Wyoming School Boards Association (WSBA)", cadence = "Annual",
                           description = paste0("Starting base salary for a teacher with a bachelor's degree (step 1) and the superintendent's salary, from WSBA's salary documents; ",
                                                sum(!is.na(mapdata2_k12$Teacher_Base_Salary)), " districts on the map have a starting base.")),

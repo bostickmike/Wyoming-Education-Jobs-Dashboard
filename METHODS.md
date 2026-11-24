@@ -38,6 +38,22 @@ title and posted date, or when WSBA's link names the board posting's job number.
 listed only there. WSBA is an association's list, not a census of vacancies, and a job missing from the dashboard
 is not evidence that no vacancy exists.
 
+## Old board ads
+
+A job board can keep an ad listed, and keep taking applications through it, until the district takes it down,
+whatever dates the ad shows: AppliTrack's closing date is a note the district types, not a deadline the board
+enforces. From the end of November 2026, a district board posting (AppliTrack, SchoolSpring, Red Rover, TedK12 or a
+dated district website) whose posted date, or stated closing date, is before the July 1 that began the previous
+school year (July 1, 2025 during the 2026-27 school year) doesn't count. Two kinds of ads count whatever their
+dates: standing pools (substitutes), and jobs districts advertise all year and fill again and again (bus drivers and
+bus aides, paraprofessionals and aides, custodians and maintenance staff, food service, athletic coaches). A WSBA
+posting that is the same ad (it links the posting, or has its district, title and posted date) doesn't count
+either. The raw postings keep the old ads, each with its reason (`Stale_Reason`); the counts and the Jobs table leave
+them out. On the November 20, 2026 postings the rule would have set aside 6 of 688 board postings. A date can't show
+which old ads are still real openings: a specialist post a district has struggled to fill (a speech pathologist, an
+occupational therapist) may be one. Earlier updates keep the counts they had (see "Files and history"), so the
+totals step down once, by about that many postings, when the rule begins.
+
 ## Categories
 
 - **K-12 position** (`position`), from the title: Teacher, Substitute, Paraprofessional, Athletics, Support Services,
