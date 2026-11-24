@@ -1279,6 +1279,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     temporary library (the spell builders inherit it). Tested on MT (same script) at the 0.80.0 commit with 0.80.0 installed:
     guard passes, then the same moves as the manual restatement, and `--apply` writes the five files byte for byte
     as committed in `bump-edjobs-0.81.0`; with 0.81.0 installed the guard stops. WY: no-change path, nothing to write.
+  * [x] edjobs pinned at 0.89.0 (2026-11-24; branch `pin-edjobs-0.89.0`; bostickmike/edjobs#94). A platform's
+    `scraper_spec()` can name its parser (`parse_fn`); the auto-fix evidence finds a source's fixtures from the tests of
+    the fetch function and that parser. Before, the parser was guessed as the fetch function's `parse_*` twin, which for
+    CSS boards (`fetch_css_board_postings()` -> `parse_css_board()`) named no function. Named in edjobs for CSS boards,
+    AppliTrack, SchoolSpring, Red Rover, NEOGOV and Trakstar. Also syncs the vendored `jobs-dash-scraper` skill (CSS-board
+    rules; SmartSites is an edjobs family). Suite on 0.89.0: 1,443 passed, 0 failed.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
