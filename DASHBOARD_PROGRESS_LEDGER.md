@@ -1250,6 +1250,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     GitHub): every step passed; the run flagged 6 of 706 board postings and split off 1 WSBA row as the same ad
     (Carbon #2 OT: WSBA dates it 2026-05-11 and links the 2023 AppliTrack job 546); `combinedclean.csv` 718 -> 712
     rows; 0 counted board rows the rule would flag; rebuild parity passed; suites 1,451 passed, 0 failed (pre and post).
+  * [x] edjobs pinned at 0.91.0 (2026-11-24; branch `pin-edjobs-0.91.0`; bostickmike/edjobs#96, #97). K-12 Trends tab:
+    the counting note is a footnote at the bottom of the tab instead of a box under the multi-year plot, whose date
+    axis and legend it covered (both Trends plots are drawn 500px tall; their containers were 400px, now 500px). The
+    Current and Multi-Year help popovers say the counts are full teaching positions only. Checked by screenshot of
+    both sub-tabs (`claude-notes/2026-11-24_pin-0.91.0/trends-*.png`). Suite on 0.91.0: 1,470 passed, 0 failed.
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
