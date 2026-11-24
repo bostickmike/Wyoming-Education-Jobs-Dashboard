@@ -1251,6 +1251,19 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     suite 1,443 passed, 0 failed; Park 16 1 row, Platte 1 12 (`claude-notes/2026-11-24_smartsites-build/rehearsal_wy.log`).
     The committed pin files match the rehearsed copy (manifest: same edjobs entry, the rest is the Mac's `writeManifest`
     rewrite).
+  * [x] App boot smoke test waits for what it checks (2026-11-24; branch `boot-smoke-wait`;
+    `claude-notes/2026-11-24_boot-smoke/README.md`; same change in MT). `test-app-boot-smoke.R` failed when a suite or a
+    render ran beside it and passed alone. Causes: `AppDriver$new()` loads the first page on chromote's 10 s command
+    timeout, which `load_timeout` doesn't cover (a starved app server fails the boot at exactly 10 s, "timed out waiting
+    for response to command Page.navigate"); `set_inputs()` gives up silently after 30 s without an output change; each
+    widget was read after a fixed `wait_for_idle()`. Now every wait is for its condition, bounded by
+    `BOOT_SMOKE_TIMEOUT_S` (default 120): the server's `sidebar_tabs` equals the tab, Shiny idle 1 s, the widget's HTML
+    matches before it is read; chromote's timeout is raised for the boot. The longitudinal-plot check had passed on
+    the empty container since the plot moved to the Trends card's Historical tab (11-21): the test now opens that tab
+    and requires `js-plotly-plot|main-svg`. The popup test starts from Home. Proof: with the app server paused 15 s
+    after it starts listening, then 2.5 s of every 4 s, the old file failed 4 of 4 runs per state at boot; the new one
+    passed 5 of 5 per state (43 expectations each). Alone it takes about 30 s instead of 57 s. Suite on 0.88.0:
+    1,462 passed, 0 failed.
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
