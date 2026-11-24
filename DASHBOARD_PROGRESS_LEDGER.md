@@ -1235,6 +1235,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     "Live dashboard check" issue and a pass closes it. Runs after each weekly update (`workflow_run`: the data push
     by the Actions token starts no push workflow), on merges that touch `Wy_Ed_Jobs/`, and daily. Checks the date only: after
     a code-only change a pass shows the page loads with the right data, not that it runs the new code. Suite on 0.86.0: 1,456 passed, 0 failed.
+  * [x] Stale board ads flagged, not counted; edjobs pinned at 0.90.0 (2026-11-24; branch `stale-board-rule`;
+    bostickmike/edjobs#95; measured in `claude-notes/2026-11-24_stale-ats-ads/README.md`, built in
+    `claude-notes/2026-11-24_stale-rule/`). Mike: chose the recommendation (option C, "V1"), for scaling to more states
+    and the most complete and accurate data. A board or district-website posting whose posted date, or a stated
+    closing date that parses, is before the July 1 that began the previous school year is flagged (`Stale_Reason`)
+    and not counted, except standing pools and ongoing roles (bus, para/aide, custodial/maintenance, food service,
+    athletic coaches). `flag_stale_k12_rows()` (`misc_district_scrapers.R`, edjobs `flag_stale_board_postings()`)
+    runs before `remove_wsba_direct_duplicates()`; a WSBA row that is the same ad as a flagged posting is split off
+    with `STALE_FEED_LINK_REASON` (archived, not counted, not page-checked). `combinedclean` and the rebuild use
+    `drop_stale_rows()`; spells keep flagged board rows and leave out the WSBA copies. Forward-only (METHODS.md "Old
+    board ads"). Replay: 6 of 688 board rows flagged on 11-20 (6 of 674 on 11-24); 1 of them (Carbon #2 OT) is on
+    WSBA too. Full rehearsal (11-24, v0.90.0 from
+    GitHub): every step passed; the run flagged 6 of 706 board postings and split off 1 WSBA row as the same ad
+    (Carbon #2 OT: WSBA dates it 2026-05-11 and links the 2023 AppliTrack job 546); `combinedclean.csv` 718 -> 712
+    rows; 0 counted board rows the rule would flag; rebuild parity passed; suites 1,451 passed, 0 failed (pre and post).
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
@@ -1300,6 +1315,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     rules; SmartSites is an edjobs family). Suite on 0.89.0: 1,443 passed, 0 failed.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals
+  step down once and the legacy `job_duration_spells.csv` shows the flagged teaching ads as "Closed / Filled" at the
+  rule's start. Open choice for Mike: restate the history from the raw archives with the rule (each week's own cutoff).
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
   separate address, recommended; (B) an optional field whose address the app emails to Mike privately via a mail

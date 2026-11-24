@@ -63,7 +63,7 @@ test_that("incrementally appending the latest week reproduces a full rebuild thr
   # mirror Wy_ED_Jobs.Rmd / rebuild_k12_history_from_archive(): drop
   # byte-identical RAW rows (before classify_k12_position() overwrites the
   # raw `position` column) so a job listed once per building counts once
-  raw_latest <- distinct(raw_latest)
+  raw_latest <- distinct(drop_stale_rows(raw_latest))   # flagged stale board ads aren't counted
   raw_latest$Archive_Date <- as.character(as.Date(raw_latest$Archive_Date))
   has_source_ids <- "posting_id" %in% names(raw_latest)
   if (!has_source_ids) raw_latest$posting_id <- NA_character_

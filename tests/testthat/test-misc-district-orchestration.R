@@ -333,3 +333,30 @@ test_that("refresh_k12_static_columns takes the map's fixed columns from the reg
   expect_equal(r$Job_Link, c("new", "n"))
   expect_equal(r$Teacher_Base_Salary, c(50000, NA))
 })
+
+# Stale board ads (edjobs flag_stale_board_postings(), 2026-11-24): flag_stale_k12_rows() on the real 11-20 archive.
+# Its Carbon #2 "Occupational Therapist(s)" (AppliTrack job 546, posted 2023-12-22) was also on WSBA (Also_On_Feed);
+# that run dropped the WSBA copy as a duplicate, so it is rebuilt here from the board row's link.
+test_that("flag_stale_k12_rows flags old board ads and splits off the WSBA copy of one", {
+  a <- read.csv(here::here("Archivek12_Data", "combined_2026-11-20.csv"), colClasses = "character")
+  wsba_label <- current_state_config()$feed$label
+  board <- a$Posting_Source != wsba_label & grepl("direct district board", a$Posting_Source)
+  direct <- a[board, setdiff(names(a), "Also_On_Feed"), drop = FALSE]
+  other <- a[!board, setdiff(names(a), "Also_On_Feed"), drop = FALSE]
+  ot <- direct[direct$posting_id == "applitrack:crb2:546", ]
+  expect_equal(nrow(ot), 1)
+  copy <- data.frame(title = "Occupational Therapist", date_posted = NA_character_, url = ot$url, District = ot$District,
+                     Posting_Source = wsba_label, stringsAsFactors = FALSE)
+  other <- dplyr::bind_rows(other, copy)
+  is_wsba <- other$Posting_Source == wsba_label
+  out <- flag_stale_k12_rows(direct, other, is_wsba, as.Date("2026-11-20"))
+  expect_equal(sum(is_stale_flagged(out$direct$Stale_Reason)), 6)
+  expect_false(any(is_stale_flagged(out$other$Stale_Reason[is_wsba])))   # WSBA rows aren't judged by their dates
+  expect_equal(nrow(out$wsba_stale), 1)
+  expect_equal(out$wsba_stale$Stale_Reason, STALE_FEED_LINK_REASON)
+  expect_equal(nrow(out$wsba_keep), sum(is_wsba) - 1)
+  # Without stale board rows nothing is split off.
+  none <- flag_stale_k12_rows(direct[0, ], other, is_wsba, as.Date("2026-11-20"))
+  expect_equal(nrow(none$wsba_stale), 0)
+  expect_equal(nrow(none$wsba_keep), sum(is_wsba))
+})

@@ -1046,6 +1046,27 @@ remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings, report
   wsba_postings[!wsba_duplicates_direct(wsba_postings, direct_postings, wsba_keys, direct_keys), , drop = FALSE]
 }
 
+# Stale board ads (edjobs flag_stale_board_postings(); Mike, 2026-11-24). One
+# run's direct board rows and the "other" rows (district websites and WSBA,
+# is_wsba marking WSBA's): board rows dated before the July 1 that began the
+# previous school year get a Stale_Reason (pools and ongoing roles excepted);
+# WSBA rows are the feed, not judged by dates, but a WSBA row that is the same
+# ad as a flagged board posting (wsba_duplicates_direct(): its link names the
+# posting's job, or the same district, title and posted date) is split off as
+# wsba_stale with STALE_FEED_LINK_REASON, so it neither counts nor is checked
+# against its page (which would find the old ad still listed). Returns
+# list(direct, other, wsba_keep, wsba_stale): wsba_keep goes on to
+# remove_wsba_direct_duplicates() against the unflagged direct rows.
+flag_stale_k12_rows <- function(direct, other, is_wsba, run_date) {
+  direct <- flag_stale_board_postings(direct, run_date)
+  other <- flag_stale_board_postings(other, run_date, board = !is_wsba)
+  stale_direct <- direct[is_stale_flagged(direct$Stale_Reason), , drop = FALSE]
+  wsba <- other[is_wsba, , drop = FALSE]
+  same <- if (nrow(stale_direct) > 0 && nrow(wsba) > 0) wsba_duplicates_direct(wsba, stale_direct) else rep(FALSE, nrow(wsba))
+  list(direct = direct, other = other, wsba_keep = wsba[!same, , drop = FALSE],
+       wsba_stale = mark_stale_feed_rows(wsba[same, , drop = FALSE], TRUE))
+}
+
 # A WSBA row duplicates a direct posting when its district, title and posted
 # date match one (wsba_posting_key()), or when its link names a job ID the
 # district's own board lists this run, whatever the wording or date: WSBA

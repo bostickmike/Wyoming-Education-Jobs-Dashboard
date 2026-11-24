@@ -94,6 +94,10 @@ k12_posting_panel <- function(archive_dir = "Archivek12_Data", from = as.Date("2
   files <- files[run_of >= from]
   d <- dplyr::bind_rows(lapply(files, function(f) {
     x <- utils::read.csv(f, colClasses = "character")
+    # A WSBA row kept only as the copy of a stale board ad (Stale_Reason, 2026-11-24) is a duplicate, which earlier
+    # runs dropped before archiving: left out, so the spells don't gain a feed posting for it. Board ads flagged
+    # stale stay in (a spell follows what the board listed; nearly all are out of durations already: Evergreen).
+    if ("Stale_Reason" %in% names(x)) x <- x[!x$Stale_Reason %in% STALE_FEED_LINK_REASON, , drop = FALSE]
     keep <- intersect(c("title", "date_posted", "url", "District", "posting_id", "Close_Date", "Posting_Source"), names(x))
     x <- x[, keep, drop = FALSE]
     x$Run_Date <- as.Date(sub("^combined_(.*)\\.csv$", "\\1", basename(f)))
