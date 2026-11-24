@@ -761,42 +761,27 @@ library(dplyr)
 library(edjobs)
 source("direct_api_scrapers.R")
 
-# One row per college in he_institution_registry.csv (one registry schema,
-# 2026-11-16; before that nine chunks with the calls written out), scraped in
-# file order so hedata keeps its row order. Each is logged on its own by
-# safe_scrape(), so one college's outage doesn't block the rest.
-#   - Neogov (LCCC, Casper, Central, Gillette): edjobs fetch_neogov_postings(),
-#     the classic careers page for the agency slug in Feed_URL; NEOGOV redirects
-#     the slug to its own domain. Each posting's page gives its exact posted
-#     date and closing date (Close_Date).
-#   - PeopleAdmin (Western, Eastern, Sheridan, Northwest): the board's own Atom
-#     feed (edjobs fetch_peopleadmin_atom()), with WY's campus name
-#     (Location_Label) as each posting's location. Western's domain is
-#     "wwcwy.peopleadmin.com" (single c): a past check mistyped it, got
-#     NXDOMAIN, and moved Western to a real but wrong NEOGOV agency that
-#     returned "0 jobs found". Sheridan's and Northwest's boards
-#     (simplehire.com) were matched to PeopleAdmin by their asset hashes.
-#   - UWHeuristic: UW's Oracle Cloud HCM JSON API (fetch_uw_postings(),
-#     direct_api_scrapers.R).
+# One row per college in he_institution_registry.csv (one registry schema, 2026-11-16; before that nine chunks with the
+# calls written out), each scraped with its scraper_spec() from state_config.R by edjobs::scrape_registry_platforms()
+# (0.95.0, 2026-11-24; `platforms = NULL`: one group per registry row, in file order, so hedata keeps its row order).
+# Each is logged on its own by safe_scrape(), so one college's outage doesn't block the rest. State specs:
+#   - Neogov (LCCC, Casper, Central, Gillette): edjobs fetch_neogov_postings(), the classic careers page for the agency
+#     slug in Feed_URL; NEOGOV redirects the slug to its own domain. Each posting's page gives its exact posted date
+#     and closing date (Close_Date).
+#   - PeopleAdmin (Western, Eastern, Sheridan, Northwest): the board's own Atom feed, with WY's campus name
+#     (Location_Label) as each posting's location. Western's domain is "wwcwy.peopleadmin.com" (single c): a past
+#     check mistyped it, got NXDOMAIN, and moved Western to a real but wrong NEOGOV agency that returned
+#     "0 jobs found". Sheridan's and Northwest's boards (simplehire.com) were matched to PeopleAdmin by their asset
+#     hashes.
+#   - UWHeuristic: UW's Oracle Cloud HCM JSON API (fetch_uw_postings(), direct_api_scrapers.R).
 # These replaced the old RSelenium scrapers.
 he_registry <- read.csv("he_institution_registry.csv", stringsAsFactors = FALSE)
-he_frames <- lapply(seq_len(nrow(he_registry)), function(i) {
-  row <- he_registry[i, ]
-  raw <- safe_scrape(
-    row$Institution,
-    scrape_fn = switch(row$Platform,
-      Neogov = function() fetch_neogov_postings(row$Feed_URL),
-      PeopleAdmin = function() fetch_peopleadmin_atom(row$Feed_URL, row$Location_Label, location_from_author = FALSE),
-      UWHeuristic = fetch_uw_postings,
-      stop("Unknown Platform in he_institution_registry.csv: ", row$Platform)
-    ),
-    expected_cols = c("Title", "Location", "Posted_Date", "Link")
-  )
-  raw %>%
-    mutate(Institution = row$Institution) %>%
-    select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date", "Page_Places")))
+he_frames <- lapply(scrape_registry_platforms(he_registry, NULL, source = "he_institution_registry.csv", shape = "raw"),
+                    function(df) {
+  # A college whose board came back empty keeps its name on a zero-row frame, as before.
+  if (!"Institution" %in% names(df)) df$Institution <- character(0)
+  df %>% select(Title, Location, Posted_Date, Institution, Link, any_of(c(POSTED_PAY_COLUMNS, "Close_Date", "Page_Places")))
 })
-names(he_frames) <- he_registry$Institution
 print(vapply(he_frames, nrow, integer(1)))
 
 ```
