@@ -1255,6 +1255,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     axis and legend it covered (both Trends plots are drawn 500px tall; their containers were 400px, now 500px). The
     Current and Multi-Year help popovers say the counts are full teaching positions only. Checked by screenshot of
     both sub-tabs (`claude-notes/2026-11-24_pin-0.91.0/trends-*.png`). Suite on 0.91.0: 1,470 passed, 0 failed.
+  * [x] edjobs pinned at 0.93.0 (2026-11-24; branch `pin-edjobs-0.93.0`; bostickmike/edjobs#98, #99). 0.93.0: the
+    Trends tabs' multi-year legend sits under the date axis with the title "Category" (the title was clipped to
+    "oad_Category" and the last item to "Library"); checked by screenshot (`claude-notes/2026-11-24_trends-legend/`).
+    0.92.0's `scrape_registry_platforms()` is in the package but not used here yet (Montana's slice A; Wyoming's is
+    A2 in `claude-notes/2026-11-24_step5-measure/README.md`). Suite on 0.93.0: 1,470 passed, 0 failed.
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
