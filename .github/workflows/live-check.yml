@@ -1,0 +1,30 @@
+name: Live dashboard check
+
+# Reads the live dashboard on Connect Cloud and checks it shows main's data (its "Refreshed on" date equals the
+# latest Archive_Date in Wy_Ed_Jobs/allsum.csv and allsum_he.csv), reading again for up to 40 minutes while a redeploy
+# finishes. A failure files one issue ("Live dashboard check: ...") and a pass closes it. The logic lives in edjobs
+# (.github/workflows/live-check.yml, edjobs::live_check_step()).
+on:
+  # After each weekly run: its data push (Actions token) starts no push-triggered workflow.
+  workflow_run:
+    workflows: ["Weekly job data refresh"]
+    types: [completed]
+  # After a merge that changes the deployed app folder.
+  push:
+    branches: [main]
+    paths: ['Wy_Ed_Jobs/**']
+  # Once a day as well. GitHub often starts it hours late.
+  schedule:
+    - cron: '52 15 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  live:
+    uses: bostickmike/edjobs/.github/workflows/live-check.yml@v0.86.0
+    with:
+      url: https://bostickmike-wyoming-education-jobs-dashboard.share.connect.posit.cloud
+      app_dir: Wy_Ed_Jobs

@@ -1227,6 +1227,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     either state's archives). `reclassify_committed_data.R` at v0.85.0: nothing to write. Full rehearsal (11-24) passed every step: suite 1,456 pass, 0 fail
     (`claude-notes/2026-11-24_trakstar/rehearsal_wy.log`); the committed pin files match the rehearsed copy (manifest:
     same edjobs entry, the rest is the Mac's `writeManifest` rewrite).
+  * [x] Live dashboard check, edjobs pinned at 0.86.0 (2026-11-24; branch `live-check-0.86.0`; bostickmike/edjobs#91;
+    Mike asked 11-23). Connect Cloud redeploys the app on every push to main, and every other check ran before that
+    push; nothing checked the app it then served. `.github/workflows/live-check.yml` (edjobs `live_check_step()`) reads
+    the live page's "Refreshed on" date until it equals the latest `Archive_Date` in `Wy_Ed_Jobs/allsum.csv` and
+    `allsum_he.csv`, reading again for up to 40 minutes while the app wakes or a redeploy finishes. A failure files one
+    "Live dashboard check" issue and a pass closes it. Runs after each weekly update (`workflow_run`: the data push
+    by the Actions token starts no push workflow), on merges that touch `Wy_Ed_Jobs/`, and daily. Checks the date only: after
+    a code-only change a pass shows the page loads with the right data, not that it runs the new code. Suite on 0.86.0: 1,456 passed, 0 failed.
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
