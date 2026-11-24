@@ -1221,6 +1221,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     filter, which asked for at least one district with a new teaching posting; 11-20 to 11-23 had none (53 teaching
     postings, all seen before). Since the suite runs before each weekly run, a quiet few days would have blocked the
     next run. The test now checks the filter keeps exactly the places with a new posting (same fix in MT).
+  * [x] edjobs pinned at 0.85.0 (2026-11-24; branch `bump-edjobs-0.85.0`; bostickmike/edjobs#90): a Trakstar Hire
+    reader (MT's St. Labre board; no WY board on it), `parse_jobposting_jsonld()` retries blocks with raw line breaks
+    (WY's NEOGOV blocks parse first time, unchanged), and a pay grade's low-mid-high steps read first to last (none in
+    either state's archives). `reclassify_committed_data.R` at v0.85.0: nothing to write. Full rehearsal (11-24) passed every step: suite 1,456 pass, 0 fail
+    (`claude-notes/2026-11-24_trakstar/rehearsal_wy.log`); the committed pin files match the rehearsed copy (manifest:
+    same edjobs entry, the rest is the Mac's `writeManifest` rewrite).
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only
