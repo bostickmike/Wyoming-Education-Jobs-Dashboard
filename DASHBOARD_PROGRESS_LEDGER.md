@@ -1235,6 +1235,22 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     "Live dashboard check" issue and a pass closes it. Runs after each weekly update (`workflow_run`: the data push
     by the Actions token starts no push workflow), on merges that touch `Wy_Ed_Jobs/`, and daily. Checks the date only: after
     a code-only change a pass shows the page loads with the right data, not that it runs the new code. Suite on 0.86.0: 1,456 passed, 0 failed.
+  * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
+    `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
+    `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
+    three SmartSites (ParentSquare) widgets (document list, image gallery, posts) with no per-district rules and keeps
+    posted dates; MT's Ekalaka moved onto it the same day. WY's `fetch/parse_smartsites_postings`, its `SmartSites`
+    spec line (edjobs's default is used) and 5 tests are deleted; the fixtures are in edjobs. The dispatch arm in
+    `fetch_misc_district_postings()` now calls edjobs's reader (no location, as the Edlio arm); the `switch` stops on
+    an unknown platform, so the arm stays. Parity: on both fixtures the new reader gives the old parser's rows
+    exactly after the orchestrator fills blank links (Park 16 3, Platte 1 12), and on the 11-23 pages (1, 12). Live
+    run of the step (11-23 22:44 MST, `fetch_all_misc_district_postings()` cut to the two rows): old and new code give
+    the same rows as the 11-20 archive (Park 16 1, Platte 1 12). This pin also brings 0.87.0 (the CSS-board reader;
+    no WY source uses it). Full rehearsal (11-23): every step passed except the pre-run suite's boot smoke, which ran
+    alongside an MT suite (1,442 passed, 1 failed; that file alone in the same copy: 24 passed, 0 failed); post-run
+    suite 1,443 passed, 0 failed; Park 16 1 row, Platte 1 12 (`claude-notes/2026-11-24_smartsites-build/rehearsal_wy.log`).
+    The committed pin files match the rehearsed copy (manifest: same edjobs entry, the rest is the Mac's `writeManifest`
+    rewrite).
 
   * [x] Documentation review (2026-11-23; branches `docs-facts`, `docs-methods`; `claude-notes/2026-11-23_docs-review/`;
     Mike's call: split roles). README: real tabs, UW's careers site and WDE602 among the sources, what blocks vs only

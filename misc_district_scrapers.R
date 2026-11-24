@@ -394,76 +394,6 @@ parse_schoolblocks_postings <- function(html_text, widget_title = "Current Job A
 }
 
 # ---------------------------------------------------------------------------
-# SmartSites / ParentSquare (Park County SD16, Platte County SD1)
-# ---------------------------------------------------------------------------
-
-# Two independent content-block types, either or both may appear on a
-# given page: a "document search" list (li.ss-document-item, title in
-# data-searchText, posted date embedded in the link's aria-label as
-# "...added YYYY-MM-DD") and an "image gallery" block (bare <img alt="...">
-# with no date at all -- confirmed this is Platte County SD1's *only*
-# visible posting content: the page has no readable title text outside
-# these image alt attributes).
-fetch_smartsites_postings <- function(url) {
-  resp <- request(url) %>% perform_with_retry()
-  parse_smartsites_postings(resp_body_string(resp))
-}
-
-parse_smartsites_postings <- function(html_text) {
-  soup <- rvest::read_html(html_text)
-
-  doc_nodes <- rvest::html_elements(soup, "li.ss-document-item")
-  # libxml2/rvest lowercases HTML attribute names on parse, so the source's
-  # camelCase "data-searchText" must be queried as "data-searchtext".
-  doc_titles_raw <- rvest::html_attr(doc_nodes, "data-searchtext")
-  # html_element() (singular): one result per item, NA when an item has no
-  # link, so labels stay aligned with titles. The plural form flattened all
-  # links and shifted every later date onto the wrong title.
-  doc_labels_raw <- rvest::html_attr(rvest::html_element(doc_nodes, "a.ss-document-link"), "aria-label")
-  # Same document-search widget lists blank application forms alongside
-  # real postings with no distinguishing markup (confirmed on Park County
-  # SD16's real page: "classified application"/"certified application"
-  # sit in the same list as real job titles) -- same content-based
-  # exclusion as the image-gallery variant below.
-  is_job <- !grepl("application", doc_titles_raw, ignore.case = TRUE)
-  doc_titles <- doc_titles_raw[is_job]
-  doc_labels <- doc_labels_raw[is_job]
-  doc_dates <- ifelse(
-    grepl("added \\d{4}-\\d{2}-\\d{2}", doc_labels),
-    sub(".*added (\\d{4}-\\d{2}-\\d{2}).*", "\\1", doc_labels),
-    NA_character_
-  )
-
-  # The image-gallery widget's own template leaves its <a> self-closed
-  # (<a href="..." />), so the <figure>/<img> are its SIBLINGS in the
-  # parsed DOM, not descendants -- "a > figure > img" (the semantically
-  # "correct" selector) matches nothing on real pages using this template.
-  # Both real postings and unrelated application-form links use this exact
-  # same widget with no distinguishing heading or class, so the only
-  # available signal is content: exclude anything whose alt text names a
-  # form rather than a position (confirmed against the real page: titles
-  # like "Certified Application"/"Classified Application"/"Coaching
-  # Application"/"Substitute Teacher Application" are the district's
-  # blank application forms, not open postings).
-  img_nodes <- rvest::html_elements(soup, "li.picseries_image img[alt]")
-  img_titles <- str_trim(rvest::html_attr(img_nodes, "alt"))
-  # The same gallery also carries decorative images whose alt text is just
-  # "logo"/"Logo" (Platte County SD1, 2026-08-03 onward) -- dropped the
-  # same way, or each one lands in combinedclean as a fake "Other" posting.
-  img_titles <- img_titles[nzchar(img_titles) &
-                             !grepl("application", img_titles, ignore.case = TRUE) &
-                             !grepl("^logo$", img_titles, ignore.case = TRUE)]
-
-  titles <- c(doc_titles, img_titles)
-  dates <- c(doc_dates, rep(NA_character_, length(img_titles)))
-
-  if (length(titles) == 0) return(empty_misc_result())
-
-  data.frame(Title = titles, Location = NA_character_, Posted_Date = dates,
-             Link = NA_character_, stringsAsFactors = FALSE)
-}
-
-# ---------------------------------------------------------------------------
 # WordPress/Elementor (Lincoln County SD2)
 # ---------------------------------------------------------------------------
 
@@ -818,15 +748,16 @@ misc_district_coverage_tiers <- function() {
 # share a single browser instance instead of paying startup cost per
 # district); every other platform is plain HTTP and ignores the session
 # argument entirely.
-# `Edlio` and `Apptegy` are the edjobs family routines (called unqualified, so
-# tests can stand in for them), with the registry row's list rules;
+# `Edlio`, `Apptegy` and `SmartSites` are the edjobs family routines (called unqualified, so
+# tests can stand in for them), Edlio and Apptegy with the registry row's list rules
+# (SmartSites has none: edjobs 0.88.0 reads its widgets the same way on every site);
 # `EdlioTabs` is Uinta 4's own reader (its postings are inside Edlio tab
 # widgets, which the family's page text doesn't open).
 fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA,
                                          skip = NA) {
   switch(platform,
     WordPressBespoke = fetch_wy_wordpress_postings(url),
-    SmartSites = fetch_smartsites_postings(url),
+    SmartSites = fetch_smartsites_postings(url, NA_character_),
     SchoolBlocks = fetch_schoolblocks_postings(url),
     Edlio = fetch_edlio_postings(url, NA_character_, start, stop),
     EdlioTabs = fetch_wy_edlio_postings(url),

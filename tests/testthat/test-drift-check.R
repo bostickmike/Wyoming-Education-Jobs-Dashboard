@@ -155,9 +155,10 @@ test_that("fixtures_named_for_source picks this district's fixture, not another'
 
   w7 <- fixtures_named_for_source(resolve_wy("Weston County School District 7"), "Weston County School District 7", files)
   expect_equal(w7$own, "misc_districts/apptegy_weston7_rendered.txt")
-  # Platte 1 is smartsites -- its fixture must not show up as Platte 2's.
+  # Platte 1 is on SmartSites (edjobs's reader and fixtures since 0.88.0): Platte 2's Apptegy fixture must not
+  # show up as Platte 1's.
   p1 <- fixtures_named_for_source(resolve_wy("Platte County School District 1"), "Platte County School District 1", files)
-  expect_equal(p1$own, "misc_districts/smartsites_platte1.html")
+  expect_equal(p1$own, character(0))
 
   # Sheridan 3 has its own fixture since 2026-11-07; without it, it would get
   # no "own" match, so no diff against some other district's page.
