@@ -1285,6 +1285,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-24_step5-measure/replay/wy_misc_stub_replay.R`): 28 of 28 rows identical, same 14 log rows in
     order, 13 calls (11 identical; the 2 Edlio ones add the skip rule, blank for both). Live run of the step with old and
     new code: 174 of 174 rows identical (99 WSBA). Suite: 1,475 passed, 0 failed.
+  * [x] K-12 history files written by edjobs `write_k12_history()`; edjobs pinned at 0.96.0 (2026-11-25 UTC; branch
+    `k12-history-tail`; bostickmike/edjobs#102; review step 5 slice C1). The Rmd's hand-written steps after
+    `combinedclean` (teacher rows, district and job-type weekly totals, `allsum`, `allnow`) and the same steps in
+    `scripts/rebuild_k12_history_from_archive.R` become `write_k12_history()` / `build_k12_history()`.
+    `list.csv`, written each run and read by nothing, is gone.
+    Replay of the old steps against the new call on the committed files
+    (`claude-notes/2026-11-24_step5-measure/replay/k12_history_replay.R`): 5 of 5 files byte-identical, for a same-day
+    re-run and for a new run date. Rebuild parity on the branch build: 11 of 11 files. Suite on 0.96.0: 1,475 passed,
+    0 failed. No full rehearsal (one step, replayed on real files).
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
