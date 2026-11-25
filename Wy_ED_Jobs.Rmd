@@ -337,24 +337,12 @@ write.csv(combined, file=file.path('Archivek12_Data',file_name), row.names = FAL
 tryCatch(refresh_schoolspring_endings("Archivek12_Data", "schoolspring_endings.csv"),
          error = function(e) message("SchoolSpring endings not updated: ", conditionMessage(e)))
 
-# BLS OEWS regional pay by role, the labeled fallback for postings that state
-# no pay (bls_oews_scraper.R). Refreshed only when BLS publishes a new year;
-# a failed check keeps the committed file. Counties come from last run's
-# salarymap2.csv (district -> "Albany County, Wyoming").
+# The labeled fallbacks for postings that state no pay (edjobs 0.98.0): BLS OEWS regional pay by role, fetched only
+# when BLS publishes a new year, and QCEW average pay of public school employees by county (the map popup's county
+# context). A failed, partial or implausible refresh keeps the committed file and is logged.
+# Counties come from last run's salarymap2.csv (district -> "Albany County, Wyoming").
 library(edjobs)
-oews_path <- file.path("Wy_Ed_Jobs", "oews_role_wages.csv")
-tryCatch(refresh_oews_wages("WY", oews_path, retrieved_source = "BLS OEWS"),
-         error = function(e) log_reference_result(oews_path, "error", conditionMessage(e)))
-
-# BLS QCEW average pay of public school employees by county (all roles), the
-# map popup's county context (qcew_school_pay.R). A failed fetch keeps the
-# existing file, and so does a partial or implausible one (write_reference_file()).
-library(edjobs)
-qcew_path <- file.path("Wy_Ed_Jobs", "qcew_county_school_pay.csv")
-tryCatch(write_reference_file(fetch_qcew_school_pay("56"), qcew_path, retrieved_source = "BLS QCEW"),
-         error = function(e) log_reference_result(qcew_path, "error", conditionMessage(e)))
-oews_wages <- read.csv(oews_path, stringsAsFactors = FALSE,
-                       colClasses = c(Area_Code = "character", SOC = "character", Year = "character"))
+oews_wages <- refresh_pay_benchmarks()
 district_county <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), stringsAsFactors = FALSE)[, c("District", "County")]
 
 # Categorize positions in the "position" column of the "combinedclean" dataset.
@@ -466,12 +454,7 @@ if (nrow(teacher_salary) > 0 && nrow(superintendent_salary) > 0) {
 # Every district not in misc_district_coverage_tiers() is scraped from a
 # genuine structured job-board platform, hence the coalesce to "Full".
 source("misc_district_scrapers.R")
-salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding = "UTF-8") %>%
-  refresh_k12_static_columns() %>%
-  select(-any_of("Data_Coverage")) %>%
-  left_join(misc_district_coverage_tiers(), by = "District") %>%
-  mutate(Data_Coverage = coalesce(Data_Coverage, "Full"))
-write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
+refresh_data_coverage(misc_district_coverage_tiers(), before = refresh_k12_static_columns)
 ```
 
 ### K-12 teacher FTE (staff headcount), from NCES's Common Core of Data via the Urban Institute API
@@ -485,27 +468,8 @@ salarymap2 <- read.csv(file.path("Wy_Ed_Jobs", "salarymap2.csv"), fileEncoding =
 district_ids <- setNames(as.list(as.character(salarymap2$NCES_LEAID)), salarymap2$District)
 district_ids <- district_ids[!vapply(district_ids, function(x) is.na(x) || x %in% c("", "NA"), logical(1))]
 
-teacher_fte <- safe_scrape(
-  "CCD district teacher FTE (WY)", retrieved_source = "Urban CCD", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = function() fetch_ccd_teacher_fte(district_ids),
-  expected_cols = c("District", "Teachers_Total_FTE", "Enrollment", "CCD_Year")
-)
-
-if (nrow(teacher_fte) > 0) {
-  # No "last updated" timestamp -- same reasoning as the WSBA/IPEDS salary
-  # chunks. CCD_Year is the real freshness signal for this data.
-  # Drop last run's copies first: since salarymap2.csv is now read back with
-  # every column kept, joining without this emitted Teachers_Total_FTE.x/.y,
-  # Enrollment.x/.y and CCD_Year.x/.y, which verify_schema.R rejects.
-  salarymap2 <- salarymap2 %>%
-    select(-any_of(c("Teachers_Total_FTE", "Enrollment", "CCD_Year", "CCD_Source"))) %>%
-    left_join(teacher_fte, by = "District") %>%
-    mutate(CCD_Source = "NCES Common Core of Data via Urban Institute Education Data Portal (educationdata.urban.org)")
-
-  write.csv(salarymap2, file.path("Wy_Ed_Jobs", "salarymap2.csv"), row.names = FALSE)
-} else {
-  message("CCD teacher FTE fetch failed -- leaving salarymap2.csv untouched this run.")
-}
+# edjobs::refresh_ccd_teacher_fte() (0.98.0): swaps the CCD columns in the file; a failed fetch leaves them alone.
+refresh_ccd_teacher_fte(district_ids)
 
 # Map rows that aren't regular CCD districts: charter schools (a charter
 # inside a host district has no district record; the 3 state-authorized ones
@@ -796,23 +760,9 @@ library(dplyr)
 library(edjobs)
 source("ipeds_unitids.R")   # IPEDS_UNITID_MAP; the fetchers are in edjobs
 
-he_salary <- safe_scrape(
-  "IPEDS instructional staff salaries (WY)", retrieved_source = "Urban IPEDS", app_dir = "Wy_Ed_Jobs",
-  scrape_fn = function() fetch_ipeds_he_salaries(IPEDS_UNITID_MAP),
-  expected_cols = c("Name", "Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor",
-                     "Faculty_Count", "Salary_Year", "Salary_Note")
-)
-
-# IPEDS non-instructional staff pay by category (ipeds_staff_salaries.R), the
-# labeled fallback for HE staff postings that state no pay. The HE munge
-# step reads it on the next run; a failed fetch keeps the existing file.
-library(edjobs)
-local({
-  unitids <- na.omit(read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"))$IPEDS_UNITID)
-  staff_path <- file.path("Wy_Ed_Jobs", "ipeds_staff_salaries.csv")
-  tryCatch(write_reference_file(fetch_ipeds_staff_salaries(56, unitids), staff_path, retrieved_source = "Urban IPEDS"),
-           error = function(e) log_reference_result(staff_path, "error", conditionMessage(e)))
-})
+# IPEDS staff pay by category (edjobs 0.98.0): the labeled fallback for college staff postings that state no pay. The
+# HE munge step reads it on the next run; a failed fetch keeps the existing file.
+refresh_ipeds_staff_pay()
 
 # University of Wyoming salary book (uw_salary_book.R), read by the HE munge
 # step on the next run. Downloaded only when UW links a new book; a failed
@@ -836,57 +786,15 @@ tryCatch(refresh_uw_salary_book(uw_book_path),
 # salary columns. Keeping just the static fields here dropped the enrollment
 # trend and Pell columns whenever their own fetches failed later in the run
 # (rehearsal 2026-11-13: both got HTTP 524; the schema check stopped the run).
-HE_SALARY_COLUMNS <- c("Faculty_Avg_Salary", "Faculty_Avg_Salary_Professor", "Faculty_Count",
-                       "Salary_Year", "Salary_Note", "Salary_Source")
 salarymap <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"), fileEncoding = "UTF-8") %>%
   refresh_he_static_columns()
 # Written every run, so a failed IPEDS fetch below doesn't hold back a registry change.
 write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
 
-if (nrow(he_salary) > 0) {
-  # No "last updated" timestamp -- same reasoning as the WSBA chunk above.
-  # IPEDS reports this annually (Salary_Year is the real freshness signal),
-  # so stamping today's date every weekly run would misrepresent how often
-  # the actual dollar figures change.
-  salarymap <- salarymap %>%
-    select(-any_of(HE_SALARY_COLUMNS)) %>%
-    left_join(he_salary, by = "Name") %>%
-    mutate(Salary_Source = ifelse(is.na(Faculty_Avg_Salary), NA_character_,   # only where IPEDS gave a figure
-                                  "IPEDS via Urban Institute Education Data Portal (educationdata.urban.org)"))
-
-  # Multi-year salary trend (current + 2 prior years) -- IPEDS is
-  # queryable by year indefinitely, unlike WSBA (no public historical
-  # archive; checked directly 2026-08-05). Pivoted to generic "N years
-  # ago" column names, not literal year numbers, so the schema stays
-  # stable as the calendar year rolls over -- app.R derives the real
-  # year labels from Salary_Year - 1, Salary_Year - 2.
-  salary_trend <- safe_scrape(
-    "IPEDS instructional staff salary 3-year trend (WY)", retrieved_source = "Urban IPEDS", app_dir = "Wy_Ed_Jobs",
-    scrape_fn = function() fetch_ipeds_he_salary_trend(IPEDS_UNITID_MAP, n_years = 3),
-    expected_cols = c("Name", "Year", "Faculty_Avg_Salary")
-  )
-  if (nrow(salary_trend) > 0) {
-    latest_year <- max(salary_trend$Year)
-    salary_trend_wide <- salary_trend %>%
-      mutate(YearsAgo = latest_year - Year) %>%
-      filter(YearsAgo > 0) %>%
-      select(Name, YearsAgo, Faculty_Avg_Salary) %>%
-      tidyr::pivot_wider(names_from = YearsAgo, values_from = Faculty_Avg_Salary,
-                          names_glue = "Faculty_Avg_Salary_Y{YearsAgo}Ago")
-    salarymap <- salarymap %>%
-      select(-starts_with("Faculty_Avg_Salary_Y")) %>%
-      left_join(salary_trend_wide, by = "Name")
-  }
-
-  salarymap <- salarymap %>%
-    select(Name, any_of("IPEDS_UNITID"), Longitude, Latitude, Link, County, Faculty_Avg_Salary, Faculty_Avg_Salary_Professor,
-           Faculty_Count, Salary_Year, Salary_Note, Salary_Source,
-           starts_with("Faculty_Avg_Salary_Y"), everything())
-
-  write.csv(salarymap, file.path("Wy_Ed_Jobs", "salarymap.csv"), row.names = FALSE)
-} else {
-  message("IPEDS salary fetch failed -- leaving salarymap.csv untouched this run.")
-}
+# Faculty salaries and the two prior years' averages from IPEDS (edjobs 0.98.0), with Salary_Note from the map. No "last
+# updated" stamp: IPEDS reports once a year and Salary_Year is the real freshness signal. The source line only where IPEDS
+# gave a figure; a failed fetch leaves the columns alone.
+refresh_ipeds_he_salaries(IPEDS_UNITID_MAP)
 ```
 
 ### Higher ed institution fall enrollment (FTE), from IPEDS via the Urban Institute's Education Data Portal API
