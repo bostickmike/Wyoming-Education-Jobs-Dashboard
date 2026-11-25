@@ -1391,6 +1391,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     boards (a job page read by rules on its lines of text) and two CSS-board columns, used by MT; nothing in WY uses them
     yet: WY's own-page readers are distinct widgets and rendered pages (`claude-notes/2026-11-25_step8-tail/README.md`).
     "$16.97 per hour to $20.04 per hour" is read as a range from the next run. Suite on 0.99.0: 1,476 passed, 0 failed.
+  * [x] Pay the districts' own pages state is kept (2026-11-25; branch `own-page-pay`;
+    `claude-notes/2026-11-25_step8-tail/README.md`). `fetch_all_misc_district_postings()` rebuilt each own-page row without
+    the pay columns, so none of the 75 in the 11-24 archive had pay. Now carried through, and read from each posting's
+    own line (Google Sites, Uinta 6) or cell (Educational Networks, Cheyenne Classical). Full rehearsal: 4 own-page rows
+    with pay (Uinta 6 three, Cheyenne Classical one), the same own-page rows per source as the 11-24 archive; every step
+    passed but `manifest`, which failed only because the rehearsal used a locally installed edjobs 0.99.0
+    (`rehearsal_wy.log`). Weston 7's tiered substitute day rates are not read.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals

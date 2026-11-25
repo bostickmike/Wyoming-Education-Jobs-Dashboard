@@ -84,7 +84,8 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) data.frame(
       Title = c("K-6 Elementary Teacher", "SPED Paraprofessional"),  # first is a WSBA duplicate, second is new
-      Location = NA_character_, Posted_Date = NA_character_, Link = NA_character_
+      Location = NA_character_, Posted_Date = NA_character_, Link = NA_character_,
+      Pay_Min = c(40000, 18.5), Pay_Max = c(45000, 20), Pay_Unit = c("year", "hour"), Pay_Text = c("a", "b")
     )
   ))
 
@@ -113,8 +114,13 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
   expect_equal(laramie_1$title, "Science Teacher")
   expect_equal(laramie_1$url, "https://example.com/4")
 
-  expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District", "Posting_Source"))
+  expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District", "Posting_Source",
+                                "Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text"))
   expect_true(all(is.na(result$position)))
+  # The pay an own page states goes with its row (dropped until 2026-11-25); WSBA's feed gives none.
+  para <- niobrara[niobrara$title == "SPED Paraprofessional", ]
+  expect_equal(list(para$Pay_Min, para$Pay_Max, para$Pay_Unit), list(18.5, 20, "hour"))
+  expect_true(all(is.na(result$Pay_Min[result$Posting_Source == WSBA_POSTING_SOURCE])))
   # Every row says where it was read: WSBA's rows the feed, the district's own page its platform.
   expect_equal(niobrara$Posting_Source[niobrara$title == "SPED Paraprofessional"], "Apptegy district site (direct board)")
   expect_equal(unique(niobrara$Posting_Source[niobrara$title != "SPED Paraprofessional"]), WSBA_POSTING_SOURCE)
@@ -137,7 +143,8 @@ test_that("fetch_all_misc_district_postings returns the right empty schema when 
 
   result <- fetch_all_misc_district_postings()
   expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District", "Posting_Source"))
+  expect_equal(names(result), c("title", "date_posted", "position", "location", "url", "District", "Posting_Source",
+                                "Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text"))
 })
 
 test_that("remove_wsba_direct_duplicates removes only exact district/title/date overlaps", {

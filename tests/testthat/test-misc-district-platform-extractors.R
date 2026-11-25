@@ -170,6 +170,10 @@ test_that("parse_wy_googlesites_postings extracts both numbered-title patterns f
     "substitute school bus drivers",
     "substitute school bus aides"
   ))
+  # The pay each numbered line states (2026-11-25).
+  pay <- setNames(result$Pay_Min, result$Title)
+  expect_equal(unname(pay[c("substitute school bus drivers", "substitute school bus aides")]), c(20.59, 16.97))
+  expect_equal(sum(is.na(result$Pay_Min)), 3)
 })
 
 test_that("parse_wy_googlesites_postings returns zero rows (not an error) when no numbered posting pattern is present", {
@@ -248,6 +252,10 @@ test_that("parse_educational_networks_postings extracts real titles and excludes
   expect_false("Apply Now" %in% result$Title)
   expect_false(any(c("Instructional Coach", "Art Teacher", "K–7 Latin Teacher", "6th Grade Teacher",
                       "Long-Term Substitute Teacher") %in% result$Title))
+  # The pay each posting's own cell states (2026-11-25); filled positions' amounts go with them.
+  expect_equal(result$Pay_Min, c(18.9, 18, NA))
+  expect_equal(result$Pay_Max, c(18.9, 22, NA))
+  expect_equal(result$Pay_Unit, c("hour", "hour", NA))
 })
 
 test_that("parse_educational_networks_postings extracts real titles from a differently-formatted table on the same platform (Wyoming Classical's real page)", {
