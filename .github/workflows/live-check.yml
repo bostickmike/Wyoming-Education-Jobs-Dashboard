@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   live:
-    uses: bostickmike/edjobs/.github/workflows/live-check.yml@v0.96.0
+    uses: bostickmike/edjobs/.github/workflows/live-check.yml@v0.97.0
     with:
       url: https://bostickmike-wyoming-education-jobs-dashboard.share.connect.posit.cloud
       app_dir: Wy_Ed_Jobs
