@@ -1387,6 +1387,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     CSS boards (`fetch_css_board_postings()` -> `parse_css_board()`) named no function. Named in edjobs for CSS boards,
     AppliTrack, SchoolSpring, Red Rover, NEOGOV and Trakstar. Also syncs the vendored `jobs-dash-scraper` skill (CSS-board
     rules; SmartSites is an edjobs family). Suite on 0.89.0: 1,443 passed, 0 failed.
+  * [x] edjobs pinned at 0.99.0 (2026-11-25; branch `pin-edjobs-0.99.0`; bostickmike/edjobs#105; package review step 8). Text
+    boards (a job page read by rules on its lines of text) and two CSS-board columns, used by MT; nothing in WY uses them
+    yet: WY's own-page readers are distinct widgets and rendered pages (`claude-notes/2026-11-25_step8-tail/README.md`).
+    "$16.97 per hour to $20.04 per hour" is read as a range from the next run. Suite on 0.99.0: 1,476 passed, 0 failed.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals
