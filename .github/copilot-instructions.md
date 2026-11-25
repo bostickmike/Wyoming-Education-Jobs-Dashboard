@@ -37,7 +37,7 @@ The fixture tests only show that the parser handles the fixture. The PR's live c
 - `.github/workflows/*`, or the `REQUIRED_SCHEMAS` in `schema_check.R`
 
 ## Useful context
-- Where a source's scraper is configured: `k12_district_registry.csv` (every K-12 target: the AppliTrack, TedK12, SchoolSpring and RedRoverK12 boards; the districts' own pages, dispatched on `Platform` by `fetch_misc_district_postings()`; Laramie Montessori's Paylocity board) or `he_institution_registry.csv` (the colleges). `edjobs::resolve_scraper_call(name)` maps a source name to its call, from the two registries listed in `state_config.R` (`scraper_sources`).
+- Where a source's scraper is configured: `k12_district_registry.csv` (every K-12 target: the AppliTrack, TedK12, SchoolSpring and RedRoverK12 boards; the districts' own pages, read by `fetch_all_misc_district_postings()` through `scrape_registry_platforms()`, each row's `scraper_spec()` in `state_config.R` or edjobs; Laramie Montessori's Paylocity board) or `he_institution_registry.csv` (the colleges). `edjobs::resolve_scraper_call(name)` maps a source name to its call, from the two registries listed in `state_config.R` (`scraper_sources`).
 - Scraper files: `direct_api_scrapers.R` (real ATS APIs) and `misc_district_scrapers.R` (heuristic HTML/chromote scrapers, plus the WSBA statewide vacancy feed).
 - Column case varies: AppliTrack and TedK12 return `title`, the others `Title`.
 - HTTP goes through `perform_with_retry()` (from the shared `edjobs` package; don't redefine it here), not bare `req_perform()`.

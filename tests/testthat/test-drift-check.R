@@ -77,15 +77,14 @@ test_that("registry-backed calls derive their arguments with the Rmd's own helpe
   }
 })
 
-test_that("every misc_district_registry district resolves to the fetch_* its dispatcher uses", {
-  dispatch <- paste(deparse(body(fetch_misc_district_postings)), collapse = "\n")
+test_that("every misc_district_registry district resolves to a fetch_* with the session it needs", {
+  # The stage (fetch_all_misc_district_postings()) runs the resolved call itself, so the spec IS the call.
   k12 <- wy_k12_registry()
   for (i in seq_len(nrow(misc_district_registry))) {
     row <- misc_district_registry[i, ]
     call <- resolve_scraper_call(row$District)
     expect_false(is.null(call), info = row$District)
     expect_true(exists(call$fn, mode = "function"), info = call$fn)
-    expect_true(grepl(sprintf("%s = %s(", row$Platform, call$fn), dispatch, fixed = TRUE), info = row$Platform)
     # session iff the scraper's first argument is a chromote session
     expect_equal(call$session, names(formals(get(call$fn)))[1] == "chromote_session", info = call$fn)
   }

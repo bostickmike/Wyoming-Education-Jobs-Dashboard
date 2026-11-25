@@ -1277,6 +1277,14 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Chrome's focus emulation and checks on every tab that the page is visible (the "every tab renders" check passed on
     tabs that had rendered nothing). With the display going off mid-run: 41 passed, 2 failed before (0.92.0 and 0.93.0);
     54 passed, 0 failed twice after. Suite with the fix: 1,488 passed, 0 failed.
+  * [x] District sites read by edjobs `scrape_registry_platforms()` (2026-11-24; branch `k12-misc-stage`; edjobs 0.95.0,
+    no release needed; review step 5 slice A2). `fetch_all_misc_district_postings()` reads the 13 sites in one call,
+    each row by its `scraper_spec()`, and then dedupes against WSBA per district as before, so row order is unchanged.
+    The hand `switch()` in `fetch_misc_district_postings()`, a second copy of the specs, is gone; each of the 5
+    browser-read sites gets its own Chrome session (one shared before, so one crash could stop the rest). Stub replay
+    (`claude-notes/2026-11-24_step5-measure/replay/wy_misc_stub_replay.R`): 28 of 28 rows identical, same 14 log rows in
+    order, 13 calls (11 identical; the 2 Edlio ones add the skip rule, blank for both). Live run of the step with old and
+    new code: 174 of 174 rows identical (99 WSBA). Suite: 1,475 passed, 0 failed.
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
