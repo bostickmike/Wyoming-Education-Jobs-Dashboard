@@ -512,8 +512,15 @@ parse_wy_googlesites_postings <- function(rendered_text) {
 
   if (length(titles) == 0) return(empty_misc_result())
 
-  data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
-             Link = NA_character_, stringsAsFactors = FALSE)
+  # Each posting is one numbered line; the pay it states ("Pay starts at $20.59 per hour") is in it (2026-11-25).
+  items <- grep("^\\s*\\d+-", strsplit(rendered_text, "\n", fixed = TRUE)[[1]], value = TRUE)
+  own_line <- vapply(titles, function(t) {
+    hit <- items[grepl(t, items, fixed = TRUE)]
+    if (length(hit)) hit[1] else NA_character_
+  }, "", USE.NAMES = FALSE)
+  cbind(data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
+                   Link = NA_character_, stringsAsFactors = FALSE),
+        extract_posted_pay(own_line))
 }
 
 # ---------------------------------------------------------------------------
@@ -571,11 +578,14 @@ parse_educational_networks_postings <- function(html_text) {
     title
   }, character(1))
 
+  # A posting's own cell states its pay (Cheyenne Classical's "$150 per day", 2026-11-25).
+  cell_text <- vapply(cells, function(cell) trimws(rvest::html_text2(cell)), character(1))[!is.na(titles)]
   titles <- titles[!is.na(titles)]
   if (length(titles) == 0) return(empty_misc_result())
 
-  data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
-             Link = NA_character_, stringsAsFactors = FALSE)
+  cbind(data.frame(Title = titles, Location = NA_character_, Posted_Date = NA_character_,
+                   Link = NA_character_, stringsAsFactors = FALSE),
+        extract_posted_pay(cell_text))
 }
 
 # ---------------------------------------------------------------------------
@@ -805,8 +815,11 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     combined <- dplyr::bind_rows(
       if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = wsba_urls,
                                           Posting_Source = WSBA_POSTING_SOURCE, stringsAsFactors = FALSE),
+      # The pay the page states for a posting, when its reader returns any (2026-11-25; dropped here until then).
       if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = own_urls,
-                                             Posting_Source = k12_posting_source_label(platform), stringsAsFactors = FALSE)
+                                             Posting_Source = k12_posting_source_label(platform),
+                                             ensure_posted_pay_columns(own_postings)[c("Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")],
+                                             stringsAsFactors = FALSE)
     )
 
     if (nrow(combined) > 0) {
@@ -861,13 +874,15 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
   }
 
   if (length(all_rows) == 0) {
-    return(data.frame(title = character(0), date_posted = character(0), position = character(0),
-                       location = character(0), url = character(0), District = character(0),
-                       Posting_Source = character(0), stringsAsFactors = FALSE))
+    return(ensure_posted_pay_columns(data.frame(
+      title = character(0), date_posted = character(0), position = character(0),
+      location = character(0), url = character(0), District = character(0),
+      Posting_Source = character(0), stringsAsFactors = FALSE)))
   }
 
   result <- dplyr::bind_rows(all_rows)
-  result[, c("title", "date_posted", "position", "location", "url", "District", "Posting_Source")]
+  ensure_posted_pay_columns(result)[, c("title", "date_posted", "position", "location", "url", "District", "Posting_Source",
+                                        "Pay_Min", "Pay_Max", "Pay_Unit", "Pay_Text")]
 }
 
 # WSBA identifies a posting by district, title, and usually a posted date.
