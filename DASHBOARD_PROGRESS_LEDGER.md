@@ -1294,6 +1294,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     (`claude-notes/2026-11-24_step5-measure/replay/k12_history_replay.R`): 5 of 5 files byte-identical, for a same-day
     re-run and for a new run date. Rebuild parity on the branch build: 11 of 11 files. Suite on 0.96.0: 1,475 passed,
     0 failed. No full rehearsal (one step, replayed on real files).
+  * [x] Daily presence check reads Wyoming's 21 AppliTrack boards again (2026-11-25 UTC; branch `presence-applitrack`).
+    The 11-16 registry change (05bc330) renamed the platform "Applitrack" to "AppliTrack"; `presence.yml` kept the old name, so
+    from 11-16 to 11-24 the check read 18 boards a day, not 39, with no error. Nothing on the dashboard reads the check yet.
+    Dry run on a copy of the presence files: 39 boards ok, 701 postings; 239 AppliTrack stretches resume and 26 postings left
+    sometime in the gap (an AppliTrack ending in those days is known only as a range, for the phase 1 spells). New
+    `test-presence-workflow.R` (both states): every platform the workflow names is in the registry; it fails on the old name.
   * [x] Higher-ed stage after the scrapes in edjobs; edjobs pinned at 0.97.0 (2026-11-25 UTC; branch `he-stage`;
     bostickmike/edjobs#103; review step 5 slice D). `combine_he_frames()`, `finish_he_rows()` (placeholders, implausible pay,
     IPEDS staff estimates) and `write_he_history()` replace the hand-written steps; the rebuild script uses the same
