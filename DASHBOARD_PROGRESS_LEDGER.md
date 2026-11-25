@@ -1306,6 +1306,15 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     together on v0.97.0 (11-25 UTC, `replay/rehearsal_wy_d.log`): all steps passed, rebuild parity 11 of 11, suites 1,474 (pre-run) and 1,474 (post-run) passed,
     0 failed. K-12 rows 718 and 718 against the 11-24 run, each source within 1; higher
     ed 459 to 460 (University of Wyoming 229 to 226, Casper 3 to 4, LCCC 66 to 67).
+  * [x] Reference and salary stages in edjobs; edjobs pinned at 0.98.0 (2026-11-25 UTC; branch `salary-stage`;
+    bostickmike/edjobs#104; review step 5 slice E). `refresh_pay_benchmarks()` (OEWS, QCEW), `refresh_ipeds_staff_pay()`,
+    `refresh_ipeds_he_salaries()`, `refresh_ccd_teacher_fte()` and `refresh_data_coverage()` replace the blocks both states wrote
+    out; the Rmd goes from 953 to 861 lines. WSBA's salary documents, UW's salary book, the charter staffing and the SAIPE stand-ins stay in the Rmd.
+    `salarymap.csv`'s columns change order once (new columns go last); every value is the same.
+    Replays with one live fetch fed to old and new code (`claude-notes/2026-11-24_step5-measure/replay/salary_stage_replay.R`,
+    `benchmark_stage_replay.R`): every value identical in `salarymap.csv` and `salarymap2.csv`; the three reference files, retrieval
+    dates and log rows identical. The edited Rmd chunks run live in a scratch copy (`run_e_chunks.R`): every fetch ok,
+    no value changed in either file (one lunch share differs in its 15th digit). Suite on 0.98.0: 1,474 passed, 0 failed. No full rehearsal (each step replayed).
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
