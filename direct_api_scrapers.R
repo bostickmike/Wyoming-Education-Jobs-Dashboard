@@ -188,7 +188,7 @@ K12_PLATFORM_SOURCE_LABELS <- c(
   AppliTrack = "AppliTrack (direct district board)", TedK12 = "TedK12 (direct district board)",
   SchoolSpring = "SchoolSpring (direct district board)", RedRoverK12 = "Red Rover (direct district board)",
   Paylocity = "Paylocity (direct board)",
-  WordPressBespoke = "WordPress district site (direct board)", SmartSites = "SmartSites district site (direct board)",
+  SmartSites = "SmartSites district site (direct board)",
   SchoolBlocks = "SchoolBlocks district site (direct board)", Edlio = "Edlio district site (direct board)",
   EdlioTabs = "Edlio district site (direct board)",
   GoogleSitesBespoke = "Google Sites district site (direct board)",

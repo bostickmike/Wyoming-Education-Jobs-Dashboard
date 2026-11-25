@@ -120,35 +120,6 @@ test_that("parse_schoolblocks_postings returns zero rows (not an error) when the
 })
 
 # ---------------------------------------------------------------------------
-# WordPress/Elementor (Lincoln County SD2)
-# ---------------------------------------------------------------------------
-
-test_that("parse_wy_wordpress_postings captures every category after the Open Positions section, not just Classified/Certified", {
-  # Regression: an earlier version whitelisted only "Classified"/
-  # "Certified" by name and silently dropped the "Substitutes" and
-  # "Coaching" categories entirely -- the exact same completeness gap
-  # already found in WSBA (systematically missing substitute/coaching
-  # postings). Also regression: naively capturing every heading on the
-  # page (instead of scoping to after "Current Open Positions") pulls in
-  # the page's own intro/contact-info text as if it were job titles.
-  html <- read_fixture("wordpress_lincoln2.html")
-  result <- parse_wy_wordpress_postings(html)
-
-  expect_equal(nrow(result), 17)
-  expect_true("Activity Bus Driver- Star Valley" %in% result$Title)   # Classified
-  expect_true("Educational Sign Language Interpreter- District Wide" %in% result$Title)  # Certified
-  expect_true("Substitute Bus Aides- Star Valley" %in% result$Title)  # Substitutes
-  expect_true("Volunteer Coach/Advisor" %in% result$Title)            # Coaching
-  expect_false(any(grepl("close at 5:00 p.m.|non-discrimination|equal employment", result$Title, ignore.case = TRUE)))
-})
-
-test_that("parse_wy_wordpress_postings returns zero rows (not an error) when there's no Current Open Positions section", {
-  result <- parse_wy_wordpress_postings("<html><body><h3 class='elementor-heading-title'>Something Else</h3></body></html>")
-  expect_equal(nrow(result), 0)
-  expect_equal(names(result), c("Title", "Location", "Posted_Date", "Link"))
-})
-
-# ---------------------------------------------------------------------------
 # Google Sites (Uinta County SD6)
 # ---------------------------------------------------------------------------
 

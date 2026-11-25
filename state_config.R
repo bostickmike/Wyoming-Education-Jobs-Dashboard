@@ -43,7 +43,6 @@ read_direct_board_registry <- function() {
 # `session = TRUE`: the fetch_* takes a chromote session first.
 # `fixture_prefix`: the fixtures' file-name prefix where it isn't the lower-cased platform.
 WY_MISC_SCRAPER_SPECS <- list(
-  WordPressBespoke = scraper_spec("fetch_wy_wordpress_postings", "Job_Link", fixture_prefix = "wordpress"),
   SchoolBlocks = scraper_spec("fetch_schoolblocks_postings", "Job_Link"),
   EdlioTabs = scraper_spec("fetch_wy_edlio_postings", "Job_Link", fixture_prefix = "edlio"),
   GoogleSitesBespoke = scraper_spec("fetch_wy_googlesites_postings", "Job_Link", session = TRUE,
