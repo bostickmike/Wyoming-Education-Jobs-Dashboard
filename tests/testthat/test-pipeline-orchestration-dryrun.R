@@ -68,11 +68,8 @@ test_that("the higher-ed scrape and combine keep PeopleAdmin's Page_Places for p
   scrape_code <- extract_chunk_code(rmd_lines, "higher ed scrapes")
   scrape_code <- sub('source\\("direct_api_scrapers.R"\\)', "", scrape_code)
   munge_lines <- strsplit(extract_chunk_code(rmd_lines, "munge he data"), "\n")[[1]]
-  bind_start <- grep("^hedata <- unname\\(he_frames\\)", munge_lines)
-  bind_end <- grep('any_of\\("Page_Places"\\)\\)$', munge_lines)
-  expect_length(bind_start, 1)
-  expect_length(bind_end, 1)
-  bind_code <- paste(munge_lines[bind_start:bind_end], collapse = "\n")
+  bind_code <- grep("^hedata <- combine_he_frames\\(", munge_lines, value = TRUE)
+  expect_length(bind_code, 1)
 
   posting <- function(title, inst_label) {
     df <- data.frame(Title = title, Location = inst_label, Posted_Date = "2026-11-16",

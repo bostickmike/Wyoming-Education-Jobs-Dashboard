@@ -705,22 +705,8 @@ library(readxl)
 # Eastern, Sheridan, Northwest) and UW carry it (NA where a posting states
 # none). It's kept in hedata.xlsx and the raw archive, but not in the
 # accumulated facultydata.csv below.
-hedata <- unname(he_frames) %>%
-  lapply(function(df) {
-    # bind_rows() won't mix a Date Posted_Date with a character one.
-    df$Posted_Date <- as.character(df$Posted_Date)
-    # Close_Date: PeopleAdmin's own close date (or "Open Until Filled");
-    # NA for the other colleges.
-    df$Close_Date <- if ("Close_Date" %in% names(df)) as.character(df$Close_Date) else rep(NA_character_, nrow(df))
-    ensure_posted_pay_columns(df)
-  }) %>%
-  bind_rows() %>%
-  select(Title, Location, Posted_Date, Institution, Link, Close_Date, all_of(POSTED_PAY_COLUMNS), any_of("Page_Places"))
-
-hedata$Posted_Date<- as.character(hedata$Posted_Date)
-
-hedata <- hedata %>%
-  mutate(Archive_Date = Sys.Date())
+# Close_Date: PeopleAdmin's own close date (or "Open Until Filled"); NA for the other colleges.
+hedata <- combine_he_frames(he_frames)
 
 # Where each posting goes on the map (edjobs place_he_postings(), 2026-11-16):
 # a posting is placed at another WY town only when the posting itself names
@@ -771,22 +757,12 @@ tryCatch(refresh_coverage_calendar(
             "WSBA + own-page districts (group)" = "^Miscellaneous K-12 districts")),
   error = function(e) message("Coverage calendar not updated: ", conditionMessage(e)))
 log_step("coverage calendar: done; pay estimates: start")
-# Non-postings (a scraped "Job Title" header, "No Jobs" notices) stay in the
-# raw archive above but are dropped from everything shown or counted.
-# Implausible posted pay is blanked the same way (drop_implausible_pay()).
-hedata <- hedata %>% filter(!is_placeholder_posting(Title)) %>% drop_implausible_pay()
-# Est_* is the institution's IPEDS average for the posting's staff category
-# (ipeds_staff_salaries.csv from the previous run), the labeled fallback for
-# staff postings that state no pay. Added after the raw archive write, so
-# the archive stays as scraped.
+# Non-postings ("Job Title" headers, "No Jobs" notices) stay in the raw archive above but are dropped from
+# everything shown or counted, implausible posted pay is blanked, and staff postings that state no pay get the
+# institution's IPEDS average for their staff category (ipeds_staff_salaries.csv from the previous run), added
+# after the raw archive write (edjobs finish_he_rows()).
 library(edjobs)
-staff_path <- file.path("Wy_Ed_Jobs", "ipeds_staff_salaries.csv")
-if (file.exists(staff_path)) {
-  he_unitids <- read.csv(file.path("Wy_Ed_Jobs", "salarymap.csv"))[, c("Name", "IPEDS_UNITID")]
-  hedata <- attach_ipeds_staff_estimates(hedata, read.csv(staff_path, stringsAsFactors = FALSE,
-                                                          colClasses = c(Year = "character")),
-                                         he_unitids$IPEDS_UNITID[match(canonicalize_he_institution(hedata$Institution), he_unitids$Name)])
-}
+hedata <- finish_he_rows(hedata, "Wy_Ed_Jobs", canonicalize_he_institution)
 # University of Wyoming staff postings use UW's own salary book instead
 # (uw_salary_book.R): the median salary of UW staff with the same title.
 source("uw_salary_book.R")
@@ -807,96 +783,11 @@ log_step("pay estimates: done")
 hedata <- hedata %>%
   mutate(Institution = canonicalize_he_institution(Institution))
 
-# Job_Type/Category classification lives in edjobs (attached by k12_he_classification.R, sourced
-# in setup). Adjunct/pooled titles get their own Job_Type, separate from
-# "Instructor/Teacher/Faculty", so a standing adjunct-pool posting isn't
-# counted the same as full-time faculty hiring.
-this_week_he_cat <- hedata %>%
-  mutate(Job_Type = classify_he_job_type(Title))
-
-# Pay_*, Est_*, Close_Date and the map-place columns (HE_PLACE_COLUMNS) are left out of facultydata.csv: its accumulated history predates
-# pay capture, and append_weekly_rows() refuses a changed column set.
-this_week_facultydata <- this_week_he_cat %>%
-  filter(Job_Type %in% c("Instructor/Teacher/Faculty", "Adjunct/Part-Time Faculty")) %>%
-  mutate(Category = classify_he_faculty_category(Title)) %>%
-  select(-all_of(POSTED_PAY_COLUMNS), -any_of(c("Est_Pay", "Est_Pay_Unit", "Est_Occupation", "Est_Area", "Est_Year", "Est_Source", "Close_Date")), -any_of(HE_PLACE_COLUMNS))
-
-#--------------------------------------------------------------------------
-# Append this week's newly classified rows onto the existing accumulated
-# history, instead of reprocessing every archived raw xlsx snapshot from
-# scratch every run. See history_accumulator.R's header (also sourced in
-# the K-12 chunk above -- sourcing again here is a cheap no-op) and
-# scripts/rebuild_he_history_from_archive.R for the disaster-recovery /
-# verification path.
-#--------------------------------------------------------------------------
-source("history_accumulator.R")
-
-facultydata <- append_weekly_rows(file.path("Wy_Ed_Jobs", "facultydata.csv"), as.data.frame(this_week_facultydata))
-# Also shipped to the repo root (gitignored/local-only) mirroring the
-# Wy_Ed_Jobs/ copy, same as before.
-write.csv(facultydata, "facultydata.csv", row.names = FALSE)
-write.csv(facultydata, file.path("Wy_Ed_Jobs", "facultydata.csv"), row.names = FALSE)
-
-# Per-institution weekly posting totals (ALL categories/job types, not
-# just full-time faculty) -- powers the sparkline trend shown next to
-# each institution's raw count on the landing page's "Top Higher Ed
-# Hiring Institutions" table. Built from this week's hedata (already
-# canonicalized above) before the Job_Type/faculty-only filter.
-# this_week_he_cat is hedata with Job_Type, which classify_work_schedule() reads for n_not_marked.
-this_week_he_totals <- posting_run_totals(this_week_he_cat, "Institution", "Job_Type", "Title", "college")
-he_institution_weekly_totals <- append_weekly_rows(
-  file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), this_week_he_totals)
-write.csv(he_institution_weekly_totals, file.path("Wy_Ed_Jobs", "he_institution_weekly_totals.csv"), row.names = FALSE)
-
-# Per-run totals by college job type (every posting, not only faculty), all and not marked: the Home page's "Top
-# Higher Ed Job Types" table.
-he_jobtype_weekly_totals <- append_weekly_rows(
-  file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"),
-  jobtype_run_totals(this_week_he_cat, "Job_Type", "Title", "college"))
-write.csv(he_jobtype_weekly_totals, file.path("Wy_Ed_Jobs", "he_jobtype_weekly_totals.csv"), row.names = FALSE)
-
-# facultydata includes both full-time-ish and Adjunct/Part-Time faculty
-# (Job_Type column distinguishes them) so the "Current Faculty Trends"
-# chart can show a full-time/part-time stacked breakdown; the Longitudinal
-# Trends and New This Week views filter back down to Job_Type ==
-# "Instructor/Teacher/Faculty" in app.R to keep their existing, unchanged
-# meaning ("faculty hiring", not incl. the standing adjunct pool).
-#
-# Both this week's Total and per-institution rows are computed from
-# this_week_facultydata alone (one Archive_Date) -- same reasoning as the
-# K-12 allsum block above.
-this_week_hesum <- this_week_facultydata %>%
-  group_by(Category, Archive_Date, Job_Type) %>%
-  summarize(sum = n(), .groups = "drop") %>%
-  mutate(Institution = "Total") %>%
-  select(Category, Archive_Date, Institution, Job_Type, sum)
-
-this_week_hesuminst <- this_week_facultydata %>%
-  group_by(Category, Archive_Date, Institution, Job_Type) %>%
-  summarise(sum = n(), .groups = "drop")
-
-check_total_matches_parts(this_week_hesum, this_week_hesuminst,
-                           group_cols = c("Category", "Archive_Date", "Job_Type"))
-
-this_week_allsum_he <- bind_rows(this_week_hesum, this_week_hesuminst)
-Allsum_he <- append_weekly_rows(file.path("Wy_Ed_Jobs", "allsum_he.csv"), this_week_allsum_he)
-write.csv(Allsum_he, file = file.path("Wy_Ed_Jobs", "allsum_he.csv"), row.names = FALSE)
-
-# Database for all data NOW by category -- always just this week's
-# snapshot, built straight from this_week_facultydata (no history needed).
-henowsum <- this_week_hesum %>%
-  ungroup() %>%
-  rename(Sum = sum) %>%
-  select(Category, Job_Type, Sum, Institution)
-
-henowinstsum <- this_week_facultydata %>%
-  group_by(Category, Institution, Job_Type) %>%
-  summarize(Sum = n(), .groups = "drop") %>%
-  select(Category, Sum, Institution, Job_Type)
-
-Allnow_he <- rbind(henowsum, henowinstsum)
-
-write.csv(Allnow_he, file = file.path("Wy_Ed_Jobs", "allnow_he.csv"), row.names = FALSE)
+# The higher-ed history files (faculty rows, institution and job-type weekly totals, allsum_he, allnow_he), appended
+# in one call (edjobs 0.97.0): only this run's rows are classified and appended, and a same-day re-run replaces
+# that day's rows. Adjunct/pooled titles get their own Job_Type, so a standing adjunct pool isn't counted as
+# full-time faculty hiring. scripts/rebuild_he_history_from_archive.R builds them with the same build_he_history().
+write_he_history(hedata, "Wy_Ed_Jobs")
 ```
 
 ### Higher Ed faculty salary data, from IPEDS via the Urban Institute's Education Data Portal API
