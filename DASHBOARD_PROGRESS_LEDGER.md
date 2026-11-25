@@ -1302,7 +1302,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     Replay on the newest committed archive (`claude-notes/2026-11-24_step5-measure/replay/he_history_replay.R`): combined and
     finished tables identical, 5 of 5 history files byte-identical, for the same date and a new one. Live higher-ed scrape
     (branch build), old and new code on the same frames: combined and finished tables identical (459 rows). Rebuild
-    parity (branch build) 11 of 11 files. Suite on 0.97.0: 1,474 passed, 0 failed. No full rehearsal.
+    parity (branch build) 11 of 11 files. Suite on 0.97.0: 1,474 passed, 0 failed. Full rehearsal of slices A2, C1 and D
+    together on v0.97.0 (11-25 UTC, `replay/rehearsal_wy_d.log`): all steps passed, rebuild parity 11 of 11, suites 1,474 (pre-run) and 1,474 (post-run) passed,
+    0 failed. K-12 rows 718 and 718 against the 11-24 run, each source within 1; higher
+    ed 459 to 460 (University of Wyoming 229 to 226, Casper 3 to 4, LCCC 66 to 67).
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
