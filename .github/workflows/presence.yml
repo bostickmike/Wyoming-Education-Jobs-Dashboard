@@ -24,6 +24,6 @@ jobs:
       contents: write
     uses: bostickmike/edjobs/.github/workflows/presence.yml@v0.15.0
     with:
-      platforms: Applitrack,SchoolSpring,TedK12,RedRoverK12
+      platforms: AppliTrack,SchoolSpring,TedK12,RedRoverK12
       setup_files: state_config.R direct_api_scrapers.R k12_he_classification.R misc_district_scrapers.R presence_feeds.R
       dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
