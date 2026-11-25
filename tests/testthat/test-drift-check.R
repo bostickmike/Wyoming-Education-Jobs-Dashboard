@@ -91,16 +91,23 @@ test_that("every misc_district_registry district resolves to the fetch_* its dis
   }
 })
 
-test_that("every he_institution_registry.csv college resolves, with the call the Rmd's loop makes", {
+test_that("every he_institution_registry.csv college resolves to the call the Rmd's stage makes", {
   he <- read_he_registry()
   expect_equal(nrow(he), 9)
+  # Wy_ED_Jobs.Rmd scrapes the colleges with edjobs::scrape_registry_platforms() (2026-11-24): one group per row in
+  # file order, each row's spec, so the spec IS the call.
   rmd <- paste(readLines(here::here("Wy_ED_Jobs.Rmd"), warn = FALSE), collapse = "\n")
-  # The loop's branch for each platform (the call written as the spec builds it).
-  needles <- c(Neogov = "Neogov = function() fetch_neogov_postings(row$Feed_URL)",
-               PeopleAdmin = "PeopleAdmin = function() fetch_peopleadmin_atom(row$Feed_URL, row$Location_Label, location_from_author = FALSE)",
-               UWHeuristic = "UWHeuristic = fetch_uw_postings")
-  expect_setequal(unique(he$Platform), names(needles))
-  for (n in needles) expect_true(grepl(n, rmd, fixed = TRUE), info = n)
+  expect_match(rmd, "scrape_registry_platforms(he_registry, NULL, source = \"he_institution_registry.csv\", shape = \"raw\")",
+               fixed = TRUE)
+  expect_setequal(unique(he$Platform), c("Neogov", "PeopleAdmin", "UWHeuristic"))
+  for (i in seq_len(nrow(he))) {
+    call <- resolve_scraper_call(he$Institution[i])
+    want <- switch(he$Platform[i],
+      Neogov = list(fn = "fetch_neogov_postings", args = list(he$Feed_URL[i])),
+      PeopleAdmin = list(fn = "fetch_peopleadmin_atom", args = list(he$Feed_URL[i], he$Location_Label[i], location_from_author = FALSE)),
+      UWHeuristic = list(fn = "fetch_uw_postings", args = list()))
+    expect_equal(call[c("fn", "args")], want, info = he$Institution[i])
+  }
   w <- he[he$Platform == "PeopleAdmin", ][1, ]
   expect_equal(resolve_scraper_call(w$Institution)$args,
                list(w$Feed_URL, w$Location_Label, location_from_author = FALSE))

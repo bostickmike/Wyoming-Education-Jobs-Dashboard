@@ -124,6 +124,11 @@ test_that("app.R boots against the committed data without an error", {
     timeout = BOOT_SMOKE_TIMEOUT_MS,
     seed = 1
   )
+  # When the Mac's display goes off, Chrome marks the page hidden and stops
+  # drawing it, so Shiny's IntersectionObserver never tells the server that a
+  # newly opened tab is visible and nothing on it renders
+  # (claude-notes/2026-11-24_legend-load/). Focus emulation keeps it visible.
+  app$get_chromote_session()$Emulation$setFocusEmulationEnabled(enabled = TRUE)
   wait_for_server(app)
 
   expect_null(app$get_html(".shiny-output-error"),
@@ -144,6 +149,9 @@ test_that("every tab renders with no Shiny output error", {
   for (tab in LEAF_TABS) {
     expect_true(show_tab(app, tab), info = sprintf("tab '%s' never became the server's current tab", tab))
 
+    # A hidden page renders no tab, so the check below would pass on nothing.
+    expect_identical(app$get_js("document.visibilityState"), "visible",
+                     info = sprintf("the page was hidden on tab '%s', so the tab may not have rendered", tab))
     err <- app$get_html(".shiny-output-error")
     expect_null(err, info = sprintf("tab '%s' rendered a Shiny output error:\n%s",
                                     tab, if (is.null(err)) "" else substr(err, 1, 800)))

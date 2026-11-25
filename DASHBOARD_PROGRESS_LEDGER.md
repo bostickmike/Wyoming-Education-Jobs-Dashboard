@@ -1260,6 +1260,23 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     "oad_Category" and the last item to "Library"); checked by screenshot (`claude-notes/2026-11-24_trends-legend/`).
     0.92.0's `scrape_registry_platforms()` is in the package but not used here yet (Montana's slice A; Wyoming's is
     A2 in `claude-notes/2026-11-24_step5-measure/README.md`). Suite on 0.93.0: 1,470 passed, 0 failed.
+  * [x] Higher-ed boards read by edjobs `scrape_registry_platforms()`; edjobs pinned at 0.95.0 (2026-11-24; branch
+    `he-registry-stage`; bostickmike/edjobs#100 = 0.94.0, #101 = 0.95.0; review step 5 slice B2). The higher-ed chunk's
+    registry loop becomes one call, one group per registry row in file order (`platforms = NULL`).
+    `test-drift-check.R` checks resolved calls instead of reading the Rmd's text. Stub replay
+    (`claude-notes/2026-11-24_step5-measure/replay/`): 9 of 9 frames identical, same log order. Full rehearsal on the
+    tagged 0.95.0: rebuild parity 11 of 11 files, 0 sources flagged by the drift check; K-12 rows 718 -> 716; higher-ed
+    rows 460 -> 459 against the committed file, by college: University of Wyoming 229 -> 227, Casper College 3 -> 4,
+    the other seven unchanged. One failure, the pre-run boot smoke (2 plots not drawn): the Mac's display went off
+    mid-test (next entry). Post-run suite 1,477 passed, 0 failed.
+  * [x] Boot smoke keeps its page visible (2026-11-24; same branch;
+    `claude-notes/2026-11-24_legend-load/README.md`). When the Mac's display goes off, Chrome marks the test page hidden
+    and stops drawing it, so Shiny never learns that a newly opened tab is visible and renders nothing on it. That is why the
+    pre-run suites of two rehearsals failed on a plot (`caffeinate -u` wakes the display, which goes off about 15 s
+    later); edjobs 0.93.0's legend is not involved (0.92.0 fails the same way on a quiet Mac). The test now sets
+    Chrome's focus emulation and checks on every tab that the page is visible (the "every tab renders" check passed on
+    tabs that had rendered nothing). With the display going off mid-run: 41 passed, 2 failed before (0.92.0 and 0.93.0);
+    54 passed, 0 failed twice after. Suite with the fix: 1,488 passed, 0 failed.
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
