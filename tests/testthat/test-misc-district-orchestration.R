@@ -74,7 +74,6 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
       Url = c("https://example.com/1", "https://example.com/2", "https://example.com/3", "https://example.com/4"),
       stringsAsFactors = FALSE
     ),
-    fetch_wy_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_smartsites_postings = function(url, location) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
@@ -130,7 +129,6 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
 test_that("fetch_all_misc_district_postings returns the right empty schema when every source is empty", {
   mock_globals(list(
     fetch_wsba_vacancies = function(url) data.frame(Title = character(0), District = character(0), Location = character(0), Posted_Date = character(0), Url = character(0)),
-    fetch_wy_wordpress_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_smartsites_postings = function(url, location) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),

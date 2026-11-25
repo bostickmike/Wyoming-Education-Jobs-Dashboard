@@ -16,7 +16,7 @@
 #
 # 2. Each district's own site, to catch what WSBA misses. These sit on six
 #    different small-business/school-CMS platforms (Apptegy, Edlio,
-#    SchoolBlocks, SmartSites/ParentSquare, WordPress, Google Sites), none
+#    SchoolBlocks, SmartSites/ParentSquare, Google Sites), none
 #    of which model job postings as structured data -- postings are free-
 #    text prose, bulleted lists, embedded-JSON file listings, or (Platte
 #    County SD1 specifically) image alt-text with no visible title text at
@@ -394,58 +394,6 @@ parse_schoolblocks_postings <- function(html_text, widget_title = "Current Job A
 }
 
 # ---------------------------------------------------------------------------
-# WordPress/Elementor (Lincoln County SD2)
-# ---------------------------------------------------------------------------
-
-# Postings are plain <p> lines inside an Elementor text-editor widget,
-# immediately preceded by a heading widget naming the category. The real
-# page has 7 headings total, in document order: "Employment Opportunities"
-# (page title), "Application Information" (intro/contact-info block, NOT a
-# job category), "Current Open Positions" (the section boundary), then the
-# 4 real job categories -- Classified, Certified, Substitutes, Coaching.
-# An earlier version of this function whitelisted only "Classified"/
-# "Certified" by name and silently dropped Substitutes/Coaching entirely,
-# which would have repeated the exact completeness gap already found in
-# WSBA (systematically missing substitute/coaching postings). Rather than
-# hardcode the 4 real category names (fragile if a 5th category is added
-# later) or capture every heading (wrongly pulls in the intro/contact
-# text), this scopes to every heading that comes AFTER the "Current Open
-# Positions" section heading in document order -- robust to new
-# categories, still excludes the non-category intro content.
-fetch_wy_wordpress_postings <- function(url) {
-  resp <- request(url) %>% perform_with_retry()
-  parse_wy_wordpress_postings(resp_body_string(resp))
-}
-
-parse_wy_wordpress_postings <- function(html_text) {
-  soup <- rvest::read_html(html_text)
-
-  heading_nodes <- rvest::html_elements(soup, ".elementor-widget-heading")
-  if (length(heading_nodes) == 0) return(empty_misc_result())
-
-  heading_texts <- str_trim(rvest::html_text2(rvest::html_elements(heading_nodes, ".elementor-heading-title")))
-  section_idx <- which(heading_texts == "Current Open Positions")
-  if (length(section_idx) == 0) return(empty_misc_result())
-
-  category_nodes <- heading_nodes[(section_idx[1] + 1):length(heading_nodes)]
-  if (length(category_nodes) == 0) return(empty_misc_result())
-
-  all_titles <- character(0)
-  for (heading_node in category_nodes) {
-    next_widget <- rvest::html_element(heading_node, xpath = "following::div[contains(@class,'elementor-widget-text-editor')][1]")
-    if (!is.na(next_widget)) {
-      lines <- rvest::html_text2(rvest::html_elements(next_widget, "p"))
-      all_titles <- c(all_titles, str_trim(lines[nzchar(str_trim(lines))]))
-    }
-  }
-
-  if (length(all_titles) == 0) return(empty_misc_result())
-
-  data.frame(Title = all_titles, Location = NA_character_, Posted_Date = NA_character_,
-             Link = NA_character_, stringsAsFactors = FALSE)
-}
-
-# ---------------------------------------------------------------------------
 # Google Sites (Uinta County SD6) -- the third platform family that
 # genuinely needs a browser
 # ---------------------------------------------------------------------------
@@ -614,10 +562,8 @@ parse_educational_networks_postings <- function(html_text) {
 # immediately before its own description. Scoped to the headings strictly
 # between the page's own "Open Positions" and "Application Process"
 # section headings, so this doesn't also pick up the page's marketing
-# headings ("Why Work With Us", "Mission-Driven Work", etc.) -- same
-# section-scoping technique parse_wy_wordpress_postings() already uses via
-# its own "Current Open Positions" heading, just needing a browser here
-# since this page never puts that text in server-rendered HTML at all.
+# headings ("Why Work With Us", "Mission-Driven Work", etc.). Needs a
+# browser: this page never puts that text in server-rendered HTML at all.
 fetch_prairieview_postings <- function(chromote_session, url) {
   chromote_session$Page$navigate(url)
   chromote_session$Page$loadEventFired(wait_ = TRUE, timeout_ = 30)
@@ -660,7 +606,7 @@ parse_prairieview_postings <- function(headings_json) {
 # starts and stops) and List_Skip (Apptegy only: a section skipped up to the
 # next header; Weston 7's "Subs Needed" block repeats its substitute list in
 # prose, so it's skipped and a posting below it still reads).
-MISC_DISTRICT_PLATFORMS <- c("WordPressBespoke", "SmartSites", "SchoolBlocks", "Edlio", "EdlioTabs",
+MISC_DISTRICT_PLATFORMS <- c("SmartSites", "SchoolBlocks", "Edlio", "EdlioTabs",
                              "GoogleSitesBespoke", "EducationalNetworks", "Apptegy", "PrairieViewHeuristic")
 # Their whole registry rows, for scrape_registry_platforms().
 misc_district_rows <- function(registry = read_k12_registry()) {

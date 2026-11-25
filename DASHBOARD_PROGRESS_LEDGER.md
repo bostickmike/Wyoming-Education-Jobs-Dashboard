@@ -1398,6 +1398,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     with pay (Uinta 6 three, Cheyenne Classical one), the same own-page rows per source as the 11-24 archive; every step
     passed but `manifest`, which failed only because the rehearsal used a locally installed edjobs 0.99.0
     (`rehearsal_wy.log`). Weston 7's tiered substitute day rates are not read.
+  * [x] `WordPressBespoke` retired (2026-11-25; branch `retire-wordpress-bespoke`; listed as dead code on 11-21). No
+    registry row uses it (Lincoln County SD2 moved to SchoolSpring 10-20) and no archive row has its label: the two
+    functions, the spec, the label, 2 test blocks and the fixture are gone.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals
