@@ -652,8 +652,10 @@ parse_prairieview_postings <- function(headings_json) {
 # prose, so it's skipped and a posting below it still reads).
 MISC_DISTRICT_PLATFORMS <- c("WordPressBespoke", "SmartSites", "SchoolBlocks", "Edlio", "EdlioTabs",
                              "GoogleSitesBespoke", "EducationalNetworks", "Apptegy", "PrairieViewHeuristic")
-# Platforms whose reader needs a chromote session.
-MISC_BROWSER_PLATFORMS <- c("Apptegy", "PrairieViewHeuristic", "GoogleSitesBespoke")
+# Their whole registry rows, for scrape_registry_platforms().
+misc_district_rows <- function(registry = read_k12_registry()) {
+  registry[registry$Platform %in% MISC_DISTRICT_PLATFORMS, , drop = FALSE]
+}
 misc_district_registry <- local({
   path <- if (file.exists("k12_district_registry.csv")) "k12_district_registry.csv" else here::here("k12_district_registry.csv")
   r <- utils::read.csv(path, stringsAsFactors = FALSE, na.strings = "", colClasses = "character")
@@ -742,33 +744,6 @@ misc_district_coverage_tiers <- function() {
   )
 }
 
-# Fetches one district's own-page postings via the right platform-specific
-# function. Apptegy, Prairie View, and Google Sites all require a live
-# chromote session (passed in by the caller so all districts needing one
-# share a single browser instance instead of paying startup cost per
-# district); every other platform is plain HTTP and ignores the session
-# argument entirely.
-# `Edlio`, `Apptegy` and `SmartSites` are the edjobs family routines (called unqualified, so
-# tests can stand in for them), Edlio and Apptegy with the registry row's list rules
-# (SmartSites has none: edjobs 0.88.0 reads its widgets the same way on every site);
-# `EdlioTabs` is Uinta 4's own reader (its postings are inside Edlio tab
-# widgets, which the family's page text doesn't open).
-fetch_misc_district_postings <- function(platform, url, chromote_session = NULL, start = NA, stop = NA,
-                                         skip = NA) {
-  switch(platform,
-    WordPressBespoke = fetch_wy_wordpress_postings(url),
-    SmartSites = fetch_smartsites_postings(url, NA_character_),
-    SchoolBlocks = fetch_schoolblocks_postings(url),
-    Edlio = fetch_edlio_postings(url, NA_character_, start, stop),
-    EdlioTabs = fetch_wy_edlio_postings(url),
-    GoogleSitesBespoke = fetch_wy_googlesites_postings(chromote_session, url),
-    EducationalNetworks = fetch_educational_networks_postings(url),
-    Apptegy = fetch_apptegy_postings(chromote_session, url, NA_character_, "text", start, stop, skip),
-    PrairieViewHeuristic = fetch_prairieview_postings(chromote_session, url),
-    stop("fetch_misc_district_postings: unknown platform '", platform, "'")
-  )
-}
-
 # Full pipeline: every WSBA statewide row (one fetch) + each miscellaneous
 # district's own page (deduplicated against that district's WSBA entries by
 # normalized title), combined into one data frame matching the schema the
@@ -785,12 +760,9 @@ fetch_misc_district_postings <- function(platform, url, chromote_session = NULL,
 # other 11 or the WSBA fetch itself.
 #
 # chromote_session_factory: a zero-arg function returning a fresh
-# chromote session (e.g. \() chromote::ChromoteSession$new()), only
-# invoked (once) if the registry actually contains a district on a
-# platform that needs a browser (currently Apptegy, Prairie View, or
-# Google Sites's platform). Kept as an injected factory rather than a hard
-# chromote::: call so this function -- and everything except those
-# districts within it -- stays testable without a real browser available.
+# chromote session (e.g. \() chromote::ChromoteSession$new()); the stage
+# opens one per browser-read district and closes it. Injected, so the
+# function stays testable without a browser (NULL: no session).
 WSBA_VACANCIES_URL <- "https://www.wsba-wy.org/vacancies"
 
 fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
@@ -800,12 +772,12 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     expected_cols = c("Title", "District", "Location", "Posted_Date", "Url")
   )
 
-  needs_browser <- any(misc_district_registry$Platform %in% MISC_BROWSER_PLATFORMS)
-  browser_session <- if (needs_browser && !is.null(chromote_session_factory)) {
-    chromote_session_factory()
-  } else {
-    NULL
-  }
+  # Each site's own postings, one frame per district in registry order, read by its scraper_spec()
+  # (state_config.R; edjobs's defaults for the family platforms), the call the live check and
+  # scripts/repro_scraper.R make.
+  own_by_district <- scrape_registry_platforms(
+    misc_district_rows(), NULL, source = "k12_district_registry.csv", shape = "raw",
+    session_factory = if (is.null(chromote_session_factory)) function() NULL else chromote_session_factory)
 
   all_rows <- list()
 
@@ -814,15 +786,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     platform <- misc_district_registry$Platform[i]
     url <- misc_district_registry$Job_Link[i]
 
-    own_postings <- safe_scrape(
-      district,
-      scrape_fn = function() fetch_misc_district_postings(platform, url, browser_session,
-                                                          misc_district_registry$List_Start[i],
-                                                          misc_district_registry$List_Stop[i],
-                                                          misc_district_registry$List_Skip[i]),
-      expected_cols = c("Title", "Location", "Posted_Date", "Link")
-    )
-    own_postings <- dedupe_against_wsba(own_postings, wsba, district)
+    own_postings <- dedupe_against_wsba(own_by_district[[district]], wsba, district)
 
     wsba_here <- wsba[wsba$District == district, , drop = FALSE]
 
@@ -894,10 +858,6 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
       Posting_Source = WSBA_POSTING_SOURCE,
       stringsAsFactors = FALSE
     )
-  }
-
-  if (!is.null(browser_session)) {
-    tryCatch(browser_session$close(), error = function(e) NULL)
   }
 
   if (length(all_rows) == 0) {

@@ -12,7 +12,7 @@ library(edjobs)
 #   - k12_district_registry.csv: every K-12 scrape target, one row each
 #     (District, NCES_LEAID, City, County, Latitude, Longitude, Platform,
 #     Platform_Key, Job_Link, List_Start, List_Stop, List_Skip): the direct
-#     boards, the district sites (fetch_misc_district_postings()) and
+#     boards, the district sites (fetch_all_misc_district_postings()) and
 #     Laramie Montessori's Paylocity board;
 #   - he_institution_registry.csv: every college (Institution, County,
 #     Latitude, Longitude, Platform, Feed_URL, Job_Link, Location_Pattern,
@@ -39,7 +39,7 @@ read_direct_board_registry <- function() {
   r <- read_k12_registry()
   r[r$Platform %in% WY_DIRECT_BOARD_PLATFORMS, , drop = FALSE]
 }
-# District sites (fetch_misc_district_postings() dispatches on Platform).
+# District sites (read through scrape_registry_platforms() in fetch_all_misc_district_postings()).
 # `session = TRUE`: the fetch_* takes a chromote session first.
 # `fixture_prefix`: the fixtures' file-name prefix where it isn't the lower-cased platform.
 WY_MISC_SCRAPER_SPECS <- list(

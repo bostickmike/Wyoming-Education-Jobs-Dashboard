@@ -39,39 +39,27 @@ test_that("misc_district_coverage_tiers labels the 10 registry districts and WSB
   expect_equal(length(unique(tiers$District)), nrow(tiers))
 })
 
-test_that("fetch_misc_district_postings dispatches to the right platform function", {
-  # Fake single-row result so this test doesn't touch the network;
-  # confirms routing, not the extractors themselves (already covered in
-  # test-misc-district-platform-extractors.R).
-  mock_globals(list(
-    fetch_wy_wordpress_postings = function(url) data.frame(Title = "wp-hit", Location = NA, Posted_Date = NA, Link = NA)
-  ))
-  result <- fetch_misc_district_postings("WordPressBespoke", "http://example.com")
-  expect_equal(result$Title, "wp-hit")
-})
-
-test_that("fetch_misc_district_postings hands the family routines the registry row's list rules", {
-  seen <- NULL
-  mock_globals(list(
-    fetch_edlio_postings = function(url, location, start, stop) { seen <<- c(start, stop); data.frame(Title = "e") },
-    fetch_wy_edlio_postings = function(url) data.frame(Title = "tabs")
-  ))
-  expect_equal(fetch_misc_district_postings("Edlio", "u", NULL, "^Open Positions$", "Student")$Title, "e")
-  expect_equal(seen, c("^Open Positions$", "Student"))
-  expect_equal(fetch_misc_district_postings("EdlioTabs", "u")$Title, "tabs")
+test_that("the district sites' stage calls each registry row's reader with its list rules", {
+  # Since 2026-11-24 the sites are read by edjobs's scrape_registry_platforms(), each row through its scraper_spec().
+  expect_equal(misc_district_rows()$District, misc_district_registry$District)
   expect_equal(misc_district_registry$Platform[misc_district_registry$District == "Uinta County School District 4"], "EdlioTabs")
-  mock_globals(list(fetch_apptegy_postings = function(session, url, location, mode, start, stop, skip) {
-    seen <<- c(mode, start, stop, skip); data.frame(Title = "a") }))
-  expect_equal(fetch_misc_district_postings("Apptegy", "u", NULL, NA, NA, "^Subs Needed$")$Title, "a")
-  expect_equal(seen, c("text", NA, NA, "^Subs Needed$"))
+  edlio <- resolve_scraper_call("Weston County School District 1")
+  expect_equal(edlio$fn, "fetch_edlio_postings")
+  expect_true(all(c("^Open Positions$", "Student Teaching Opportunities") %in% unlist(edlio$args)))
+  expect_equal(resolve_scraper_call("Uinta County School District 4")$fn, "fetch_wy_edlio_postings")
+  apptegy <- resolve_scraper_call("Weston County School District 7")
+  expect_equal(apptegy$fn, "fetch_apptegy_postings")
+  expect_true(any(grepl("Subs Needed", unlist(apptegy$args))))
 })
 
-test_that("fetch_misc_district_postings errors clearly on an unknown platform", {
-  expect_error(fetch_misc_district_postings("not-a-real-platform", "http://example.com"), "unknown platform")
+test_that("a district site on a platform with no scraper spec stops the stage", {
+  rows <- misc_district_rows()[1, , drop = FALSE]
+  rows$Platform <- "not-a-real-platform"
+  expect_error(scrape_registry_platforms(rows, NULL, source = "k12_district_registry.csv", shape = "raw"), "no scraper spec")
 })
 
 test_that("fetch_all_misc_district_postings combines WSBA and district-own postings, deduplicated, with no chromote available", {
-  # No chromote_session_factory passed -> browser_session stays NULL ->
+  # No chromote_session_factory passed -> each browser read gets a NULL session ->
   # fetch_apptegy_postings(NULL, ...)/fetch_wy_googlesites_postings(NULL, url)
   # are called for the 3 Apptegy districts and Uinta County SD6 and
   # (mocked here) return a fixed result regardless of the NULL session,
@@ -90,7 +78,7 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
     fetch_smartsites_postings = function(url, location) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_edlio_postings = function(url, location, start, stop) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_edlio_postings = function(url, location, start, stop, skip) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
@@ -140,7 +128,7 @@ test_that("fetch_all_misc_district_postings returns the right empty schema when 
     fetch_smartsites_postings = function(url, location) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_schoolblocks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_edlio_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
-    fetch_edlio_postings = function(url, location, start, stop) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
+    fetch_edlio_postings = function(url, location, start, stop, skip) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_wy_googlesites_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_educational_networks_postings = function(url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
     fetch_prairieview_postings = function(session, url) data.frame(Title = character(0), Location = character(0), Posted_Date = character(0), Link = character(0)),
