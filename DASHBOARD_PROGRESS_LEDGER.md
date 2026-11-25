@@ -1321,6 +1321,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     `benchmark_stage_replay.R`): every value identical in `salarymap.csv` and `salarymap2.csv`; the three reference files, retrieval
     dates and log rows identical. The edited Rmd chunks run live in a scratch copy (`run_e_chunks.R`): every fetch ok,
     no value changed in either file (one lunch share differs in its 15th digit). Suite on 0.98.0: 1,474 passed, 0 failed. No full rehearsal (each step replayed).
+  * [x] Package review step 5 closed (2026-11-25): the pipeline stages are edjobs calls (slices 1-3, A, A2, B, B2, C1, D, E; C2 in
+    E). C3, a shared skeleton for reconciling the statewide feed, is not built (Mike, 2026-11-25): MT matches OPI posting by posting, WY drops
+    WSBA duplicates and opens the linked pages; revisit with a third state's feed. `claude-notes/2026-11-24_step5-measure/README.md`.
   * [x] Park 16 and Platte 1 on edjobs's SmartSites reader, edjobs pinned at 0.88.0 (2026-11-24; branch
     `smartsites-family`; bostickmike/edjobs#92, #93; `claude-notes/2026-11-24_smartsites-family/` measured it,
     `claude-notes/2026-11-24_smartsites-build/` built it). edjobs `fetch_smartsites_postings(url, location)` reads the
