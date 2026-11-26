@@ -1401,6 +1401,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   * [x] `WordPressBespoke` retired (2026-11-25; branch `retire-wordpress-bespoke`; listed as dead code on 11-21). No
     registry row uses it (Lincoln County SD2 moved to SchoolSpring 10-20) and no archive row has its label: the two
     functions, the spec, the label, 2 test blocks and the fixture are gone.
+  * [x] Places for postings that had none; WSBA's misnamed towns corrected; edjobs pinned at 0.100.0 (2026-11-26; branch
+    `wy-locations`; bostickmike/edjobs#106; Mike chose all four steps; `claude-notes/2026-11-26_wy-location/README.md`).
+    125 of 718 rows (11-24) had no place. WSBA's town was checked: 81 of 86 of today's WSBA rows give a town where the
+    district has a school (CCD 2023), and 17 of 17 that link a school's board posting give that school's town; it was
+    wrong for Laramie County SD 1 ("Laramie"; its schools are in Cheyenne) and Carbon 2 ("CCSD#2"). Now: WSBA's town is
+    kept for the own-page districts' WSBA rows (17 rows were blank); a WSBA town that is none of the district's becomes its
+    office town (3 rows); a row with no place takes the district's town when all its schools are in one town (84 rows, from
+    `Wy_Ed_Jobs/district_towns.csv`, CCD 2024, refreshed each run). 24 rows in districts with schools in several towns stay
+    blank. Full rehearsal: 85 filled, 3 corrected, 24 blank (the several-town districts); every step passed except the
+    pre-run and post-run suites (a test calling an unexported edjobs helper, and the new file missing from the data
+    dictionary: both fixed, then the suite passed 1,487/0 on the branch and 1,488/0 on the rehearsal's output) and
+    `manifest` (a locally installed edjobs). The place is part of the "new this week" key, so the next update shows 12
+    teacher postings as new that only gained a place (a normal week shows 0-4). A pairing rule for that (a gone row with
+    the same title and district and no place) was measured, not built: it would also have paired 2 past WY and 7 MT
+    postings. Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
 - [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals

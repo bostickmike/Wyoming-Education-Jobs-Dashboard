@@ -95,6 +95,9 @@ test_that("fetch_all_misc_district_postings combines WSBA and district-own posti
   # "K-6 Elementary Teacher" must NOT appear twice).
   expect_equal(nrow(niobrara), 3)
   expect_equal(sum(niobrara$title == "K-6 Elementary Teacher"), 1)
+  # WSBA's town goes with its rows; the district's own page gives none (2026-11-26).
+  expect_equal(sort(niobrara$location[niobrara$Posting_Source == WSBA_POSTING_SOURCE]), c("Lusk", "Lusk"))
+  expect_true(is.na(niobrara$location[niobrara$title == "SPED Paraprofessional"]))
   expect_true("SPED Paraprofessional" %in% niobrara$title)
 
   # Regression: Snowy Range Academy is a WSBA_ONLY_ORGS entry, not one of

@@ -759,8 +759,11 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
     }
 
     combined <- dplyr::bind_rows(
+      # WSBA's town goes with its rows (dropped until 2026-11-26: it checked out against CCD and the districts' boards,
+      # claude-notes/2026-11-26_wy-location); an own page's rows have no place of their own.
       if (nrow(wsba_here) > 0) data.frame(title = wsba_here$Title, date_posted = wsba_here$Posted_Date, url = wsba_urls,
-                                          Posting_Source = WSBA_POSTING_SOURCE, stringsAsFactors = FALSE),
+                                          Posting_Source = WSBA_POSTING_SOURCE, location = wsba_here$Location,
+                                          stringsAsFactors = FALSE),
       # The pay the page states for a posting, when its reader returns any (2026-11-25; dropped here until then).
       if (nrow(own_postings) > 0) data.frame(title = own_postings$Title, date_posted = own_postings$Posted_Date, url = own_urls,
                                              Posting_Source = k12_posting_source_label(platform),
@@ -770,7 +773,7 @@ fetch_all_misc_district_postings <- function(chromote_session_factory = NULL) {
 
     if (nrow(combined) > 0) {
       combined$position <- NA_character_
-      combined$location <- NA_character_
+      if (!"location" %in% names(combined)) combined$location <- NA_character_
       combined$District <- district
       all_rows[[length(all_rows) + 1]] <- combined
     }
