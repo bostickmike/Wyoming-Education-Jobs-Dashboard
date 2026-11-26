@@ -28,6 +28,7 @@ Each dataset is accessible via the **Data** tab in the interactive web dashboard
 | **Higher Ed Category Time Series** | `allsum_he.csv` | Faculty and adjunct postings by discipline, type and college in every update, with statewide totals. | College × Discipline × Type × Update | Twice weekly |
 | **Active Higher Ed Jobs** | `hedata.xlsx` | Every college posting listed in the latest update, all job types, with posted pay, campus placement and pay estimates. | Posting level | Twice weekly |
 | **IPEDS Staff Salaries** | `ipeds_staff_salaries.csv` | Average pay of full-time non-instructional staff by college and occupational category (categories with at least 3 staff). | College × Category | Annual |
+| **District Towns** | `district_towns.csv` | The town of each district's office and of its schools, from CCD; gives a posting with no stated place its district's town when all its schools are in one town. | District | Annual |
 | **K-12 Salary History** | `k12_salary_history.csv` | Teacher base salary and superintendent salary by district for each WSBA salary year this project has captured (WSBA keeps no public archive). | District × Year | Annual |
 | **BLS Regional Pay by Role** | `oews_role_wages.csv` | Median pay for the occupations K-12 postings are matched to, by Wyoming OEWS area; the source of the K-12 Typical pay (BLS est.) column. | Area × Occupation | Annual |
 | **Posting First Seen** | `posting_first_seen.csv` | When the dashboard first found each currently listed posting; shown where the board gives no posted date. | Posting level | Twice weekly |
@@ -470,3 +471,15 @@ When each outside data source was last fetched successfully.
 | :--- | :--- | :--- | :--- |
 | `Source` | String | This dashboard: update log | An outside data source the dashboard uses (BLS OEWS, Census ACS, Urban IPEDS, ...). |
 | `Retrieved` | Date (YYYY-MM-DD) | This dashboard: update log | Last date that source was fetched successfully; shown on the Data tab. |
+
+### W. District Towns (`district_towns.csv`)
+
+Where each district's office and schools are (NCES Common Core of Data, latest directory year), used to place postings
+that give no town and to correct a WSBA town that is none of the district's.
+
+| Column Name | Data Type | Source Authority | Description |
+| :--- | :--- | :--- | :--- |
+| `NCES_LEAID` | String (7 digits) | NCES CCD via Urban Institute | District's NCES id; joins to the registry's NCES_LEAID. |
+| `Office_Town` | String | NCES CCD via Urban Institute | Town of the district's office: the place given to a WSBA posting whose stated town is none of the district's. |
+| `School_Towns` | String | NCES CCD via Urban Institute | Towns of the district's schools, separated by semicolons. When there is one, it is the place given to the district's postings that state none. |
+| `CCD_Year` | String | NCES CCD via Urban Institute | Directory year the towns come from (refreshed each update; a failed refresh keeps the file). |

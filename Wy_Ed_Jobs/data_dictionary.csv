@@ -244,3 +244,7 @@
 "UW Salary Book","uw_salary_book.csv","Salary","Numeric","University of Wyoming salary listing","Scheduled salary as of September 1: annual base plus pay for added duties."
 "UW Salary Book","uw_salary_book.csv","Fiscal_Year","String","University of Wyoming salary listing","UW fiscal year of the listing, e.g. FY2026."
 "UW Salary Book","uw_salary_book.csv","Source_URL","String","University of Wyoming salary listing","The PDF the rows were read from."
+"District Towns","district_towns.csv","NCES_LEAID","String (7 digits)","NCES Common Core of Data via Urban Institute Education Data Portal","District's NCES id; joins to k12_district_registry.csv's NCES_LEAID."
+"District Towns","district_towns.csv","Office_Town","String","NCES Common Core of Data via Urban Institute Education Data Portal","Town of the district's office (CCD district directory): the place given to a WSBA posting whose stated town is none of the district's."
+"District Towns","district_towns.csv","School_Towns","String","NCES Common Core of Data via Urban Institute Education Data Portal","Towns of the district's schools (CCD school directory), separated by semicolons. When there is one, it is the place given to the district's postings that state none."
+"District Towns","district_towns.csv","CCD_Year","String","NCES Common Core of Data via Urban Institute Education Data Portal","Directory year the towns come from (refreshed each update; a failed refresh keeps the file)."

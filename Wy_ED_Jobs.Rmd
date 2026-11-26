@@ -300,6 +300,18 @@ if (nrow(wsba_stale_rows) > 0) wsba_stale_rows$Also_On_Feed <- FALSE
 combined <- dplyr::bind_rows(direct, other_rows, wsba_rows, wsba_stale_rows) %>%
   mutate(Archive_Date = Sys.Date())
 
+# A posting's place from its district's CCD towns (edjobs 0.100.0; Mike, 2026-11-26): a row with no place takes the
+# district's town when all its schools are in one town, and a WSBA town that is none of the district's (WSBA's text
+# says "Laramie" for Laramie County SD 1, whose schools are in Cheyenne) becomes its office town. A board's place is
+# kept; districts with schools in several towns keep a blank. Before the posting_id, which includes the place.
+# claude-notes/2026-11-26_wy-location/README.md.
+district_towns <- refresh_district_towns()
+registry_ids <- setNames(read_k12_registry()$NCES_LEAID, read_k12_registry()$District)
+combined <- fill_k12_locations(combined, district_towns, registry_ids,
+                               feed_rows = combined$Posting_Source %in% WSBA_POSTING_SOURCE)
+message(sprintf("Places from district towns: %d filled, %d WSBA town(s) corrected.",
+                attr(combined, "location_changes")[["filled"]], attr(combined, "location_changes")[["corrected"]]))
+
 # fix_title_encoding() (edjobs) is applied here, once, at
 # the point titles first enter the pipeline -- not just inside
 # classify_k12_position()/classify_k12_subject() below, which only fixed a
