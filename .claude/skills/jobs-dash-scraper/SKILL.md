@@ -67,7 +67,8 @@ To minimize LLM token usage and prevent manual editing errors across coupled fil
    - `k12_district_registry.csv` (with duplicate prevention)
    - `.github/copilot-allowlist.txt` (alphabetized domain insertion)
    - `tests/testthat/test-salary-scrapers.R` (unmapped setdiff)
-   - `Mt_ED_Jobs.Rmd` (safe_scrape block, date standardization, direct_df bind)
+   - `state_config.R` (the platform added to `MT_DIRECT_BOARD_PLATFORMS`; since 2026-11-24 the Rmd reads these
+     platforms with `edjobs::scrape_registry_platforms()`, so no Rmd block is written)
    - `misc_district_scrapers.R` (CMS-specific boilerplate fetch/parse functions)
    - `tests/testthat/test-misc-district-scrapers.R` (unit test templates)
    - `README.md` (updates K-12 coverage count)
@@ -109,14 +110,28 @@ When a page's postings are found by CSS selectors alone (an accordion of titles,
 posting with its title, link and place inside), don't write a `parse_*` function. Give the registry row Platform
 `CSSBoard` and add a row to the state's `css_board_rules.csv`, keyed by `Source` (the registry name). edjobs
 `parse_css_board()` reads it (edjobs 0.87.0; `?css_board_rules` documents every column): `Title_CSS` (required);
-`Item_CSS` (one element per posting); `Link_CSS` (blank = the page, `@title` = the title's own `href`, else a
+`Item_CSS` (one element per posting); `Link_CSS` (blank = the page, `@title` = the title's own `href`, `@item` = the item's own, else a
 selector inside the item); `Location_CSS` (inside the item; blank = the registry's place); `Board_CSS` (an element
 the board always has, postings or not: set it, so a redesigned page is an error instead of "no postings");
-`Exclude_Regex` / `Include_Regex` (on the title); `Max_Title_Chars`; `Max_Tries`. Test it like any scraper: a real
+`Exclude_Regex` / `Include_Regex` (on the title); `Strip_Regex` (removed from titles); `Max_Title_Chars`; `Max_Tries`. Test it like any scraper: a real
 captured fixture and the exact Title/Location/Link vectors. Fixing a broken CSS board means editing its rules row,
 not code; in CI that file is outside the allowed paths, so (as for Apptegy's `List_*` registry columns) report the
 row change on the issue instead of editing. A page that needs text markers, dates or paired anchors is still a
 one-off, or belongs to a family (Apptegy, CyberSchool, Google Sites, WordPress, ...).
+
+## Pages of plain text: a text-board rule, not a new parser
+
+When a page has no useful markup but its postings are lines of text between fixed headings, or each posting repeats a
+line ("NOTICE OF VACANCY", "Lightbox Page"), give the registry row Platform `TextBoard` and add a row to the state's
+`text_board_rules.csv`, keyed by `Source` (the registry name; several rows = several sections, read in order). edjobs
+`parse_text_board()` reads it (edjobs 0.99.0; `?text_board_rules` documents every column): `Start_Regex` / `Stop_Regex`
+(lines bounding the section; when set and missing, the reader errors instead of saying "no postings"); `Title_Regex`
+(titles are the matching lines, or its first capture group) or `Marker_Regex` (the title is the line before each match);
+`Exclude_Regex`, `Strip_Regex`, `Max_Title_Chars`; `Pay_Regex` (which of a posting's own lines state its pay; blank = no
+pay read). Read the whole live page before writing the rule: a section the old parser stopped before, a heading taken for a
+job and an unread pay line were all found that way (MT, 2026-11-25). The place is the registry's City, never a section
+heading. Test as for CSS boards: captured fixtures, exact Title vectors, and the auto-fix titles
+`fetch_text_board_postings: <registry name>`. Fixing one is a rules-row change (outside CI's allowed paths).
 
 ## Bespoke heuristic scrapers: when yes, when no
 
