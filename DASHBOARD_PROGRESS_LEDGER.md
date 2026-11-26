@@ -1545,6 +1545,11 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   (0.3%; 59.5 unchanged); widest reading, re-advertised postings included, K-12 750 (9.8%, 31.5 days). Found: a
   re-titled ad (same board + posted date) reads as an ending (209); `relisted_next_run()` keys on the exact title,
   so punctuation edits escape it (41; MT same); `fix_title_encoding()` misses hex entities (`&#x27;`, both states).
+  Status 2026-11-26 (`claude-notes/2026-11-26_duration-checks/README.md`): (a) clean since 11-17, the last processing change
+  ("split posting spells at gaps", which took WY HE 59.5 -> 52.5 and MT K-12 25.5 -> 29); today's code on older archives
+  reproduces the medians committed then, so later moves are data (MT HE 32.5 -> 36.5 on 11-23); ~4 weeks puts (a) at
+  ~12-15. (b) preview on the pipeline's panels: endings with any artifact sign MT K-12 8.0%, MT HE 3.2%, WY K-12 6.7%,
+  WY HE 0.7% (ceilings; 68% on 11-02); rerun at (a)'s date. (c) done 11-10.
 - [ ] Classification safeguards (`claude-notes/2026-11-01_classification-safeguards-proposal.md`): 3, 5, 6, 7, 8,
   9, 10, 11, 12, 13 done; 2 measured, no effect, not built; 1 has a small ceiling (Other is 1.6% MT, 0.1% WY), suggest
   parking (`claude-notes/2026-11-08_classifier-items-1-2-measured.md`). Golden set 551 of 551, no known misses (2026-11-09:
