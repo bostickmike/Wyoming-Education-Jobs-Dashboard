@@ -1418,6 +1418,17 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] WSBA rows picked out by their source label in the weekly run (Mike, 2026-11-26, option A; branch
+  `is-wsba-by-label`; `claude-notes/2026-11-26_is-wsba/`). The Rmd's `is_wsba` keyed on the district having a direct
+  board, so WSBA rows at districts with none (Platte #1, Niobrara #1, Park #16, Weston #1 and #7, STRIDE, the
+  Sweetwater CDC, ...) were treated as board rows: judged by the stale-ad date rule, though the comments and the
+  rebuild (`wy_archive_stale_flags()`, by `Posting_Source`) don't. Now `wsba_feed_rows()` (`misc_district_scrapers.R`)
+  uses the same rule as the rebuild: the WSBA label or the vacancies-page link. No output changes: on the archives 31,
+  35 and 32 rows moved (11-13/11-20/11-24), oldest posted 2026-03-12, none before the 2025-07-01 cutoff, none with a
+  page the closed-posting check reads. Live run of the WSBA + district-page step (11-26): 174 rows, 99 WSBA, 32 move;
+  stale flags 0 under both rules, 1 WSBA copy split off under both, 137 rows out of the step under both; a second run (three district pages timed
+  out, same 99 WSBA rows) matched again, and 37 direct postings are "also on WSBA" under both. Without it the
+  live run and the rebuild would disagree from July 2027 on, when these rows can first be old. Suite 1,493 passed, 0 failed (with the boot smoke).
 - [x] Stale board ads: history restated under the rule (Mike, 2026-11-26; branch `stale-restate`; edjobs 0.104.0,
   bostickmike/edjobs#110; `claude-notes/2026-11-26_stale-restate/`). Was forward-only: the weeks before the rule still
   counted the old ads, so the totals would have stepped down once when it began. Now `wy_archive_stale_flags()`
@@ -1430,7 +1441,8 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   `stale_history_restated` for 11-27. Suite 1,487 passed, 0 failed; rebuild parity 11 of 11. Found while building: the
   live `is_wsba` (direct-board district, or the WSBA page link) leaves WSBA rows at districts with no direct board
   (Platte, Niobrara, Park 16) to be judged by their dates like board rows, though the comments say WSBA rows aren't;
-  none of the 148 such rows on 11-13/11-20/11-24 would be flagged, so nothing changes yet (not fixed here). Full rehearsal (11-26, edjobs 0.104.0):
+  none of the 98 such rows on 11-13/11-20/11-24 (31, 35, 32; the 148 first written here was every WSBA row) would be
+  flagged, so nothing changes yet (fixed 11-26, entry above). Full rehearsal (11-26, edjobs 0.104.0):
   every step passed, suites 1,487 / 1,488 passed, 0 failed; the render flagged 6 of 711 board postings and 1 WSBA copy;
   rebuild parity held after the live run; every run expectation passed on its output with RUN_DATE 2026-11-27.
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the

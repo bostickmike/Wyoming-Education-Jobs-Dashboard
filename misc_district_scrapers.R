@@ -981,6 +981,18 @@ remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings, report
 # against its page (which would find the old ad still listed). Returns
 # list(direct, other, wsba_keep, wsba_stale): wsba_keep goes on to
 # remove_wsba_direct_duplicates() against the unflagged direct rows.
+#
+# Which "other" rows are WSBA's: by the source label every WSBA row carries
+# (fetch_all_misc_district_postings()), or the vacancies-page link, the same rule
+# the rebuild uses (history_accumulator.R wy_archive_stale_flags()). Until
+# 2026-11-26 the Rmd keyed on the district having a direct board, which treated
+# WSBA rows at districts with none (Platte #1, Niobrara #1, Park #16, STRIDE, ...;
+# 32 of the 49 on 2026-11-24) as board rows, judged by their dates.
+wsba_feed_rows <- function(other) {
+  src <- if ("Posting_Source" %in% names(other)) other$Posting_Source else rep(NA_character_, nrow(other))
+  (!is.na(src) & src == WSBA_POSTING_SOURCE) | (!is.na(other$url) & other$url == WSBA_VACANCIES_URL)
+}
+
 flag_stale_k12_rows <- function(direct, other, is_wsba, run_date) {
   direct <- flag_stale_board_postings(direct, run_date)
   other <- flag_stale_board_postings(other, run_date, board = !is_wsba)
