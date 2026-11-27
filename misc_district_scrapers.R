@@ -985,7 +985,7 @@ remove_wsba_direct_duplicates <- function(wsba_postings, direct_postings, report
 # Which "other" rows are WSBA's: by the source label every WSBA row carries
 # (fetch_all_misc_district_postings()), or the vacancies-page link, the same rule
 # the rebuild uses (history_accumulator.R wy_archive_stale_flags()). Until
-# 2026-11-27 the Rmd keyed on the district having a direct board, which treated
+# 2026-11-26 the Rmd keyed on the district having a direct board, which treated
 # WSBA rows at districts with none (Platte #1, Niobrara #1, Park #16, STRIDE, ...;
 # 32 of the 49 on 2026-11-24) as board rows, judged by their dates.
 wsba_feed_rows <- function(other) {
