@@ -1418,6 +1418,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] `test-data-dictionary.R`'s `pending` list emptied (full review 2026-11-27, finding 3.3; branch
+  `review-dictionary-pending`): every listed column (SAIPE range, ACS MOEs, CCD/IPEDS links) is in the committed files,
+  so dropping one now fails the test. Tests: 171 passed, 0 failed.
 - [x] Docs for the 11-26 changes (branch `docs-place-and-wsba`): METHODS.md gains "Where a K-12 posting is placed"
   (the CCD-town fill and the WSBA-town correction, from the 11-27 update; on the 11-24 postings 84 filled, 3 corrected,
   24 left blank; a filled posting counts once as new); DATA_DICTIONARY.md and `data_dictionary.csv` describe the fill
