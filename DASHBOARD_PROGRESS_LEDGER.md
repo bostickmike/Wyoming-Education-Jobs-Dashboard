@@ -1415,9 +1415,13 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     `manifest` (a locally installed edjobs). The place is part of the "new this week" key, so the next update shows 12
     teacher postings as new that only gained a place (a normal week shows 0-4). A pairing rule for that (a gone row with
     the same title and district and no place) was measured, not built: it would also have paired 2 past WY and 7 MT
-    postings. Listing durations bridge by title.
+    postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] Docs for the 11-26 changes (branch `docs-place-and-wsba`): METHODS.md gains "Where a K-12 posting is placed"
+  (the CCD-town fill and the WSBA-town correction, from the 11-27 update; on the 11-24 postings 84 filled, 3 corrected,
+  24 left blank; a filled posting counts once as new); DATA_DICTIONARY.md and `data_dictionary.csv` describe the fill
+  on both `location` columns; CLAUDE.md names `fill_k12_locations()` and `wsba_feed_rows()`.
 - [x] WSBA rows picked out by their source label in the weekly run (Mike, 2026-11-26, option A; branch
   `is-wsba-by-label`; `claude-notes/2026-11-26_is-wsba/`). The Rmd's `is_wsba` keyed on the district having a direct
   board, so WSBA rows at districts with none (Platte #1, Niobrara #1, Park #16, Weston #1 and #7, STRIDE, the
