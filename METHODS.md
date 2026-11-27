@@ -42,7 +42,7 @@ is not evidence that no vacancy exists.
 
 A job board can keep an ad listed, and keep taking applications through it, until the district takes it down,
 whatever dates the ad shows: AppliTrack's closing date is a note the district types, not a deadline the board
-enforces. From the end of November 2026, a district board posting (AppliTrack, SchoolSpring, Red Rover, TedK12 or a
+enforces. A district board posting (AppliTrack, SchoolSpring, Red Rover, TedK12 or a
 dated district website) whose posted date, or stated closing date, is before the July 1 that began the previous
 school year (July 1, 2025 during the 2026-27 school year) doesn't count. Two kinds of ads count whatever their
 dates: standing pools (substitutes), and jobs districts advertise all year and fill again and again (bus drivers and
@@ -51,8 +51,10 @@ posting that is the same ad (it links the posting, or has its district, title an
 either. The raw postings keep the old ads, each with its reason (`Stale_Reason`); the counts and the Jobs table leave
 them out. On the November 20, 2026 postings the rule would have set aside 6 of 688 board postings. A date can't show
 which old ads are still real openings: a specialist post a district has struggled to fill (a speech pathologist, an
-occupational therapist) may be one. Earlier updates keep the counts they had (see "Files and history"), so the
-totals step down once, by about that many postings, when the rule begins.
+occupational therapist) may be one. The rule began with the November 27, 2026 update, and on November 26 the whole
+history, back to August 2024, was recomputed under it (see "Files and history"): each earlier update's ads are judged
+by that update's own date, so every week shown is counted the same way. It set aside 3 to 28 postings a week, and up
+to 10 teaching postings (most of them Fremont County School District #38's ads from 2023 and 2024, still listed in 2025).
 
 ## Categories
 

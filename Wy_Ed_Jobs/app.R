@@ -1150,13 +1150,13 @@ ui <- page_navbar(
             source = "Wyoming School Boards Association salary settlements (starting base); Wyoming Department of Education, Staff Member Collection, WDE602 (average).")),
       openings_source = "each district's own job board, or the Wyoming School Boards Association vacancies list."),
     # K-12 Trends tab: edjobs's k12_trends_panel() (step 7 slice 2b); the note on old board ads (edjobs
-    # flag_stale_board_postings(), 2026-11-24; METHODS.md "Old board ads").
+    # flag_stale_board_postings(), 2026-11-24; history restated 2026-11-26; METHODS.md "Old board ads").
     k12_trends_panel(k12nowsum, k12sum, counting_note = tagList(
       tags$strong("How postings are counted: "),
       "a job listed on both a district's own board and WSBA's statewide list counts once, from the district's board. ",
-      "Since the end of November 2026, board ads posted (or closing) before the July 1 that began the previous school year aren't counted, ",
-      "except substitute pools and jobs districts advertise all year (bus drivers, paraprofessionals, custodians, food service, coaches); ",
-      "earlier weeks still count them.")),
+      "Board ads posted (or closing) before the July 1 that began the previous school year aren't counted, in any week shown ",
+      "(each week by its own date), except substitute pools and jobs districts advertise all year (bus drivers, paraprofessionals, ",
+      "custodians, food service, coaches).")),
     k12_spells_panel()
   ),
 

@@ -1418,9 +1418,21 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
-- [ ] Stale board ads (edjobs 0.90.0) apply forward-only: weeks before the rule still count the old ads, so totals
-  step down once and the legacy `job_duration_spells.csv` shows the flagged teaching ads as "Closed / Filled" at the
-  rule's start. Open choice for Mike: restate the history from the raw archives with the rule (each week's own cutoff).
+- [x] Stale board ads: history restated under the rule (Mike, 2026-11-26; branch `stale-restate`; edjobs 0.104.0,
+  bostickmike/edjobs#110; `claude-notes/2026-11-26_stale-restate/`). Was forward-only: the weeks before the rule still
+  counted the old ads, so the totals would have stepped down once when it began. Now `wy_archive_stale_flags()`
+  (`history_accumulator.R`, edjobs `stale_flags_for_archive()`) gives an archive written before the rule its flags,
+  judged with that run's own date (WSBA rows not judged; none of the flagged rows in any archive is a WSBA row); the
+  rebuild and `test-history-accumulator.R` read through it, and the history files were rebuilt once from all 126
+  archives: every week 3 to 28 postings lower, Teacher 0 to 10 lower (264 of the 291 teaching row-weeks out are Fremont
+  County SD 38's 2023-24 ads), the current 11-24 snapshot 718 -> 712; `job_duration_spells.csv` regenerated (1,909 ->
+  1,905). METHODS.md "Old board ads", DATA_DICTIONARY.md, the K-12 Trends note and CLAUDE.md updated; run expectation
+  `stale_history_restated` for 11-27. Suite 1,487 passed, 0 failed; rebuild parity 11 of 11. Found while building: the
+  live `is_wsba` (direct-board district, or the WSBA page link) leaves WSBA rows at districts with no direct board
+  (Platte, Niobrara, Park 16) to be judged by their dates like board rows, though the comments say WSBA rows aren't;
+  none of the 148 such rows on 11-13/11-20/11-24 would be flagged, so nothing changes yet (not fixed here). Full rehearsal (11-26, edjobs 0.104.0):
+  every step passed, suites 1,487 / 1,488 passed, 0 failed; the render flagged 6 of 711 board postings and 1 WSBA copy;
+  rebuild parity held after the live run; every run expectation passed on its output with RUN_DATE 2026-11-27.
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
   separate address, recommended; (B) an optional field whose address the app emails to Mike privately via a mail
