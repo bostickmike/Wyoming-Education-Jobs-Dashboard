@@ -1032,10 +1032,10 @@
         "GithubRef": "v0.104.0",
         "GithubSHA1": "2838f7b00df140d180530da8a88a259ca707b509",
         "NeedsCompilation": "no",
-        "Packaged": "2026-11-27 03:09:43 UTC; mikebostick",
+        "Packaged": "2026-11-27 17:33:35 UTC; runner",
         "Author": "Mike Bostick [aut, cre]",
         "Maintainer": "Mike Bostick <michael.bostick@montana.edu>",
-        "Built": "R 4.6.2; ; 2026-11-27 03:09:44 UTC; unix"
+        "Built": "R 4.6.2; ; 2026-11-27 17:33:37 UTC; unix"
       }
     },
     "evaluate": {
@@ -2960,7 +2960,7 @@
         "Package": "selectr",
         "Type": "Package",
         "Title": "Translate CSS Selectors to XPath Expressions",
-        "Version": "0.8-0",
+        "Version": "0.8-1",
         "Authors@R": "c(person(\"Simon\", \"Potter\",\n                    role = c(\"aut\", \"trl\", \"cre\"),\n                    email = \"simon@sjp.co.nz\"),\n             person(\"Simon\", \"Sapin\", role = \"aut\"),\n             person(\"Ian\", \"Bicking\", role = \"aut\"))",
         "License": "BSD_3_clause + file LICENCE",
         "Encoding": "UTF-8",
@@ -2972,12 +2972,12 @@
         "Language": "en-GB",
         "Description": "Translates a CSS selector into an equivalent XPath\n  expression. This allows us to use CSS selectors when working with\n  the 'XML' and 'xml2' packages, which can only evaluate XPath\n  expressions. Also provided are convenience functions for querying\n  XML and HTML documents with CSS selectors. This package was\n  originally a port of the Python package 'cssselect'\n  (<https://cssselect.readthedocs.io/>).",
         "NeedsCompilation": "no",
-        "Packaged": "2026-09-27 06:18:23 UTC; vscode",
+        "Packaged": "2026-11-26 21:32:30 UTC; vscode",
         "Author": "Simon Potter [aut, trl, cre],\n  Simon Sapin [aut],\n  Ian Bicking [aut]",
         "Maintainer": "Simon Potter <simon@sjp.co.nz>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-09-27 06:50:02 UTC",
-        "Built": "R 4.6.0; ; 2026-09-28 04:40:24 UTC; unix"
+        "Date/Publication": "2026-11-26 23:40:02 UTC",
+        "Built": "R 4.6.0; ; 2026-11-27 04:38:33 UTC; unix"
       }
     },
     "sf": {
@@ -3518,7 +3518,7 @@
         "Package": "tinytex",
         "Type": "Package",
         "Title": "Helper Functions to Install and Maintain TeX Live, and Compile\nLaTeX Documents",
-        "Version": "0.61",
+        "Version": "0.62",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\")),\n  person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4474-2498\")),\n  person(\"Devon\", \"Ryan\", role = \"ctb\", email = \"dpryan79@gmail.com\", comment = c(ORCID = \"0000-0002-8549-0971\")),\n  person(\"Ethan\", \"Heinzen\", role = \"ctb\"),\n  person(\"Fernando\", \"Cagua\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Helper functions to install and maintain the 'LaTeX' distribution\n  named 'TinyTeX' (<https://yihui.org/tinytex/>), a lightweight, cross-platform,\n  portable, and easy-to-maintain version of 'TeX Live'. This package also\n  contains helper functions to compile 'LaTeX' documents, and install missing\n  'LaTeX' packages automatically.",
         "Imports": "xfun (>= 0.48)",
@@ -3529,12 +3529,12 @@
         "Encoding": "UTF-8",
         "RoxygenNote": "7.3.3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-09-17 18:47:44 UTC; yihui",
+        "Packaged": "2026-11-25 03:20:23 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>),\n  Posit Software, PBC [cph, fnd],\n  Christophe Dervieux [ctb] (ORCID:\n    <https://orcid.org/0000-0003-4474-2498>),\n  Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>),\n  Ethan Heinzen [ctb],\n  Fernando Cagua [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "RSPM",
-        "Date/Publication": "2026-09-17 20:40:02 UTC",
-        "Built": "R 4.6.0; ; 2026-09-26 06:35:38 UTC; unix"
+        "Date/Publication": "2026-11-25 04:30:02 UTC",
+        "Built": "R 4.6.0; ; 2026-11-26 04:25:14 UTC; unix"
       }
     },
     "tzdb": {
@@ -3947,76 +3947,79 @@
   },
   "files": {
     "allnow_he.csv": {
-      "checksum": "d96a68cfe04d55d313e83c15f1110212"
+      "checksum": "16659d16cee770691b3fafaeffa04335"
     },
     "allnow.csv": {
-      "checksum": "595248486f77ca2be6ee35d6698d3bc0"
+      "checksum": "5f236662c8406fefcfda83118af6021f"
     },
     "allsum_he.csv": {
-      "checksum": "64a5aa6f86da4f13746327f14af80174"
+      "checksum": "8e8d47f3228f2a0def82681a70f84c97"
     },
     "allsum.csv": {
-      "checksum": "8a7ea3f7bc9bc9fa4527fc7db2339619"
+      "checksum": "e98ee300c3e8ac519a0ba9c68cd3e1df"
     },
     "app.R": {
       "checksum": "00c2810edfd0cb04c838092ba48651dc"
     },
     "combinedclean.csv": {
-      "checksum": "77528d836545f52827a65a10193b77e7"
+      "checksum": "03e00bd75e9f66cd5d88010e02700845"
     },
     "data_dictionary.csv": {
-      "checksum": "13bf69eec32acf04a36792e3ab1a0b9b"
+      "checksum": "17f39bb12c268c6275ee7943aea4f00c"
+    },
+    "district_towns.csv": {
+      "checksum": "4c3e42367b0d2eec257546168e3cfeb2"
     },
     "facultydata.csv": {
-      "checksum": "3f4457d58bafcc1d169b559d5a736afc"
+      "checksum": "890800bcd2d6fa833bd6baf8249c4a76"
     },
     "he_institution_weekly_totals.csv": {
-      "checksum": "89434b53e35dda00e010b7b6c39436af"
+      "checksum": "0dab4c849a9f284b6ad221455df385bb"
     },
     "he_job_duration_spells.csv": {
-      "checksum": "6b12a4a8ad8ee1568068e8ea5ba84af8"
+      "checksum": "174e1f6ccd91cfd6d0d77536b1efe0b6"
     },
     "he_jobtype_weekly_totals.csv": {
-      "checksum": "7641185d0c5b93c31ed092f5970719c8"
+      "checksum": "80d0d0e8859e1c70490b132f696e8e2a"
     },
     "hedata.xlsx": {
-      "checksum": "9482efe461cb0d0541852b77d1f75ccb"
+      "checksum": "89364e85411bc38bbe6991a820047181"
     },
     "ipeds_staff_salaries.csv": {
       "checksum": "b5a8e82b453c6862ca3cea904094a171"
     },
     "job_duration_spells.csv": {
-      "checksum": "6f20e45188eb59ee0da4f5b10c97cd3c"
+      "checksum": "01e7e80edb93249d117422edc568534d"
     },
     "k12_district_weekly_totals.csv": {
-      "checksum": "9ac75271e590d1d63da2404ce94d8fb2"
+      "checksum": "61561e1c49b7c4b492d907112276800c"
     },
     "k12_jobtype_weekly_totals.csv": {
-      "checksum": "f55159c53c038c54087de2696de45492"
+      "checksum": "4bd856f9c8a1891118afc4b11b601fa9"
     },
     "k12_salary_history.csv": {
       "checksum": "9e49d9d39ad05d745044d4a2cbea6e9b"
     },
     "k12jobanalysis.csv": {
-      "checksum": "56ca1a432aec722849313a053801ea6c"
+      "checksum": "23137c8eb90dfff6c097b0153b0d1f9c"
     },
     "oews_role_wages.csv": {
       "checksum": "e76d522f393eef5f4b3d04f6b08c35da"
     },
     "posting_first_seen.csv": {
-      "checksum": "b8a0622456f1a29b1db6d4ff5c84226c"
+      "checksum": "82535e15d1225f69df0e7de0947de55c"
     },
     "qcew_county_school_pay.csv": {
       "checksum": "878f496a43d7d58b3cad681aa38ea910"
     },
     "salarymap.csv": {
-      "checksum": "a06d61cb6a8fde6a5b93221d3a886afc"
+      "checksum": "b3869419f2ea67223e5060b257364fc3"
     },
     "salarymap2.csv": {
       "checksum": "2991fda22fcc4e916323a110ecdce53e"
     },
     "source_retrieved_dates.csv": {
-      "checksum": "707c3bf83860a2b28ef0dff00fcc05e7"
+      "checksum": "b63a85ac40ebdcba32fd876c8d21c415"
     },
     "uw_salary_book.csv": {
       "checksum": "56027ba3824b3367afc2b83495196c86"

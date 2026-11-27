@@ -1,15 +1,15 @@
 "Segment","Position","Postings","Median_Days"
-"HE","All",11,37
+"HE","All",10,35
 "HE","Professional",3,33
-"HE","Accounting/Finance",2,65
 "HE","Adjunct/Part-Time Faculty",2,37
 "HE","Maintenance & Service",2,47.5
+"HE","Accounting/Finance",1,25
 "HE","Advising and Student Services",1,38
 "HE","Technical",1,15
-"K-12","All",47,14
+"K-12","All",52,14
+"K-12","Custodial/Maintenance",13,13
 "K-12","Support Services",13,14
-"K-12","Custodial/Maintenance",10,12.5
-"K-12","Paraprofessional",9,13
+"K-12","Paraprofessional",11,13
 "K-12","Athletics",6,35.5
 "K-12","Administration",3,21
 "K-12","Food Services",3,14
