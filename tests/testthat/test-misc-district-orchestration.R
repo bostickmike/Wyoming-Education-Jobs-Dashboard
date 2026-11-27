@@ -344,7 +344,7 @@ test_that("flag_stale_k12_rows flags old board ads and splits off the WSBA copy 
   copy <- data.frame(title = "Occupational Therapist", date_posted = NA_character_, url = ot$url, District = ot$District,
                      Posting_Source = wsba_label, stringsAsFactors = FALSE)
   other <- dplyr::bind_rows(other, copy)
-  is_wsba <- other$Posting_Source == wsba_label
+  is_wsba <- wsba_feed_rows(other)
   out <- flag_stale_k12_rows(direct, other, is_wsba, as.Date("2026-11-20"))
   expect_equal(sum(is_stale_flagged(out$direct$Stale_Reason)), 6)
   expect_false(any(is_stale_flagged(out$other$Stale_Reason[is_wsba])))   # WSBA rows aren't judged by their dates
@@ -355,4 +355,21 @@ test_that("flag_stale_k12_rows flags old board ads and splits off the WSBA copy 
   none <- flag_stale_k12_rows(direct[0, ], other, is_wsba, as.Date("2026-11-20"))
   expect_equal(nrow(none$wsba_stale), 0)
   expect_equal(nrow(none$wsba_keep), sum(is_wsba))
+})
+
+# WSBA rows are WSBA's whatever the district: on 2026-11-24, 32 of the 49 were at
+# districts with no direct board (Platte #1, STRIDE, ...), which the Rmd's old
+# district rule counted as board rows. The live rule and the rebuild's agree.
+test_that("wsba_feed_rows marks every WSBA row, at districts with or without a direct board", {
+  a <- read.csv(here::here("Archivek12_Data", "combined_2026-11-24.csv"), colClasses = "character")
+  w <- wsba_feed_rows(a)
+  expect_equal(sum(w), 49)
+  expect_true(all(a$Posting_Source[w] == WSBA_POSTING_SOURCE))
+  no_board <- w & !a$District %in% read_direct_board_registry()$District
+  expect_equal(sum(no_board), 32)
+  expect_true("Platte County School District 1" %in% a$District[no_board])
+  # The page link alone marks a row when the label is missing.
+  b <- data.frame(url = c(WSBA_VACANCIES_URL, "https://platte1.org/x", NA), Posting_Source = NA_character_)
+  expect_equal(wsba_feed_rows(b), c(TRUE, FALSE, FALSE))
+  expect_equal(wsba_feed_rows(b[, "url", drop = FALSE]), c(TRUE, FALSE, FALSE))
 })

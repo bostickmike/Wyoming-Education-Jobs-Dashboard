@@ -247,7 +247,7 @@ direct <- direct %>%
 other <- other %>%
   mutate(date_posted = standardize_date(date_posted))
 
-is_wsba <- other$District %in% registry$District | (!is.na(other$url) & other$url == WSBA_VACANCIES_URL)
+is_wsba <- wsba_feed_rows(other)   # by source label, as the rebuild does (misc_district_scrapers.R; 2026-11-27)
 # Stale board ads (edjobs flag_stale_board_postings(); Mike, 2026-11-24): a
 # board posting whose posted date, or stated closing date, is before the July 1
 # that began the previous school year is flagged in Stale_Reason and not
