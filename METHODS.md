@@ -38,6 +38,22 @@ title and posted date, or when WSBA's link names the board posting's job number.
 listed only there. WSBA is an association's list, not a census of vacancies, and a job missing from the dashboard
 is not evidence that no vacancy exists.
 
+## Where a K-12 posting is placed
+
+A posting's place (`location`) is what its board or WSBA gives, often a school building. Many district websites,
+and some boards, give none. Starting with the November 27, 2026 update, the district's towns from the federal school
+directory ([CCD](https://nces.ed.gov/ccd/), `district_towns.csv`) fill some of those gaps:
+
+- a posting with no place, in a district whose schools are all in one town, gets that town;
+- a WSBA town that is none of the district's towns gets the district office's town (WSBA lists Laramie County School
+  District #1's jobs as "Laramie"; its schools are in Cheyenne);
+- a posting in a district with schools in several towns keeps a blank place, since the town can't be told from the
+  district alone.
+
+On the November 24, 2026 postings this would have filled 84 places, corrected 3 WSBA towns, and left 24 blank. The
+place is part of the ID of a posting that has no board job number (see "One posting, one ID"), so a posting whose
+place was filled counts once as new in the first update with the fill.
+
 ## Old board ads
 
 A job board can keep an ad listed, and keep taking applications through it, until the district takes it down,
