@@ -119,6 +119,11 @@
 "Albany County School District 1","2026-10-09",23,12
 "Albany County School District 1","2026-10-16",19,8
 "Albany County School District 1","2026-10-23",15,7
+"Albany County School District 1","2026-10-30",15,10
+"Albany County School District 1","2026-11-06",16,11
+"Albany County School District 1","2026-11-13",18,13
+"Albany County School District 1","2026-11-20",15,10
+"Albany County School District 1","2026-11-24",14,9
 "Big Horn School District 1","2024-08-09",36,12
 "Big Horn School District 1","2024-08-16",14,3
 "Big Horn School District 1","2024-08-23",12,0
@@ -239,6 +244,11 @@
 "Big Horn School District 1","2026-10-09",9,0
 "Big Horn School District 1","2026-10-16",12,1
 "Big Horn School District 1","2026-10-23",12,1
+"Big Horn School District 1","2026-10-30",11,2
+"Big Horn School District 1","2026-11-06",12,2
+"Big Horn School District 1","2026-11-13",12,2
+"Big Horn School District 1","2026-11-20",11,1
+"Big Horn School District 1","2026-11-24",11,1
 "Big Horn School District 2","2024-08-09",9,3
 "Big Horn School District 2","2024-08-16",5,2
 "Big Horn School District 2","2024-08-23",5,3
@@ -359,6 +369,11 @@
 "Big Horn School District 2","2026-10-09",5,3
 "Big Horn School District 2","2026-10-16",5,3
 "Big Horn School District 2","2026-10-23",6,4
+"Big Horn School District 2","2026-10-30",6,4
+"Big Horn School District 2","2026-11-06",6,4
+"Big Horn School District 2","2026-11-13",5,3
+"Big Horn School District 2","2026-11-20",3,1
+"Big Horn School District 2","2026-11-24",3,1
 "Big Horn School District 3","2024-08-09",12,5
 "Big Horn School District 3","2024-08-16",6,2
 "Big Horn School District 3","2024-08-23",6,2
@@ -479,111 +494,116 @@
 "Big Horn School District 3","2026-10-09",2,0
 "Big Horn School District 3","2026-10-16",3,1
 "Big Horn School District 3","2026-10-23",5,3
-"Big Horn School District 4","2024-08-09",6,6
-"Big Horn School District 4","2024-08-16",3,3
-"Big Horn School District 4","2024-08-23",3,3
-"Big Horn School District 4","2024-08-30",3,3
-"Big Horn School District 4","2024-09-06",2,2
-"Big Horn School District 4","2024-09-13",2,2
-"Big Horn School District 4","2024-09-20",2,2
-"Big Horn School District 4","2024-09-27",2,2
-"Big Horn School District 4","2024-10-04",2,2
-"Big Horn School District 4","2024-10-11",2,2
-"Big Horn School District 4","2024-10-18",2,2
-"Big Horn School District 4","2024-10-25",2,2
-"Big Horn School District 4","2024-11-01",2,2
-"Big Horn School District 4","2024-11-08",2,2
-"Big Horn School District 4","2024-11-15",2,2
-"Big Horn School District 4","2024-11-22",2,2
-"Big Horn School District 4","2024-11-29",2,2
-"Big Horn School District 4","2024-12-06",2,2
-"Big Horn School District 4","2024-12-13",3,3
-"Big Horn School District 4","2024-12-20",3,3
-"Big Horn School District 4","2024-12-27",3,3
-"Big Horn School District 4","2025-01-03",3,3
-"Big Horn School District 4","2025-01-10",2,2
-"Big Horn School District 4","2025-01-17",2,2
-"Big Horn School District 4","2025-01-24",3,3
-"Big Horn School District 4","2025-01-31",3,3
-"Big Horn School District 4","2025-02-07",3,3
-"Big Horn School District 4","2025-02-14",12,8
-"Big Horn School District 4","2025-02-21",12,8
-"Big Horn School District 4","2025-02-28",14,9
-"Big Horn School District 4","2025-03-07",14,9
-"Big Horn School District 4","2025-03-14",14,9
-"Big Horn School District 4","2025-03-21",14,9
-"Big Horn School District 4","2025-03-28",12,7
-"Big Horn School District 4","2025-04-04",8,3
-"Big Horn School District 4","2025-04-11",10,5
-"Big Horn School District 4","2025-04-18",10,5
-"Big Horn School District 4","2025-04-25",9,4
-"Big Horn School District 4","2025-05-02",9,4
-"Big Horn School District 4","2025-05-09",9,4
-"Big Horn School District 4","2025-05-16",11,6
-"Big Horn School District 4","2025-05-23",11,6
-"Big Horn School District 4","2025-05-30",11,6
-"Big Horn School District 4","2025-06-06",10,5
-"Big Horn School District 4","2025-06-13",8,5
-"Big Horn School District 4","2025-06-20",8,5
-"Big Horn School District 4","2025-06-27",8,5
-"Big Horn School District 4","2025-07-04",8,5
-"Big Horn School District 4","2025-07-11",8,5
-"Big Horn School District 4","2025-07-18",8,5
-"Big Horn School District 4","2025-07-25",9,5
-"Big Horn School District 4","2025-08-01",9,5
-"Big Horn School District 4","2025-08-08",5,3
-"Big Horn School District 4","2025-08-15",5,3
-"Big Horn School District 4","2025-08-22",5,3
-"Big Horn School District 4","2025-08-29",5,3
-"Big Horn School District 4","2025-09-05",5,3
-"Big Horn School District 4","2025-09-12",5,3
-"Big Horn School District 4","2025-09-19",5,3
-"Big Horn School District 4","2025-09-26",4,2
-"Big Horn School District 4","2025-10-03",4,2
-"Big Horn School District 4","2025-10-10",4,2
-"Big Horn School District 4","2025-10-17",5,3
-"Big Horn School District 4","2025-10-24",5,3
-"Big Horn School District 4","2025-10-31",4,2
-"Big Horn School District 4","2025-11-07",4,2
-"Big Horn School District 4","2025-11-14",4,2
-"Big Horn School District 4","2025-11-21",4,2
-"Big Horn School District 4","2025-11-28",4,2
-"Big Horn School District 4","2025-12-05",4,2
-"Big Horn School District 4","2025-12-12",4,2
-"Big Horn School District 4","2025-12-19",4,2
-"Big Horn School District 4","2025-12-26",4,2
-"Big Horn School District 4","2026-01-02",4,2
-"Big Horn School District 4","2026-01-09",4,2
-"Big Horn School District 4","2026-01-16",5,3
-"Big Horn School District 4","2026-01-23",5,3
-"Big Horn School District 4","2026-01-30",5,3
-"Big Horn School District 4","2026-02-06",5,3
-"Big Horn School District 4","2026-02-13",6,4
-"Big Horn School District 4","2026-02-20",6,4
-"Big Horn School District 4","2026-02-27",6,4
-"Big Horn School District 4","2026-03-06",6,4
-"Big Horn School District 4","2026-03-13",6,4
-"Big Horn School District 4","2026-03-20",6,4
-"Big Horn School District 4","2026-03-27",6,4
-"Big Horn School District 4","2026-04-03",6,4
-"Big Horn School District 4","2026-04-10",4,3
-"Big Horn School District 4","2026-04-17",5,4
-"Big Horn School District 4","2026-04-24",6,5
-"Big Horn School District 4","2026-05-01",6,5
-"Big Horn School District 4","2026-05-07",6,5
-"Big Horn School District 4","2026-05-08",6,5
-"Big Horn School District 4","2026-05-15",5,4
-"Big Horn School District 4","2026-05-22",5,4
-"Big Horn School District 4","2026-05-29",5,3
-"Big Horn School District 4","2026-06-05",7,5
-"Big Horn School District 4","2026-06-12",8,5
-"Big Horn School District 4","2026-06-19",8,5
-"Big Horn School District 4","2026-06-26",7,3
-"Big Horn School District 4","2026-07-03",7,3
-"Big Horn School District 4","2026-07-10",7,3
-"Big Horn School District 4","2026-07-17",7,3
-"Big Horn School District 4","2026-07-24",4,2
-"Big Horn School District 4","2026-07-31",4,2
+"Big Horn School District 3","2026-10-30",4,2
+"Big Horn School District 3","2026-11-06",4,2
+"Big Horn School District 3","2026-11-13",4,2
+"Big Horn School District 3","2026-11-20",4,2
+"Big Horn School District 3","2026-11-24",5,3
+"Big Horn School District 4","2024-08-09",4,4
+"Big Horn School District 4","2024-08-16",2,2
+"Big Horn School District 4","2024-08-23",2,2
+"Big Horn School District 4","2024-08-30",2,2
+"Big Horn School District 4","2024-09-06",1,1
+"Big Horn School District 4","2024-09-13",1,1
+"Big Horn School District 4","2024-09-20",1,1
+"Big Horn School District 4","2024-09-27",1,1
+"Big Horn School District 4","2024-10-04",1,1
+"Big Horn School District 4","2024-10-11",1,1
+"Big Horn School District 4","2024-10-18",1,1
+"Big Horn School District 4","2024-10-25",1,1
+"Big Horn School District 4","2024-11-01",1,1
+"Big Horn School District 4","2024-11-08",1,1
+"Big Horn School District 4","2024-11-15",1,1
+"Big Horn School District 4","2024-11-22",1,1
+"Big Horn School District 4","2024-11-29",1,1
+"Big Horn School District 4","2024-12-06",1,1
+"Big Horn School District 4","2024-12-13",2,2
+"Big Horn School District 4","2024-12-20",2,2
+"Big Horn School District 4","2024-12-27",2,2
+"Big Horn School District 4","2025-01-03",2,2
+"Big Horn School District 4","2025-01-10",1,1
+"Big Horn School District 4","2025-01-17",1,1
+"Big Horn School District 4","2025-01-24",2,2
+"Big Horn School District 4","2025-01-31",2,2
+"Big Horn School District 4","2025-02-07",2,2
+"Big Horn School District 4","2025-02-14",11,7
+"Big Horn School District 4","2025-02-21",11,7
+"Big Horn School District 4","2025-02-28",13,8
+"Big Horn School District 4","2025-03-07",13,8
+"Big Horn School District 4","2025-03-14",13,8
+"Big Horn School District 4","2025-03-21",13,8
+"Big Horn School District 4","2025-03-28",11,6
+"Big Horn School District 4","2025-04-04",7,2
+"Big Horn School District 4","2025-04-11",9,4
+"Big Horn School District 4","2025-04-18",9,4
+"Big Horn School District 4","2025-04-25",8,3
+"Big Horn School District 4","2025-05-02",8,3
+"Big Horn School District 4","2025-05-09",8,3
+"Big Horn School District 4","2025-05-16",10,5
+"Big Horn School District 4","2025-05-23",10,5
+"Big Horn School District 4","2025-05-30",10,5
+"Big Horn School District 4","2025-06-06",9,4
+"Big Horn School District 4","2025-06-13",7,4
+"Big Horn School District 4","2025-06-20",7,4
+"Big Horn School District 4","2025-06-27",7,4
+"Big Horn School District 4","2025-07-04",7,4
+"Big Horn School District 4","2025-07-11",7,4
+"Big Horn School District 4","2025-07-18",7,4
+"Big Horn School District 4","2025-07-25",8,4
+"Big Horn School District 4","2025-08-01",8,4
+"Big Horn School District 4","2025-08-08",4,2
+"Big Horn School District 4","2025-08-15",4,2
+"Big Horn School District 4","2025-08-22",4,2
+"Big Horn School District 4","2025-08-29",4,2
+"Big Horn School District 4","2025-09-05",4,2
+"Big Horn School District 4","2025-09-12",4,2
+"Big Horn School District 4","2025-09-19",4,2
+"Big Horn School District 4","2025-09-26",3,1
+"Big Horn School District 4","2025-10-03",3,1
+"Big Horn School District 4","2025-10-10",3,1
+"Big Horn School District 4","2025-10-17",4,2
+"Big Horn School District 4","2025-10-24",4,2
+"Big Horn School District 4","2025-10-31",3,1
+"Big Horn School District 4","2025-11-07",3,1
+"Big Horn School District 4","2025-11-14",3,1
+"Big Horn School District 4","2025-11-21",3,1
+"Big Horn School District 4","2025-11-28",3,1
+"Big Horn School District 4","2025-12-05",3,1
+"Big Horn School District 4","2025-12-12",3,1
+"Big Horn School District 4","2025-12-19",3,1
+"Big Horn School District 4","2025-12-26",3,1
+"Big Horn School District 4","2026-01-02",3,1
+"Big Horn School District 4","2026-01-09",3,1
+"Big Horn School District 4","2026-01-16",4,2
+"Big Horn School District 4","2026-01-23",4,2
+"Big Horn School District 4","2026-01-30",4,2
+"Big Horn School District 4","2026-02-06",4,2
+"Big Horn School District 4","2026-02-13",5,3
+"Big Horn School District 4","2026-02-20",5,3
+"Big Horn School District 4","2026-02-27",5,3
+"Big Horn School District 4","2026-03-06",5,3
+"Big Horn School District 4","2026-03-13",5,3
+"Big Horn School District 4","2026-03-20",5,3
+"Big Horn School District 4","2026-03-27",5,3
+"Big Horn School District 4","2026-04-03",5,3
+"Big Horn School District 4","2026-04-10",3,2
+"Big Horn School District 4","2026-04-17",4,3
+"Big Horn School District 4","2026-04-24",5,4
+"Big Horn School District 4","2026-05-01",5,4
+"Big Horn School District 4","2026-05-07",5,4
+"Big Horn School District 4","2026-05-08",5,4
+"Big Horn School District 4","2026-05-15",4,3
+"Big Horn School District 4","2026-05-22",4,3
+"Big Horn School District 4","2026-05-29",4,2
+"Big Horn School District 4","2026-06-05",6,4
+"Big Horn School District 4","2026-06-12",7,4
+"Big Horn School District 4","2026-06-19",7,4
+"Big Horn School District 4","2026-06-26",6,2
+"Big Horn School District 4","2026-07-03",6,2
+"Big Horn School District 4","2026-07-10",6,2
+"Big Horn School District 4","2026-07-17",6,2
+"Big Horn School District 4","2026-07-24",3,1
+"Big Horn School District 4","2026-07-31",3,1
 "Big Horn School District 4","2026-08-03",4,2
 "Big Horn School District 4","2026-08-04",4,2
 "Big Horn School District 4","2026-08-07",4,2
@@ -599,6 +619,11 @@
 "Big Horn School District 4","2026-10-09",5,4
 "Big Horn School District 4","2026-10-16",5,4
 "Big Horn School District 4","2026-10-23",5,4
+"Big Horn School District 4","2026-10-30",4,3
+"Big Horn School District 4","2026-11-06",4,3
+"Big Horn School District 4","2026-11-13",4,3
+"Big Horn School District 4","2026-11-20",4,3
+"Big Horn School District 4","2026-11-24",4,3
 "Campbell County School District 1","2024-08-09",100,96
 "Campbell County School District 1","2024-08-16",50,45
 "Campbell County School District 1","2024-08-23",28,14
@@ -679,8 +704,8 @@
 "Campbell County School District 1","2026-01-30",39,31
 "Campbell County School District 1","2026-02-06",39,31
 "Campbell County School District 1","2026-02-13",36,31
-"Campbell County School District 1","2026-02-20",45,40
-"Campbell County School District 1","2026-02-27",47,41
+"Campbell County School District 1","2026-02-20",44,39
+"Campbell County School District 1","2026-02-27",46,40
 "Campbell County School District 1","2026-03-06",40,35
 "Campbell County School District 1","2026-03-13",42,37
 "Campbell County School District 1","2026-03-20",43,36
@@ -699,26 +724,31 @@
 "Campbell County School District 1","2026-06-12",28,15
 "Campbell County School District 1","2026-06-19",22,13
 "Campbell County School District 1","2026-06-26",22,17
-"Campbell County School District 1","2026-07-03",36,29
-"Campbell County School District 1","2026-07-10",46,39
-"Campbell County School District 1","2026-07-17",38,34
-"Campbell County School District 1","2026-07-24",51,45
-"Campbell County School District 1","2026-07-31",51,46
-"Campbell County School District 1","2026-08-03",52,47
-"Campbell County School District 1","2026-08-04",51,46
-"Campbell County School District 1","2026-08-07",47,41
-"Campbell County School District 1","2026-08-11",50,45
-"Campbell County School District 1","2026-08-14",52,46
-"Campbell County School District 1","2026-08-21",41,35
-"Campbell County School District 1","2026-08-28",42,35
-"Campbell County School District 1","2026-09-04",37,25
-"Campbell County School District 1","2026-09-11",34,27
-"Campbell County School District 1","2026-09-18",31,26
-"Campbell County School District 1","2026-09-25",36,27
-"Campbell County School District 1","2026-10-02",38,29
-"Campbell County School District 1","2026-10-09",35,27
-"Campbell County School District 1","2026-10-16",30,26
-"Campbell County School District 1","2026-10-23",33,26
+"Campbell County School District 1","2026-07-03",35,28
+"Campbell County School District 1","2026-07-10",45,38
+"Campbell County School District 1","2026-07-17",37,33
+"Campbell County School District 1","2026-07-24",50,44
+"Campbell County School District 1","2026-07-31",50,45
+"Campbell County School District 1","2026-08-03",51,46
+"Campbell County School District 1","2026-08-04",50,45
+"Campbell County School District 1","2026-08-07",46,40
+"Campbell County School District 1","2026-08-11",49,44
+"Campbell County School District 1","2026-08-14",51,45
+"Campbell County School District 1","2026-08-21",40,34
+"Campbell County School District 1","2026-08-28",41,34
+"Campbell County School District 1","2026-09-04",36,24
+"Campbell County School District 1","2026-09-11",33,26
+"Campbell County School District 1","2026-09-18",30,25
+"Campbell County School District 1","2026-09-25",35,26
+"Campbell County School District 1","2026-10-02",37,28
+"Campbell County School District 1","2026-10-09",34,26
+"Campbell County School District 1","2026-10-16",29,25
+"Campbell County School District 1","2026-10-23",32,25
+"Campbell County School District 1","2026-10-30",30,23
+"Campbell County School District 1","2026-11-06",27,22
+"Campbell County School District 1","2026-11-13",25,22
+"Campbell County School District 1","2026-11-20",28,24
+"Campbell County School District 1","2026-11-24",27,23
 "Carbon County School District 1","2024-08-09",58,31
 "Carbon County School District 1","2024-08-16",29,16
 "Carbon County School District 1","2024-08-23",26,13
@@ -766,13 +796,13 @@
 "Carbon County School District 1","2025-06-13",32,18
 "Carbon County School District 1","2025-06-20",35,20
 "Carbon County School District 1","2025-06-27",34,19
-"Carbon County School District 1","2025-07-04",31,17
-"Carbon County School District 1","2025-07-11",29,17
-"Carbon County School District 1","2025-07-18",28,16
-"Carbon County School District 1","2025-07-25",29,17
-"Carbon County School District 1","2025-08-01",30,18
-"Carbon County School District 1","2025-08-08",27,14
-"Carbon County School District 1","2025-08-15",27,14
+"Carbon County School District 1","2025-07-04",26,15
+"Carbon County School District 1","2025-07-11",25,16
+"Carbon County School District 1","2025-07-18",24,15
+"Carbon County School District 1","2025-07-25",26,17
+"Carbon County School District 1","2025-08-01",27,18
+"Carbon County School District 1","2025-08-08",24,14
+"Carbon County School District 1","2025-08-15",24,14
 "Carbon County School District 1","2025-08-22",24,13
 "Carbon County School District 1","2025-08-29",22,11
 "Carbon County School District 1","2025-09-05",22,11
@@ -839,126 +869,136 @@
 "Carbon County School District 1","2026-10-09",16,8
 "Carbon County School District 1","2026-10-16",16,8
 "Carbon County School District 1","2026-10-23",17,9
-"Carbon County School District 2","2024-08-09",46,16
-"Carbon County School District 2","2024-08-16",19,6
-"Carbon County School District 2","2024-08-23",18,6
-"Carbon County School District 2","2024-08-30",15,3
-"Carbon County School District 2","2024-09-06",15,3
-"Carbon County School District 2","2024-09-13",14,2
-"Carbon County School District 2","2024-09-20",15,3
-"Carbon County School District 2","2024-09-27",18,6
-"Carbon County School District 2","2024-10-04",19,7
-"Carbon County School District 2","2024-10-11",19,7
-"Carbon County School District 2","2024-10-18",14,5
-"Carbon County School District 2","2024-10-25",14,5
-"Carbon County School District 2","2024-11-01",14,5
-"Carbon County School District 2","2024-11-08",11,3
-"Carbon County School District 2","2024-11-15",11,3
-"Carbon County School District 2","2024-11-22",11,3
-"Carbon County School District 2","2024-11-29",11,3
-"Carbon County School District 2","2024-12-06",11,4
-"Carbon County School District 2","2024-12-13",14,4
-"Carbon County School District 2","2024-12-20",15,4
-"Carbon County School District 2","2024-12-27",15,4
-"Carbon County School District 2","2025-01-03",15,4
-"Carbon County School District 2","2025-01-10",16,5
-"Carbon County School District 2","2025-01-17",14,5
-"Carbon County School District 2","2025-01-24",15,6
-"Carbon County School District 2","2025-01-31",14,6
-"Carbon County School District 2","2025-02-07",14,6
-"Carbon County School District 2","2025-02-14",13,5
-"Carbon County School District 2","2025-02-21",13,5
-"Carbon County School District 2","2025-02-28",16,8
-"Carbon County School District 2","2025-03-07",14,8
-"Carbon County School District 2","2025-03-14",25,10
-"Carbon County School District 2","2025-03-21",26,11
-"Carbon County School District 2","2025-03-28",24,9
-"Carbon County School District 2","2025-04-04",24,9
-"Carbon County School District 2","2025-04-11",25,8
-"Carbon County School District 2","2025-04-18",23,6
-"Carbon County School District 2","2025-04-25",25,8
-"Carbon County School District 2","2025-05-02",27,9
-"Carbon County School District 2","2025-05-09",29,9
-"Carbon County School District 2","2025-05-16",27,7
-"Carbon County School District 2","2025-05-23",27,7
-"Carbon County School District 2","2025-05-30",28,6
-"Carbon County School District 2","2025-06-06",27,8
-"Carbon County School District 2","2025-06-13",29,9
-"Carbon County School District 2","2025-06-20",27,8
-"Carbon County School District 2","2025-06-27",27,8
-"Carbon County School District 2","2025-07-04",28,9
-"Carbon County School District 2","2025-07-11",28,9
-"Carbon County School District 2","2025-07-18",30,11
-"Carbon County School District 2","2025-07-25",30,11
-"Carbon County School District 2","2025-08-01",25,9
-"Carbon County School District 2","2025-08-08",23,8
-"Carbon County School District 2","2025-08-15",23,8
-"Carbon County School District 2","2025-08-22",25,9
-"Carbon County School District 2","2025-08-29",25,9
-"Carbon County School District 2","2025-09-05",26,11
-"Carbon County School District 2","2025-09-12",19,9
-"Carbon County School District 2","2025-09-19",19,9
-"Carbon County School District 2","2025-09-26",19,9
-"Carbon County School District 2","2025-10-03",19,9
-"Carbon County School District 2","2025-10-10",18,9
-"Carbon County School District 2","2025-10-17",20,10
-"Carbon County School District 2","2025-10-24",21,11
-"Carbon County School District 2","2025-10-31",20,11
-"Carbon County School District 2","2025-11-07",20,11
-"Carbon County School District 2","2025-11-14",20,11
-"Carbon County School District 2","2025-11-21",20,11
-"Carbon County School District 2","2025-11-28",19,10
-"Carbon County School District 2","2025-12-05",18,10
-"Carbon County School District 2","2025-12-12",15,7
-"Carbon County School District 2","2025-12-19",15,7
-"Carbon County School District 2","2025-12-26",15,7
-"Carbon County School District 2","2026-01-02",15,7
-"Carbon County School District 2","2026-01-09",17,9
-"Carbon County School District 2","2026-01-16",17,8
-"Carbon County School District 2","2026-01-23",18,8
-"Carbon County School District 2","2026-01-30",17,8
-"Carbon County School District 2","2026-02-06",20,11
-"Carbon County School District 2","2026-02-13",17,8
-"Carbon County School District 2","2026-02-20",17,8
-"Carbon County School District 2","2026-02-27",18,7
-"Carbon County School District 2","2026-03-06",19,7
-"Carbon County School District 2","2026-03-13",26,7
-"Carbon County School District 2","2026-03-20",24,7
-"Carbon County School District 2","2026-03-27",24,7
-"Carbon County School District 2","2026-04-03",24,7
-"Carbon County School District 2","2026-04-10",25,6
-"Carbon County School District 2","2026-04-17",24,5
-"Carbon County School District 2","2026-04-24",24,5
-"Carbon County School District 2","2026-05-01",24,5
-"Carbon County School District 2","2026-05-07",25,5
-"Carbon County School District 2","2026-05-08",25,5
-"Carbon County School District 2","2026-05-15",25,5
-"Carbon County School District 2","2026-05-22",25,5
-"Carbon County School District 2","2026-05-29",26,6
-"Carbon County School District 2","2026-06-05",25,6
-"Carbon County School District 2","2026-06-12",25,6
-"Carbon County School District 2","2026-06-19",25,6
-"Carbon County School District 2","2026-06-26",25,6
-"Carbon County School District 2","2026-07-03",22,6
-"Carbon County School District 2","2026-07-10",23,5
-"Carbon County School District 2","2026-07-17",22,4
-"Carbon County School District 2","2026-07-24",21,4
-"Carbon County School District 2","2026-07-31",21,4
-"Carbon County School District 2","2026-08-03",21,4
-"Carbon County School District 2","2026-08-04",22,5
-"Carbon County School District 2","2026-08-07",21,4
-"Carbon County School District 2","2026-08-11",24,7
-"Carbon County School District 2","2026-08-14",24,7
-"Carbon County School District 2","2026-08-21",24,7
-"Carbon County School District 2","2026-08-28",21,7
-"Carbon County School District 2","2026-09-04",19,6
-"Carbon County School District 2","2026-09-11",19,6
-"Carbon County School District 2","2026-09-18",20,6
-"Carbon County School District 2","2026-09-25",20,6
-"Carbon County School District 2","2026-10-02",20,6
-"Carbon County School District 2","2026-10-09",20,6
-"Carbon County School District 2","2026-10-16",15,5
-"Carbon County School District 2","2026-10-23",14,4
+"Carbon County School District 1","2026-10-30",16,8
+"Carbon County School District 1","2026-11-06",15,7
+"Carbon County School District 1","2026-11-13",15,7
+"Carbon County School District 1","2026-11-20",14,7
+"Carbon County School District 1","2026-11-24",14,7
+"Carbon County School District 2","2024-08-09",44,14
+"Carbon County School District 2","2024-08-16",18,5
+"Carbon County School District 2","2024-08-23",17,5
+"Carbon County School District 2","2024-08-30",14,2
+"Carbon County School District 2","2024-09-06",14,2
+"Carbon County School District 2","2024-09-13",13,1
+"Carbon County School District 2","2024-09-20",14,2
+"Carbon County School District 2","2024-09-27",17,5
+"Carbon County School District 2","2024-10-04",18,6
+"Carbon County School District 2","2024-10-11",18,6
+"Carbon County School District 2","2024-10-18",13,4
+"Carbon County School District 2","2024-10-25",13,4
+"Carbon County School District 2","2024-11-01",13,4
+"Carbon County School District 2","2024-11-08",10,2
+"Carbon County School District 2","2024-11-15",10,2
+"Carbon County School District 2","2024-11-22",10,2
+"Carbon County School District 2","2024-11-29",10,2
+"Carbon County School District 2","2024-12-06",10,3
+"Carbon County School District 2","2024-12-13",13,3
+"Carbon County School District 2","2024-12-20",14,3
+"Carbon County School District 2","2024-12-27",14,3
+"Carbon County School District 2","2025-01-03",14,3
+"Carbon County School District 2","2025-01-10",15,4
+"Carbon County School District 2","2025-01-17",13,4
+"Carbon County School District 2","2025-01-24",14,5
+"Carbon County School District 2","2025-01-31",13,5
+"Carbon County School District 2","2025-02-07",13,5
+"Carbon County School District 2","2025-02-14",12,4
+"Carbon County School District 2","2025-02-21",12,4
+"Carbon County School District 2","2025-02-28",15,7
+"Carbon County School District 2","2025-03-07",13,7
+"Carbon County School District 2","2025-03-14",24,9
+"Carbon County School District 2","2025-03-21",25,10
+"Carbon County School District 2","2025-03-28",23,8
+"Carbon County School District 2","2025-04-04",23,8
+"Carbon County School District 2","2025-04-11",24,7
+"Carbon County School District 2","2025-04-18",22,5
+"Carbon County School District 2","2025-04-25",24,7
+"Carbon County School District 2","2025-05-02",26,8
+"Carbon County School District 2","2025-05-09",28,8
+"Carbon County School District 2","2025-05-16",26,6
+"Carbon County School District 2","2025-05-23",26,6
+"Carbon County School District 2","2025-05-30",27,5
+"Carbon County School District 2","2025-06-06",26,7
+"Carbon County School District 2","2025-06-13",28,8
+"Carbon County School District 2","2025-06-20",26,7
+"Carbon County School District 2","2025-06-27",26,7
+"Carbon County School District 2","2025-07-04",26,7
+"Carbon County School District 2","2025-07-11",26,7
+"Carbon County School District 2","2025-07-18",28,9
+"Carbon County School District 2","2025-07-25",28,9
+"Carbon County School District 2","2025-08-01",23,7
+"Carbon County School District 2","2025-08-08",21,6
+"Carbon County School District 2","2025-08-15",21,6
+"Carbon County School District 2","2025-08-22",23,7
+"Carbon County School District 2","2025-08-29",23,7
+"Carbon County School District 2","2025-09-05",24,9
+"Carbon County School District 2","2025-09-12",17,7
+"Carbon County School District 2","2025-09-19",17,7
+"Carbon County School District 2","2025-09-26",17,7
+"Carbon County School District 2","2025-10-03",17,7
+"Carbon County School District 2","2025-10-10",16,7
+"Carbon County School District 2","2025-10-17",18,8
+"Carbon County School District 2","2025-10-24",19,9
+"Carbon County School District 2","2025-10-31",18,9
+"Carbon County School District 2","2025-11-07",18,9
+"Carbon County School District 2","2025-11-14",18,9
+"Carbon County School District 2","2025-11-21",18,9
+"Carbon County School District 2","2025-11-28",17,8
+"Carbon County School District 2","2025-12-05",16,8
+"Carbon County School District 2","2025-12-12",13,5
+"Carbon County School District 2","2025-12-19",13,5
+"Carbon County School District 2","2025-12-26",13,5
+"Carbon County School District 2","2026-01-02",13,5
+"Carbon County School District 2","2026-01-09",15,7
+"Carbon County School District 2","2026-01-16",15,6
+"Carbon County School District 2","2026-01-23",16,6
+"Carbon County School District 2","2026-01-30",15,6
+"Carbon County School District 2","2026-02-06",18,9
+"Carbon County School District 2","2026-02-13",15,6
+"Carbon County School District 2","2026-02-20",15,6
+"Carbon County School District 2","2026-02-27",16,5
+"Carbon County School District 2","2026-03-06",17,5
+"Carbon County School District 2","2026-03-13",24,5
+"Carbon County School District 2","2026-03-20",22,5
+"Carbon County School District 2","2026-03-27",22,5
+"Carbon County School District 2","2026-04-03",22,5
+"Carbon County School District 2","2026-04-10",23,4
+"Carbon County School District 2","2026-04-17",23,4
+"Carbon County School District 2","2026-04-24",23,4
+"Carbon County School District 2","2026-05-01",23,4
+"Carbon County School District 2","2026-05-07",24,4
+"Carbon County School District 2","2026-05-08",24,4
+"Carbon County School District 2","2026-05-15",24,4
+"Carbon County School District 2","2026-05-22",24,4
+"Carbon County School District 2","2026-05-29",25,5
+"Carbon County School District 2","2026-06-05",24,5
+"Carbon County School District 2","2026-06-12",24,5
+"Carbon County School District 2","2026-06-19",24,5
+"Carbon County School District 2","2026-06-26",24,5
+"Carbon County School District 2","2026-07-03",21,5
+"Carbon County School District 2","2026-07-10",22,4
+"Carbon County School District 2","2026-07-17",21,3
+"Carbon County School District 2","2026-07-24",20,3
+"Carbon County School District 2","2026-07-31",20,3
+"Carbon County School District 2","2026-08-03",20,3
+"Carbon County School District 2","2026-08-04",21,4
+"Carbon County School District 2","2026-08-07",20,3
+"Carbon County School District 2","2026-08-11",23,6
+"Carbon County School District 2","2026-08-14",23,6
+"Carbon County School District 2","2026-08-21",23,6
+"Carbon County School District 2","2026-08-28",20,6
+"Carbon County School District 2","2026-09-04",18,5
+"Carbon County School District 2","2026-09-11",18,5
+"Carbon County School District 2","2026-09-18",19,5
+"Carbon County School District 2","2026-09-25",19,5
+"Carbon County School District 2","2026-10-02",19,5
+"Carbon County School District 2","2026-10-09",19,5
+"Carbon County School District 2","2026-10-16",14,4
+"Carbon County School District 2","2026-10-23",13,3
+"Carbon County School District 2","2026-10-30",14,3
+"Carbon County School District 2","2026-11-06",13,3
+"Carbon County School District 2","2026-11-13",12,2
+"Carbon County School District 2","2026-11-20",14,4
+"Carbon County School District 2","2026-11-24",14,4
 "Cheyenne Classical Academy","2026-08-07",3,2
 "Cheyenne Classical Academy","2026-08-11",2,1
 "Cheyenne Classical Academy","2026-08-14",2,1
@@ -971,6 +1011,11 @@
 "Cheyenne Classical Academy","2026-10-09",1,0
 "Cheyenne Classical Academy","2026-10-16",1,0
 "Cheyenne Classical Academy","2026-10-23",1,0
+"Cheyenne Classical Academy","2026-10-30",1,0
+"Cheyenne Classical Academy","2026-11-06",1,0
+"Cheyenne Classical Academy","2026-11-13",1,0
+"Cheyenne Classical Academy","2026-11-20",1,0
+"Cheyenne Classical Academy","2026-11-24",1,0
 "Converse County School District 1","2024-08-09",28,18
 "Converse County School District 1","2024-08-16",14,9
 "Converse County School District 1","2024-08-23",16,11
@@ -1090,6 +1135,11 @@
 "Converse County School District 1","2026-10-09",14,9
 "Converse County School District 1","2026-10-16",14,9
 "Converse County School District 1","2026-10-23",21,13
+"Converse County School District 1","2026-10-30",17,10
+"Converse County School District 1","2026-11-06",18,11
+"Converse County School District 1","2026-11-13",11,6
+"Converse County School District 1","2026-11-20",11,8
+"Converse County School District 1","2026-11-24",11,8
 "Converse County School District 2","2024-08-09",24,10
 "Converse County School District 2","2024-08-16",12,5
 "Converse County School District 2","2024-08-23",12,5
@@ -1137,30 +1187,30 @@
 "Converse County School District 2","2025-06-13",15,6
 "Converse County School District 2","2025-06-20",14,5
 "Converse County School District 2","2025-06-27",14,5
-"Converse County School District 2","2025-07-04",14,5
-"Converse County School District 2","2025-07-11",14,5
-"Converse County School District 2","2025-07-18",15,6
-"Converse County School District 2","2025-07-25",16,6
-"Converse County School District 2","2025-08-01",15,5
-"Converse County School District 2","2025-08-08",15,6
-"Converse County School District 2","2025-08-15",15,6
-"Converse County School District 2","2025-08-22",14,7
-"Converse County School District 2","2025-08-29",13,6
-"Converse County School District 2","2025-09-05",12,5
-"Converse County School District 2","2025-09-12",12,4
-"Converse County School District 2","2025-09-19",11,5
-"Converse County School District 2","2025-09-26",12,6
-"Converse County School District 2","2025-10-03",11,6
-"Converse County School District 2","2025-10-10",10,5
-"Converse County School District 2","2025-10-17",10,5
-"Converse County School District 2","2025-10-24",10,5
-"Converse County School District 2","2025-10-31",11,5
-"Converse County School District 2","2025-11-07",10,4
-"Converse County School District 2","2025-11-14",8,4
-"Converse County School District 2","2025-11-21",5,2
-"Converse County School District 2","2025-11-28",5,2
-"Converse County School District 2","2025-12-05",6,2
-"Converse County School District 2","2025-12-12",7,3
+"Converse County School District 2","2025-07-04",13,4
+"Converse County School District 2","2025-07-11",13,4
+"Converse County School District 2","2025-07-18",14,5
+"Converse County School District 2","2025-07-25",15,5
+"Converse County School District 2","2025-08-01",14,4
+"Converse County School District 2","2025-08-08",14,5
+"Converse County School District 2","2025-08-15",14,5
+"Converse County School District 2","2025-08-22",13,6
+"Converse County School District 2","2025-08-29",12,5
+"Converse County School District 2","2025-09-05",11,4
+"Converse County School District 2","2025-09-12",11,3
+"Converse County School District 2","2025-09-19",10,4
+"Converse County School District 2","2025-09-26",11,5
+"Converse County School District 2","2025-10-03",10,5
+"Converse County School District 2","2025-10-10",9,4
+"Converse County School District 2","2025-10-17",9,4
+"Converse County School District 2","2025-10-24",9,4
+"Converse County School District 2","2025-10-31",10,4
+"Converse County School District 2","2025-11-07",9,3
+"Converse County School District 2","2025-11-14",7,3
+"Converse County School District 2","2025-11-21",4,1
+"Converse County School District 2","2025-11-28",4,1
+"Converse County School District 2","2025-12-05",5,1
+"Converse County School District 2","2025-12-12",6,2
 "Converse County School District 2","2025-12-19",6,2
 "Converse County School District 2","2025-12-26",7,2
 "Converse County School District 2","2026-01-02",7,2
@@ -1210,6 +1260,11 @@
 "Converse County School District 2","2026-10-09",3,2
 "Converse County School District 2","2026-10-16",3,2
 "Converse County School District 2","2026-10-23",5,3
+"Converse County School District 2","2026-10-30",5,3
+"Converse County School District 2","2026-11-06",5,4
+"Converse County School District 2","2026-11-13",4,3
+"Converse County School District 2","2026-11-20",5,4
+"Converse County School District 2","2026-11-24",5,4
 "Crook County School District 1","2024-08-09",24,5
 "Crook County School District 1","2024-08-16",12,4
 "Crook County School District 1","2024-08-23",12,4
@@ -1330,6 +1385,11 @@
 "Crook County School District 1","2026-10-09",22,3
 "Crook County School District 1","2026-10-16",21,3
 "Crook County School District 1","2026-10-23",21,3
+"Crook County School District 1","2026-10-30",18,1
+"Crook County School District 1","2026-11-06",17,1
+"Crook County School District 1","2026-11-13",16,1
+"Crook County School District 1","2026-11-20",16,1
+"Crook County School District 1","2026-11-24",13,1
 "Fremont County School District 1","2024-08-09",43,16
 "Fremont County School District 1","2024-08-16",20,7
 "Fremont County School District 1","2024-08-23",19,7
@@ -1450,81 +1510,86 @@
 "Fremont County School District 1","2026-10-09",23,9
 "Fremont County School District 1","2026-10-16",25,10
 "Fremont County School District 1","2026-10-23",24,10
-"Fremont County School District 14","2024-08-09",31,13
-"Fremont County School District 14","2024-08-16",15,6
-"Fremont County School District 14","2024-08-23",16,7
-"Fremont County School District 14","2024-08-30",16,7
-"Fremont County School District 14","2024-09-06",16,7
-"Fremont County School District 14","2024-09-13",16,7
-"Fremont County School District 14","2024-09-20",16,7
-"Fremont County School District 14","2024-09-27",16,7
-"Fremont County School District 14","2024-10-04",16,7
-"Fremont County School District 14","2024-10-11",16,7
-"Fremont County School District 14","2024-10-18",16,7
-"Fremont County School District 14","2024-10-25",16,7
-"Fremont County School District 14","2024-11-01",16,7
-"Fremont County School District 14","2024-11-08",16,7
-"Fremont County School District 14","2024-11-15",14,7
-"Fremont County School District 14","2024-11-22",14,7
-"Fremont County School District 14","2024-11-29",12,5
-"Fremont County School District 14","2024-12-06",14,7
-"Fremont County School District 14","2024-12-13",14,7
-"Fremont County School District 14","2024-12-20",13,6
-"Fremont County School District 14","2024-12-27",13,6
-"Fremont County School District 14","2025-01-03",13,6
-"Fremont County School District 14","2025-01-10",13,6
-"Fremont County School District 14","2025-01-17",13,6
-"Fremont County School District 14","2025-01-24",15,8
-"Fremont County School District 14","2025-01-31",14,7
-"Fremont County School District 14","2025-02-07",14,7
-"Fremont County School District 14","2025-02-14",14,7
-"Fremont County School District 14","2025-02-21",14,7
-"Fremont County School District 14","2025-02-28",16,9
-"Fremont County School District 14","2025-03-07",15,8
-"Fremont County School District 14","2025-03-14",15,8
-"Fremont County School District 14","2025-03-21",12,7
-"Fremont County School District 14","2025-03-28",13,8
-"Fremont County School District 14","2025-04-04",13,6
-"Fremont County School District 14","2025-04-11",13,6
-"Fremont County School District 14","2025-04-18",13,6
-"Fremont County School District 14","2025-04-25",13,6
-"Fremont County School District 14","2025-05-02",10,3
-"Fremont County School District 14","2025-05-09",10,3
-"Fremont County School District 14","2025-05-16",16,4
-"Fremont County School District 14","2025-05-23",16,4
-"Fremont County School District 14","2025-05-30",16,4
-"Fremont County School District 14","2025-06-06",12,4
-"Fremont County School District 14","2025-06-13",12,4
-"Fremont County School District 14","2025-06-20",11,3
-"Fremont County School District 14","2025-06-27",11,3
-"Fremont County School District 14","2025-07-04",11,3
-"Fremont County School District 14","2025-07-11",11,3
-"Fremont County School District 14","2025-07-18",11,3
-"Fremont County School District 14","2025-07-25",11,3
-"Fremont County School District 14","2025-08-01",11,3
-"Fremont County School District 14","2025-08-08",11,3
-"Fremont County School District 14","2025-08-15",11,3
-"Fremont County School District 14","2025-08-22",12,4
-"Fremont County School District 14","2025-08-29",12,4
-"Fremont County School District 14","2025-09-05",12,4
-"Fremont County School District 14","2025-09-12",13,5
-"Fremont County School District 14","2025-09-19",12,5
-"Fremont County School District 14","2025-09-26",12,5
-"Fremont County School District 14","2025-10-03",12,5
-"Fremont County School District 14","2025-10-10",12,5
-"Fremont County School District 14","2025-10-17",12,5
-"Fremont County School District 14","2025-10-24",9,4
-"Fremont County School District 14","2025-10-31",9,4
-"Fremont County School District 14","2025-11-07",9,4
-"Fremont County School District 14","2025-11-14",9,4
-"Fremont County School District 14","2025-11-21",10,5
-"Fremont County School District 14","2025-11-28",10,5
-"Fremont County School District 14","2025-12-05",10,5
-"Fremont County School District 14","2025-12-12",10,5
-"Fremont County School District 14","2025-12-19",10,5
-"Fremont County School District 14","2025-12-26",10,5
-"Fremont County School District 14","2026-01-02",10,5
-"Fremont County School District 14","2026-01-09",10,5
+"Fremont County School District 1","2026-10-30",22,9
+"Fremont County School District 1","2026-11-06",22,8
+"Fremont County School District 1","2026-11-13",17,6
+"Fremont County School District 1","2026-11-20",17,6
+"Fremont County School District 1","2026-11-24",18,6
+"Fremont County School District 14","2024-08-09",29,11
+"Fremont County School District 14","2024-08-16",14,5
+"Fremont County School District 14","2024-08-23",15,6
+"Fremont County School District 14","2024-08-30",15,6
+"Fremont County School District 14","2024-09-06",15,6
+"Fremont County School District 14","2024-09-13",15,6
+"Fremont County School District 14","2024-09-20",15,6
+"Fremont County School District 14","2024-09-27",15,6
+"Fremont County School District 14","2024-10-04",15,6
+"Fremont County School District 14","2024-10-11",15,6
+"Fremont County School District 14","2024-10-18",15,6
+"Fremont County School District 14","2024-10-25",15,6
+"Fremont County School District 14","2024-11-01",15,6
+"Fremont County School District 14","2024-11-08",15,6
+"Fremont County School District 14","2024-11-15",13,6
+"Fremont County School District 14","2024-11-22",13,6
+"Fremont County School District 14","2024-11-29",11,4
+"Fremont County School District 14","2024-12-06",13,6
+"Fremont County School District 14","2024-12-13",13,6
+"Fremont County School District 14","2024-12-20",12,5
+"Fremont County School District 14","2024-12-27",12,5
+"Fremont County School District 14","2025-01-03",12,5
+"Fremont County School District 14","2025-01-10",12,5
+"Fremont County School District 14","2025-01-17",12,5
+"Fremont County School District 14","2025-01-24",14,7
+"Fremont County School District 14","2025-01-31",13,6
+"Fremont County School District 14","2025-02-07",13,6
+"Fremont County School District 14","2025-02-14",13,6
+"Fremont County School District 14","2025-02-21",13,6
+"Fremont County School District 14","2025-02-28",15,8
+"Fremont County School District 14","2025-03-07",14,7
+"Fremont County School District 14","2025-03-14",14,7
+"Fremont County School District 14","2025-03-21",11,6
+"Fremont County School District 14","2025-03-28",12,7
+"Fremont County School District 14","2025-04-04",12,5
+"Fremont County School District 14","2025-04-11",12,5
+"Fremont County School District 14","2025-04-18",12,5
+"Fremont County School District 14","2025-04-25",12,5
+"Fremont County School District 14","2025-05-02",9,2
+"Fremont County School District 14","2025-05-09",9,2
+"Fremont County School District 14","2025-05-16",15,3
+"Fremont County School District 14","2025-05-23",15,3
+"Fremont County School District 14","2025-05-30",15,3
+"Fremont County School District 14","2025-06-06",11,3
+"Fremont County School District 14","2025-06-13",11,3
+"Fremont County School District 14","2025-06-20",10,2
+"Fremont County School District 14","2025-06-27",10,2
+"Fremont County School District 14","2025-07-04",10,2
+"Fremont County School District 14","2025-07-11",10,2
+"Fremont County School District 14","2025-07-18",10,2
+"Fremont County School District 14","2025-07-25",10,2
+"Fremont County School District 14","2025-08-01",10,2
+"Fremont County School District 14","2025-08-08",10,2
+"Fremont County School District 14","2025-08-15",10,2
+"Fremont County School District 14","2025-08-22",11,3
+"Fremont County School District 14","2025-08-29",11,3
+"Fremont County School District 14","2025-09-05",11,3
+"Fremont County School District 14","2025-09-12",12,4
+"Fremont County School District 14","2025-09-19",11,4
+"Fremont County School District 14","2025-09-26",11,4
+"Fremont County School District 14","2025-10-03",11,4
+"Fremont County School District 14","2025-10-10",11,4
+"Fremont County School District 14","2025-10-17",11,4
+"Fremont County School District 14","2025-10-24",8,3
+"Fremont County School District 14","2025-10-31",8,3
+"Fremont County School District 14","2025-11-07",8,3
+"Fremont County School District 14","2025-11-14",8,3
+"Fremont County School District 14","2025-11-21",9,4
+"Fremont County School District 14","2025-11-28",9,4
+"Fremont County School District 14","2025-12-05",9,4
+"Fremont County School District 14","2025-12-12",9,4
+"Fremont County School District 14","2025-12-19",9,4
+"Fremont County School District 14","2025-12-26",9,4
+"Fremont County School District 14","2026-01-02",9,4
+"Fremont County School District 14","2026-01-09",9,4
 "Fremont County School District 14","2026-01-16",10,5
 "Fremont County School District 14","2026-01-23",10,5
 "Fremont County School District 14","2026-01-30",10,5
@@ -1570,6 +1635,11 @@
 "Fremont County School District 14","2026-10-09",12,4
 "Fremont County School District 14","2026-10-16",12,4
 "Fremont County School District 14","2026-10-23",9,2
+"Fremont County School District 14","2026-10-30",9,2
+"Fremont County School District 14","2026-11-06",9,2
+"Fremont County School District 14","2026-11-13",9,2
+"Fremont County School District 14","2026-11-20",9,2
+"Fremont County School District 14","2026-11-24",9,2
 "Fremont County School District 2","2024-08-09",16,2
 "Fremont County School District 2","2024-08-16",8,1
 "Fremont County School District 2","2024-08-23",6,0
@@ -1690,6 +1760,11 @@
 "Fremont County School District 2","2026-10-09",12,3
 "Fremont County School District 2","2026-10-16",13,4
 "Fremont County School District 2","2026-10-23",13,4
+"Fremont County School District 2","2026-10-30",13,4
+"Fremont County School District 2","2026-11-06",12,3
+"Fremont County School District 2","2026-11-13",10,3
+"Fremont County School District 2","2026-11-20",10,3
+"Fremont County School District 2","2026-11-24",9,3
 "Fremont County School District 21","2024-08-09",18,12
 "Fremont County School District 21","2024-08-16",9,6
 "Fremont County School District 21","2024-08-23",9,6
@@ -1737,7 +1812,7 @@
 "Fremont County School District 21","2025-06-13",6,3
 "Fremont County School District 21","2025-06-20",6,3
 "Fremont County School District 21","2025-06-27",6,3
-"Fremont County School District 21","2025-07-04",6,3
+"Fremont County School District 21","2025-07-04",5,2
 "Fremont County School District 21","2025-07-11",5,2
 "Fremont County School District 21","2025-07-18",6,3
 "Fremont County School District 21","2025-07-25",7,4
@@ -1810,6 +1885,11 @@
 "Fremont County School District 21","2026-10-09",11,8
 "Fremont County School District 21","2026-10-16",11,8
 "Fremont County School District 21","2026-10-23",11,8
+"Fremont County School District 21","2026-10-30",12,8
+"Fremont County School District 21","2026-11-06",12,8
+"Fremont County School District 21","2026-11-13",12,8
+"Fremont County School District 21","2026-11-20",12,8
+"Fremont County School District 21","2026-11-24",12,8
 "Fremont County School District 24","2024-08-09",24,2
 "Fremont County School District 24","2024-08-16",10,0
 "Fremont County School District 24","2024-08-23",12,0
@@ -1912,6 +1992,11 @@
 "Fremont County School District 24","2026-06-26",11,2
 "Fremont County School District 24","2026-08-11",1,1
 "Fremont County School District 24","2026-08-14",1,1
+"Fremont County School District 24","2026-10-30",2,1
+"Fremont County School District 24","2026-11-06",2,1
+"Fremont County School District 24","2026-11-13",2,1
+"Fremont County School District 24","2026-11-20",2,1
+"Fremont County School District 24","2026-11-24",2,1
 "Fremont County School District 25","2024-08-09",42,28
 "Fremont County School District 25","2024-08-16",17,11
 "Fremont County School District 25","2024-08-23",19,12
@@ -1959,7 +2044,7 @@
 "Fremont County School District 25","2025-06-13",33,18
 "Fremont County School District 25","2025-06-20",36,18
 "Fremont County School District 25","2025-06-27",20,11
-"Fremont County School District 25","2025-07-04",42,24
+"Fremont County School District 25","2025-07-04",39,21
 "Fremont County School District 25","2025-07-11",23,12
 "Fremont County School District 25","2025-07-18",23,12
 "Fremont County School District 25","2025-07-25",21,10
@@ -1972,11 +2057,11 @@
 "Fremont County School District 25","2025-09-12",25,13
 "Fremont County School District 25","2025-09-19",22,12
 "Fremont County School District 25","2025-09-26",21,11
-"Fremont County School District 25","2025-10-03",44,22
+"Fremont County School District 25","2025-10-03",41,19
 "Fremont County School District 25","2025-10-10",22,11
 "Fremont County School District 25","2025-10-17",19,9
-"Fremont County School District 25","2025-10-24",36,14
-"Fremont County School District 25","2025-10-31",34,12
+"Fremont County School District 25","2025-10-24",34,12
+"Fremont County School District 25","2025-10-31",32,10
 "Fremont County School District 25","2025-11-07",19,8
 "Fremont County School District 25","2025-11-14",19,8
 "Fremont County School District 25","2025-11-21",20,9
@@ -1984,44 +2069,44 @@
 "Fremont County School District 25","2025-12-05",19,8
 "Fremont County School District 25","2025-12-12",19,8
 "Fremont County School District 25","2025-12-19",17,6
-"Fremont County School District 25","2025-12-26",38,12
-"Fremont County School District 25","2026-01-02",38,12
-"Fremont County School District 25","2026-01-09",17,5
-"Fremont County School District 25","2026-01-16",19,6
-"Fremont County School District 25","2026-01-23",46,20
-"Fremont County School District 25","2026-01-30",23,10
-"Fremont County School District 25","2026-02-06",20,9
-"Fremont County School District 25","2026-02-13",22,11
-"Fremont County School District 25","2026-02-20",26,15
-"Fremont County School District 25","2026-02-27",30,18
-"Fremont County School District 25","2026-03-06",29,17
-"Fremont County School District 25","2026-03-13",66,42
-"Fremont County School District 25","2026-03-20",30,17
-"Fremont County School District 25","2026-03-27",34,19
-"Fremont County School District 25","2026-04-03",72,42
-"Fremont County School District 25","2026-04-10",34,19
-"Fremont County School District 25","2026-04-17",38,22
-"Fremont County School District 25","2026-04-24",34,18
-"Fremont County School District 25","2026-05-01",31,16
-"Fremont County School District 25","2026-05-07",31,16
-"Fremont County School District 25","2026-05-08",31,16
-"Fremont County School District 25","2026-05-15",31,19
-"Fremont County School District 25","2026-05-22",28,16
-"Fremont County School District 25","2026-05-29",32,19
-"Fremont County School District 25","2026-06-05",62,34
-"Fremont County School District 25","2026-06-12",29,16
-"Fremont County School District 25","2026-06-19",44,20
-"Fremont County School District 25","2026-06-26",23,11
-"Fremont County School District 25","2026-07-03",46,22
-"Fremont County School District 25","2026-07-10",24,12
-"Fremont County School District 25","2026-07-17",44,24
-"Fremont County School District 25","2026-07-24",21,11
-"Fremont County School District 25","2026-07-31",22,12
-"Fremont County School District 25","2026-08-03",22,12
-"Fremont County School District 25","2026-08-04",23,12
-"Fremont County School District 25","2026-08-07",23,12
-"Fremont County School District 25","2026-08-11",28,16
-"Fremont County School District 25","2026-08-14",28,16
+"Fremont County School District 25","2025-12-26",36,10
+"Fremont County School District 25","2026-01-02",36,10
+"Fremont County School District 25","2026-01-09",15,3
+"Fremont County School District 25","2026-01-16",17,4
+"Fremont County School District 25","2026-01-23",42,16
+"Fremont County School District 25","2026-01-30",21,8
+"Fremont County School District 25","2026-02-06",18,7
+"Fremont County School District 25","2026-02-13",20,9
+"Fremont County School District 25","2026-02-20",24,13
+"Fremont County School District 25","2026-02-27",28,16
+"Fremont County School District 25","2026-03-06",27,15
+"Fremont County School District 25","2026-03-13",62,38
+"Fremont County School District 25","2026-03-20",28,15
+"Fremont County School District 25","2026-03-27",32,17
+"Fremont County School District 25","2026-04-03",68,38
+"Fremont County School District 25","2026-04-10",32,17
+"Fremont County School District 25","2026-04-17",36,20
+"Fremont County School District 25","2026-04-24",32,16
+"Fremont County School District 25","2026-05-01",29,14
+"Fremont County School District 25","2026-05-07",29,14
+"Fremont County School District 25","2026-05-08",29,14
+"Fremont County School District 25","2026-05-15",29,17
+"Fremont County School District 25","2026-05-22",26,14
+"Fremont County School District 25","2026-05-29",30,17
+"Fremont County School District 25","2026-06-05",58,30
+"Fremont County School District 25","2026-06-12",27,14
+"Fremont County School District 25","2026-06-19",40,16
+"Fremont County School District 25","2026-06-26",21,9
+"Fremont County School District 25","2026-07-03",42,18
+"Fremont County School District 25","2026-07-10",22,10
+"Fremont County School District 25","2026-07-17",40,20
+"Fremont County School District 25","2026-07-24",19,9
+"Fremont County School District 25","2026-07-31",20,10
+"Fremont County School District 25","2026-08-03",20,10
+"Fremont County School District 25","2026-08-04",21,10
+"Fremont County School District 25","2026-08-07",21,10
+"Fremont County School District 25","2026-08-11",26,14
+"Fremont County School District 25","2026-08-14",26,14
 "Fremont County School District 25","2026-08-21",4,4
 "Fremont County School District 25","2026-08-28",2,2
 "Fremont County School District 25","2026-09-04",2,2
@@ -2030,73 +2115,78 @@
 "Fremont County School District 25","2026-09-25",2,2
 "Fremont County School District 25","2026-10-02",2,2
 "Fremont County School District 25","2026-10-23",4,1
-"Fremont County School District 38","2024-08-09",32,24
-"Fremont County School District 38","2024-08-16",16,12
-"Fremont County School District 38","2024-08-23",17,13
-"Fremont County School District 38","2024-08-30",17,13
-"Fremont County School District 38","2024-09-06",17,13
-"Fremont County School District 38","2024-09-13",17,13
-"Fremont County School District 38","2024-09-20",17,13
-"Fremont County School District 38","2024-09-27",17,13
-"Fremont County School District 38","2024-10-04",17,13
-"Fremont County School District 38","2024-10-11",17,13
-"Fremont County School District 38","2024-10-18",16,12
-"Fremont County School District 38","2024-10-25",16,12
-"Fremont County School District 38","2024-11-01",16,12
-"Fremont County School District 38","2024-11-08",16,12
-"Fremont County School District 38","2024-11-15",16,12
-"Fremont County School District 38","2024-11-22",16,12
-"Fremont County School District 38","2024-11-29",16,12
-"Fremont County School District 38","2024-12-06",16,12
-"Fremont County School District 38","2024-12-13",16,12
-"Fremont County School District 38","2024-12-20",16,12
-"Fremont County School District 38","2024-12-27",16,12
-"Fremont County School District 38","2025-01-03",16,12
-"Fremont County School District 38","2025-01-10",16,12
-"Fremont County School District 38","2025-01-17",16,12
-"Fremont County School District 38","2025-01-24",16,12
-"Fremont County School District 38","2025-01-31",16,12
-"Fremont County School District 38","2025-02-07",16,12
-"Fremont County School District 38","2025-02-14",16,12
-"Fremont County School District 38","2025-02-21",16,12
-"Fremont County School District 38","2025-02-28",16,12
-"Fremont County School District 38","2025-03-07",16,12
-"Fremont County School District 38","2025-03-14",16,12
-"Fremont County School District 38","2025-03-21",16,12
-"Fremont County School District 38","2025-03-28",16,12
-"Fremont County School District 38","2025-04-04",16,12
-"Fremont County School District 38","2025-04-11",16,12
-"Fremont County School District 38","2025-04-18",16,12
-"Fremont County School District 38","2025-04-25",16,12
-"Fremont County School District 38","2025-05-02",16,12
-"Fremont County School District 38","2025-05-09",16,12
-"Fremont County School District 38","2025-05-16",16,12
-"Fremont County School District 38","2025-05-23",16,12
-"Fremont County School District 38","2025-05-30",16,12
-"Fremont County School District 38","2025-06-06",16,12
-"Fremont County School District 38","2025-06-13",16,12
-"Fremont County School District 38","2025-06-20",16,12
-"Fremont County School District 38","2025-06-27",16,12
-"Fremont County School District 38","2025-07-04",16,12
-"Fremont County School District 38","2025-07-11",16,12
-"Fremont County School District 38","2025-07-18",16,12
-"Fremont County School District 38","2025-07-25",16,12
-"Fremont County School District 38","2025-08-01",16,12
-"Fremont County School District 38","2025-08-08",16,12
-"Fremont County School District 38","2025-08-15",16,12
-"Fremont County School District 38","2025-08-22",16,12
-"Fremont County School District 38","2025-08-29",16,12
-"Fremont County School District 38","2025-09-05",16,12
-"Fremont County School District 38","2025-09-12",16,12
-"Fremont County School District 38","2025-09-19",16,12
-"Fremont County School District 38","2025-09-26",16,12
-"Fremont County School District 38","2025-10-03",16,12
-"Fremont County School District 38","2025-10-10",16,12
-"Fremont County School District 38","2025-10-17",16,12
-"Fremont County School District 38","2025-10-24",16,12
-"Fremont County School District 38","2025-10-31",16,12
-"Fremont County School District 38","2025-11-07",16,12
-"Fremont County School District 38","2025-11-14",16,12
+"Fremont County School District 25","2026-10-30",4,1
+"Fremont County School District 25","2026-11-06",4,1
+"Fremont County School District 25","2026-11-13",26,16
+"Fremont County School District 25","2026-11-20",26,15
+"Fremont County School District 25","2026-11-24",25,14
+"Fremont County School District 38","2024-08-09",24,16
+"Fremont County School District 38","2024-08-16",12,8
+"Fremont County School District 38","2024-08-23",13,9
+"Fremont County School District 38","2024-08-30",13,9
+"Fremont County School District 38","2024-09-06",13,9
+"Fremont County School District 38","2024-09-13",13,9
+"Fremont County School District 38","2024-09-20",13,9
+"Fremont County School District 38","2024-09-27",13,9
+"Fremont County School District 38","2024-10-04",13,9
+"Fremont County School District 38","2024-10-11",13,9
+"Fremont County School District 38","2024-10-18",12,8
+"Fremont County School District 38","2024-10-25",12,8
+"Fremont County School District 38","2024-11-01",12,8
+"Fremont County School District 38","2024-11-08",12,8
+"Fremont County School District 38","2024-11-15",12,8
+"Fremont County School District 38","2024-11-22",12,8
+"Fremont County School District 38","2024-11-29",12,8
+"Fremont County School District 38","2024-12-06",12,8
+"Fremont County School District 38","2024-12-13",12,8
+"Fremont County School District 38","2024-12-20",12,8
+"Fremont County School District 38","2024-12-27",12,8
+"Fremont County School District 38","2025-01-03",12,8
+"Fremont County School District 38","2025-01-10",12,8
+"Fremont County School District 38","2025-01-17",12,8
+"Fremont County School District 38","2025-01-24",12,8
+"Fremont County School District 38","2025-01-31",12,8
+"Fremont County School District 38","2025-02-07",12,8
+"Fremont County School District 38","2025-02-14",12,8
+"Fremont County School District 38","2025-02-21",12,8
+"Fremont County School District 38","2025-02-28",12,8
+"Fremont County School District 38","2025-03-07",12,8
+"Fremont County School District 38","2025-03-14",12,8
+"Fremont County School District 38","2025-03-21",12,8
+"Fremont County School District 38","2025-03-28",12,8
+"Fremont County School District 38","2025-04-04",12,8
+"Fremont County School District 38","2025-04-11",12,8
+"Fremont County School District 38","2025-04-18",12,8
+"Fremont County School District 38","2025-04-25",12,8
+"Fremont County School District 38","2025-05-02",12,8
+"Fremont County School District 38","2025-05-09",12,8
+"Fremont County School District 38","2025-05-16",12,8
+"Fremont County School District 38","2025-05-23",12,8
+"Fremont County School District 38","2025-05-30",12,8
+"Fremont County School District 38","2025-06-06",12,8
+"Fremont County School District 38","2025-06-13",12,8
+"Fremont County School District 38","2025-06-20",12,8
+"Fremont County School District 38","2025-06-27",12,8
+"Fremont County School District 38","2025-07-04",8,4
+"Fremont County School District 38","2025-07-11",8,4
+"Fremont County School District 38","2025-07-18",8,4
+"Fremont County School District 38","2025-07-25",8,4
+"Fremont County School District 38","2025-08-01",8,4
+"Fremont County School District 38","2025-08-08",8,4
+"Fremont County School District 38","2025-08-15",8,4
+"Fremont County School District 38","2025-08-22",8,4
+"Fremont County School District 38","2025-08-29",8,4
+"Fremont County School District 38","2025-09-05",8,4
+"Fremont County School District 38","2025-09-12",8,4
+"Fremont County School District 38","2025-09-19",8,4
+"Fremont County School District 38","2025-09-26",8,4
+"Fremont County School District 38","2025-10-03",8,4
+"Fremont County School District 38","2025-10-10",8,4
+"Fremont County School District 38","2025-10-17",8,4
+"Fremont County School District 38","2025-10-24",8,4
+"Fremont County School District 38","2025-10-31",8,4
+"Fremont County School District 38","2025-11-07",8,4
+"Fremont County School District 38","2025-11-14",8,4
 "Fremont County School District 38","2026-08-07",6,5
 "Fremont County School District 38","2026-08-11",9,8
 "Fremont County School District 38","2026-08-14",9,8
@@ -2110,6 +2200,11 @@
 "Fremont County School District 38","2026-10-09",6,4
 "Fremont County School District 38","2026-10-16",6,4
 "Fremont County School District 38","2026-10-23",5,4
+"Fremont County School District 38","2026-10-30",7,5
+"Fremont County School District 38","2026-11-06",7,5
+"Fremont County School District 38","2026-11-13",5,3
+"Fremont County School District 38","2026-11-20",6,4
+"Fremont County School District 38","2026-11-24",5,4
 "Fremont County School District 6","2024-08-09",18,4
 "Fremont County School District 6","2024-08-16",9,2
 "Fremont County School District 6","2024-08-23",9,2
@@ -2230,24 +2325,29 @@
 "Fremont County School District 6","2026-10-09",12,5
 "Fremont County School District 6","2026-10-16",7,2
 "Fremont County School District 6","2026-10-23",7,2
-"Goshen County School District 1","2024-08-09",30,25
-"Goshen County School District 1","2024-08-16",11,9
-"Goshen County School District 1","2024-08-23",11,9
-"Goshen County School District 1","2024-08-30",13,11
-"Goshen County School District 1","2024-09-06",11,9
-"Goshen County School District 1","2024-09-13",7,5
-"Goshen County School District 1","2024-09-20",7,5
-"Goshen County School District 1","2024-09-27",8,6
-"Goshen County School District 1","2024-10-04",9,7
-"Goshen County School District 1","2024-10-11",10,8
-"Goshen County School District 1","2024-10-18",8,6
-"Goshen County School District 1","2024-10-25",8,6
-"Goshen County School District 1","2024-11-01",7,5
-"Goshen County School District 1","2024-11-08",7,5
-"Goshen County School District 1","2024-11-15",7,5
-"Goshen County School District 1","2024-11-22",9,6
-"Goshen County School District 1","2024-11-29",9,7
-"Goshen County School District 1","2024-12-06",9,7
+"Fremont County School District 6","2026-10-30",7,2
+"Fremont County School District 6","2026-11-06",5,2
+"Fremont County School District 6","2026-11-13",6,3
+"Fremont County School District 6","2026-11-20",6,3
+"Fremont County School District 6","2026-11-24",6,3
+"Goshen County School District 1","2024-08-09",28,23
+"Goshen County School District 1","2024-08-16",10,8
+"Goshen County School District 1","2024-08-23",10,8
+"Goshen County School District 1","2024-08-30",12,10
+"Goshen County School District 1","2024-09-06",10,8
+"Goshen County School District 1","2024-09-13",6,4
+"Goshen County School District 1","2024-09-20",6,4
+"Goshen County School District 1","2024-09-27",7,5
+"Goshen County School District 1","2024-10-04",8,6
+"Goshen County School District 1","2024-10-11",9,7
+"Goshen County School District 1","2024-10-18",7,5
+"Goshen County School District 1","2024-10-25",7,5
+"Goshen County School District 1","2024-11-01",6,4
+"Goshen County School District 1","2024-11-08",6,4
+"Goshen County School District 1","2024-11-15",6,4
+"Goshen County School District 1","2024-11-22",8,5
+"Goshen County School District 1","2024-11-29",8,6
+"Goshen County School District 1","2024-12-06",8,6
 "Goshen County School District 1","2024-12-13",8,6
 "Goshen County School District 1","2024-12-20",13,11
 "Goshen County School District 1","2024-12-27",13,11
@@ -2277,43 +2377,43 @@
 "Goshen County School District 1","2025-06-13",16,14
 "Goshen County School District 1","2025-06-20",16,14
 "Goshen County School District 1","2025-06-27",12,10
-"Goshen County School District 1","2025-07-04",9,7
-"Goshen County School District 1","2025-07-11",10,8
-"Goshen County School District 1","2025-07-18",11,9
-"Goshen County School District 1","2025-07-25",13,11
-"Goshen County School District 1","2025-08-01",16,13
-"Goshen County School District 1","2025-08-08",11,9
-"Goshen County School District 1","2025-08-15",8,6
-"Goshen County School District 1","2025-08-22",8,6
-"Goshen County School District 1","2025-08-29",10,8
-"Goshen County School District 1","2025-09-05",11,9
-"Goshen County School District 1","2025-09-12",8,6
-"Goshen County School District 1","2025-09-19",15,13
-"Goshen County School District 1","2025-09-26",15,13
-"Goshen County School District 1","2025-10-03",12,10
-"Goshen County School District 1","2025-10-10",11,8
-"Goshen County School District 1","2025-10-17",11,8
-"Goshen County School District 1","2025-10-24",9,7
-"Goshen County School District 1","2025-10-31",9,7
-"Goshen County School District 1","2025-11-07",9,7
-"Goshen County School District 1","2025-11-14",8,6
-"Goshen County School District 1","2025-11-21",10,8
-"Goshen County School District 1","2025-11-28",10,8
-"Goshen County School District 1","2025-12-05",13,11
-"Goshen County School District 1","2025-12-12",14,12
-"Goshen County School District 1","2025-12-19",12,10
-"Goshen County School District 1","2025-12-26",13,11
-"Goshen County School District 1","2026-01-02",13,11
-"Goshen County School District 1","2026-01-09",11,9
-"Goshen County School District 1","2026-01-16",9,7
-"Goshen County School District 1","2026-01-23",8,6
-"Goshen County School District 1","2026-01-30",10,7
-"Goshen County School District 1","2026-02-06",9,6
-"Goshen County School District 1","2026-02-13",8,6
-"Goshen County School District 1","2026-02-20",10,8
-"Goshen County School District 1","2026-02-27",7,5
-"Goshen County School District 1","2026-03-06",8,5
-"Goshen County School District 1","2026-03-13",9,6
+"Goshen County School District 1","2025-07-04",8,6
+"Goshen County School District 1","2025-07-11",9,7
+"Goshen County School District 1","2025-07-18",10,8
+"Goshen County School District 1","2025-07-25",12,10
+"Goshen County School District 1","2025-08-01",15,12
+"Goshen County School District 1","2025-08-08",10,8
+"Goshen County School District 1","2025-08-15",7,5
+"Goshen County School District 1","2025-08-22",7,5
+"Goshen County School District 1","2025-08-29",9,7
+"Goshen County School District 1","2025-09-05",10,8
+"Goshen County School District 1","2025-09-12",7,5
+"Goshen County School District 1","2025-09-19",14,12
+"Goshen County School District 1","2025-09-26",14,12
+"Goshen County School District 1","2025-10-03",11,9
+"Goshen County School District 1","2025-10-10",10,7
+"Goshen County School District 1","2025-10-17",10,7
+"Goshen County School District 1","2025-10-24",8,6
+"Goshen County School District 1","2025-10-31",8,6
+"Goshen County School District 1","2025-11-07",8,6
+"Goshen County School District 1","2025-11-14",7,5
+"Goshen County School District 1","2025-11-21",9,7
+"Goshen County School District 1","2025-11-28",9,7
+"Goshen County School District 1","2025-12-05",12,10
+"Goshen County School District 1","2025-12-12",13,11
+"Goshen County School District 1","2025-12-19",11,9
+"Goshen County School District 1","2025-12-26",12,10
+"Goshen County School District 1","2026-01-02",12,10
+"Goshen County School District 1","2026-01-09",10,8
+"Goshen County School District 1","2026-01-16",8,6
+"Goshen County School District 1","2026-01-23",7,5
+"Goshen County School District 1","2026-01-30",9,6
+"Goshen County School District 1","2026-02-06",8,5
+"Goshen County School District 1","2026-02-13",7,5
+"Goshen County School District 1","2026-02-20",9,7
+"Goshen County School District 1","2026-02-27",6,4
+"Goshen County School District 1","2026-03-06",7,4
+"Goshen County School District 1","2026-03-13",8,5
 "Goshen County School District 1","2026-03-20",10,7
 "Goshen County School District 1","2026-03-27",5,2
 "Goshen County School District 1","2026-04-03",7,3
@@ -2350,53 +2450,58 @@
 "Goshen County School District 1","2026-10-09",7,3
 "Goshen County School District 1","2026-10-16",6,3
 "Goshen County School District 1","2026-10-23",7,4
-"Hot Springs County School District 1","2024-08-09",54,28
-"Hot Springs County School District 1","2024-08-16",22,12
-"Hot Springs County School District 1","2024-08-23",19,11
-"Hot Springs County School District 1","2024-08-30",19,11
-"Hot Springs County School District 1","2024-09-06",21,12
-"Hot Springs County School District 1","2024-09-13",21,12
-"Hot Springs County School District 1","2024-09-20",21,12
-"Hot Springs County School District 1","2024-09-27",20,12
-"Hot Springs County School District 1","2024-10-04",20,12
-"Hot Springs County School District 1","2024-10-11",20,12
-"Hot Springs County School District 1","2024-10-18",20,12
-"Hot Springs County School District 1","2024-10-25",19,12
-"Hot Springs County School District 1","2024-11-01",20,13
-"Hot Springs County School District 1","2024-11-08",20,13
-"Hot Springs County School District 1","2024-11-15",20,13
-"Hot Springs County School District 1","2024-11-22",18,12
-"Hot Springs County School District 1","2024-11-29",19,13
-"Hot Springs County School District 1","2024-12-06",19,13
-"Hot Springs County School District 1","2024-12-13",19,13
-"Hot Springs County School District 1","2024-12-20",19,13
-"Hot Springs County School District 1","2024-12-27",19,13
-"Hot Springs County School District 1","2025-01-03",19,13
-"Hot Springs County School District 1","2025-01-10",19,13
-"Hot Springs County School District 1","2025-01-17",21,13
-"Hot Springs County School District 1","2025-01-24",22,13
-"Hot Springs County School District 1","2025-01-31",21,12
-"Hot Springs County School District 1","2025-02-07",21,12
-"Hot Springs County School District 1","2025-02-14",21,12
-"Hot Springs County School District 1","2025-02-21",21,12
-"Hot Springs County School District 1","2025-02-28",20,13
-"Hot Springs County School District 1","2025-03-07",21,14
-"Hot Springs County School District 1","2025-03-14",21,14
-"Hot Springs County School District 1","2025-03-21",21,14
-"Hot Springs County School District 1","2025-03-28",21,14
-"Hot Springs County School District 1","2025-04-04",21,14
-"Hot Springs County School District 1","2025-04-11",22,15
-"Hot Springs County School District 1","2025-04-18",23,16
-"Hot Springs County School District 1","2025-04-25",23,16
-"Hot Springs County School District 1","2025-05-02",34,16
-"Hot Springs County School District 1","2025-05-09",32,14
-"Hot Springs County School District 1","2025-05-16",32,14
-"Hot Springs County School District 1","2025-05-23",33,14
-"Hot Springs County School District 1","2025-05-30",33,14
-"Hot Springs County School District 1","2025-06-06",33,14
-"Hot Springs County School District 1","2025-06-13",33,14
-"Hot Springs County School District 1","2025-06-20",34,15
-"Hot Springs County School District 1","2025-06-27",31,13
+"Goshen County School District 1","2026-10-30",7,4
+"Goshen County School District 1","2026-11-06",6,3
+"Goshen County School District 1","2026-11-13",5,2
+"Goshen County School District 1","2026-11-20",6,3
+"Goshen County School District 1","2026-11-24",5,2
+"Hot Springs County School District 1","2024-08-09",48,22
+"Hot Springs County School District 1","2024-08-16",19,9
+"Hot Springs County School District 1","2024-08-23",17,9
+"Hot Springs County School District 1","2024-08-30",17,9
+"Hot Springs County School District 1","2024-09-06",19,10
+"Hot Springs County School District 1","2024-09-13",19,10
+"Hot Springs County School District 1","2024-09-20",19,10
+"Hot Springs County School District 1","2024-09-27",18,10
+"Hot Springs County School District 1","2024-10-04",18,10
+"Hot Springs County School District 1","2024-10-11",18,10
+"Hot Springs County School District 1","2024-10-18",18,10
+"Hot Springs County School District 1","2024-10-25",17,10
+"Hot Springs County School District 1","2024-11-01",18,11
+"Hot Springs County School District 1","2024-11-08",18,11
+"Hot Springs County School District 1","2024-11-15",18,11
+"Hot Springs County School District 1","2024-11-22",16,10
+"Hot Springs County School District 1","2024-11-29",17,11
+"Hot Springs County School District 1","2024-12-06",17,11
+"Hot Springs County School District 1","2024-12-13",17,11
+"Hot Springs County School District 1","2024-12-20",17,11
+"Hot Springs County School District 1","2024-12-27",17,11
+"Hot Springs County School District 1","2025-01-03",17,11
+"Hot Springs County School District 1","2025-01-10",17,11
+"Hot Springs County School District 1","2025-01-17",19,11
+"Hot Springs County School District 1","2025-01-24",21,12
+"Hot Springs County School District 1","2025-01-31",20,11
+"Hot Springs County School District 1","2025-02-07",20,11
+"Hot Springs County School District 1","2025-02-14",20,11
+"Hot Springs County School District 1","2025-02-21",20,11
+"Hot Springs County School District 1","2025-02-28",19,12
+"Hot Springs County School District 1","2025-03-07",20,13
+"Hot Springs County School District 1","2025-03-14",20,13
+"Hot Springs County School District 1","2025-03-21",20,13
+"Hot Springs County School District 1","2025-03-28",20,13
+"Hot Springs County School District 1","2025-04-04",20,13
+"Hot Springs County School District 1","2025-04-11",21,14
+"Hot Springs County School District 1","2025-04-18",22,15
+"Hot Springs County School District 1","2025-04-25",22,15
+"Hot Springs County School District 1","2025-05-02",33,15
+"Hot Springs County School District 1","2025-05-09",31,13
+"Hot Springs County School District 1","2025-05-16",31,13
+"Hot Springs County School District 1","2025-05-23",32,13
+"Hot Springs County School District 1","2025-05-30",32,13
+"Hot Springs County School District 1","2025-06-06",32,13
+"Hot Springs County School District 1","2025-06-13",32,13
+"Hot Springs County School District 1","2025-06-20",33,14
+"Hot Springs County School District 1","2025-06-27",30,12
 "Hot Springs County School District 1","2025-07-18",7,5
 "Hot Springs County School District 1","2025-07-25",7,5
 "Hot Springs County School District 1","2025-08-01",7,5
@@ -2468,6 +2573,11 @@
 "Hot Springs County School District 1","2026-10-09",7,3
 "Hot Springs County School District 1","2026-10-16",10,5
 "Hot Springs County School District 1","2026-10-23",9,4
+"Hot Springs County School District 1","2026-10-30",9,4
+"Hot Springs County School District 1","2026-11-06",9,4
+"Hot Springs County School District 1","2026-11-13",8,4
+"Hot Springs County School District 1","2026-11-20",9,4
+"Hot Springs County School District 1","2026-11-24",9,4
 "Johnson County School District 1","2024-08-09",23,10
 "Johnson County School District 1","2024-08-16",14,6
 "Johnson County School District 1","2024-08-23",13,5
@@ -2588,6 +2698,11 @@
 "Johnson County School District 1","2026-10-09",12,3
 "Johnson County School District 1","2026-10-16",14,3
 "Johnson County School District 1","2026-10-23",13,2
+"Johnson County School District 1","2026-10-30",14,3
+"Johnson County School District 1","2026-11-06",13,3
+"Johnson County School District 1","2026-11-13",10,1
+"Johnson County School District 1","2026-11-20",9,0
+"Johnson County School District 1","2026-11-24",9,0
 "Laramie County School District 1","2024-08-09",287,226
 "Laramie County School District 1","2024-08-16",137,111
 "Laramie County School District 1","2024-08-23",118,94
@@ -2708,6 +2823,11 @@
 "Laramie County School District 1","2026-10-09",83,36
 "Laramie County School District 1","2026-10-16",71,39
 "Laramie County School District 1","2026-10-23",68,43
+"Laramie County School District 1","2026-10-30",63,39
+"Laramie County School District 1","2026-11-06",56,36
+"Laramie County School District 1","2026-11-13",92,40
+"Laramie County School District 1","2026-11-20",96,45
+"Laramie County School District 1","2026-11-24",97,44
 "Laramie County School District 2","2024-08-09",36,12
 "Laramie County School District 2","2024-08-16",14,4
 "Laramie County School District 2","2024-08-23",15,5
@@ -2828,6 +2948,11 @@
 "Laramie County School District 2","2026-10-09",21,7
 "Laramie County School District 2","2026-10-16",16,6
 "Laramie County School District 2","2026-10-23",16,6
+"Laramie County School District 2","2026-10-30",16,6
+"Laramie County School District 2","2026-11-06",16,6
+"Laramie County School District 2","2026-11-13",16,6
+"Laramie County School District 2","2026-11-20",16,6
+"Laramie County School District 2","2026-11-24",16,6
 "Laramie Montessori Charter School","2026-08-21",1,0
 "Laramie Montessori Charter School","2026-08-28",1,0
 "Laramie Montessori Charter School","2026-09-04",1,0
@@ -2838,66 +2963,71 @@
 "Laramie Montessori Charter School","2026-10-09",2,1
 "Laramie Montessori Charter School","2026-10-16",2,1
 "Laramie Montessori Charter School","2026-10-23",3,2
-"Lincoln County School District 1","2024-08-09",21,8
-"Lincoln County School District 1","2024-08-16",10,4
-"Lincoln County School District 1","2024-08-23",9,4
-"Lincoln County School District 1","2024-08-30",9,4
-"Lincoln County School District 1","2024-09-06",9,4
-"Lincoln County School District 1","2024-09-13",9,4
-"Lincoln County School District 1","2024-09-20",10,5
-"Lincoln County School District 1","2024-09-27",10,5
-"Lincoln County School District 1","2024-10-04",9,4
-"Lincoln County School District 1","2024-10-11",10,4
-"Lincoln County School District 1","2024-10-18",10,4
-"Lincoln County School District 1","2024-10-25",10,4
-"Lincoln County School District 1","2024-11-01",10,4
-"Lincoln County School District 1","2024-11-08",10,4
-"Lincoln County School District 1","2024-11-15",11,6
-"Lincoln County School District 1","2024-11-22",11,6
-"Lincoln County School District 1","2024-11-29",11,6
-"Lincoln County School District 1","2024-12-06",14,6
-"Lincoln County School District 1","2024-12-13",14,6
-"Lincoln County School District 1","2024-12-20",13,5
-"Lincoln County School District 1","2024-12-27",13,5
-"Lincoln County School District 1","2025-01-03",14,6
-"Lincoln County School District 1","2025-01-10",14,6
-"Lincoln County School District 1","2025-01-17",13,5
-"Lincoln County School District 1","2025-01-24",16,6
-"Lincoln County School District 1","2025-01-31",16,6
-"Lincoln County School District 1","2025-02-07",16,6
-"Lincoln County School District 1","2025-02-14",17,7
-"Lincoln County School District 1","2025-02-21",19,9
-"Lincoln County School District 1","2025-02-28",19,9
-"Lincoln County School District 1","2025-03-07",18,8
-"Lincoln County School District 1","2025-03-14",15,8
-"Lincoln County School District 1","2025-03-21",16,9
-"Lincoln County School District 1","2025-03-28",16,9
-"Lincoln County School District 1","2025-04-04",16,9
-"Lincoln County School District 1","2025-04-11",15,8
-"Lincoln County School District 1","2025-04-18",15,8
-"Lincoln County School District 1","2025-04-25",16,9
-"Lincoln County School District 1","2025-05-02",20,10
-"Lincoln County School District 1","2025-05-09",20,10
-"Lincoln County School District 1","2025-05-16",20,10
-"Lincoln County School District 1","2025-05-23",20,10
-"Lincoln County School District 1","2025-05-30",20,10
-"Lincoln County School District 1","2025-06-06",20,10
-"Lincoln County School District 1","2025-06-13",20,10
-"Lincoln County School District 1","2025-06-20",21,11
-"Lincoln County School District 1","2025-06-27",20,10
-"Lincoln County School District 1","2025-07-04",20,10
-"Lincoln County School District 1","2025-07-11",20,10
-"Lincoln County School District 1","2025-07-18",20,10
-"Lincoln County School District 1","2025-07-25",20,10
-"Lincoln County School District 1","2025-08-01",20,10
-"Lincoln County School District 1","2025-08-08",20,10
-"Lincoln County School District 1","2025-08-15",20,10
-"Lincoln County School District 1","2025-08-22",16,6
-"Lincoln County School District 1","2025-08-29",16,6
-"Lincoln County School District 1","2025-09-05",16,6
-"Lincoln County School District 1","2025-09-12",16,6
-"Lincoln County School District 1","2025-09-19",16,6
-"Lincoln County School District 1","2025-09-26",16,6
+"Laramie Montessori Charter School","2026-10-30",3,2
+"Laramie Montessori Charter School","2026-11-06",3,2
+"Laramie Montessori Charter School","2026-11-13",3,2
+"Laramie Montessori Charter School","2026-11-20",3,2
+"Laramie Montessori Charter School","2026-11-24",3,2
+"Lincoln County School District 1","2024-08-09",19,6
+"Lincoln County School District 1","2024-08-16",9,3
+"Lincoln County School District 1","2024-08-23",8,3
+"Lincoln County School District 1","2024-08-30",8,3
+"Lincoln County School District 1","2024-09-06",8,3
+"Lincoln County School District 1","2024-09-13",8,3
+"Lincoln County School District 1","2024-09-20",9,4
+"Lincoln County School District 1","2024-09-27",9,4
+"Lincoln County School District 1","2024-10-04",8,3
+"Lincoln County School District 1","2024-10-11",9,3
+"Lincoln County School District 1","2024-10-18",9,3
+"Lincoln County School District 1","2024-10-25",9,3
+"Lincoln County School District 1","2024-11-01",9,3
+"Lincoln County School District 1","2024-11-08",9,3
+"Lincoln County School District 1","2024-11-15",10,5
+"Lincoln County School District 1","2024-11-22",10,5
+"Lincoln County School District 1","2024-11-29",10,5
+"Lincoln County School District 1","2024-12-06",13,5
+"Lincoln County School District 1","2024-12-13",13,5
+"Lincoln County School District 1","2024-12-20",12,4
+"Lincoln County School District 1","2024-12-27",12,4
+"Lincoln County School District 1","2025-01-03",13,5
+"Lincoln County School District 1","2025-01-10",13,5
+"Lincoln County School District 1","2025-01-17",12,4
+"Lincoln County School District 1","2025-01-24",15,5
+"Lincoln County School District 1","2025-01-31",15,5
+"Lincoln County School District 1","2025-02-07",15,5
+"Lincoln County School District 1","2025-02-14",16,6
+"Lincoln County School District 1","2025-02-21",18,8
+"Lincoln County School District 1","2025-02-28",18,8
+"Lincoln County School District 1","2025-03-07",17,7
+"Lincoln County School District 1","2025-03-14",14,7
+"Lincoln County School District 1","2025-03-21",15,8
+"Lincoln County School District 1","2025-03-28",15,8
+"Lincoln County School District 1","2025-04-04",15,8
+"Lincoln County School District 1","2025-04-11",14,7
+"Lincoln County School District 1","2025-04-18",14,7
+"Lincoln County School District 1","2025-04-25",15,8
+"Lincoln County School District 1","2025-05-02",19,9
+"Lincoln County School District 1","2025-05-09",19,9
+"Lincoln County School District 1","2025-05-16",19,9
+"Lincoln County School District 1","2025-05-23",19,9
+"Lincoln County School District 1","2025-05-30",19,9
+"Lincoln County School District 1","2025-06-06",19,9
+"Lincoln County School District 1","2025-06-13",19,9
+"Lincoln County School District 1","2025-06-20",20,10
+"Lincoln County School District 1","2025-06-27",19,9
+"Lincoln County School District 1","2025-07-04",18,8
+"Lincoln County School District 1","2025-07-11",18,8
+"Lincoln County School District 1","2025-07-18",18,8
+"Lincoln County School District 1","2025-07-25",18,8
+"Lincoln County School District 1","2025-08-01",18,8
+"Lincoln County School District 1","2025-08-08",18,8
+"Lincoln County School District 1","2025-08-15",18,8
+"Lincoln County School District 1","2025-08-22",14,4
+"Lincoln County School District 1","2025-08-29",14,4
+"Lincoln County School District 1","2025-09-05",14,4
+"Lincoln County School District 1","2025-09-12",14,4
+"Lincoln County School District 1","2025-09-19",14,4
+"Lincoln County School District 1","2025-09-26",14,4
 "Lincoln County School District 1","2026-08-11",8,1
 "Lincoln County School District 1","2026-08-14",8,1
 "Lincoln County School District 1","2026-08-21",8,1
@@ -2910,6 +3040,11 @@
 "Lincoln County School District 1","2026-10-09",17,7
 "Lincoln County School District 1","2026-10-16",17,7
 "Lincoln County School District 1","2026-10-23",18,8
+"Lincoln County School District 1","2026-10-30",16,6
+"Lincoln County School District 1","2026-11-06",16,6
+"Lincoln County School District 1","2026-11-13",16,6
+"Lincoln County School District 1","2026-11-20",16,6
+"Lincoln County School District 1","2026-11-24",16,6
 "Lincoln County School District 2","2024-08-09",34,10
 "Lincoln County School District 2","2024-08-16",16,4
 "Lincoln County School District 2","2024-08-23",16,4
@@ -3030,6 +3165,11 @@
 "Lincoln County School District 2","2026-10-09",16,4
 "Lincoln County School District 2","2026-10-16",16,3
 "Lincoln County School District 2","2026-10-23",19,3
+"Lincoln County School District 2","2026-10-30",18,4
+"Lincoln County School District 2","2026-11-06",19,5
+"Lincoln County School District 2","2026-11-13",20,5
+"Lincoln County School District 2","2026-11-20",20,4
+"Lincoln County School District 2","2026-11-24",19,4
 "Natrona School District 1","2024-08-09",100,60
 "Natrona School District 1","2024-08-16",50,24
 "Natrona School District 1","2024-08-23",50,30
@@ -3044,10 +3184,10 @@
 "Natrona School District 1","2024-10-25",50,31
 "Natrona School District 1","2024-11-01",50,33
 "Natrona School District 1","2024-11-08",50,34
-"Natrona School District 1","2024-11-15",50,32
-"Natrona School District 1","2024-11-22",50,29
-"Natrona School District 1","2024-11-29",46,28
-"Natrona School District 1","2024-12-06",50,30
+"Natrona School District 1","2024-11-15",49,31
+"Natrona School District 1","2024-11-22",49,28
+"Natrona School District 1","2024-11-29",45,27
+"Natrona School District 1","2024-12-06",49,29
 "Natrona School District 1","2024-12-13",50,34
 "Natrona School District 1","2024-12-20",50,39
 "Natrona School District 1","2024-12-27",50,38
@@ -3149,6 +3289,11 @@
 "Natrona School District 1","2026-10-09",71,31
 "Natrona School District 1","2026-10-16",65,30
 "Natrona School District 1","2026-10-23",67,35
+"Natrona School District 1","2026-10-30",66,36
+"Natrona School District 1","2026-11-06",63,35
+"Natrona School District 1","2026-11-13",59,31
+"Natrona School District 1","2026-11-20",64,35
+"Natrona School District 1","2026-11-24",61,36
 "Niobrara County School District 1","2024-08-09",22,9
 "Niobrara County School District 1","2024-08-16",11,4
 "Niobrara County School District 1","2024-08-23",5,2
@@ -3269,6 +3414,11 @@
 "Niobrara County School District 1","2026-10-09",5,3
 "Niobrara County School District 1","2026-10-16",6,4
 "Niobrara County School District 1","2026-10-23",7,5
+"Niobrara County School District 1","2026-10-30",7,5
+"Niobrara County School District 1","2026-11-06",7,5
+"Niobrara County School District 1","2026-11-13",6,3
+"Niobrara County School District 1","2026-11-20",6,3
+"Niobrara County School District 1","2026-11-24",6,3
 "Northeast Wyoming BOCES","2026-08-11",1,1
 "Northeast Wyoming BOCES","2026-08-14",1,1
 "Northeast Wyoming BOCES","2026-08-21",1,1
@@ -3281,6 +3431,8 @@
 "Northeast Wyoming BOCES","2026-10-09",1,1
 "Northeast Wyoming BOCES","2026-10-16",1,1
 "Northeast Wyoming BOCES","2026-10-23",1,1
+"Northeast Wyoming BOCES","2026-10-30",1,1
+"Northeast Wyoming BOCES","2026-11-06",1,1
 "Park County School District 1","2024-08-09",18,10
 "Park County School District 1","2024-08-16",7,3
 "Park County School District 1","2024-08-23",5,1
@@ -3400,6 +3552,11 @@
 "Park County School District 1","2026-10-09",7,2
 "Park County School District 1","2026-10-16",7,2
 "Park County School District 1","2026-10-23",7,2
+"Park County School District 1","2026-10-30",6,1
+"Park County School District 1","2026-11-06",6,1
+"Park County School District 1","2026-11-13",10,5
+"Park County School District 1","2026-11-20",10,5
+"Park County School District 1","2026-11-24",10,5
 "Park County School District 16","2024-08-09",2,2
 "Park County School District 16","2024-08-16",1,1
 "Park County School District 16","2024-08-23",2,2
@@ -3520,6 +3677,11 @@
 "Park County School District 16","2026-10-09",4,2
 "Park County School District 16","2026-10-16",4,2
 "Park County School District 16","2026-10-23",4,2
+"Park County School District 16","2026-10-30",4,2
+"Park County School District 16","2026-11-06",4,2
+"Park County School District 16","2026-11-13",3,2
+"Park County School District 16","2026-11-20",3,2
+"Park County School District 16","2026-11-24",2,2
 "Park County School District 6","2024-08-09",51,29
 "Park County School District 6","2024-08-16",26,16
 "Park County School District 6","2024-08-23",10,6
@@ -3639,6 +3801,11 @@
 "Park County School District 6","2026-10-09",25,18
 "Park County School District 6","2026-10-16",27,20
 "Park County School District 6","2026-10-23",21,15
+"Park County School District 6","2026-10-30",21,15
+"Park County School District 6","2026-11-06",19,14
+"Park County School District 6","2026-11-13",13,8
+"Park County School District 6","2026-11-20",15,10
+"Park County School District 6","2026-11-24",12,7
 "Platte County School District 1","2024-08-09",17,9
 "Platte County School District 1","2024-08-16",1,0
 "Platte County School District 1","2024-08-23",2,1
@@ -3759,6 +3926,11 @@
 "Platte County School District 1","2026-10-09",20,11
 "Platte County School District 1","2026-10-16",19,8
 "Platte County School District 1","2026-10-23",20,7
+"Platte County School District 1","2026-10-30",22,9
+"Platte County School District 1","2026-11-06",20,8
+"Platte County School District 1","2026-11-13",22,8
+"Platte County School District 1","2026-11-20",20,8
+"Platte County School District 1","2026-11-24",18,8
 "Platte County School District 2","2024-08-09",12,4
 "Platte County School District 2","2024-08-16",6,2
 "Platte County School District 2","2024-08-23",6,2
@@ -3879,6 +4051,11 @@
 "Platte County School District 2","2026-10-09",2,0
 "Platte County School District 2","2026-10-16",2,0
 "Platte County School District 2","2026-10-23",3,0
+"Platte County School District 2","2026-10-30",3,0
+"Platte County School District 2","2026-11-06",3,0
+"Platte County School District 2","2026-11-13",4,0
+"Platte County School District 2","2026-11-20",4,0
+"Platte County School District 2","2026-11-24",4,0
 "Prairie View Community School","2026-08-07",4,3
 "Prairie View Community School","2026-08-11",4,3
 "Prairie View Community School","2026-08-14",4,3
@@ -3892,6 +4069,11 @@
 "Prairie View Community School","2026-10-09",5,4
 "Prairie View Community School","2026-10-16",5,4
 "Prairie View Community School","2026-10-23",5,4
+"Prairie View Community School","2026-10-30",5,4
+"Prairie View Community School","2026-11-06",5,4
+"Prairie View Community School","2026-11-13",5,4
+"Prairie View Community School","2026-11-20",5,3
+"Prairie View Community School","2026-11-24",5,3
 "STRIDE Learning Center","2026-08-11",4,4
 "STRIDE Learning Center","2026-08-14",4,4
 "STRIDE Learning Center","2026-08-21",4,4
@@ -3904,6 +4086,11 @@
 "STRIDE Learning Center","2026-10-09",5,5
 "STRIDE Learning Center","2026-10-16",5,5
 "STRIDE Learning Center","2026-10-23",5,5
+"STRIDE Learning Center","2026-10-30",5,5
+"STRIDE Learning Center","2026-11-06",6,5
+"STRIDE Learning Center","2026-11-13",6,5
+"STRIDE Learning Center","2026-11-20",6,5
+"STRIDE Learning Center","2026-11-24",6,5
 "Sheridan County School District 1","2024-08-09",28,10
 "Sheridan County School District 1","2024-08-16",15,5
 "Sheridan County School District 1","2024-08-23",14,4
@@ -4024,6 +4211,11 @@
 "Sheridan County School District 1","2026-10-09",10,2
 "Sheridan County School District 1","2026-10-16",10,2
 "Sheridan County School District 1","2026-10-23",12,3
+"Sheridan County School District 1","2026-10-30",12,3
+"Sheridan County School District 1","2026-11-06",11,2
+"Sheridan County School District 1","2026-11-13",11,2
+"Sheridan County School District 1","2026-11-20",12,3
+"Sheridan County School District 1","2026-11-24",12,3
 "Sheridan County School District 2","2024-08-09",51,20
 "Sheridan County School District 2","2024-08-16",23,9
 "Sheridan County School District 2","2024-08-23",20,7
@@ -4144,6 +4336,11 @@
 "Sheridan County School District 2","2026-10-09",19,6
 "Sheridan County School District 2","2026-10-16",19,6
 "Sheridan County School District 2","2026-10-23",19,6
+"Sheridan County School District 2","2026-10-30",20,6
+"Sheridan County School District 2","2026-11-06",17,5
+"Sheridan County School District 2","2026-11-13",16,5
+"Sheridan County School District 2","2026-11-20",15,3
+"Sheridan County School District 2","2026-11-24",13,2
 "Sheridan County School District 3","2024-08-09",10,2
 "Sheridan County School District 3","2024-08-16",5,1
 "Sheridan County School District 3","2024-08-23",5,1
@@ -4259,10 +4456,20 @@
 "Sheridan County School District 3","2026-10-02",1,1
 "Sheridan County School District 3","2026-10-09",1,1
 "Sheridan County School District 3","2026-10-23",3,0
+"Sheridan County School District 3","2026-10-30",3,0
+"Sheridan County School District 3","2026-11-06",3,0
+"Sheridan County School District 3","2026-11-13",3,0
+"Sheridan County School District 3","2026-11-20",3,0
+"Sheridan County School District 3","2026-11-24",3,0
 "Snowy Range Academy","2026-08-07",2,2
 "Snowy Range Academy","2026-08-11",2,2
 "Snowy Range Academy","2026-10-16",1,0
 "Snowy Range Academy","2026-10-23",1,0
+"Snowy Range Academy","2026-10-30",1,0
+"Snowy Range Academy","2026-11-06",1,0
+"Snowy Range Academy","2026-11-13",1,0
+"Snowy Range Academy","2026-11-20",1,0
+"Snowy Range Academy","2026-11-24",1,0
 "Sublette County School District 1","2024-08-09",36,13
 "Sublette County School District 1","2024-08-16",20,7
 "Sublette County School District 1","2024-08-23",20,7
@@ -4383,6 +4590,11 @@
 "Sublette County School District 1","2026-10-09",3,1
 "Sublette County School District 1","2026-10-16",3,1
 "Sublette County School District 1","2026-10-23",2,0
+"Sublette County School District 1","2026-10-30",2,0
+"Sublette County School District 1","2026-11-06",2,0
+"Sublette County School District 1","2026-11-13",1,0
+"Sublette County School District 1","2026-11-20",3,2
+"Sublette County School District 1","2026-11-24",3,2
 "Sublette County School District 9","2024-08-09",21,6
 "Sublette County School District 9","2024-08-16",10,3
 "Sublette County School District 9","2024-08-23",10,3
@@ -4500,6 +4712,11 @@
 "Sublette County School District 9","2026-10-09",5,0
 "Sublette County School District 9","2026-10-16",6,0
 "Sublette County School District 9","2026-10-23",6,0
+"Sublette County School District 9","2026-10-30",6,0
+"Sublette County School District 9","2026-11-06",8,0
+"Sublette County School District 9","2026-11-13",6,0
+"Sublette County School District 9","2026-11-20",8,1
+"Sublette County School District 9","2026-11-24",8,1
 "Sweetwater County Child Developmental Center","2026-08-11",3,3
 "Sweetwater County Child Developmental Center","2026-08-14",2,2
 "Sweetwater County Child Developmental Center","2026-08-21",2,2
@@ -4512,6 +4729,11 @@
 "Sweetwater County Child Developmental Center","2026-10-09",4,4
 "Sweetwater County Child Developmental Center","2026-10-16",4,4
 "Sweetwater County Child Developmental Center","2026-10-23",5,5
+"Sweetwater County Child Developmental Center","2026-10-30",5,5
+"Sweetwater County Child Developmental Center","2026-11-06",5,5
+"Sweetwater County Child Developmental Center","2026-11-13",5,5
+"Sweetwater County Child Developmental Center","2026-11-20",5,5
+"Sweetwater County Child Developmental Center","2026-11-24",5,5
 "Sweetwater County School District 1","2024-08-09",184,103
 "Sweetwater County School District 1","2024-08-16",78,51
 "Sweetwater County School District 1","2024-08-23",79,52
@@ -4559,8 +4781,8 @@
 "Sweetwater County School District 1","2025-06-13",90,61
 "Sweetwater County School District 1","2025-06-20",92,62
 "Sweetwater County School District 1","2025-06-27",91,60
-"Sweetwater County School District 1","2025-07-04",86,57
-"Sweetwater County School District 1","2025-07-11",86,55
+"Sweetwater County School District 1","2025-07-04",85,57
+"Sweetwater County School District 1","2025-07-11",85,55
 "Sweetwater County School District 1","2025-07-18",87,58
 "Sweetwater County School District 1","2025-07-25",110,58
 "Sweetwater County School District 1","2025-08-01",112,60
@@ -4632,6 +4854,11 @@
 "Sweetwater County School District 1","2026-10-09",67,47
 "Sweetwater County School District 1","2026-10-16",70,48
 "Sweetwater County School District 1","2026-10-23",78,54
+"Sweetwater County School District 1","2026-10-30",78,55
+"Sweetwater County School District 1","2026-11-06",84,61
+"Sweetwater County School District 1","2026-11-13",75,54
+"Sweetwater County School District 1","2026-11-20",72,52
+"Sweetwater County School District 1","2026-11-24",73,53
 "Sweetwater County School District 2","2024-08-09",49,16
 "Sweetwater County School District 2","2024-08-16",18,5
 "Sweetwater County School District 2","2024-08-23",20,7
@@ -4752,6 +4979,11 @@
 "Sweetwater County School District 2","2026-10-09",21,3
 "Sweetwater County School District 2","2026-10-16",20,2
 "Sweetwater County School District 2","2026-10-23",20,2
+"Sweetwater County School District 2","2026-10-30",19,1
+"Sweetwater County School District 2","2026-11-06",19,1
+"Sweetwater County School District 2","2026-11-13",14,2
+"Sweetwater County School District 2","2026-11-20",15,3
+"Sweetwater County School District 2","2026-11-24",15,3
 "Teton County School District 1","2024-08-09",74,29
 "Teton County School District 1","2024-08-16",32,11
 "Teton County School District 1","2024-08-23",29,9
@@ -4872,6 +5104,11 @@
 "Teton County School District 1","2026-10-09",14,3
 "Teton County School District 1","2026-10-16",15,4
 "Teton County School District 1","2026-10-23",14,4
+"Teton County School District 1","2026-10-30",12,2
+"Teton County School District 1","2026-11-06",14,4
+"Teton County School District 1","2026-11-13",11,3
+"Teton County School District 1","2026-11-20",6,1
+"Teton County School District 1","2026-11-24",6,1
 "Uinta County School District 1","2024-08-09",11,8
 "Uinta County School District 1","2024-08-16",5,3
 "Uinta County School District 1","2024-08-23",4,3
@@ -4919,30 +5156,30 @@
 "Uinta County School District 1","2025-06-13",7,4
 "Uinta County School District 1","2025-06-20",7,4
 "Uinta County School District 1","2025-06-27",4,1
-"Uinta County School District 1","2025-07-04",4,2
-"Uinta County School District 1","2025-07-11",3,1
-"Uinta County School District 1","2025-07-18",4,2
-"Uinta County School District 1","2025-07-25",7,3
-"Uinta County School District 1","2025-08-01",7,3
-"Uinta County School District 1","2025-08-08",8,5
-"Uinta County School District 1","2025-08-15",8,5
-"Uinta County School District 1","2025-08-22",4,3
-"Uinta County School District 1","2025-08-29",2,1
-"Uinta County School District 1","2025-09-05",3,2
-"Uinta County School District 1","2025-09-12",3,2
-"Uinta County School District 1","2025-09-19",3,2
-"Uinta County School District 1","2025-09-26",4,2
-"Uinta County School District 1","2025-10-03",5,2
-"Uinta County School District 1","2025-10-10",5,2
-"Uinta County School District 1","2025-10-17",4,2
-"Uinta County School District 1","2025-10-24",4,2
-"Uinta County School District 1","2025-10-31",3,1
-"Uinta County School District 1","2025-11-07",4,1
-"Uinta County School District 1","2025-11-14",3,1
-"Uinta County School District 1","2025-11-21",3,1
-"Uinta County School District 1","2025-11-28",3,1
-"Uinta County School District 1","2025-12-05",3,1
-"Uinta County School District 1","2025-12-12",2,1
+"Uinta County School District 1","2025-07-04",3,2
+"Uinta County School District 1","2025-07-11",2,1
+"Uinta County School District 1","2025-07-18",3,2
+"Uinta County School District 1","2025-07-25",6,3
+"Uinta County School District 1","2025-08-01",6,3
+"Uinta County School District 1","2025-08-08",7,5
+"Uinta County School District 1","2025-08-15",7,5
+"Uinta County School District 1","2025-08-22",3,3
+"Uinta County School District 1","2025-08-29",1,1
+"Uinta County School District 1","2025-09-05",2,2
+"Uinta County School District 1","2025-09-12",2,2
+"Uinta County School District 1","2025-09-19",2,2
+"Uinta County School District 1","2025-09-26",3,2
+"Uinta County School District 1","2025-10-03",4,2
+"Uinta County School District 1","2025-10-10",4,2
+"Uinta County School District 1","2025-10-17",3,2
+"Uinta County School District 1","2025-10-24",3,2
+"Uinta County School District 1","2025-10-31",2,1
+"Uinta County School District 1","2025-11-07",3,1
+"Uinta County School District 1","2025-11-14",2,1
+"Uinta County School District 1","2025-11-21",2,1
+"Uinta County School District 1","2025-11-28",2,1
+"Uinta County School District 1","2025-12-05",2,1
+"Uinta County School District 1","2025-12-12",1,1
 "Uinta County School District 1","2025-12-19",1,1
 "Uinta County School District 1","2025-12-26",1,1
 "Uinta County School District 1","2026-01-02",1,1
@@ -4992,6 +5229,11 @@
 "Uinta County School District 1","2026-10-09",8,2
 "Uinta County School District 1","2026-10-16",7,2
 "Uinta County School District 1","2026-10-23",7,2
+"Uinta County School District 1","2026-10-30",7,2
+"Uinta County School District 1","2026-11-06",8,2
+"Uinta County School District 1","2026-11-13",5,1
+"Uinta County School District 1","2026-11-20",5,1
+"Uinta County School District 1","2026-11-24",5,1
 "Uinta County School District 4","2024-08-09",10,4
 "Uinta County School District 4","2024-08-16",5,2
 "Uinta County School District 4","2024-08-23",5,2
@@ -5112,6 +5354,11 @@
 "Uinta County School District 4","2026-10-09",13,4
 "Uinta County School District 4","2026-10-16",12,4
 "Uinta County School District 4","2026-10-23",12,4
+"Uinta County School District 4","2026-10-30",4,4
+"Uinta County School District 4","2026-11-06",4,4
+"Uinta County School District 4","2026-11-13",3,3
+"Uinta County School District 4","2026-11-20",3,3
+"Uinta County School District 4","2026-11-24",3,3
 "Uinta County School District 6","2024-08-09",26,4
 "Uinta County School District 6","2024-08-16",12,1
 "Uinta County School District 6","2024-08-23",12,1
@@ -5231,9 +5478,14 @@
 "Uinta County School District 6","2026-10-09",5,0
 "Uinta County School District 6","2026-10-16",5,0
 "Uinta County School District 6","2026-10-23",5,0
-"Washakie County School District 1","2024-08-09",30,10
-"Washakie County School District 1","2024-08-16",9,3
-"Washakie County School District 1","2024-08-23",9,3
+"Uinta County School District 6","2026-10-30",5,0
+"Uinta County School District 6","2026-11-06",5,0
+"Uinta County School District 6","2026-11-13",6,1
+"Uinta County School District 6","2026-11-20",6,1
+"Uinta County School District 6","2026-11-24",6,1
+"Washakie County School District 1","2024-08-09",28,8
+"Washakie County School District 1","2024-08-16",8,2
+"Washakie County School District 1","2024-08-23",8,2
 "Washakie County School District 1","2024-08-30",8,3
 "Washakie County School District 1","2024-09-06",9,4
 "Washakie County School District 1","2024-09-13",8,3
@@ -5278,79 +5530,84 @@
 "Washakie County School District 1","2025-06-13",21,11
 "Washakie County School District 1","2025-06-20",19,11
 "Washakie County School District 1","2025-06-27",19,11
-"Washakie County School District 1","2025-07-04",20,11
-"Washakie County School District 1","2025-07-11",19,10
-"Washakie County School District 1","2025-07-18",19,10
-"Washakie County School District 1","2025-07-25",18,9
-"Washakie County School District 1","2025-08-01",15,6
-"Washakie County School District 1","2025-08-08",12,3
-"Washakie County School District 1","2025-08-15",12,3
-"Washakie County School District 1","2025-08-22",13,4
-"Washakie County School District 1","2025-08-29",13,4
-"Washakie County School District 1","2025-09-05",11,3
-"Washakie County School District 1","2025-09-12",11,3
-"Washakie County School District 1","2025-09-19",12,4
-"Washakie County School District 1","2025-09-26",12,3
-"Washakie County School District 1","2025-10-03",12,3
-"Washakie County School District 1","2025-10-10",12,3
-"Washakie County School District 1","2025-10-17",12,3
-"Washakie County School District 1","2025-10-24",13,3
-"Washakie County School District 1","2025-10-31",13,3
-"Washakie County School District 1","2025-11-07",11,3
-"Washakie County School District 1","2025-11-14",11,3
-"Washakie County School District 1","2025-11-21",11,3
-"Washakie County School District 1","2025-11-28",10,2
-"Washakie County School District 1","2025-12-05",11,3
-"Washakie County School District 1","2025-12-12",13,6
-"Washakie County School District 1","2025-12-19",15,9
-"Washakie County School District 1","2025-12-26",15,9
-"Washakie County School District 1","2026-01-02",15,9
-"Washakie County School District 1","2026-01-09",15,9
-"Washakie County School District 1","2026-01-16",16,9
-"Washakie County School District 1","2026-01-23",16,9
-"Washakie County School District 1","2026-01-30",15,8
-"Washakie County School District 1","2026-02-06",16,8
-"Washakie County School District 1","2026-02-13",16,9
-"Washakie County School District 1","2026-02-20",17,10
-"Washakie County School District 1","2026-02-27",16,10
-"Washakie County School District 1","2026-03-06",17,11
-"Washakie County School District 1","2026-03-13",17,11
-"Washakie County School District 1","2026-03-20",16,10
-"Washakie County School District 1","2026-03-27",28,11
-"Washakie County School District 1","2026-04-03",29,12
-"Washakie County School District 1","2026-04-10",30,13
-"Washakie County School District 1","2026-04-17",24,7
-"Washakie County School District 1","2026-04-24",24,6
-"Washakie County School District 1","2026-05-01",23,5
-"Washakie County School District 1","2026-05-07",29,11
-"Washakie County School District 1","2026-05-08",29,11
-"Washakie County School District 1","2026-05-15",19,11
-"Washakie County School District 1","2026-05-22",17,10
-"Washakie County School District 1","2026-05-29",18,11
-"Washakie County School District 1","2026-06-05",25,14
-"Washakie County School District 1","2026-06-12",25,14
-"Washakie County School District 1","2026-06-19",26,15
-"Washakie County School District 1","2026-06-26",25,14
-"Washakie County School District 1","2026-07-03",25,14
-"Washakie County School District 1","2026-07-10",23,12
-"Washakie County School District 1","2026-07-17",23,12
-"Washakie County School District 1","2026-07-24",25,14
-"Washakie County School District 1","2026-07-31",24,13
-"Washakie County School District 1","2026-08-03",21,11
-"Washakie County School District 1","2026-08-04",21,11
-"Washakie County School District 1","2026-08-07",20,9
-"Washakie County School District 1","2026-08-11",21,9
-"Washakie County School District 1","2026-08-14",20,8
-"Washakie County School District 1","2026-08-21",17,7
-"Washakie County School District 1","2026-08-28",18,6
-"Washakie County School District 1","2026-09-04",17,6
-"Washakie County School District 1","2026-09-11",17,6
-"Washakie County School District 1","2026-09-18",19,8
-"Washakie County School District 1","2026-09-25",17,7
-"Washakie County School District 1","2026-10-02",17,7
-"Washakie County School District 1","2026-10-09",15,6
-"Washakie County School District 1","2026-10-16",14,5
-"Washakie County School District 1","2026-10-23",13,4
+"Washakie County School District 1","2025-07-04",19,11
+"Washakie County School District 1","2025-07-11",18,10
+"Washakie County School District 1","2025-07-18",17,9
+"Washakie County School District 1","2025-07-25",17,9
+"Washakie County School District 1","2025-08-01",14,6
+"Washakie County School District 1","2025-08-08",11,3
+"Washakie County School District 1","2025-08-15",11,3
+"Washakie County School District 1","2025-08-22",12,4
+"Washakie County School District 1","2025-08-29",12,4
+"Washakie County School District 1","2025-09-05",10,3
+"Washakie County School District 1","2025-09-12",10,3
+"Washakie County School District 1","2025-09-19",11,4
+"Washakie County School District 1","2025-09-26",11,3
+"Washakie County School District 1","2025-10-03",11,3
+"Washakie County School District 1","2025-10-10",11,3
+"Washakie County School District 1","2025-10-17",11,3
+"Washakie County School District 1","2025-10-24",12,3
+"Washakie County School District 1","2025-10-31",12,3
+"Washakie County School District 1","2025-11-07",10,3
+"Washakie County School District 1","2025-11-14",10,3
+"Washakie County School District 1","2025-11-21",10,3
+"Washakie County School District 1","2025-11-28",9,2
+"Washakie County School District 1","2025-12-05",10,3
+"Washakie County School District 1","2025-12-12",12,6
+"Washakie County School District 1","2025-12-19",14,9
+"Washakie County School District 1","2025-12-26",14,9
+"Washakie County School District 1","2026-01-02",14,9
+"Washakie County School District 1","2026-01-09",14,9
+"Washakie County School District 1","2026-01-16",15,9
+"Washakie County School District 1","2026-01-23",15,9
+"Washakie County School District 1","2026-01-30",14,8
+"Washakie County School District 1","2026-02-06",15,8
+"Washakie County School District 1","2026-02-13",15,9
+"Washakie County School District 1","2026-02-20",16,10
+"Washakie County School District 1","2026-02-27",15,10
+"Washakie County School District 1","2026-03-06",16,11
+"Washakie County School District 1","2026-03-13",16,11
+"Washakie County School District 1","2026-03-20",15,10
+"Washakie County School District 1","2026-03-27",27,11
+"Washakie County School District 1","2026-04-03",28,12
+"Washakie County School District 1","2026-04-10",29,13
+"Washakie County School District 1","2026-04-17",23,7
+"Washakie County School District 1","2026-04-24",23,6
+"Washakie County School District 1","2026-05-01",22,5
+"Washakie County School District 1","2026-05-07",28,11
+"Washakie County School District 1","2026-05-08",28,11
+"Washakie County School District 1","2026-05-15",18,11
+"Washakie County School District 1","2026-05-22",16,10
+"Washakie County School District 1","2026-05-29",17,11
+"Washakie County School District 1","2026-06-05",24,14
+"Washakie County School District 1","2026-06-12",24,14
+"Washakie County School District 1","2026-06-19",25,15
+"Washakie County School District 1","2026-06-26",24,14
+"Washakie County School District 1","2026-07-03",22,12
+"Washakie County School District 1","2026-07-10",20,10
+"Washakie County School District 1","2026-07-17",20,10
+"Washakie County School District 1","2026-07-24",22,12
+"Washakie County School District 1","2026-07-31",21,11
+"Washakie County School District 1","2026-08-03",20,11
+"Washakie County School District 1","2026-08-04",20,11
+"Washakie County School District 1","2026-08-07",19,9
+"Washakie County School District 1","2026-08-11",20,9
+"Washakie County School District 1","2026-08-14",19,8
+"Washakie County School District 1","2026-08-21",16,7
+"Washakie County School District 1","2026-08-28",17,6
+"Washakie County School District 1","2026-09-04",16,6
+"Washakie County School District 1","2026-09-11",16,6
+"Washakie County School District 1","2026-09-18",18,8
+"Washakie County School District 1","2026-09-25",16,7
+"Washakie County School District 1","2026-10-02",16,7
+"Washakie County School District 1","2026-10-09",14,6
+"Washakie County School District 1","2026-10-16",13,5
+"Washakie County School District 1","2026-10-23",12,4
+"Washakie County School District 1","2026-10-30",11,2
+"Washakie County School District 1","2026-11-06",11,2
+"Washakie County School District 1","2026-11-13",11,2
+"Washakie County School District 1","2026-11-20",9,2
+"Washakie County School District 1","2026-11-24",9,2
 "Washakie County School District 2","2024-08-09",6,0
 "Washakie County School District 2","2024-08-16",3,0
 "Washakie County School District 2","2024-08-23",3,0
@@ -5471,6 +5728,11 @@
 "Washakie County School District 2","2026-10-09",3,2
 "Washakie County School District 2","2026-10-16",1,0
 "Washakie County School District 2","2026-10-23",1,0
+"Washakie County School District 2","2026-10-30",1,0
+"Washakie County School District 2","2026-11-06",1,0
+"Washakie County School District 2","2026-11-13",1,0
+"Washakie County School District 2","2026-11-20",1,0
+"Washakie County School District 2","2026-11-24",1,0
 "Weston County School District 1","2024-08-09",16,8
 "Weston County School District 1","2024-08-16",9,4
 "Weston County School District 1","2024-08-23",11,4
@@ -5591,6 +5853,11 @@
 "Weston County School District 1","2026-10-09",14,5
 "Weston County School District 1","2026-10-16",15,5
 "Weston County School District 1","2026-10-23",16,5
+"Weston County School District 1","2026-10-30",16,5
+"Weston County School District 1","2026-11-06",16,5
+"Weston County School District 1","2026-11-13",16,4
+"Weston County School District 1","2026-11-20",16,4
+"Weston County School District 1","2026-11-24",16,4
 "Weston County School District 7","2024-08-09",14,1
 "Weston County School District 7","2024-08-16",8,1
 "Weston County School District 7","2024-08-23",7,1
@@ -5711,8 +5978,15 @@
 "Weston County School District 7","2026-10-09",7,1
 "Weston County School District 7","2026-10-16",7,1
 "Weston County School District 7","2026-10-23",6,0
+"Weston County School District 7","2026-10-30",6,0
+"Weston County School District 7","2026-11-06",6,0
+"Weston County School District 7","2026-11-13",6,0
+"Weston County School District 7","2026-11-20",7,1
+"Weston County School District 7","2026-11-24",7,1
 "Wyoming Boys School","2026-10-16",1,1
 "Wyoming Boys School","2026-10-23",1,1
+"Wyoming Boys School","2026-10-30",1,1
+"Wyoming Boys School","2026-11-06",1,1
 "Wyoming Classical Academy","2026-08-07",19,16
 "Wyoming Classical Academy","2026-08-11",19,16
 "Wyoming Classical Academy","2026-08-14",19,16
@@ -5725,282 +5999,8 @@
 "Wyoming Classical Academy","2026-10-09",20,16
 "Wyoming Classical Academy","2026-10-16",20,16
 "Wyoming Classical Academy","2026-10-23",20,16
-"Albany County School District 1","2026-10-30",15,10
-"Big Horn School District 1","2026-10-30",11,2
-"Big Horn School District 2","2026-10-30",6,4
-"Big Horn School District 3","2026-10-30",4,2
-"Big Horn School District 4","2026-10-30",5,4
-"Campbell County School District 1","2026-10-30",31,24
-"Carbon County School District 1","2026-10-30",16,8
-"Carbon County School District 2","2026-10-30",15,4
-"Cheyenne Classical Academy","2026-10-30",1,0
-"Converse County School District 1","2026-10-30",17,10
-"Converse County School District 2","2026-10-30",5,3
-"Crook County School District 1","2026-10-30",18,1
-"Fremont County School District 1","2026-10-30",22,9
-"Fremont County School District 14","2026-10-30",9,2
-"Fremont County School District 2","2026-10-30",13,4
-"Fremont County School District 21","2026-10-30",12,8
-"Fremont County School District 24","2026-10-30",2,1
-"Fremont County School District 25","2026-10-30",4,1
-"Fremont County School District 38","2026-10-30",7,5
-"Fremont County School District 6","2026-10-30",7,2
-"Goshen County School District 1","2026-10-30",7,4
-"Hot Springs County School District 1","2026-10-30",9,4
-"Johnson County School District 1","2026-10-30",14,3
-"Laramie County School District 1","2026-10-30",63,39
-"Laramie County School District 2","2026-10-30",16,6
-"Laramie Montessori Charter School","2026-10-30",3,2
-"Lincoln County School District 1","2026-10-30",16,6
-"Lincoln County School District 2","2026-10-30",18,4
-"Natrona School District 1","2026-10-30",66,36
-"Niobrara County School District 1","2026-10-30",7,5
-"Northeast Wyoming BOCES","2026-10-30",1,1
-"Park County School District 1","2026-10-30",6,1
-"Park County School District 16","2026-10-30",4,2
-"Park County School District 6","2026-10-30",21,15
-"Platte County School District 1","2026-10-30",22,9
-"Platte County School District 2","2026-10-30",3,0
-"Prairie View Community School","2026-10-30",5,4
-"STRIDE Learning Center","2026-10-30",5,5
-"Sheridan County School District 1","2026-10-30",12,3
-"Sheridan County School District 2","2026-10-30",20,6
-"Sheridan County School District 3","2026-10-30",3,0
-"Snowy Range Academy","2026-10-30",1,0
-"Sublette County School District 1","2026-10-30",2,0
-"Sublette County School District 9","2026-10-30",6,0
-"Sweetwater County Child Developmental Center","2026-10-30",5,5
-"Sweetwater County School District 1","2026-10-30",78,55
-"Sweetwater County School District 2","2026-10-30",19,1
-"Teton County School District 1","2026-10-30",12,2
-"Uinta County School District 1","2026-10-30",7,2
-"Uinta County School District 4","2026-10-30",4,4
-"Uinta County School District 6","2026-10-30",5,0
-"Washakie County School District 1","2026-10-30",14,4
-"Washakie County School District 2","2026-10-30",1,0
-"Weston County School District 1","2026-10-30",16,5
-"Weston County School District 7","2026-10-30",6,0
-"Wyoming Boys School","2026-10-30",1,1
 "Wyoming Classical Academy","2026-10-30",20,16
-"Albany County School District 1","2026-11-06",16,11
-"Big Horn School District 1","2026-11-06",12,2
-"Big Horn School District 2","2026-11-06",6,4
-"Big Horn School District 3","2026-11-06",4,2
-"Big Horn School District 4","2026-11-06",5,4
-"Campbell County School District 1","2026-11-06",28,23
-"Carbon County School District 1","2026-11-06",15,7
-"Carbon County School District 2","2026-11-06",14,4
-"Cheyenne Classical Academy","2026-11-06",1,0
-"Converse County School District 1","2026-11-06",18,11
-"Converse County School District 2","2026-11-06",5,4
-"Crook County School District 1","2026-11-06",17,1
-"Fremont County School District 1","2026-11-06",22,8
-"Fremont County School District 14","2026-11-06",9,2
-"Fremont County School District 2","2026-11-06",12,3
-"Fremont County School District 21","2026-11-06",12,8
-"Fremont County School District 24","2026-11-06",2,1
-"Fremont County School District 25","2026-11-06",4,1
-"Fremont County School District 38","2026-11-06",7,5
-"Fremont County School District 6","2026-11-06",5,2
-"Goshen County School District 1","2026-11-06",6,3
-"Hot Springs County School District 1","2026-11-06",9,4
-"Johnson County School District 1","2026-11-06",13,3
-"Laramie County School District 1","2026-11-06",56,36
-"Laramie County School District 2","2026-11-06",16,6
-"Laramie Montessori Charter School","2026-11-06",3,2
-"Lincoln County School District 1","2026-11-06",16,6
-"Lincoln County School District 2","2026-11-06",19,5
-"Natrona School District 1","2026-11-06",63,35
-"Niobrara County School District 1","2026-11-06",7,5
-"Northeast Wyoming BOCES","2026-11-06",1,1
-"Park County School District 1","2026-11-06",6,1
-"Park County School District 16","2026-11-06",4,2
-"Park County School District 6","2026-11-06",19,14
-"Platte County School District 1","2026-11-06",20,8
-"Platte County School District 2","2026-11-06",3,0
-"Prairie View Community School","2026-11-06",5,4
-"STRIDE Learning Center","2026-11-06",6,5
-"Sheridan County School District 1","2026-11-06",11,2
-"Sheridan County School District 2","2026-11-06",17,5
-"Sheridan County School District 3","2026-11-06",3,0
-"Snowy Range Academy","2026-11-06",1,0
-"Sublette County School District 1","2026-11-06",2,0
-"Sublette County School District 9","2026-11-06",8,0
-"Sweetwater County Child Developmental Center","2026-11-06",5,5
-"Sweetwater County School District 1","2026-11-06",84,61
-"Sweetwater County School District 2","2026-11-06",19,1
-"Teton County School District 1","2026-11-06",14,4
-"Uinta County School District 1","2026-11-06",8,2
-"Uinta County School District 4","2026-11-06",4,4
-"Uinta County School District 6","2026-11-06",5,0
-"Washakie County School District 1","2026-11-06",14,4
-"Washakie County School District 2","2026-11-06",1,0
-"Weston County School District 1","2026-11-06",16,5
-"Weston County School District 7","2026-11-06",6,0
-"Wyoming Boys School","2026-11-06",1,1
 "Wyoming Classical Academy","2026-11-06",20,16
-"Albany County School District 1","2026-11-13",18,13
-"Big Horn School District 1","2026-11-13",12,2
-"Big Horn School District 2","2026-11-13",5,3
-"Big Horn School District 3","2026-11-13",4,2
-"Big Horn School District 4","2026-11-13",5,4
-"Campbell County School District 1","2026-11-13",26,23
-"Carbon County School District 1","2026-11-13",15,7
-"Carbon County School District 2","2026-11-13",13,3
-"Cheyenne Classical Academy","2026-11-13",1,0
-"Converse County School District 1","2026-11-13",11,6
-"Converse County School District 2","2026-11-13",4,3
-"Crook County School District 1","2026-11-13",16,1
-"Fremont County School District 1","2026-11-13",17,6
-"Fremont County School District 14","2026-11-13",9,2
-"Fremont County School District 2","2026-11-13",10,3
-"Fremont County School District 21","2026-11-13",12,8
-"Fremont County School District 24","2026-11-13",2,1
-"Fremont County School District 25","2026-11-13",26,16
-"Fremont County School District 38","2026-11-13",5,3
-"Fremont County School District 6","2026-11-13",6,3
-"Goshen County School District 1","2026-11-13",5,2
-"Hot Springs County School District 1","2026-11-13",8,4
-"Johnson County School District 1","2026-11-13",10,1
-"Laramie County School District 1","2026-11-13",92,40
-"Laramie County School District 2","2026-11-13",16,6
-"Laramie Montessori Charter School","2026-11-13",3,2
-"Lincoln County School District 1","2026-11-13",16,6
-"Lincoln County School District 2","2026-11-13",20,5
-"Natrona School District 1","2026-11-13",59,31
-"Niobrara County School District 1","2026-11-13",6,3
-"Park County School District 1","2026-11-13",10,5
-"Park County School District 16","2026-11-13",3,2
-"Park County School District 6","2026-11-13",13,8
-"Platte County School District 1","2026-11-13",22,8
-"Platte County School District 2","2026-11-13",4,0
-"Prairie View Community School","2026-11-13",5,4
-"STRIDE Learning Center","2026-11-13",6,5
-"Sheridan County School District 1","2026-11-13",11,2
-"Sheridan County School District 2","2026-11-13",16,5
-"Sheridan County School District 3","2026-11-13",3,0
-"Snowy Range Academy","2026-11-13",1,0
-"Sublette County School District 1","2026-11-13",1,0
-"Sublette County School District 9","2026-11-13",6,0
-"Sweetwater County Child Developmental Center","2026-11-13",5,5
-"Sweetwater County School District 1","2026-11-13",75,54
-"Sweetwater County School District 2","2026-11-13",14,2
-"Teton County School District 1","2026-11-13",11,3
-"Uinta County School District 1","2026-11-13",5,1
-"Uinta County School District 4","2026-11-13",3,3
-"Uinta County School District 6","2026-11-13",6,1
-"Washakie County School District 1","2026-11-13",14,4
-"Washakie County School District 2","2026-11-13",1,0
-"Weston County School District 1","2026-11-13",16,4
-"Weston County School District 7","2026-11-13",6,0
 "Wyoming Classical Academy","2026-11-13",20,16
-"Albany County School District 1","2026-11-20",15,10
-"Big Horn School District 1","2026-11-20",11,1
-"Big Horn School District 2","2026-11-20",3,1
-"Big Horn School District 3","2026-11-20",4,2
-"Big Horn School District 4","2026-11-20",5,4
-"Campbell County School District 1","2026-11-20",29,25
-"Carbon County School District 1","2026-11-20",14,7
-"Carbon County School District 2","2026-11-20",15,5
-"Cheyenne Classical Academy","2026-11-20",1,0
-"Converse County School District 1","2026-11-20",11,8
-"Converse County School District 2","2026-11-20",5,4
-"Crook County School District 1","2026-11-20",16,1
-"Fremont County School District 1","2026-11-20",17,6
-"Fremont County School District 14","2026-11-20",9,2
-"Fremont County School District 2","2026-11-20",10,3
-"Fremont County School District 21","2026-11-20",12,8
-"Fremont County School District 24","2026-11-20",2,1
-"Fremont County School District 25","2026-11-20",26,15
-"Fremont County School District 38","2026-11-20",6,4
-"Fremont County School District 6","2026-11-20",6,3
-"Goshen County School District 1","2026-11-20",6,3
-"Hot Springs County School District 1","2026-11-20",9,4
-"Johnson County School District 1","2026-11-20",9,0
-"Laramie County School District 1","2026-11-20",96,45
-"Laramie County School District 2","2026-11-20",16,6
-"Laramie Montessori Charter School","2026-11-20",3,2
-"Lincoln County School District 1","2026-11-20",16,6
-"Lincoln County School District 2","2026-11-20",20,4
-"Natrona School District 1","2026-11-20",64,35
-"Niobrara County School District 1","2026-11-20",6,3
-"Park County School District 1","2026-11-20",10,5
-"Park County School District 16","2026-11-20",3,2
-"Park County School District 6","2026-11-20",15,10
-"Platte County School District 1","2026-11-20",20,8
-"Platte County School District 2","2026-11-20",4,0
-"Prairie View Community School","2026-11-20",5,3
-"STRIDE Learning Center","2026-11-20",6,5
-"Sheridan County School District 1","2026-11-20",12,3
-"Sheridan County School District 2","2026-11-20",15,3
-"Sheridan County School District 3","2026-11-20",3,0
-"Snowy Range Academy","2026-11-20",1,0
-"Sublette County School District 1","2026-11-20",3,2
-"Sublette County School District 9","2026-11-20",8,1
-"Sweetwater County Child Developmental Center","2026-11-20",5,5
-"Sweetwater County School District 1","2026-11-20",72,52
-"Sweetwater County School District 2","2026-11-20",15,3
-"Teton County School District 1","2026-11-20",6,1
-"Uinta County School District 1","2026-11-20",5,1
-"Uinta County School District 4","2026-11-20",3,3
-"Uinta County School District 6","2026-11-20",6,1
-"Washakie County School District 1","2026-11-20",12,4
-"Washakie County School District 2","2026-11-20",1,0
-"Weston County School District 1","2026-11-20",16,4
-"Weston County School District 7","2026-11-20",7,1
 "Wyoming Classical Academy","2026-11-20",20,16
-"Albany County School District 1","2026-11-24",14,9
-"Big Horn School District 1","2026-11-24",11,1
-"Big Horn School District 2","2026-11-24",3,1
-"Big Horn School District 3","2026-11-24",5,3
-"Big Horn School District 4","2026-11-24",5,4
-"Campbell County School District 1","2026-11-24",28,24
-"Carbon County School District 1","2026-11-24",14,7
-"Carbon County School District 2","2026-11-24",15,5
-"Cheyenne Classical Academy","2026-11-24",1,0
-"Converse County School District 1","2026-11-24",11,8
-"Converse County School District 2","2026-11-24",5,4
-"Crook County School District 1","2026-11-24",13,1
-"Fremont County School District 1","2026-11-24",18,6
-"Fremont County School District 14","2026-11-24",9,2
-"Fremont County School District 2","2026-11-24",9,3
-"Fremont County School District 21","2026-11-24",12,8
-"Fremont County School District 24","2026-11-24",2,1
-"Fremont County School District 25","2026-11-24",25,14
-"Fremont County School District 38","2026-11-24",5,4
-"Fremont County School District 6","2026-11-24",6,3
-"Goshen County School District 1","2026-11-24",5,2
-"Hot Springs County School District 1","2026-11-24",9,4
-"Johnson County School District 1","2026-11-24",9,0
-"Laramie County School District 1","2026-11-24",97,44
-"Laramie County School District 2","2026-11-24",16,6
-"Laramie Montessori Charter School","2026-11-24",3,2
-"Lincoln County School District 1","2026-11-24",16,6
-"Lincoln County School District 2","2026-11-24",19,4
-"Natrona School District 1","2026-11-24",61,36
-"Niobrara County School District 1","2026-11-24",6,3
-"Park County School District 1","2026-11-24",10,5
-"Park County School District 16","2026-11-24",2,2
-"Park County School District 6","2026-11-24",12,7
-"Platte County School District 1","2026-11-24",18,8
-"Platte County School District 2","2026-11-24",4,0
-"Prairie View Community School","2026-11-24",5,3
-"STRIDE Learning Center","2026-11-24",6,5
-"Sheridan County School District 1","2026-11-24",12,3
-"Sheridan County School District 2","2026-11-24",13,2
-"Sheridan County School District 3","2026-11-24",3,0
-"Snowy Range Academy","2026-11-24",1,0
-"Sublette County School District 1","2026-11-24",3,2
-"Sublette County School District 9","2026-11-24",8,1
-"Sweetwater County Child Developmental Center","2026-11-24",5,5
-"Sweetwater County School District 1","2026-11-24",73,53
-"Sweetwater County School District 2","2026-11-24",15,3
-"Teton County School District 1","2026-11-24",6,1
-"Uinta County School District 1","2026-11-24",5,1
-"Uinta County School District 4","2026-11-24",3,3
-"Uinta County School District 6","2026-11-24",6,1
-"Washakie County School District 1","2026-11-24",12,4
-"Washakie County School District 2","2026-11-24",1,0
-"Weston County School District 1","2026-11-24",16,4
-"Weston County School District 7","2026-11-24",7,1
 "Wyoming Classical Academy","2026-11-24",20,16

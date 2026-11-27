@@ -66,6 +66,19 @@ backfill_k12_posting_source <- function(posting_id, url, archive_date) {
   out
 }
 
+# Stale board ads, restated (edjobs stale_flags_for_archive(); Mike, 2026-11-26): an archive written before the rule
+# (no Stale_Reason) gets its flags now, judged with that run's own date, so every week of the history is counted under
+# one rule; an archive the rule wrote keeps that run's flags. WSBA rows are the feed and aren't judged by their dates
+# (Posting_Source from 2026-11-13, else the vacancies-page link); before that, no flagged row in any archive is a WSBA
+# row (claude-notes/2026-11-26_stale-restate/). The rebuild and test-history-accumulator.R read archives through it.
+wy_archive_stale_flags <- function(df) {
+  d <- as.character(df$Archive_Date[!is.na(df$Archive_Date)][1])
+  run <- if (is.na(d)) as.Date(NA) else as.Date(d, tryFormats = c("%Y-%m-%d", "%m/%d/%Y"))
+  feed <- (if ("Posting_Source" %in% names(df)) df$Posting_Source %in% WSBA_FEED_LABEL else FALSE) |
+    (!is.na(df$url) & df$url == WSBA_FEED_URL)
+  stale_flags_for_archive(df, run, board = !feed)
+}
+
 # combinedclean.csv's rows from one run's K-12 postings, for the weekly
 # pipeline (Wy_ED_Jobs.Rmd) and the from-archive rebuild alike. Callers
 # dedupe first (distinct(), then collapse_duplicate_posting_ids() where the

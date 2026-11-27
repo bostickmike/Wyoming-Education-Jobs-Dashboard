@@ -52,10 +52,12 @@ rebuild_k12_history_from_archive <- function(archive_dir = "Archivek12_Data",
   # only ever sees a single run's rows at a time.
   combinedclean <- csv_files %>%
     lapply(function(file) {
-      # Board ads the run flagged as stale (Stale_Reason, edjobs flag_stale_board_postings(), from 2026-11-24)
-      # were not counted; archives written before then have no flags and are counted as they were (forward-only).
+      # Board ads flagged as stale (Stale_Reason, edjobs flag_stale_board_postings()) aren't counted: the run's own
+      # flags from 2026-11-27, and archives written before then judged now with their run's date
+      # (wy_archive_stale_flags(), history_accumulator.R; restated 2026-11-26).
       df <- read.csv(file, colClasses = c("Archive_Date" = "character")) %>%
         select(-any_of("X")) %>%
+        wy_archive_stale_flags() %>%
         drop_stale_rows() %>%
         distinct()
       has_source_ids <- "posting_id" %in% names(df)
