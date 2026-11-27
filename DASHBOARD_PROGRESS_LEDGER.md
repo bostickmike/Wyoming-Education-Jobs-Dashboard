@@ -1430,7 +1430,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   `stale_history_restated` for 11-27. Suite 1,487 passed, 0 failed; rebuild parity 11 of 11. Found while building: the
   live `is_wsba` (direct-board district, or the WSBA page link) leaves WSBA rows at districts with no direct board
   (Platte, Niobrara, Park 16) to be judged by their dates like board rows, though the comments say WSBA rows aren't;
-  none of the 148 such rows on 11-13/11-20/11-24 would be flagged, so nothing changes yet (not fixed here).
+  none of the 148 such rows on 11-13/11-20/11-24 would be flagged, so nothing changes yet (not fixed here). Full rehearsal (11-26, edjobs 0.104.0):
+  every step passed, suites 1,487 / 1,488 passed, 0 failed; the render flagged 6 of 711 board postings and 1 WSBA copy;
+  rebuild parity held after the live run; every run expectation passed on its output with RUN_DATE 2026-11-27.
 - [ ] **Later (Mike 11-16, parked): a way for someone sending feedback to get a reply.** An email can't go in the
   report: it becomes a public issue (edit history keeps it). Options: (A) a "want a reply? email ..." line with a
   separate address, recommended; (B) an optional field whose address the app emails to Mike privately via a mail
