@@ -1426,7 +1426,10 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
   reads them (rule A unchanged; college rule now edjobs `find_he_new_postings()`), with the old histories as the
   fallback. Seeded from git history (`claude-notes/2026-11-27_full-review/seed_recent_postings.R`). This week: K-12
   14 -> 106 new (106 of 720 in the Jobs table), college 0 -> 17 (of 460), checked in the running app.
-  Data dictionary updated. App/dictionary/data tests on 0.107.0: 671 passed, 0 failed. Needs the 0.107.0 pin.
+  Data dictionary updated. App/dictionary/data tests on 0.107.0: 671 passed, 0 failed. Pinned edjobs 0.110.0
+  (`Pin edjobs 0.110.0`); rehearsed 2026-11-27 (`claude-notes/logs/2026-11-27_rehearsal-wy-pin-0.110.0.log`): every
+  step ok, rebuild parity 11 of 11 files, post-run suite 1502 passed, 0 failed; the recent-postings files hold
+  2026-11-20 and 2026-11-27 (K-12 735 + 714 rows, college 463 + 460).
 - [x] Listing Duration: days listed end halfway to the next update, not +7 (full review 2026-11-27, finding 2.4;
   Mike's call; branch `durations-midpoint`). The flat 7 days assumed weekly updates (twice a week since 11-17); now a
   gone posting's listing runs to the midpoint between its last sighting and the next update, as the posting spells
