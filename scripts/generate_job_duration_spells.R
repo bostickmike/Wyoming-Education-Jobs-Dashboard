@@ -39,6 +39,16 @@ if (file.exists(out_path)) {
 
 max_scrape_date <- max(k12$Archive_Date, na.rm = TRUE)
 
+# Days open: first to last update that showed the posting, plus half the gap to the next update (when it was gone),
+# as the posting spells end a listing (edjobs build_posting_spells(): midpoint to the next run). A posting still
+# listed gets nothing added. Was a flat +7, one weekly gap, which overstated listings since the twice-weekly
+# updates (2026-11-17; full review 2026-11-27, Mike's call).
+update_dates <- sort(unique(as.Date(k12$Archive_Date)))
+half_gap_after <- function(d) {
+  nxt <- update_dates[update_dates > as.Date(d)]
+  if (length(nxt) == 0) 0 else as.numeric(nxt[1] - as.Date(d)) / 2
+}
+
 # A posting that drops off the board for more than SPELL_GAP_DAYS (i.e. it
 # missed two or more weekly scrapes) and later reappears under the same title
 # starts a new spell, rather than being merged into one multi-month "spell"
@@ -59,7 +69,8 @@ spells <- k12 %>%
     Last_Seen_Date = max(Archive_Date),
     # Calendar weeks, not snapshots: some weeks had more than one scrape.
     Weeks_Observed = n_distinct(format(obs_date, "%G-%V")),
-    Estimated_Days_Open = as.integer(as.Date(max(Archive_Date)) - as.Date(min(Archive_Date)) + 7),
+    Estimated_Days_Open = as.integer(floor(as.numeric(as.Date(max(Archive_Date)) - as.Date(min(Archive_Date))) +
+                                           half_gap_after(max(Archive_Date)) + 0.5)),
     Status = ifelse(max(Archive_Date) == max_scrape_date, "Still Active", "Closed / Filled"),
     .groups = "drop"
   ) %>%

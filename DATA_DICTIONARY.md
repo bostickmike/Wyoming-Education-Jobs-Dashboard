@@ -119,7 +119,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `First_Seen_Date` | Date (YYYY-MM-DD) | This dashboard: posting tracking | Earliest update in which this job vacancy was observed active. |
 | `Last_Seen_Date` | Date (YYYY-MM-DD) | This dashboard: posting tracking | Latest update in which this job vacancy was observed active. |
 | `Weeks_Observed` | Integer | This dashboard: posting tracking | Number of distinct calendar weeks (ISO weeks) in which this posting was observed during the spell. A posting absent for more than 21 days that reappears under the same title starts a new spell. |
-| `Estimated_Days_Open` | Integer | This dashboard: posting tracking | Estimated days the posting was listed, from its first to its last sighting. How long a listing stays up, not time to fill: filled jobs can stay posted and open jobs get reposted. |
+| `Estimated_Days_Open` | Integer | This dashboard: posting tracking | Estimated days the posting was listed: first to last sighting, plus half the time to the next update once it is gone. How long a listing stays up, not time to fill: filled jobs can stay posted and open jobs get reposted. |
 | `Status` | Categorical | This dashboard: posting tracking | Still Active (listed in the latest update) or Closed / Filled (no longer listed; whether it was filled isn't known). |
 | `is_stem` | Binary (0/1) | This dashboard: job title classification | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |
 | `is_sped` | Binary (0/1) | This dashboard: job title classification | Binary indicator: 1 if position is Special Education; 0 otherwise. |
@@ -223,7 +223,7 @@ To support seamless merges with federal, state, and academic datasets, the follo
 | `First_Seen_Date` | Date (YYYY-MM-DD) | This dashboard: posting tracking | Earliest update in which this collegiate job posting was observed active. |
 | `Last_Seen_Date` | Date (YYYY-MM-DD) | This dashboard: posting tracking | Latest update in which this collegiate job posting was observed active. |
 | `Weeks_Observed` | Integer | This dashboard: posting tracking | Number of distinct calendar weeks (ISO weeks) in which this posting was observed during the spell. A posting absent for more than 21 days that reappears under the same title starts a new spell. |
-| `Estimated_Days_Open` | Integer | This dashboard: posting tracking | Estimated days the posting was listed, from its first to its last sighting. How long a listing stays up, not time to fill: filled jobs can stay posted and open jobs get reposted. |
+| `Estimated_Days_Open` | Integer | This dashboard: posting tracking | Estimated days the posting was listed: first to last sighting, plus half the time to the next update once it is gone. How long a listing stays up, not time to fill: filled jobs can stay posted and open jobs get reposted. |
 | `Status` | Categorical | This dashboard: posting tracking | Still Active (listed in the latest update) or Closed / Filled (no longer listed; whether it was filled isn't known). |
 | `is_stem` | Binary (0/1) | This dashboard: job title classification | Binary indicator: 1 if position is Science, Technology, Engineering, or Mathematics; 0 otherwise. |
 | `is_health` | Binary (0/1) | This dashboard: job title classification | Binary indicator: 1 if position is Nursing, Health Sciences, or Medical; 0 otherwise. |

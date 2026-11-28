@@ -1418,6 +1418,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] Listing Duration: days listed end halfway to the next update, not +7 (full review 2026-11-27, finding 2.4;
+  Mike's call; branch `durations-midpoint`). The flat 7 days assumed weekly updates (twice a week since 11-17); now a
+  gone posting's listing runs to the midpoint between its last sighting and the next update, as the posting spells
+  end one, and a still-listed posting gets nothing added. `job_duration_spells.csv` / `he_job_duration_spells.csv`
+  regenerated (only `Estimated_Days_Open` changes): ended-listing median K-12 28 -> 25, college 77 -> 74 days. METHODS.md and
+  the dictionary updated; the tab text changes with edjobs 0.110.0. Tests: 285 passed, 0 failed.
 - [x] `test-data-dictionary.R`'s `pending` list emptied (full review 2026-11-27, finding 3.3; branch
   `review-dictionary-pending`): every listed column (SAIPE range, ACS MOEs, CCD/IPEDS links) is in the committed files,
   so dropping one now fails the test. Tests: 171 passed, 0 failed.

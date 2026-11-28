@@ -109,7 +109,8 @@ and Gillette College report to IPEDS as one institution while they separate, so 
 ## Listing duration
 
 The Listing Duration tab lists each posting with the first and last update that showed it (`job_duration_spells.csv`,
-`he_job_duration_spells.csv`). Days listed is the span from the first to the last sighting, plus 7 days; a posting
+`he_job_duration_spells.csv`). Days listed is the span from the first to the last sighting, plus half the time to the next update once
+the posting is gone (nothing is added while it is still listed: the same end the posting spells use); a posting
 that disappears for more than 21 days and comes back under the same title starts a new row. It starts at the
 first sighting, which is often after the posting went up, and "no longer listed" means only that it stopped
 appearing.
