@@ -657,7 +657,7 @@ source("direct_api_scrapers.R")
 #     hashes.
 #   - UWHeuristic: UW's Oracle Cloud HCM JSON API (fetch_uw_postings(), direct_api_scrapers.R).
 # These replaced the old RSelenium scrapers.
-he_registry <- read.csv("he_institution_registry.csv", stringsAsFactors = FALSE)
+he_registry <- read_he_registry()
 he_frames <- lapply(scrape_registry_platforms(he_registry, NULL, source = "he_institution_registry.csv", shape = "raw"),
                     function(df) {
   # A college whose board came back empty keeps its name on a zero-row frame, as before.
@@ -727,7 +727,7 @@ log_step("posting status: done; coverage calendar: start")
 library(edjobs)
 tryCatch(refresh_coverage_calendar(
   "coverage_calendar.csv", "scrape_log.csv",
-  k12_entities = read.csv("k12_district_registry.csv", stringsAsFactors = FALSE)$District,
+  k12_entities = read_k12_registry()$District,
   data_k12 = unique(combined$District), data_he = unique(hedata$Institution),
   feeds = c("WSBA statewide feed" = "^WSBA statewide vacancies$",
             "WSBA + own-page districts (group)" = "^Miscellaneous K-12 districts")),

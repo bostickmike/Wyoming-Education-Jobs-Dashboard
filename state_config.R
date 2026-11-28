@@ -19,11 +19,8 @@ library(edjobs)
 #     Location_Label).
 # WSBA-only orgs (WSBA_ONLY_ORGS) have no scraper of their own and resolve
 # to NULL, as does anything else not listed.
-# The registries sit at the repository root; tests run from tests/testthat.
-wy_registry_path <- function(file) if (file.exists(file)) file else here::here(file)
-read_k12_registry <- function() utils::read.csv(wy_registry_path("k12_district_registry.csv"), stringsAsFactors = FALSE,
-                                                 colClasses = c(NCES_LEAID = "character", Platform_Key = "character"))
-read_he_registry <- function() utils::read.csv(wy_registry_path("he_institution_registry.csv"), stringsAsFactors = FALSE)
+# Both are read with edjobs::read_k12_registry() / read_he_registry() (edjobs 0.113.0; text columns, blanks "",
+# NCES_LEAID as 7-digit text), which find the repository-root file from tests/testthat too.
 
 # How each platform is scraped: the platforms edjobs scrapes (AppliTrack,
 # SchoolSpring, TedK12, Red Rover, Edlio, Apptegy, NEOGOV ...) come from
