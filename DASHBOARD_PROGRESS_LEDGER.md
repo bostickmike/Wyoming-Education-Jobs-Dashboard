@@ -1418,6 +1418,12 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] Built with edjobs (branch `pin-edjobs-0.111.0`; edjobs 0.111.0). The data-sources footer, on every tab, ends
+  with `built_with_edjobs()` ("Built with edjobs, an open-source R package for tracking education job postings",
+  linking to the package on GitHub), and the Data tab invites anyone wanting a dashboard for another state to start
+  from the package. Text only, no rehearsal: the app booted on 0.111.0 and both lines were checked in it. Pinned
+  edjobs 0.111.0 (`EDJOBS_VERSION`, weekly workflow ref, manifest edjobs entry and app.R checksum by hand). Tests on
+  0.111.0: 1448 passed, 0 failed.
 - [x] New This Week covers every role (full review 2026-11-27, finding 1.6; Mike's call; branch
   `new-this-week-all-roles`; edjobs 0.107.0). It compared the teaching/faculty histories, so the Jobs tabs' button on an
   all-roles table dropped every new support, para, coach and staff posting, and the map's and summary tables' "New
