@@ -1418,6 +1418,18 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] Registry reads through edjobs (Utah phase 0, gap 4; branch `registry-reader`; edjobs 0.113.0): WY's own
+  `read_k12_registry()` / `read_he_registry()` deleted from `state_config.R` (same names as the edjobs exports, so they
+  would mask them), and the Rmd's two plain `read.csv()` registry reads go through the package. Pin 0.113.0 (from
+  0.111.0; 0.112.0 CCD id padding / NEOGOV links). Before/after replay of every registry consumer (installed 0.110.0
+  on main vs 0.113.0 on the branch, separate processes): `k12_static_columns()`, `refresh_he_static_columns()`,
+  `he_institution_urls`, the id map and every source's `resolve_scraper_call()` identical; the registry tables,
+  `read_direct_board_registry()` and `misc_district_rows()` differ only in all-blank `City` / `Location_Pattern`
+  (logical NA -> ""), equal as text. Rehearsed 2026-11-28 (`claude-notes/logs/2026-11-28_rehearsal-wy-registry-reader-0.113.0.log`):
+  every step ok, rebuild parity 11 of 11, pre- and post-run suites 1502 passed, 0 failed; recent-postings files hold
+  2026-11-20 and 2026-11-28 (K-12 735 + 714, college 463 + 460). Sources as on 11-27 except WSBA 50 -> 44: the six
+  SchoolSpring pairs `data_audit.R` listed (0.109.0's link-ID fix) now count once. Still twice: Laramie Montessori's
+  school counselor (Paylocity + WSBA), because the WSBA dedupe compares only the direct-board platforms; separate fix.
 - [x] Built with edjobs (branch `pin-edjobs-0.111.0`; edjobs 0.111.0). The data-sources footer, on every tab, ends
   with `built_with_edjobs()` ("Built with edjobs, an open-source R package for tracking education job postings",
   linking to the package on GitHub), and the Data tab invites anyone wanting a dashboard for another state to start
