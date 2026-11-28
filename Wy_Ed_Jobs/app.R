@@ -977,7 +977,8 @@ data_sources_footer <- tags$footer(
   tags$p(
     "This product uses the Census Bureau Data API but is not endorsed or certified by the Census Bureau.",
     "BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov."
-  )
+  ),
+  built_with_edjobs()
 )
 
 ui <- page_navbar(
