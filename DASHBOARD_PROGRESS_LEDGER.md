@@ -1418,6 +1418,9 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] Run expectation `wsba_schoolspring_counted_once` (2026-12-01 to 12-15): no WSBA row whose SchoolSpring job number
+  is a SchoolSpring board posting (the six pairs counted twice in the 11-27 data). Measured with
+  `measure_expectation()`: 6 on main's 11-27 `combinedclean.csv`, 0 on the 11-28 rehearsal's; validates (34 rows).
 - [x] Registry reads through edjobs (Utah phase 0, gap 4; branch `registry-reader`; edjobs 0.113.0): WY's own
   `read_k12_registry()` / `read_he_registry()` deleted from `state_config.R` (same names as the edjobs exports, so they
   would mask them), and the Rmd's two plain `read.csv()` registry reads go through the package. Pin 0.113.0 (from
