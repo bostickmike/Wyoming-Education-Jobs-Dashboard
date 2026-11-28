@@ -1418,6 +1418,18 @@ Unlike ephemeral conversation logs or local scratch handoffs, this document live
     postings. Mike 11-26: skip it (a one-time effect of the fill). Listing durations bridge by title.
 
 **Open work (moved here from claude-notes handoff, 2026-11-03; this list is the source of truth):**
+- [x] New This Week covers every role (full review 2026-11-27, finding 1.6; Mike's call; branch
+  `new-this-week-all-roles`; edjobs 0.107.0). It compared the teaching/faculty histories, so the Jobs tabs' button on an
+  all-roles table dropped every new support, para, coach and staff posting, and the map's and summary tables' "New
+  This Week" counted teachers and faculty only. The pipeline now keeps `k12_recent_postings.csv` /
+  `he_recent_postings.csv` (every role, last two weeks; edjobs `write_k12_history()` / `write_he_history()`); app.R
+  reads them (rule A unchanged; college rule now edjobs `find_he_new_postings()`), with the old histories as the
+  fallback. Seeded from git history (`claude-notes/2026-11-27_full-review/seed_recent_postings.R`). This week: K-12
+  14 -> 106 new (106 of 720 in the Jobs table), college 0 -> 17 (of 460), checked in the running app.
+  Data dictionary updated. App/dictionary/data tests on 0.107.0: 671 passed, 0 failed. Pinned edjobs 0.110.0
+  (`Pin edjobs 0.110.0`); rehearsed 2026-11-27 (`claude-notes/logs/2026-11-27_rehearsal-wy-pin-0.110.0.log`): every
+  step ok, rebuild parity 11 of 11 files, post-run suite 1502 passed, 0 failed; the recent-postings files hold
+  2026-11-20 and 2026-11-27 (K-12 735 + 714 rows, college 463 + 460).
 - [x] Listing Duration: days listed end halfway to the next update, not +7 (full review 2026-11-27, finding 2.4;
   Mike's call; branch `durations-midpoint`). The flat 7 days assumed weekly updates (twice a week since 11-17); now a
   gone posting's listing runs to the midpoint between its last sighting and the next update, as the posting spells
