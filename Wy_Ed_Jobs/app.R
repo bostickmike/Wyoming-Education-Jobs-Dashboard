@@ -603,10 +603,9 @@ HE_JOB_TYPE_COLORS <- c(
 )
 
 #--------------------------------------------------
-# "New this week" -- row-level history, diffed against the previous
-# archived week by (identity columns), scoped to Teacher/Faculty postings
-# same as the rest of the trend tabs (k12jobanalysis.csv/facultydata.csv
-# are already filtered that way upstream).
+# Teaching and faculty history (k12jobanalysis.csv/facultydata.csv are
+# filtered that way upstream): the trend tabs and the vacancy rate, and
+# "new this week" until the every-role files below hold two weeks.
 #--------------------------------------------------
 k12_history <- read.csv("k12jobanalysis.csv", fileEncoding = "UTF-8") %>%
   validate_and_pad_schema(c("title", "Archive_Date", "location", "District", "Posting_ID"), "k12jobanalysis.csv",
@@ -629,26 +628,26 @@ he_history <- read.csv("facultydata.csv", fileEncoding = "UTF-8") %>%
     "Adjunct/Part-Time Faculty" = "Adjunct/part-time faculty"
   ))
 
-he_new_this_week <- {
-  dates <- sort(unique(he_history$Archive_Date))
-  if (length(dates) >= 2) {
-    latest <- dates[length(dates)]
-    previous <- dates[length(dates) - 1]
-    he_history %>%
-      filter(Archive_Date == latest) %>%
-      anti_join(he_history %>% filter(Archive_Date == previous), by = c("Title", "Location", "Institution"))
-  } else {
-    he_history[0, ]
-  }
+# "New this week" over every role (edjobs 0.107.0; full review 2026-11-27, Mike's call): the pipeline keeps the last
+# two weeks' postings of every role in k12_recent_postings.csv / he_recent_postings.csv. The teaching and faculty
+# histories above are the fallback until a file holds two weeks. Rules: edjobs find_k12_new_postings() (rule A,
+# 2026-11-21) and find_he_new_postings() (title, location, institution).
+read_recent_postings <- function(f) {
+  d <- tryCatch(read.csv(f, colClasses = "character", fileEncoding = "UTF-8"), error = function(e) NULL)
+  if (!is.null(d) && length(unique(d$Archive_Date)) >= 2) d else NULL
 }
+k12_recent <- read_recent_postings("k12_recent_postings.csv")
+if (!is.null(k12_recent)) k12_new_this_week <- find_k12_new_postings(k12_recent)
+he_recent <- read_recent_postings("he_recent_postings.csv")
+he_new_this_week <- find_he_new_postings(if (is.null(he_recent)) he_history else he_recent)
 
 #--------------------------------------------------
 # Combined map dataset -- one row per K-12 district or HE institution,
 # merging each entity's existing location/salary reference data with a
 # live current-openings count, a couple of sample current titles, and a
 # new-this-week count (reusing k12_new_this_week/he_new_this_week above,
-# so it's the same Teacher/Faculty-scoped definition of "new" as the New
-# This Week tabs, not a separate metric).
+# every role, so it's the same definition of "new" as the Jobs tabs' New
+# This Week button, not a separate metric).
 #--------------------------------------------------
 k12_current_counts <- combineddata %>% count(District, name = "CurrentCount")
 k12_sample_titles <- combineddata %>%
